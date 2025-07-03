@@ -14,7 +14,10 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Zazastro",
-  description: "Zaza's fucking astrology.",
+  description: "Zaza's personal astrology site.",
+  icons: {
+    icon: "pisces.png",
+  },
 };
 
 export default function RootLayout({

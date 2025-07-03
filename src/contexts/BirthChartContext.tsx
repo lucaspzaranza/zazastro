@@ -3,18 +3,12 @@ import {
   getAntiscion,
   getDegreeAndSign,
 } from "@/app/utils/chartUtils";
-import { BirthChart } from "@/interfaces/BirthChart";
+import { BirthChart, planetTypes } from "@/interfaces/BirthChart";
 
-import React, {
-  createContext,
-  useState,
-  useContext,
-  ReactNode,
-  useEffect,
-} from "react";
+import React, { createContext, useState, useContext, ReactNode } from "react";
 
 interface BirthChartContextType {
-  birthChart: BirthChart;
+  birthChart: BirthChart | undefined;
   updateBirthChart: (chartData: BirthChart) => void;
 }
 
@@ -25,22 +19,7 @@ const BirthChartContext = createContext<BirthChartContextType | undefined>(
 export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [birthChart, setBirthChart] = useState<BirthChart>({
-    planets: [],
-    planetsWithSigns: [],
-    housesData: {
-      armc: 0,
-      ascendant: 0,
-      equatorialAscendant: 0,
-      house: [],
-      housesWithSigns: [],
-      kochCoAscendant: 0,
-      mc: 0,
-      munkaseyCoAscendant: 0,
-      munkaseyPolarAscendant: 0,
-      vertex: 0,
-    },
-  });
+  const [birthChart, setBirthChart] = useState<BirthChart>();
 
   const updateBirthChart = (chartData: BirthChart) => {
     setBirthChart({
@@ -54,6 +33,7 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
 
           longitudeRaw: planet.longitude,
           antiscionRaw: getAntiscion(planet.longitude, true),
+          type: planetTypes[planet.id],
         };
       }),
 

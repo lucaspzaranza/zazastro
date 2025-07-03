@@ -25,9 +25,7 @@ export default function BirthChart() {
       });
 
       const data = await response.json();
-      console.log("mapa:");
-      console.log(data);
-
+      // console.log(data);
       updateBirthChart(data);
     } catch (error) {
       console.error("Erro ao consultar mapa astral:", error);

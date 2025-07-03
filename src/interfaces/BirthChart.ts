@@ -1,3 +1,28 @@
+export type PlanetType =
+  | "sun"
+  | "moon"
+  | "mercury"
+  | "venus"
+  | "mars"
+  | "jupiter"
+  | "saturn"
+  | "uranus"
+  | "neptune"
+  | "pluto";
+
+export const planetTypes: PlanetType[] = [
+  "sun",
+  "moon",
+  "mercury",
+  "venus",
+  "mars",
+  "jupiter",
+  "saturn",
+  "uranus",
+  "neptune",
+  "pluto",
+];
+
 export interface BirthChart {
   planets: Planet[];
   planetsWithSigns: { position: string; antiscion: string }[];
@@ -6,6 +31,8 @@ export interface BirthChart {
 
 export interface Planet {
   name: string;
+  type: PlanetType;
+  id: number;
   longitude: number;
   longitudeRaw: number;
   sign: string;
@@ -24,12 +51,4 @@ export interface HousesData {
   kochCoAscendant: number;
   munkaseyCoAscendant: number;
   munkaseyPolarAscendant: number;
-}
-
-export interface ArabicPart {
-  name: string;
-  position: number;
-  distanceFromASC: number;
-  antiscion: number;
-  antiscionSign: string;
 }
