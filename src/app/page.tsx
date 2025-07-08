@@ -4,6 +4,8 @@ import { BirthChartContextProvider } from "@/contexts/BirthChartContext";
 import { ArabicPartsContextProvider } from "@/contexts/ArabicPartsContext";
 import BirthChart from "./components/BirthChart";
 import ArabicParts from "./components/ArabicParts";
+import ReturnChart from "./components/ReturnChart";
+import BirthArchArabicParts from "./components/BirthArchArabicParts";
 
 export default function Home() {
   return (
@@ -13,6 +15,8 @@ export default function Home() {
         <ArabicPartsContextProvider>
           <BirthChart />
           <ArabicParts />
+          <ReturnChart />
+          <BirthArchArabicParts />
         </ArabicPartsContextProvider>
       </BirthChartContextProvider>
     </div>

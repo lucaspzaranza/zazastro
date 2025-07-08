@@ -73,48 +73,48 @@ export default function ArabicParts() {
       <h2 className="text-xl font-bold">Partes Árabes</h2>
       <ul>
         <li>
-          {arabicParts.fortune?.name}: {arabicParts.fortune?.longitudeSign} 
-          Antiscion: {arabicParts.fortune?.antiscionSign}
+          {arabicParts.fortune?.name}: {arabicParts.fortune?.longitudeSign}
+          &nbsp; Antiscion: {arabicParts.fortune?.antiscionSign}
         </li>
 
         <li>
-          {arabicParts.spirit?.name}: {arabicParts.spirit?.longitudeSign} 
+          {arabicParts.spirit?.name}: {arabicParts.spirit?.longitudeSign}&nbsp;
           Antiscion: {arabicParts.spirit?.antiscionSign}
         </li>
 
         <li>
-          {arabicParts.necessity?.name}: {arabicParts.necessity?.longitudeSign} 
-          Antiscion: {arabicParts.necessity?.antiscionSign}
+          {arabicParts.necessity?.name}: {arabicParts.necessity?.longitudeSign}
+          &nbsp; Antiscion: {arabicParts.necessity?.antiscionSign}
         </li>
 
         <li>
-          {arabicParts.love?.name}: {arabicParts.love?.longitudeSign} 
+          {arabicParts.love?.name}: {arabicParts.love?.longitudeSign}&nbsp;
           Antiscion: {arabicParts.love?.antiscionSign}
         </li>
 
         <li>
-          {arabicParts.valor?.name}: {arabicParts.valor?.longitudeSign} 
+          {arabicParts.valor?.name}: {arabicParts.valor?.longitudeSign}&nbsp;
           Antiscion: {arabicParts.valor?.antiscionSign}
         </li>
 
         <li>
-          {arabicParts.victory?.name}: {arabicParts.victory?.longitudeSign} 
-          Antiscion: {arabicParts.victory?.antiscionSign}
+          {arabicParts.victory?.name}: {arabicParts.victory?.longitudeSign}
+          &nbsp; Antiscion: {arabicParts.victory?.antiscionSign}
         </li>
 
         <li>
-          {arabicParts.captivity?.name}: {arabicParts.captivity?.longitudeSign} 
-          Antiscion: {arabicParts.captivity?.antiscionSign}
+          {arabicParts.captivity?.name}: {arabicParts.captivity?.longitudeSign}
+          &nbsp; Antiscion: {arabicParts.captivity?.antiscionSign}
         </li>
 
         <li>
-          {arabicParts.marriage?.name}: {arabicParts.marriage?.longitudeSign} 
-          Antiscion: {arabicParts.marriage?.antiscionSign}
+          {arabicParts.marriage?.name}: {arabicParts.marriage?.longitudeSign}
+          &nbsp; Antiscion: {arabicParts.marriage?.antiscionSign}
         </li>
 
         <li>
           {arabicParts.resignation?.name}:{" "}
-          {arabicParts.resignation?.longitudeSign}  Antiscion:{" "}
+          {arabicParts.resignation?.longitudeSign}&nbsp; Antiscion:{" "}
           {arabicParts.resignation?.antiscionSign}
         </li>
       </ul>

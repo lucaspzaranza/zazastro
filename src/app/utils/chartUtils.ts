@@ -1,30 +1,48 @@
-import { PlanetType } from "@/interfaces/BirthChart";
+import { PlanetType, planetTypes } from "@/interfaces/BirthChart";
 
-export function getSign(longitude: number) {
+export function getSign(longitude: number, getGlyphOnly = false): string {
   const signs = [
-    "Áries ♈",
-    "Touro ♉",
-    "Gêmeos ♊",
-    "Câncer ♋",
-    "Leão ♌",
-    "Virgem ♍",
-    "Libra ♎",
-    "Escorpião ♏",
-    "Sagitário ♐",
-    "Capricórnio ♑",
-    "Aquário ♒",
-    "Peixes ♓",
+    `${!getGlyphOnly ? "Áries " : ""}♈︎`,
+    `${!getGlyphOnly ? "Touro " : ""}♉︎`,
+    `${!getGlyphOnly ? "Gêmeos " : ""}♊︎`,
+    `${!getGlyphOnly ? "Câncer " : ""}♋︎`,
+    `${!getGlyphOnly ? "Leão " : ""}♌︎`,
+    `${!getGlyphOnly ? "Virgem " : ""}♍︎`,
+    `${!getGlyphOnly ? "Libra " : ""}♎︎`,
+    `${!getGlyphOnly ? "Escorpião " : ""}♏︎`,
+    `${!getGlyphOnly ? "Sagitário " : ""}♐︎`,
+    `${!getGlyphOnly ? "Capricórnio " : ""}♑︎`,
+    `${!getGlyphOnly ? "Aquário " : ""}♒︎`,
+    `${!getGlyphOnly ? "Peixes " : ""}♓︎`,
   ];
   return signs[Math.floor(longitude / 30) % 12];
+}
+
+export function getPlanetSymbol(planet: PlanetType): string {
+  const planetsSymbols: Record<PlanetType, string> = {
+    sun: "☉",
+    moon: "☾",
+    mercury: "☿",
+    venus: "♀",
+    mars: "♂",
+    jupiter: "♃",
+    saturn: "♄",
+    uranus: "♅",
+    neptune: "♆",
+    pluto: "♇",
+  };
+
+  return planetsSymbols[planet];
 }
 
 /**
  * Returns the formatted longitude value with its corresponding Sign.
  * @param longitude The longitude value to be formatted.
+ * @param getGlyphOnly If true, it'll show only the sign glyph without its name.
  * @returns The position at the Zodiac to that longitude.
  */
-export function getDegreeAndSign(longitude: number) {
-  const sign = getSign(longitude);
+export function getDegreeAndSign(longitude: number, getGlyphOnly = false) {
+  const sign = getSign(longitude, getGlyphOnly);
   const previousSign = Math.floor(longitude / 30);
   const rest = Number.parseFloat((longitude - previousSign * 30).toFixed(2));
   const degrees = Math.floor(rest);
@@ -34,7 +52,7 @@ export function getDegreeAndSign(longitude: number) {
     minutes = "0" + minutes;
   }
 
-  const result = `${degrees}°${minutes}' de ${sign}`;
+  const result = `${degrees}°${minutes}'${!getGlyphOnly ? "de " : ""}${sign}`;
 
   return result;
 }
@@ -63,10 +81,12 @@ export function getAntiscion(longitude: number, getRaw = false) {
     result = 270 + distance;
   }
 
+  result = wrapZodiacLongitude(result);
+
   return getRaw ? result : decimalToDegreesMinutes(result);
 }
 
-export function clampZodiacLongitude(longitude: number) {
+export function wrapZodiacLongitude(longitude: number) {
   if (longitude < 0) {
     return (longitude += 360);
   } else if (longitude >= 360) {
@@ -77,7 +97,7 @@ export function clampZodiacLongitude(longitude: number) {
 }
 
 export function getZodiacRuler(longitude: number) {
-  let long = clampZodiacLongitude(longitude);
+  let long = wrapZodiacLongitude(longitude);
 
   const zodiacRulers: PlanetType[] = [
     "mars", // Aries 0 - 29
@@ -97,4 +117,11 @@ export function getZodiacRuler(longitude: number) {
   const index = Math.floor(long / 30);
 
   return zodiacRulers[index];
+}
+
+export function getHourAndMinute(decimalTime: number): string {
+  const hours = Math.floor(decimalTime);
+  const minutes = (decimalTime - hours).toFixed(2).padStart(2, "0");
+  const hoursString = hours.toString().padStart(2, "0");
+  return `${hours}h${minutes}`;
 }

@@ -3,7 +3,7 @@
 import { ArabicPart } from "@/interfaces/ArabicPart";
 import { BirthChart } from "@/interfaces/BirthChart";
 import {
-  clampZodiacLongitude,
+  wrapZodiacLongitude,
   decimalToDegreesMinutes,
   getAntiscion,
   getDegreeAndSign,
@@ -26,20 +26,24 @@ function getDistanceFromAscendant(
   return distance;
 }
 
+const getGlyphOnly = true;
+
 function getArabicPartData(longitudeRaw: number, asc: number) {
   const longitude = decimalToDegreesMinutes(longitudeRaw);
   const antiscion = getAntiscion(longitudeRaw);
   const antiscionRaw = getAntiscion(longitudeRaw, true);
   const distanceFromASC = getDistanceFromAscendant(longitudeRaw, asc);
+  const rawDistanceFromASC = wrapZodiacLongitude(longitudeRaw - asc);
 
-  const longitudeSign = getDegreeAndSign(longitude);
-  const antiscionSign = getDegreeAndSign(antiscion);
+  const longitudeSign = getDegreeAndSign(longitude, getGlyphOnly);
+  const antiscionSign = getDegreeAndSign(antiscion, getGlyphOnly);
 
   return {
     longitude,
     antiscion,
     antiscionRaw,
     distanceFromASC,
+    rawDistanceFromASC,
     longitudeSign,
     antiscionSign,
   };
@@ -53,7 +57,7 @@ export function useArabicPartCalculations() {
     const moon = chartData.planets.find((p) => p.type === "moon")!;
     const asc = chartData.housesData.ascendant;
 
-    const longitudeRaw = clampZodiacLongitude(
+    const longitudeRaw = wrapZodiacLongitude(
       asc + moon.longitudeRaw - sun.longitudeRaw
     );
 
@@ -71,7 +75,7 @@ export function useArabicPartCalculations() {
     const moon = chartData.planets.find((p) => p.type === "moon")!;
     const asc = chartData.housesData.ascendant;
 
-    const longitudeRaw = clampZodiacLongitude(
+    const longitudeRaw = wrapZodiacLongitude(
       asc + sun.longitudeRaw - moon.longitudeRaw
     );
 
@@ -89,7 +93,7 @@ export function useArabicPartCalculations() {
     const lotOfFortune = arabicParts?.fortune!;
     const lotOfSpirit = arabicParts?.spirit!;
 
-    const longitudeRaw = clampZodiacLongitude(
+    const longitudeRaw = wrapZodiacLongitude(
       asc + lotOfFortune.longitudeRaw - lotOfSpirit.longitudeRaw
     );
 
@@ -107,7 +111,7 @@ export function useArabicPartCalculations() {
     const lotOfFortune = arabicParts?.fortune!;
     const lotOfSpirit = arabicParts?.spirit!;
 
-    const longitudeRaw = clampZodiacLongitude(
+    const longitudeRaw = wrapZodiacLongitude(
       asc + lotOfSpirit.longitudeRaw - lotOfFortune.longitudeRaw
     );
 
@@ -125,7 +129,7 @@ export function useArabicPartCalculations() {
     const lotOfFortune = arabicParts?.fortune!;
     const mars = chartData.planets.find((p) => p.type === "mars")!;
 
-    const longitudeRaw = clampZodiacLongitude(
+    const longitudeRaw = wrapZodiacLongitude(
       asc + lotOfFortune.longitudeRaw - mars.longitudeRaw
     );
 
@@ -143,7 +147,7 @@ export function useArabicPartCalculations() {
     const lotOfSpirit = arabicParts?.spirit!;
     const jupiter = chartData.planets.find((p) => p.type === "jupiter")!;
 
-    const longitudeRaw = clampZodiacLongitude(
+    const longitudeRaw = wrapZodiacLongitude(
       asc + jupiter.longitudeRaw - lotOfSpirit.longitudeRaw
     );
 
@@ -161,7 +165,7 @@ export function useArabicPartCalculations() {
     const lotOfFortune = arabicParts?.fortune!;
     const saturn = chartData.planets.find((p) => p.type === "saturn")!;
 
-    const longitudeRaw = clampZodiacLongitude(
+    const longitudeRaw = wrapZodiacLongitude(
       asc + lotOfFortune.longitudeRaw - saturn.longitudeRaw
     );
 
@@ -179,7 +183,7 @@ export function useArabicPartCalculations() {
     const dsc = chartData.housesData.house[6];
     const venus = chartData.planets.find((p) => p.type === "venus")!;
 
-    const longitudeRaw = clampZodiacLongitude(asc + dsc - venus.longitudeRaw);
+    const longitudeRaw = wrapZodiacLongitude(asc + dsc - venus.longitudeRaw);
     const longitude = decimalToDegreesMinutes(longitudeRaw);
     const zodiacRuler = getZodiacRuler(longitude);
 
@@ -198,7 +202,7 @@ export function useArabicPartCalculations() {
     const jupiter = chartData.planets.find((p) => p.type === "jupiter")!;
     const sun = chartData.planets.find((p) => p.type === "sun")!;
 
-    const longitudeRaw = clampZodiacLongitude(
+    const longitudeRaw = wrapZodiacLongitude(
       saturn.longitudeRaw + jupiter.longitudeRaw - sun.longitudeRaw
     );
     const longitude = decimalToDegreesMinutes(longitudeRaw);
@@ -213,6 +217,38 @@ export function useArabicPartCalculations() {
     };
   }
 
+  function calculateBirthArchArabicPart(
+    arabicPart: ArabicPart,
+    chart: BirthChart
+  ): ArabicPart {
+    const asc = chart.housesData.ascendant;
+    const longitudeRaw = asc + arabicPart.rawDistanceFromASC;
+    const arabicPartData = getArabicPartData(
+      longitudeRaw,
+      chart.housesData.ascendant
+    );
+
+    console.log(
+      `Parte: ${arabicPart.name}, Distância do AC (cru): ${
+        arabicPart.rawDistanceFromASC
+      }, 
+      longitudeRaw: ${longitudeRaw}, transformada: ${
+        arabicPartData.longitudeSign
+      },
+      AC da Revolução (cru): ${asc},
+      AC da Revolução: ${getDegreeAndSign(decimalToDegreesMinutes(asc))},
+      Antiscion: ${arabicPartData.antiscion};
+      Antiscion (cru): ${arabicPartData.antiscionRaw},
+      Signo do Antiscion: ${arabicPartData.antiscionSign}`
+    );
+
+    return {
+      ...arabicPart,
+      longitudeRaw,
+      ...arabicPartData,
+    };
+  }
+
   return {
     calculateLotOfFortune,
     calculateLotOfSpirit,
@@ -223,5 +259,6 @@ export function useArabicPartCalculations() {
     calculateLotOfCaptivity,
     calculateLotOfMarriage,
     calculateLotOfResignation,
+    calculateBirthArchArabicPart,
   };
 }

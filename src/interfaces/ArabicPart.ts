@@ -10,6 +10,7 @@ export interface ArabicPart {
   antiscionRaw: number;
   antiscionSign: string;
   distanceFromASC: number;
+  rawDistanceFromASC: number;
   zodiacRuler?: PlanetType;
   planet?: PlanetType;
 }
