@@ -11,6 +11,7 @@ export type PlanetType =
   | "pluto";
 
 export type ReturnChartType = "solar" | "lunar";
+export type ChartType = "birth" | "return";
 
 export const planetTypes: PlanetType[] = [
   "sun",
@@ -42,6 +43,8 @@ export interface BirthChart {
   // If it is a return chart, these props will be needed
   returnType?: ReturnChartType;
   targetDate?: BirthDate;
+  returnTime?: string;
+  timezone?: string;
 }
 
 export interface Planet {
@@ -69,6 +72,12 @@ export interface HousesData {
 }
 
 export interface Coordinates {
+  latitude: number;
+  longitude: number;
+}
+
+export interface SelectedCity {
+  name: string;
   latitude: number;
   longitude: number;
 }

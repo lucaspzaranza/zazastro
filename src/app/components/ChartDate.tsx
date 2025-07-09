@@ -1,30 +1,45 @@
 import { useBirthChart } from "@/contexts/BirthChartContext";
-import { BirthDate } from "@/interfaces/BirthChartInterfaces";
-import { useEffect, useRef, useState } from "react";
+import { BirthDate, ChartType } from "@/interfaces/BirthChartInterfaces";
+import moment from "moment-timezone";
+import { useEffect, useState } from "react";
 
-export const ChartDate = () => {
-  // const [date, setDate] = useState<BirthDate | undefined>();
-  const date = useRef<BirthDate | undefined>(undefined);
+export const ChartDate = (
+  props: Readonly<{
+    chartType: ChartType;
+  }>
+) => {
+  const { chartType } = props;
+  const [date, setDate] = useState<BirthDate | undefined>();
   const { birthChart } = useBirthChart();
 
   useEffect(() => {
-    date.current = birthChart?.targetDate
-      ? birthChart.targetDate
-      : birthChart?.birthDate;
+    if (birthChart === undefined) return;
 
-    console.log(date.current);
+    if (chartType === "birth") {
+      setDate(birthChart.birthDate);
+    } else if (birthChart.timezone) {
+      const returnDate = moment.tz(birthChart.returnTime, birthChart.timezone);
+      setDate({
+        day: returnDate.date(),
+        month: returnDate.month() + 1,
+        year: returnDate.year(),
+        time: returnDate.format("HH:mm"),
+        coordinates: {
+          ...birthChart.birthDate.coordinates,
+        },
+      });
+    }
   }, [birthChart]);
 
-  // if (date.current === undefined) return;
+  if (date === undefined) return;
 
   return (
     <div>
       <h2 className="font-bold text-lg mb-2">Dados do mapa:</h2>
       <p>
-        {date.current?.day}/{date.current?.month.toString().padStart(2, "0")}/
-        {date.current?.year} - {date.current?.time}, (
-        {date.current?.coordinates.latitude},
-        {date.current?.coordinates.longitude})
+        {date?.day.toString().padStart(2, "0")}/
+        {date?.month.toString().padStart(2, "0")}/{date?.year} - {date?.time} (
+        {date?.coordinates.latitude},{date?.coordinates.longitude})
       </p>
     </div>
   );

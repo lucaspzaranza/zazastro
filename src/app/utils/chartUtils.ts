@@ -123,5 +123,5 @@ export function getHourAndMinute(decimalTime: number): string {
   const hours = Math.floor(decimalTime);
   const minutes = (decimalTime - hours) * 60;
   const hoursString = hours.toString().padStart(2, "0");
-  return `${hoursString}h${minutes}`;
+  return `${hoursString}:${minutes}`;
 }

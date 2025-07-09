@@ -3,6 +3,10 @@
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import { useBirthChart } from "@/contexts/BirthChartContext";
 import { useArabicPartCalculations } from "@/hooks/useArabicPartCalculations";
+import type {
+  ArabicParts,
+  ArabicPart,
+} from "@/interfaces/ArabicPartInterfaces";
 import { useEffect, useRef, useState } from "react";
 
 export default function ArabicParts() {
@@ -19,6 +23,8 @@ export default function ArabicParts() {
     calculateLotOfMarriage,
     calculateLotOfResignation,
   } = useArabicPartCalculations();
+
+  const [parts, setParts] = useState<ArabicPart[]>([]);
 
   useEffect(() => {
     if (birthChart === undefined) return;
@@ -61,9 +67,27 @@ export default function ArabicParts() {
 
   useEffect(() => {
     if (arabicParts === undefined) return;
+    setParts([]);
 
-    // console.log("Partes Árabes:");
-    // console.log(arabicParts);
+    const keys: (keyof ArabicParts)[] = [
+      "fortune",
+      "spirit",
+      "necessity",
+      "love",
+      "valor",
+      "victory",
+      "captivity",
+      "marriage",
+      "resignation",
+    ];
+
+    keys.forEach((key) => {
+      const part = arabicParts[key];
+
+      if (part) {
+        setParts((prev) => [...prev, part]);
+      }
+    });
   }, [arabicParts]);
 
   if (arabicParts === undefined) return;
@@ -71,52 +95,16 @@ export default function ArabicParts() {
   return (
     <div className="flex flex-col gap-2 mt-4 text-left">
       <h2 className="text-xl font-bold">Partes Árabes</h2>
+
       <ul>
-        <li>
-          {arabicParts.fortune?.name}: {arabicParts.fortune?.longitudeSign}
-          &nbsp; Antiscion: {arabicParts.fortune?.antiscionSign}
-        </li>
-
-        <li>
-          {arabicParts.spirit?.name}: {arabicParts.spirit?.longitudeSign}&nbsp;
-          Antiscion: {arabicParts.spirit?.antiscionSign}
-        </li>
-
-        <li>
-          {arabicParts.necessity?.name}: {arabicParts.necessity?.longitudeSign}
-          &nbsp; Antiscion: {arabicParts.necessity?.antiscionSign}
-        </li>
-
-        <li>
-          {arabicParts.love?.name}: {arabicParts.love?.longitudeSign}&nbsp;
-          Antiscion: {arabicParts.love?.antiscionSign}
-        </li>
-
-        <li>
-          {arabicParts.valor?.name}: {arabicParts.valor?.longitudeSign}&nbsp;
-          Antiscion: {arabicParts.valor?.antiscionSign}
-        </li>
-
-        <li>
-          {arabicParts.victory?.name}: {arabicParts.victory?.longitudeSign}
-          &nbsp; Antiscion: {arabicParts.victory?.antiscionSign}
-        </li>
-
-        <li>
-          {arabicParts.captivity?.name}: {arabicParts.captivity?.longitudeSign}
-          &nbsp; Antiscion: {arabicParts.captivity?.antiscionSign}
-        </li>
-
-        <li>
-          {arabicParts.marriage?.name}: {arabicParts.marriage?.longitudeSign}
-          &nbsp; Antiscion: {arabicParts.marriage?.antiscionSign}
-        </li>
-
-        <li>
-          {arabicParts.resignation?.name}:{" "}
-          {arabicParts.resignation?.longitudeSign}&nbsp; Antiscion:{" "}
-          {arabicParts.resignation?.antiscionSign}
-        </li>
+        {parts.map((arabicPart, index) => {
+          return (
+            <li key={index}>
+              {arabicPart?.name}: {arabicPart.longitudeSign}&nbsp; Antiscion:{" "}
+              {arabicPart.antiscionSign}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

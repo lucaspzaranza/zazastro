@@ -3,8 +3,14 @@
 import { useBirthChart } from "@/contexts/BirthChartContext";
 import { useRef, useState } from "react";
 import { getHourAndMinute } from "../utils/chartUtils";
-import { BirthDate, Coordinates } from "@/interfaces/BirthChartInterfaces";
+import {
+  BirthDate,
+  Coordinates,
+  ReturnChartType,
+  SelectedCity,
+} from "@/interfaces/BirthChartInterfaces";
 import { ChartDate } from "./ChartDate";
+import CitySearch from "./CitySearch";
 
 export default function BirthChart() {
   const [loading, setLoading] = useState(false);
@@ -54,13 +60,13 @@ export default function BirthChart() {
     }
   };
 
-  const getSolarReturn = async () => {
+  const getPlanetReturn = async (returnType: ReturnChartType) => {
     const targetDate: BirthDate = {
       ...birthDate,
-      year: 2024,
+      year: returnType === "solar" ? 2024 : 2025,
     };
 
-    const response = await fetch("http://localhost:3001/return/solar", {
+    const response = await fetch("http://localhost:3001/return/" + returnType, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -72,62 +78,36 @@ export default function BirthChart() {
 
     if (!response.ok) {
       console.log(response);
-      throw new Error("Erro ao buscar a Revolução Solar");
+      throw new Error(`Erro ao buscar a Revolução ${returnType}.`);
     }
 
     const data = await response.json();
 
-    console.log("Revolução Solar:");
-    console.log(data);
-    updateBirthChart({ chartData: data, isReturnChart: false });
+    // console.log(`Revolução ${returnType}:`);
+    // console.log(data);
     updateBirthChart({
+      isReturnChart: false,
       chartData: {
-        planets: data.returnPlanets,
-        housesData: data.returnHousesData,
-        returnType: "solar",
+        ...data,
         birthDate,
         targetDate,
       },
+    });
+    updateBirthChart({
       isReturnChart: true,
+      chartData: {
+        planets: data.returnPlanets,
+        housesData: data.returnHousesData,
+        returnType,
+        birthDate,
+        targetDate,
+      },
     });
   };
 
-  const getLunarReturn = async () => {
-    const targetDate: BirthDate = {
-      ...birthDate,
-      year: 2025,
-    };
-
-    const response = await fetch("http://localhost:3001/return/lunar", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        birthDate,
-        birthTime,
-        targetDate,
-      }),
-    });
-
-    if (!response.ok) {
-      console.log(response);
-      throw new Error("Erro ao buscar a Revolução Solar");
-    }
-
-    const data = await response.json();
-
-    console.log("Revolução Lunar:");
-    console.log(data);
-    updateBirthChart({ chartData: data, isReturnChart: false });
-    updateBirthChart({
-      chartData: {
-        planets: data.returnPlanets,
-        housesData: data.returnHousesData,
-        returnType: "lunar",
-        birthDate,
-        targetDate,
-      },
-      isReturnChart: true,
-    });
+  const selectCity = (selectedCity: SelectedCity) => {
+    console.log("Cidade Selecionada:");
+    console.log(selectedCity);
   };
 
   return (
@@ -140,24 +120,26 @@ export default function BirthChart() {
       </button>
 
       <button
-        onClick={getSolarReturn}
+        onClick={() => getPlanetReturn("solar")}
         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
       >
         Revolução Solar
       </button>
 
       <button
-        onClick={getLunarReturn}
+        onClick={() => getPlanetReturn("lunar")}
         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
       >
         Revolução Lunar
       </button>
 
+      {/* <CitySearch onSelect={selectCity} /> */}
+
       {loading && <p>Carregando...</p>}
 
       {birthChart && (
         <div className="mt-6 text-left">
-          <ChartDate />
+          <ChartDate chartType="birth" />
 
           <h2 className="font-bold text-lg mb-2">Casas Astrológicas:</h2>
           <ul className="mb-4">

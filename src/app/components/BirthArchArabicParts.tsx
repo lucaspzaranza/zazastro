@@ -62,14 +62,6 @@ export default function BirthArchArabicParts() {
             </li>
           );
         })}
-
-        {/* 
-          <li>
-            {birthArchArabicParts?.fortune?.name}:{" "}
-            {birthArchArabicParts.fortune?.longitudeSign}
-            &nbsp; Antiscion: {birthArchArabicParts.fortune?.antiscionSign}
-          </li>
-         */}
       </ul>
     </div>
   );
