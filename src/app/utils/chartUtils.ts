@@ -1,4 +1,4 @@
-import { PlanetType, planetTypes } from "@/interfaces/BirthChart";
+import { PlanetType, planetTypes } from "@/interfaces/BirthChartInterfaces";
 
 export function getSign(longitude: number, getGlyphOnly = false): string {
   const signs = [
@@ -121,7 +121,7 @@ export function getZodiacRuler(longitude: number) {
 
 export function getHourAndMinute(decimalTime: number): string {
   const hours = Math.floor(decimalTime);
-  const minutes = (decimalTime - hours).toFixed(2).padStart(2, "0");
+  const minutes = (decimalTime - hours) * 60;
   const hoursString = hours.toString().padStart(2, "0");
-  return `${hours}h${minutes}`;
+  return `${hoursString}h${minutes}`;
 }

@@ -1,4 +1,4 @@
-import { ArabicParts } from "@/interfaces/ArabicPart";
+import { ArabicParts } from "@/interfaces/ArabicPartInterfaces";
 
 import React, { createContext, useState, useContext, ReactNode } from "react";
 

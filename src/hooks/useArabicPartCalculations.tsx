@@ -1,7 +1,7 @@
 "use client";
 
-import { ArabicPart } from "@/interfaces/ArabicPart";
-import { BirthChart } from "@/interfaces/BirthChart";
+import { ArabicPart } from "@/interfaces/ArabicPartInterfaces";
+import { BirthChart } from "@/interfaces/BirthChartInterfaces";
 import {
   wrapZodiacLongitude,
   decimalToDegreesMinutes,
@@ -228,19 +228,19 @@ export function useArabicPartCalculations() {
       chart.housesData.ascendant
     );
 
-    console.log(
-      `Parte: ${arabicPart.name}, Distância do AC (cru): ${
-        arabicPart.rawDistanceFromASC
-      }, 
-      longitudeRaw: ${longitudeRaw}, transformada: ${
-        arabicPartData.longitudeSign
-      },
-      AC da Revolução (cru): ${asc},
-      AC da Revolução: ${getDegreeAndSign(decimalToDegreesMinutes(asc))},
-      Antiscion: ${arabicPartData.antiscion};
-      Antiscion (cru): ${arabicPartData.antiscionRaw},
-      Signo do Antiscion: ${arabicPartData.antiscionSign}`
-    );
+    // console.log(
+    //   `Parte: ${arabicPart.name}, Distância do AC (cru): ${
+    //     arabicPart.rawDistanceFromASC
+    //   },
+    //   longitudeRaw: ${longitudeRaw}, transformada: ${
+    //     arabicPartData.longitudeSign
+    //   },
+    //   AC da Revolução (cru): ${asc},
+    //   AC da Revolução: ${getDegreeAndSign(decimalToDegreesMinutes(asc))},
+    //   Antiscion: ${arabicPartData.antiscion};
+    //   Antiscion (cru): ${arabicPartData.antiscionRaw},
+    //   Signo do Antiscion: ${arabicPartData.antiscionSign}`
+    // );
 
     return {
       ...arabicPart,

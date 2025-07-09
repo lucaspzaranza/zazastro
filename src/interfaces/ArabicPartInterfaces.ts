@@ -1,4 +1,4 @@
-import { PlanetType } from "./BirthChart";
+import { PlanetType } from "./BirthChartInterfaces";
 
 export interface ArabicPart {
   name: string;

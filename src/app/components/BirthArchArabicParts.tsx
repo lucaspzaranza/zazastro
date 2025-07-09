@@ -3,7 +3,7 @@
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import { useBirthChart } from "@/contexts/BirthChartContext";
 import { useArabicPartCalculations } from "@/hooks/useArabicPartCalculations";
-import { ArabicPart, ArabicParts } from "@/interfaces/ArabicPart";
+import { ArabicPart, ArabicParts } from "@/interfaces/ArabicPartInterfaces";
 import { useEffect, useRef, useState } from "react";
 
 export default function BirthArchArabicParts() {

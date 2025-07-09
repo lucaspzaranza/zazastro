@@ -3,7 +3,7 @@ import {
   getAntiscion,
   getDegreeAndSign,
 } from "@/app/utils/chartUtils";
-import { BirthChart, planetTypes } from "@/interfaces/BirthChart";
+import { BirthChart, planetTypes } from "@/interfaces/BirthChartInterfaces";
 
 import React, { createContext, useState, useContext, ReactNode } from "react";
 

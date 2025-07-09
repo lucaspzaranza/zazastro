@@ -3,10 +3,28 @@
 import { useBirthChart } from "@/contexts/BirthChartContext";
 import { useRef, useState } from "react";
 import { getHourAndMinute } from "../utils/chartUtils";
+import { BirthDate, Coordinates } from "@/interfaces/BirthChartInterfaces";
+import { ChartDate } from "./ChartDate";
 
 export default function BirthChart() {
   const [loading, setLoading] = useState(false);
   const { birthChart, updateBirthChart } = useBirthChart();
+
+  const birthTime = 6.75; // 06h45
+  const hourAndMinuteHour = getHourAndMinute(birthTime);
+
+  const coordinates: Coordinates = {
+    latitude: -3.71839, // Fortaleza
+    longitude: -38.5434,
+  };
+
+  const birthDate: BirthDate = {
+    year: 1993,
+    month: 8,
+    day: 31,
+    time: hourAndMinuteHour,
+    coordinates,
+  };
 
   const getBirthChart = async () => {
     setLoading(true);
@@ -16,17 +34,19 @@ export default function BirthChart() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          day: 31,
-          month: 8,
-          year: 1993,
-          hour: 6.75, // 6h45
-          latitude: -3.71839, // Fortaleza
-          longitude: -38.5434,
+          birthDate,
+          hour: birthTime,
         }),
       });
 
       const data = await response.json();
-      updateBirthChart({ chartData: data, isReturnChart: false });
+      updateBirthChart({
+        chartData: {
+          ...data,
+          birthDate,
+        },
+        isReturnChart: false,
+      });
     } catch (error) {
       console.error("Erro ao consultar mapa astral:", error);
     } finally {
@@ -35,24 +55,18 @@ export default function BirthChart() {
   };
 
   const getSolarReturn = async () => {
-    const birthTime = 6.75;
-    const targetDate = {
+    const targetDate: BirthDate = {
+      ...birthDate,
       year: 2024,
-      month: 8,
-      day: 31,
-      time: getHourAndMinute(birthTime),
     };
 
     const response = await fetch("http://localhost:3001/return/solar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        birthDate: { year: 1993, month: 8, day: 31 },
-        birthTime: birthTime,
-        sunLongitude: 158,
+        birthDate,
+        birthTime,
         targetDate,
-        birthLatitude: -3.71839,
-        birthLongitude: -38.5434,
       }),
     });
 
@@ -70,14 +84,8 @@ export default function BirthChart() {
       chartData: {
         planets: data.returnPlanets,
         housesData: data.returnHousesData,
-        planetsWithSigns: undefined,
         returnType: "solar",
-        birthDate: {
-          year: 1993,
-          month: 8,
-          day: 31,
-          time: getHourAndMinute(birthTime),
-        },
+        birthDate,
         targetDate,
       },
       isReturnChart: true,
@@ -85,25 +93,18 @@ export default function BirthChart() {
   };
 
   const getLunarReturn = async () => {
-    const birthTime = 6.75;
-    const hourAndMinuteHour = getHourAndMinute(birthTime);
-    const targetDate = {
+    const targetDate: BirthDate = {
+      ...birthDate,
       year: 2025,
-      month: 8,
-      day: 31,
-      time: hourAndMinuteHour,
     };
 
     const response = await fetch("http://localhost:3001/return/lunar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        birthDate: { year: 1993, month: 8, day: 31 },
+        birthDate,
         birthTime,
-        moonLongitude: 330.21,
         targetDate,
-        birthLatitude: -3.71839,
-        birthLongitude: -38.5434,
       }),
     });
 
@@ -121,14 +122,8 @@ export default function BirthChart() {
       chartData: {
         planets: data.returnPlanets,
         housesData: data.returnHousesData,
-        planetsWithSigns: undefined,
         returnType: "lunar",
-        birthDate: {
-          year: 1993,
-          month: 8,
-          day: 31,
-          time: hourAndMinuteHour,
-        },
+        birthDate,
         targetDate,
       },
       isReturnChart: true,
@@ -162,6 +157,8 @@ export default function BirthChart() {
 
       {birthChart && (
         <div className="mt-6 text-left">
+          <ChartDate />
+
           <h2 className="font-bold text-lg mb-2">Casas Astrológicas:</h2>
           <ul className="mb-4">
             {birthChart.housesData.housesWithSigns?.map((house, index) => (

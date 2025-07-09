@@ -1,5 +1,5 @@
 import { useBirthChart } from "@/contexts/BirthChartContext";
-import { BirthDate } from "@/interfaces/BirthChart";
+import { BirthDate } from "@/interfaces/BirthChartInterfaces";
 import { useEffect, useState } from "react";
 
 export default function BirthArch() {
@@ -11,6 +11,10 @@ export default function BirthArch() {
     month: 0,
     year: 0,
     time: "",
+    coordinates: {
+      latitude: 0,
+      longitude: 0,
+    },
   });
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {

@@ -30,6 +30,7 @@ export interface BirthDate {
   month: number;
   year: number;
   time: string;
+  coordinates: Coordinates;
 }
 
 export interface BirthChart {
@@ -65,4 +66,9 @@ export interface HousesData {
   kochCoAscendant: number;
   munkaseyCoAscendant: number;
   munkaseyPolarAscendant: number;
+}
+
+export interface Coordinates {
+  latitude: number;
+  longitude: number;
 }
