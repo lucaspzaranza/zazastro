@@ -25,6 +25,11 @@ export default function BirthChart() {
     longitude: -38.5434,
   };
 
+  const SPCoordinates: Coordinates = {
+    latitude: -23.5489, // Fortaleza
+    longitude: -46.6388,
+  };
+
   const birthDate: BirthDate = {
     year: 1993,
     month: 8,

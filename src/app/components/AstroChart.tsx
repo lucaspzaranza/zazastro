@@ -19,15 +19,17 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
   const ref = useRef<SVGSVGElement>(null);
   const [rotation, setRotation] = useState(0);
 
-  const getHouseColor = (index: number): string => {
-    if (index === 0) {
-      return "red";
-    } else if (index % 3 === 0) {
-      return "black";
-    } else {
-      return "gray";
-    }
-  };
+  // console.log("housesData: ", housesData);
+
+  // const getHouseColor = (index: number): string => {
+  //   if (index === 0) {
+  //     return "red";
+  //   } else if (index % 3 === 0) {
+  //     return "black";
+  //   } else {
+  //     return "gray";
+  //   }
+  // };
 
   const getRotationDifference = (asc: number) => {
     const nextSignMultiple = Math.floor(asc / 30) + 1;
@@ -92,6 +94,7 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
     const baseGroup = svg
       .attr("width", scaledSize)
       .attr("height", scaledSize)
+      .style("overflow", "visible")
       .append("g")
       .attr("transform", `translate(${center}, ${center})`)
       .attr(
@@ -120,10 +123,6 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
       .attr("stroke", "black")
       .attr("stroke-width", 1);
 
-    /*
-          AQUUIIII
-     */
-
     // Círculo externo dos signos
     baseGroup
       .append("circle")
@@ -133,9 +132,6 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
       .attr("stroke-width", 1);
 
     // Grupo que será rotacionado para alinhar os signos com o Ascendente
-    // console.log("ascendant: ", housesData.ascendant);
-    // console.log("zodiacRotation: ", zodiacRotation);
-
     const zodiacGroup = baseGroup
       .append("g")
       .attr("transform", `rotate(${-zodiacRotation})`);
@@ -157,7 +153,6 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
         .attr("y2", y2)
         .attr("stroke", "black")
         .attr("stroke-width", 1);
-      // .attr("transform", `rotate(${rotation})`);
     }
 
     //Glifos dos signos centralizados nas fatias com cor por elemento
@@ -192,63 +187,130 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
       .attr("r", radius)
       .attr("fill", "white")
       .attr("stroke", "black")
-      .attr("stroke-width", 2);
+      .attr("stroke-width", 1);
 
-    // Houses
-    const angles = housesData.house;
-    for (let i = 0; i < 12; i++) {
-      const isAngularHouse = i % 3 === 0;
-      const start = angles[i];
-      const end = angles[(i + 1) % 12];
-      let span = (end - start + 360) % 360;
-      if (span === 0) span = 360;
+    // 1) Defina os raios dos dois círculos menores (diâmetro = 1/4 do diâmetro maior)
+    const smallOuterRadius = radius / 1.5;
+    const smallInnerRadius = smallOuterRadius - 20; // ajuste o “gap” entre círculos
 
-      // Converte graus para radianos e inverte o sinal
-      // Converte o cuspide em ângulo relativo ao SVG:
-      // 0° de Áries no topo e sentido anti‑horário
-      const angleDeg = -start - 90;
-      const angleRad = (angleDeg * Math.PI) / 180;
+    // 2) Desenhe os dois círculos concentricamente
+    const centerCircles = baseGroup.append("g");
 
-      // Linha do centro até o círculo das casas
-      const x2 = radius * Math.cos(angleRad);
-      const y2 = radius * Math.sin(angleRad);
+    centerCircles
+      .append("circle")
+      .attr("r", smallInnerRadius)
+      .attr("fill", "none")
+      .attr("stroke", "black")
+      .attr("stroke-width", 0.5);
 
-      rotatedGroup
-        .append("line")
-        .attr("x1", 0)
-        .attr("y1", 0)
-        .attr("x2", x2)
-        .attr("y2", y2)
-        .attr("stroke", getHouseColor(i))
-        .attr("stroke-width", isAngularHouse ? 2 : 1); // traço mais grosso nas angulares
-      // .attr("stroke-width", i === 0 ? 3 : 1); // traço mais grosso nas angulares
+    centerCircles
+      .append("circle")
+      .attr("r", smallOuterRadius)
+      .attr("fill", "none")
+      .attr("stroke", "black")
+      .attr("stroke-width", 0.5);
 
-      // Número da casa (também anti‑horário)
-      // posição média do setor (graus zodiacais, 0° Áries = topo)
-      const midDeg = (start + span / 2) % 360;
+    // 3) Posicione os números das casas no anel entre esses círculos
+    const midRadius = (smallInnerRadius + smallOuterRadius) / 2;
 
-      // converter para ângulo SVG anti‑horário:
-      // - midDeg graus no zodíaco fixo
-      // - 0° Áries = -90° no SVG
-      const angleSVG = -midDeg - 90;
-      const rad = (angleSVG * Math.PI) / 180;
+    housesData.house.forEach((startDeg, i) => {
+      // 1) pega o grau de início e o de fim (próxima cúspide)
+      const nextDeg = housesData.house[(i + 1) % 12];
 
-      // raio interno onde ficará o número
-      const numRadius = radius - 30;
-      const x = numRadius * Math.cos(rad);
-      const y = numRadius * Math.sin(rad);
+      // 2) calcula o intervalo, normalizando em [0,360)
+      let span = (nextDeg - startDeg + 360) % 360;
+      if (span === 0) span = 360; // casa 12 completa
 
-      const houseCountRotation = housesData.ascendant - 90;
+      // 3) ângulo médio do setor
+      const midDeg = startDeg + span / 2;
 
-      rotatedGroup
+      // 4) converte diretinho pra radianos (sem -90 porque já alinhou o ascendente)
+      const angleRad = (-midDeg * Math.PI) / 180;
+
+      // 5) coordenadas no anel entre os círculos
+      const x = midRadius * Math.cos(angleRad);
+      const y = midRadius * Math.sin(angleRad);
+
+      centerCircles
         .append("text")
         .attr("x", x)
         .attr("y", y)
         .attr("font-size", 10)
         .attr("text-anchor", "middle")
         .attr("alignment-baseline", "middle")
-        .attr("transform", `rotate(${-houseCountRotation}, ${x}, ${y})`)
         .text((i + 1).toString());
+    });
+
+    const innerCircleRadius = smallInnerRadius; // ou o valor que você estiver usando
+    // parâmetros de styling
+    const houseLineStrokeWidth = (i: number) => (i % 3 === 0 ? 2 : 0.5);
+    const angles = housesData.house;
+
+    // mapeamento das siglas das casas angulares
+    const angularLabels: Record<number, string> = {
+      0: "AC", // Casa 1 – Ascendente
+      3: "IC", // Casa 4 – Fundo do Céu
+      6: "DC", // Casa 7 – Descendente
+      9: "MC", // Casa 10 – Meio do Céu
+    };
+    const continuationLength = 25; // comprimento do traço de continuidade
+    const labelOffset = 25; // distância extra para posicionar o texto
+
+    // desenha cada cúspide das casas
+    for (let i = 0; i < 12; i++) {
+      const start = angles[i];
+      const angleRad = ((-start - 90) * Math.PI) / 180;
+
+      // ponto inicial da linha (já definido por você)
+      const x1 = i % 3 === 0 ? 0 : innerCircleRadius * Math.cos(angleRad);
+      const y1 = i % 3 === 0 ? 0 : innerCircleRadius * Math.sin(angleRad);
+      // ponto final da cúspide
+      const x2 = radius * Math.cos(angleRad);
+      const y2 = radius * Math.sin(angleRad);
+
+      // desenha a cúspide
+      rotatedGroup
+        .append("line")
+        .attr("x1", x1)
+        .attr("y1", y1)
+        .attr("x2", x2)
+        .attr("y2", y2)
+        .attr("stroke", "black")
+        .attr("stroke-width", houseLineStrokeWidth(i));
+
+      // só para as casas angulares, adiciona traço e sigla
+      if (i % 3 === 0) {
+        // 1) pequeno traço de continuidade
+        const originLineX = outerZodiacRadius * Math.cos(angleRad);
+        const originLineY = outerZodiacRadius * Math.sin(angleRad);
+
+        const finalLineX = (outerZodiacRadius + 12) * Math.cos(angleRad);
+        const finalLineY = (outerZodiacRadius + 12) * Math.sin(angleRad);
+
+        // 2) sigla da casa
+        const labelRadius = radius + continuationLength + labelOffset;
+        const lx = labelRadius * Math.cos(angleRad);
+        const ly = labelRadius * Math.sin(angleRad);
+
+        rotatedGroup
+          .append("text")
+          .attr("x", lx)
+          .attr("y", ly)
+          .attr("font-size", 12)
+          .attr("text-anchor", "middle")
+          .attr("alignment-baseline", "middle")
+          .attr("transform", `rotate(${-housesRotation}, ${lx}, ${ly})`)
+          .text(angularLabels[i]);
+
+        rotatedGroup
+          .append("line")
+          .attr("x1", originLineX)
+          .attr("y1", originLineY)
+          .attr("x2", finalLineX)
+          .attr("y2", finalLineY)
+          .attr("stroke", "black")
+          .attr("stroke-width", 2);
+      }
     }
 
     // Graduações de grau (a cada 10°)
@@ -297,40 +359,86 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
         .attr("stroke-width", 1);
     }
 
+    // 1. Defina seu limiar e parâmetros de distância
+    const thresholdDeg = 5; // graus para considerar “mesma posição”
+    const baseSymbolOffset = 20; // distância base do símbolo até o círculo
+    const overlapGap = 5; // gap extra (px) entre símbolos sobrepostos
+    const lineStartOffset = 12; // quão “para dentro” a linha começa
+
+    // 2. Agrupe planetas por longitude próxima
+    // (cria uma cópia para não mutar o array original)
+    const sorted = planets.slice().sort((a, b) => a.longitude - b.longitude);
+
+    const clusters: (typeof sorted)[] = [];
+    sorted.forEach((p) => {
+      if (clusters.length === 0) {
+        clusters.push([p]);
+      } else {
+        const last = clusters[clusters.length - 1];
+        const prev = last[last.length - 1];
+        if (Math.abs(p.longitude - prev.longitude) < thresholdDeg) {
+          last.push(p);
+        } else {
+          clusters.push([p]);
+        }
+      }
+    });
+
+    // 3. Mapeie cada planeta ao seu índice dentro do cluster
+    const offsetIndex = new Map<(typeof sorted)[number], number>();
+    clusters.forEach((cluster) => {
+      cluster.forEach((p, i) => {
+        offsetIndex.set(p, i);
+      });
+    });
+
+    // 4. Loop de renderização
     planets.forEach((planet) => {
-      // calcula o ângulo para posicionar no zodíaco fixo
+      // ângulo fixo no zodíaco
       const angle = 180 - (planet.longitude % 360) - 90;
       const angleRad = (angle * Math.PI) / 180;
 
-      const x = (radius - 20) * Math.cos(angleRad);
-      const y = (radius - 20) * Math.sin(angleRad);
+      // índice de sobreposição (0 = sem sobreposição, 1, 2, …)
+      const idx = offsetIndex.get(planet) || 0;
 
-      // Desenha linha do planeta até o círculo das casas
-      const xEdge = radius * Math.cos(angleRad);
-      const yEdge = radius * Math.sin(angleRad);
+      // calcula offsets
+      const symbolOffset = baseSymbolOffset + idx * overlapGap;
+      const rSymbol = radius - symbolOffset; // onde vai o glifo
+      const rLineStart = radius - lineStartOffset; // onde começa a linha
+      const rLineEnd = radius; // onde termina a linha
 
+      // coordenadas
+      const xs = rSymbol * Math.cos(angleRad);
+      const ys = rSymbol * Math.sin(angleRad);
+      const x1 = rLineStart * Math.cos(angleRad);
+      const y1 = rLineStart * Math.sin(angleRad);
+      const x2 = rLineEnd * Math.cos(angleRad);
+      const y2 = rLineEnd * Math.sin(angleRad);
+
+      // desenha a linha até o círculo
       baseGroup
         .append("line")
-        .attr("x1", x)
-        .attr("y1", y)
-        .attr("x2", xEdge)
-        .attr("y2", yEdge)
+        .attr("x1", x1)
+        .attr("y1", y1)
+        .attr("x2", x2)
+        .attr("y2", y2)
         .attr("stroke", "black")
-        .attr("transform", `rotate(${-zodiacRotation})`)
-        .attr("stroke-width", 1);
+        .attr("stroke-width", 1)
+        .attr("transform", `rotate(${-zodiacRotation})`);
 
-      // Desenha o símbolo do planeta
-      // usa planet.sign para mapear: ex. "Sol" → chave "sun"
-      const symbol = getPlanetSymbol(planet.type);
+      // desenha o símbolo do planeta deslocado
       baseGroup
         .append("text")
-        .attr("x", x)
-        .attr("y", y)
+        .attr("x", xs)
+        .attr("y", ys)
         .attr("font-size", 14)
         .attr("text-anchor", "middle")
         .attr("alignment-baseline", "middle")
-        .attr("transform", `rotate(${-zodiacRotation})`)
-        .text(symbol);
+        .attr(
+          "transform",
+          `rotate(${-zodiacRotation}) rotate(90, ${xs}, ${ys})`
+        )
+        .text(getPlanetSymbol(planet.type));
     });
   }, [planets, housesData, rotation]);
 
@@ -338,7 +446,7 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
     <div className="flex flex-col justify-center items-center">
       <input
         type="number"
-        className="border-1 mb-4"
+        className="border-1 mb-8"
         onChange={(e) => setRotation(Number.parseFloat(e.target.value))}
       />
       <svg ref={ref}></svg>
