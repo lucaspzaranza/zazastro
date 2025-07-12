@@ -2,6 +2,7 @@ import { useBirthChart } from "@/contexts/BirthChartContext";
 import { BirthDate } from "@/interfaces/BirthChartInterfaces";
 import { useEffect, useState } from "react";
 import { ChartDate } from "./ChartDate";
+import AstroChart from "./AstroChart";
 
 export default function BirthArch() {
   const [input, setInput] = useState(0);
@@ -72,6 +73,10 @@ export default function BirthArch() {
       {returnChart && (
         <div className="text-left">
           <ChartDate chartType="return" />
+          <AstroChart
+            planets={returnChart.planets}
+            housesData={returnChart.housesData}
+          />
 
           <h2 className="font-bold text-lg mb-2">Casas Astrológicas:</h2>
           <ul className="mb-4">

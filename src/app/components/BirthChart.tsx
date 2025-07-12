@@ -11,6 +11,7 @@ import {
 } from "@/interfaces/BirthChartInterfaces";
 import { ChartDate } from "./ChartDate";
 import CitySearch from "./CitySearch";
+import AstroChart from "./AstroChart";
 
 export default function BirthChart() {
   const [loading, setLoading] = useState(false);
@@ -46,6 +47,7 @@ export default function BirthChart() {
       });
 
       const data = await response.json();
+      console.log(data);
       updateBirthChart({
         chartData: {
           ...data,
@@ -140,6 +142,10 @@ export default function BirthChart() {
       {birthChart && (
         <div className="mt-6 text-left">
           <ChartDate chartType="birth" />
+          <AstroChart
+            planets={birthChart.planets}
+            housesData={birthChart.housesData}
+          />
 
           <h2 className="font-bold text-lg mb-2">Casas Astrológicas:</h2>
           <ul className="mb-4">

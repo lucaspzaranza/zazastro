@@ -1,5 +1,5 @@
 import { SelectedCity } from "@/interfaces/BirthChartInterfaces";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface CityResult {
   display_name: string;
@@ -12,18 +12,41 @@ export default function CitySearch({
 }: {
   onSelect: (city: SelectedCity) => void;
 }) {
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<CityResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedCity, setSelectedCity] = useState(false);
+  const [queryError, setQueryError] = useState(false);
 
   useEffect(() => {
-    if (query.length === 0) setSelectedCity(false);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
+        // console.log("Clicou fora do componente!");
+        setResults([]);
+        setQueryError(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (query.length <= 1) setSelectedCity(false);
 
     if (query.length < 3 || selectedCity) return;
 
     const timeout = setTimeout(() => {
       setIsLoading(true);
+      if (queryError) {
+        setQueryError(false);
+      }
       fetch(
         `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
           query
@@ -35,7 +58,17 @@ export default function CitySearch({
         }
       )
         .then((res) => res.json())
-        .then((data) => setResults(data))
+        .then((data) => {
+          // console.log("resultados encontrados:", data);
+          if (data.length === 0) {
+            setQueryError(true);
+          } else {
+            if (queryError) {
+              setQueryError(false);
+            }
+            setResults(data);
+          }
+        })
         .catch((err) => console.error("Erro na busca de cidades:", err))
         .finally(() => setIsLoading(false));
     }, 500); // debounce de 500ms
@@ -44,7 +77,7 @@ export default function CitySearch({
   }, [query]);
 
   return (
-    <div className="flex flex-col gap-1">
+    <div ref={wrapperRef} className="flex flex-col gap-1">
       <input
         className="border p-2 rounded"
         type="text"
@@ -54,8 +87,9 @@ export default function CitySearch({
       />
 
       {isLoading && <p>Buscando...</p>}
+      {queryError && <p>Sem resultados.</p>}
 
-      {results.length > 0 && (
+      {results.length > 0 && !isLoading && (
         <ul className="bg-white border rounded shadow p-2">
           {results.map((city, index) => (
             <li
