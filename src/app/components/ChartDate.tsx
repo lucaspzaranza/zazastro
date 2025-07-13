@@ -2,6 +2,7 @@ import { useBirthChart } from "@/contexts/BirthChartContext";
 import { BirthDate, ChartType } from "@/interfaces/BirthChartInterfaces";
 import moment from "moment-timezone";
 import { useEffect, useState } from "react";
+import { getHourAndMinute } from "../utils/chartUtils";
 
 export const ChartDate = (
   props: Readonly<{
@@ -16,7 +17,16 @@ export const ChartDate = (
     if (birthChart === undefined) return;
 
     if (chartType === "birth") {
-      setDate(birthChart.birthDate);
+      const convertedTime = getHourAndMinute(
+        Number.parseFloat(birthChart.birthDate.time)
+      );
+
+      const transformedDate: BirthDate = {
+        ...birthChart.birthDate,
+        time: convertedTime,
+      };
+
+      setDate(transformedDate);
     } else if (birthChart.timezone) {
       const returnDate = moment.tz(birthChart.returnTime, birthChart.timezone);
       setDate({

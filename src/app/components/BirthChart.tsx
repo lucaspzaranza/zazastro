@@ -2,7 +2,7 @@
 
 import { useBirthChart } from "@/contexts/BirthChartContext";
 import { useRef, useState } from "react";
-import { getHourAndMinute } from "../utils/chartUtils";
+import { convertDegMinToDecimal, getHourAndMinute } from "../utils/chartUtils";
 import {
   BirthDate,
   Coordinates,
@@ -17,16 +17,13 @@ export default function BirthChart() {
   const [loading, setLoading] = useState(false);
   const { birthChart, updateBirthChart } = useBirthChart();
 
-  const birthTime = 6.75; // 06h45
-  const hourAndMinuteHour = getHourAndMinute(birthTime);
-
   const coordinates: Coordinates = {
     latitude: -3.71839, // Fortaleza
     longitude: -38.5434,
   };
 
   const SPCoordinates: Coordinates = {
-    latitude: -23.5489, // Fortaleza
+    latitude: -23.5489,
     longitude: -46.6388,
   };
 
@@ -34,9 +31,36 @@ export default function BirthChart() {
     year: 1993,
     month: 8,
     day: 31,
-    time: hourAndMinuteHour,
+    time: convertDegMinToDecimal(6, 45).toString(),
     coordinates,
   };
+
+  // Eli's birth
+  // const birthDate: BirthDate = {
+  //   year: 1994,
+  //   month: 6,
+  //   day: 23,
+  //   time: convertDegMinToDecimal(20, 19).toString(),
+  //   coordinates: SPCoordinates,
+  // };
+
+  // Jana's birth
+  // const birthDate: BirthDate = {
+  //   year: 1995,
+  //   month: 6,
+  //   day: 20,
+  //   time: convertDegMinToDecimal(2, 20).toString(),
+  //   coordinates: SPCoordinates,
+  // };
+
+  // Alinezinha
+  // const birthDate: BirthDate = {
+  //   year: 1999,
+  //   month: 3,
+  //   day: 22,
+  //   time: convertDegMinToDecimal(12, 39).toString(),
+  //   coordinates,
+  // };
 
   const getBirthChart = async () => {
     setLoading(true);
@@ -47,7 +71,7 @@ export default function BirthChart() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           birthDate,
-          hour: birthTime,
+          // hour: birthTime,
         }),
       });
 
@@ -78,7 +102,7 @@ export default function BirthChart() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         birthDate,
-        birthTime,
+        // birthTime,
         targetDate,
       }),
     });

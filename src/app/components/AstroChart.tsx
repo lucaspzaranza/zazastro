@@ -38,8 +38,16 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
     return difference;
   };
 
-  const zodiacRotation =
-    housesData.ascendant - (90 - getRotationDifference(housesData.ascendant));
+  // const zodiacRotation =
+  //   housesData.ascendant - (30 - getRotationDifference(housesData.ascendant));
+
+  // const zodiacRotation =
+  //   housesData.ascendant -
+  //   (rotation - getRotationDifference(housesData.ascendant));
+
+  // const zodiacRotation = rotation;
+
+  const zodiacRotation = 270 - housesData.ascendant;
 
   useEffect(() => {
     if (!ref.current) return;
@@ -213,21 +221,43 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
     // 3) Posicione os números das casas no anel entre esses círculos
     const midRadius = (smallInnerRadius + smallOuterRadius) / 2;
 
-    housesData.house.forEach((startDeg, i) => {
-      // 1) pega o grau de início e o de fim (próxima cúspide)
-      const nextDeg = housesData.house[(i + 1) % 12];
+    // normalize o ascendente e as cuspides
+    const asc = ((housesData.ascendant % 360) + 360) % 360;
+    const angles = housesData.house.map((a) => ((a % 360) + 360) % 360);
 
-      // 2) calcula o intervalo, normalizando em [0,360)
-      let span = (nextDeg - startDeg + 360) % 360;
-      if (span === 0) span = 360; // casa 12 completa
+    // 1) encontra o índice exato da cúspide do Ascendente
+    let best = 0,
+      bestDiff = 360;
+    angles.forEach((a, idx) => {
+      const d = Math.min(Math.abs(a - asc), 360 - Math.abs(a - asc));
+      if (d < bestDiff) {
+        bestDiff = d;
+        best = idx;
+      }
+    });
 
-      // 3) ângulo médio do setor
+    // 2) recua 1 posição (−30°) para alinhar CASA 1 no Ascendente
+    const startIndex = (best - 1 + 12) % 12;
+
+    // 3) percorre anti‑horário a partir daí
+    for (let j = 0; j < 12; j++) {
+      // i anda anti‑horário
+      const i = (startIndex - j + 12) % 12;
+
+      // calcula meio do setor i
+      const startDeg = angles[i];
+      const endDeg = angles[(i + 1) % 12];
+      let span = (endDeg - startDeg + 360) % 360;
+      if (span === 0) span = 360;
       const midDeg = startDeg + span / 2;
 
-      // 4) converte diretinho pra radianos (sem -90 porque já alinhou o ascendente)
-      const angleRad = (-midDeg * Math.PI) / 180;
+      // diferença de graus a partir do ascendente
+      const degFromAsc = (midDeg - asc + 360) % 360;
 
-      // 5) coordenadas no anel entre os círculos
+      // mapeia 0→asc para π rad (esquerda) e cresce anti‑horário
+      const angleRad = (degFromAsc * Math.PI) / 180 + Math.PI;
+
+      // calcula coords no midRadius
       const x = midRadius * Math.cos(angleRad);
       const y = midRadius * Math.sin(angleRad);
 
@@ -238,13 +268,13 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
         .attr("font-size", 10)
         .attr("text-anchor", "middle")
         .attr("alignment-baseline", "middle")
-        .text((i + 1).toString());
-    });
+        .text((j + 1).toString());
+    }
 
     const innerCircleRadius = smallInnerRadius; // ou o valor que você estiver usando
     // parâmetros de styling
     const houseLineStrokeWidth = (i: number) => (i % 3 === 0 ? 2 : 0.5);
-    const angles = housesData.house;
+    // const angles = housesData.house;
 
     // mapeamento das siglas das casas angulares
     const angularLabels: Record<number, string> = {

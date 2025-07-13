@@ -121,7 +121,13 @@ export function getZodiacRuler(longitude: number) {
 
 export function getHourAndMinute(decimalTime: number): string {
   const hours = Math.floor(decimalTime);
-  const minutes = (decimalTime - hours) * 60;
+  const minutes = Math.floor((decimalTime - hours) * 60);
   const hoursString = hours.toString().padStart(2, "0");
   return `${hoursString}:${minutes}`;
+}
+
+export function convertDegMinToDecimal(deg: number, min: number) {
+  // const [deg, min] = time.split(":").map(Number);
+  const decimal = deg + min / 60;
+  return parseFloat(decimal.toFixed(4));
 }
