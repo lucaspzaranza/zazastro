@@ -221,43 +221,26 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
     // 3) Posicione os números das casas no anel entre esses círculos
     const midRadius = (smallInnerRadius + smallOuterRadius) / 2;
 
-    // normalize o ascendente e as cuspides
+    // normaliza Ascendente e cuspides
     const asc = ((housesData.ascendant % 360) + 360) % 360;
-    const angles = housesData.house.map((a) => ((a % 360) + 360) % 360);
+    const cusps = housesData.house.map((a) => ((a % 360) + 360) % 360);
 
-    // 1) encontra o índice exato da cúspide do Ascendente
-    let best = 0,
-      bestDiff = 360;
-    angles.forEach((a, idx) => {
-      const d = Math.min(Math.abs(a - asc), 360 - Math.abs(a - asc));
-      if (d < bestDiff) {
-        bestDiff = d;
-        best = idx;
-      }
-    });
+    // raio médio do anel onde os números ficarão
 
-    // 2) recua 1 posição (−30°) para alinhar CASA 1 no Ascendente
-    const startIndex = (best - 1 + 12) % 12;
-
-    // 3) percorre anti‑horário a partir daí
+    // percorre 0..11 diretamente (já é anti‑horário começando no Ascendente)
     for (let j = 0; j < 12; j++) {
-      // i anda anti‑horário
-      const i = (startIndex - j + 12) % 12;
+      const startDeg = cusps[j];
+      const endDeg = cusps[(j + 1) % 12];
 
-      // calcula meio do setor i
-      const startDeg = angles[i];
-      const endDeg = angles[(i + 1) % 12];
       let span = (endDeg - startDeg + 360) % 360;
       if (span === 0) span = 360;
       const midDeg = startDeg + span / 2;
 
-      // diferença de graus a partir do ascendente
       const degFromAsc = (midDeg - asc + 360) % 360;
 
-      // mapeia 0→asc para π rad (esquerda) e cresce anti‑horário
-      const angleRad = (degFromAsc * Math.PI) / 180 + Math.PI;
+      // **AQUI**: invertendo para anti‑horário
+      const angleRad = Math.PI - (degFromAsc * Math.PI) / 180;
 
-      // calcula coords no midRadius
       const x = midRadius * Math.cos(angleRad);
       const y = midRadius * Math.sin(angleRad);
 
@@ -274,7 +257,6 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
     const innerCircleRadius = smallInnerRadius; // ou o valor que você estiver usando
     // parâmetros de styling
     const houseLineStrokeWidth = (i: number) => (i % 3 === 0 ? 2 : 0.5);
-    // const angles = housesData.house;
 
     // mapeamento das siglas das casas angulares
     const angularLabels: Record<number, string> = {
@@ -288,7 +270,7 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
 
     // desenha cada cúspide das casas
     for (let i = 0; i < 12; i++) {
-      const start = angles[i];
+      const start = cusps[i];
       const angleRad = ((-start - 90) * Math.PI) / 180;
 
       // ponto inicial da linha (já definido por você)
@@ -423,21 +405,71 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
     });
 
     // 4. Loop de renderização
+    // planets.forEach((planet) => {
+    //   // ângulo fixo no zodíaco
+    //   const angle = 180 - (planet.longitude % 360) - 90;
+    //   const angleRad = (angle * Math.PI) / 180;
+
+    //   // índice de sobreposição (0 = sem sobreposição, 1, 2, …)
+    //   const idx = offsetIndex.get(planet) || 0;
+
+    //   // calcula offsets
+    //   const symbolOffset = baseSymbolOffset + idx * overlapGap;
+    //   const rSymbol = radius - symbolOffset; // onde vai o glifo
+    //   const rLineStart = radius - lineStartOffset; // onde começa a linha
+    //   const rLineEnd = radius; // onde termina a linha
+
+    //   // coordenadas
+    //   const xs = rSymbol * Math.cos(angleRad);
+    //   const ys = rSymbol * Math.sin(angleRad);
+    //   const x1 = rLineStart * Math.cos(angleRad);
+    //   const y1 = rLineStart * Math.sin(angleRad);
+    //   const x2 = rLineEnd * Math.cos(angleRad);
+    //   const y2 = rLineEnd * Math.sin(angleRad);
+
+    //   // desenha a linha até o círculo
+    //   baseGroup
+    //     .append("line")
+    //     .attr("x1", x1)
+    //     .attr("y1", y1)
+    //     .attr("x2", x2)
+    //     .attr("y2", y2)
+    //     .attr("stroke", "black")
+    //     .attr("stroke-width", 1)
+    //     .attr("transform", `rotate(${-zodiacRotation})`);
+
+    //   // desenha o símbolo do planeta deslocado
+    //   baseGroup
+    //     .append("text")
+    //     .attr("x", xs)
+    //     .attr("y", ys)
+    //     .attr("font-size", 14)
+    //     .attr("text-anchor", "middle")
+    //     .attr("alignment-baseline", "middle")
+    //     .attr(
+    //       "transform",
+    //       `rotate(${-zodiacRotation}) rotate(90, ${xs}, ${ys})`
+    //     )
+    //     .text(getPlanetSymbol(planet.type));
+    // });
+
     planets.forEach((planet) => {
-      // ângulo fixo no zodíaco
-      const angle = 180 - (planet.longitude % 360) - 90;
-      const angleRad = (angle * Math.PI) / 180;
+      // 1) ângulo zodiacal original (graus → rad)
+      const rawDeg = 180 - (planet.longitude % 360) - 90;
+      const rawRad = (rawDeg * Math.PI) / 180;
 
-      // índice de sobreposição (0 = sem sobreposição, 1, 2, …)
+      // 2) compensa a rotação do zodíaco (transforma em ângulo final)
+      const rotRad = (zodiacRotation * Math.PI) / 180;
+      const angleRad = rawRad - rotRad;
+
+      // 3) offsets de sobreposição
       const idx = offsetIndex.get(planet) || 0;
-
-      // calcula offsets
       const symbolOffset = baseSymbolOffset + idx * overlapGap;
-      const rSymbol = radius - symbolOffset; // onde vai o glifo
-      const rLineStart = radius - lineStartOffset; // onde começa a linha
-      const rLineEnd = radius; // onde termina a linha
+      const rSymbol = radius - symbolOffset;
+      const rLineStart = radius - lineStartOffset;
+      const rLineEnd = radius;
 
-      // coordenadas
+      // 4) cálculos das coordenadas FINAIS
       const xs = rSymbol * Math.cos(angleRad);
       const ys = rSymbol * Math.sin(angleRad);
       const x1 = rLineStart * Math.cos(angleRad);
@@ -445,7 +477,7 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
       const x2 = rLineEnd * Math.cos(angleRad);
       const y2 = rLineEnd * Math.sin(angleRad);
 
-      // desenha a linha até o círculo
+      // 5) desenha a linha
       baseGroup
         .append("line")
         .attr("x1", x1)
@@ -453,10 +485,9 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
         .attr("x2", x2)
         .attr("y2", y2)
         .attr("stroke", "black")
-        .attr("stroke-width", 1)
-        .attr("transform", `rotate(${-zodiacRotation})`);
+        .attr("stroke-width", 1);
 
-      // desenha o símbolo do planeta deslocado
+      // 6) desenha o símbolo EM PÉ (sem transform extra)
       baseGroup
         .append("text")
         .attr("x", xs)
@@ -464,10 +495,6 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
         .attr("font-size", 14)
         .attr("text-anchor", "middle")
         .attr("alignment-baseline", "middle")
-        .attr(
-          "transform",
-          `rotate(${-zodiacRotation}) rotate(90, ${xs}, ${ys})`
-        )
         .text(getPlanetSymbol(planet.type));
     });
   }, [planets, housesData, rotation]);
