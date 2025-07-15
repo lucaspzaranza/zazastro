@@ -404,55 +404,6 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
       });
     });
 
-    // 4. Loop de renderização
-    // planets.forEach((planet) => {
-    //   // ângulo fixo no zodíaco
-    //   const angle = 180 - (planet.longitude % 360) - 90;
-    //   const angleRad = (angle * Math.PI) / 180;
-
-    //   // índice de sobreposição (0 = sem sobreposição, 1, 2, …)
-    //   const idx = offsetIndex.get(planet) || 0;
-
-    //   // calcula offsets
-    //   const symbolOffset = baseSymbolOffset + idx * overlapGap;
-    //   const rSymbol = radius - symbolOffset; // onde vai o glifo
-    //   const rLineStart = radius - lineStartOffset; // onde começa a linha
-    //   const rLineEnd = radius; // onde termina a linha
-
-    //   // coordenadas
-    //   const xs = rSymbol * Math.cos(angleRad);
-    //   const ys = rSymbol * Math.sin(angleRad);
-    //   const x1 = rLineStart * Math.cos(angleRad);
-    //   const y1 = rLineStart * Math.sin(angleRad);
-    //   const x2 = rLineEnd * Math.cos(angleRad);
-    //   const y2 = rLineEnd * Math.sin(angleRad);
-
-    //   // desenha a linha até o círculo
-    //   baseGroup
-    //     .append("line")
-    //     .attr("x1", x1)
-    //     .attr("y1", y1)
-    //     .attr("x2", x2)
-    //     .attr("y2", y2)
-    //     .attr("stroke", "black")
-    //     .attr("stroke-width", 1)
-    //     .attr("transform", `rotate(${-zodiacRotation})`);
-
-    //   // desenha o símbolo do planeta deslocado
-    //   baseGroup
-    //     .append("text")
-    //     .attr("x", xs)
-    //     .attr("y", ys)
-    //     .attr("font-size", 14)
-    //     .attr("text-anchor", "middle")
-    //     .attr("alignment-baseline", "middle")
-    //     .attr(
-    //       "transform",
-    //       `rotate(${-zodiacRotation}) rotate(90, ${xs}, ${ys})`
-    //     )
-    //     .text(getPlanetSymbol(planet.type));
-    // });
-
     planets.forEach((planet) => {
       // 1) ângulo zodiacal original (graus → rad)
       const rawDeg = 180 - (planet.longitude % 360) - 90;
@@ -495,7 +446,9 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
         .attr("font-size", 14)
         .attr("text-anchor", "middle")
         .attr("alignment-baseline", "middle")
-        .text(getPlanetSymbol(planet.type));
+        .text(
+          `${getPlanetSymbol(planet.type)}${planet.isRetrograde ? "r" : ""}`
+        );
     });
   }, [planets, housesData, rotation]);
 

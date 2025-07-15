@@ -27,13 +27,13 @@ export default function BirthChart() {
     longitude: -46.6388,
   };
 
-  const birthDate: BirthDate = {
-    year: 1993,
-    month: 8,
-    day: 31,
-    time: convertDegMinToDecimal(6, 45).toString(),
-    coordinates,
-  };
+  // const birthDate: BirthDate = {
+  //   year: 1993,
+  //   month: 8,
+  //   day: 31,
+  //   time: convertDegMinToDecimal(6, 45).toString(),
+  //   coordinates,
+  // };
 
   // Eli's birth
   // const birthDate: BirthDate = {
@@ -45,13 +45,13 @@ export default function BirthChart() {
   // };
 
   // Jana's birth
-  // const birthDate: BirthDate = {
-  //   year: 1995,
-  //   month: 6,
-  //   day: 20,
-  //   time: convertDegMinToDecimal(2, 20).toString(),
-  //   coordinates: SPCoordinates,
-  // };
+  const birthDate: BirthDate = {
+    year: 1995,
+    month: 6,
+    day: 20,
+    time: convertDegMinToDecimal(2, 20).toString(),
+    coordinates: SPCoordinates,
+  };
 
   // Alinezinha
   // const birthDate: BirthDate = {

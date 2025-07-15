@@ -8,7 +8,9 @@ export type PlanetType =
   | "saturn"
   | "uranus"
   | "neptune"
-  | "pluto";
+  | "pluto"
+  | "northNode"
+  | "southNode";
 
 export type ReturnChartType = "solar" | "lunar";
 export type ChartType = "birth" | "return";
@@ -24,6 +26,8 @@ export const planetTypes: PlanetType[] = [
   "uranus",
   "neptune",
   "pluto",
+  "northNode",
+  "southNode",
 ];
 
 export interface BirthDate {
@@ -56,6 +60,7 @@ export interface Planet {
   sign: string;
   antiscion: number;
   antiscionRaw: number;
+  isRetrograde: boolean;
 }
 
 export interface HousesData {

@@ -30,6 +30,8 @@ export function getPlanetSymbol(planet: PlanetType): string {
     uranus: "♅",
     neptune: "♆",
     pluto: "♇",
+    northNode: "Ω",
+    southNode: "ω",
   };
 
   return planetsSymbols[planet];
