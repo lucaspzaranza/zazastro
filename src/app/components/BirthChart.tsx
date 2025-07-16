@@ -12,6 +12,7 @@ import {
 import { ChartDate } from "./ChartDate";
 import CitySearch from "./CitySearch";
 import AstroChart from "./AstroChart";
+import ArabicParts from "./ArabicParts";
 
 export default function BirthChart() {
   const [loading, setLoading] = useState(false);
@@ -27,13 +28,14 @@ export default function BirthChart() {
     longitude: -46.6388,
   };
 
-  // const birthDate: BirthDate = {
-  //   year: 1993,
-  //   month: 8,
-  //   day: 31,
-  //   time: convertDegMinToDecimal(6, 45).toString(),
-  //   coordinates,
-  // };
+  // Meu
+  const birthDate: BirthDate = {
+    year: 1993,
+    month: 8,
+    day: 31,
+    time: convertDegMinToDecimal(6, 45).toString(),
+    coordinates,
+  };
 
   // Eli's birth
   // const birthDate: BirthDate = {
@@ -45,13 +47,13 @@ export default function BirthChart() {
   // };
 
   // Jana's birth
-  const birthDate: BirthDate = {
-    year: 1995,
-    month: 6,
-    day: 20,
-    time: convertDegMinToDecimal(2, 20).toString(),
-    coordinates: SPCoordinates,
-  };
+  // const birthDate: BirthDate = {
+  //   year: 1995,
+  //   month: 6,
+  //   day: 20,
+  //   time: convertDegMinToDecimal(2, 20).toString(),
+  //   coordinates: SPCoordinates,
+  // };
 
   // Alinezinha
   // const birthDate: BirthDate = {
@@ -142,7 +144,7 @@ export default function BirthChart() {
   };
 
   return (
-    <div className="flex flex-col items-center gap-2 pt-4">
+    <div className="w-full flex flex-col items-center gap-2 pt-4">
       <button
         onClick={getBirthChart}
         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
@@ -188,7 +190,7 @@ export default function BirthChart() {
           <h2 className="font-bold text-lg mb-2">Planetas:</h2>
           <ul>
             {birthChart.planets?.map((planet, index) => (
-              <li key={planet.name}>
+              <li key={index}>
                 {birthChart.planetsWithSigns !== undefined && (
                   <>
                     {planet.name}: {birthChart.planetsWithSigns[index].position}
@@ -199,6 +201,8 @@ export default function BirthChart() {
               </li>
             ))}
           </ul>
+
+          <ArabicParts />
         </div>
       )}
     </div>

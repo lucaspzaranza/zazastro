@@ -3,6 +3,7 @@ import { BirthDate } from "@/interfaces/BirthChartInterfaces";
 import { useEffect, useState } from "react";
 import { ChartDate } from "./ChartDate";
 import AstroChart from "./AstroChart";
+import BirthArchArabicParts from "./BirthArchArabicParts";
 
 export default function BirthArch() {
   const [input, setInput] = useState(0);
@@ -102,6 +103,8 @@ export default function BirthArch() {
               </li>
             ))}
           </ul>
+
+          <BirthArchArabicParts />
         </div>
       )}
     </div>

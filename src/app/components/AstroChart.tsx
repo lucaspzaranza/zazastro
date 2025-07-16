@@ -3,10 +3,11 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
-import { getPlanetSymbol } from "../utils/chartUtils";
+import { getPlanetSymbol, planetOverlapData } from "../utils/chartUtils";
 import {
   HousesData,
   Planet,
+  PlanetOverlap,
   PlanetType,
 } from "@/interfaces/BirthChartInterfaces";
 
@@ -371,40 +372,36 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
         .attr("stroke-width", 1);
     }
 
-    // 1. Defina seu limiar e parâmetros de distância
-    const thresholdDeg = 5; // graus para considerar “mesma posição”
-    const baseSymbolOffset = 20; // distância base do símbolo até o círculo
-    const overlapGap = 5; // gap extra (px) entre símbolos sobrepostos
-    const lineStartOffset = 12; // quão “para dentro” a linha começa
+    const lineStartOffset = 6; // quão “para dentro” a linha começa
 
-    // 2. Agrupe planetas por longitude próxima
-    // (cria uma cópia para não mutar o array original)
-    const sorted = planets.slice().sort((a, b) => a.longitude - b.longitude);
+    const getOverlappedPlanets = (planet: Planet) => {
+      const planetOverlap = planetOverlapData[planet.type];
 
-    const clusters: (typeof sorted)[] = [];
-    sorted.forEach((p) => {
-      if (clusters.length === 0) {
-        clusters.push([p]);
-      } else {
-        const last = clusters[clusters.length - 1];
-        const prev = last[last.length - 1];
-        if (Math.abs(p.longitude - prev.longitude) < thresholdDeg) {
-          last.push(p);
-        } else {
-          clusters.push([p]);
-        }
-      }
-    });
+      const overlappedPlanets: Planet[] = planets.filter((p) => {
+        const distance = Math.abs(
+          (p.longitudeRaw - planet.longitudeRaw - 360) % 360
+        );
 
-    // 3. Mapeie cada planeta ao seu índice dentro do cluster
-    const offsetIndex = new Map<(typeof sorted)[number], number>();
-    clusters.forEach((cluster) => {
-      cluster.forEach((p, i) => {
-        offsetIndex.set(p, i);
+        return distance < planetOverlap.thresholdDeg;
       });
-    });
+
+      const sorted = overlappedPlanets.sort((a, b) =>
+        Math.abs((a.longitudeRaw - b.longitudeRaw - 360) % 360)
+      );
+
+      return sorted;
+    };
 
     planets.forEach((planet) => {
+      const overlappedPlanets = getOverlappedPlanets(planet);
+      const overlapIndex =
+        overlappedPlanets.length > 0 ? overlappedPlanets.indexOf(planet) : 0;
+      const prevPlanet = overlappedPlanets[overlapIndex - 1]; // previous planet edge overlap data
+      const planetOverlap =
+        prevPlanet !== undefined
+          ? planetOverlapData[prevPlanet.type]
+          : planetOverlapData[planet.type];
+
       // 1) ângulo zodiacal original (graus → rad)
       const rawDeg = 180 - (planet.longitude % 360) - 90;
       const rawRad = (rawDeg * Math.PI) / 180;
@@ -414,8 +411,9 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
       const angleRad = rawRad - rotRad;
 
       // 3) offsets de sobreposição
-      const idx = offsetIndex.get(planet) || 0;
-      const symbolOffset = baseSymbolOffset + idx * overlapGap;
+      const idx = overlapIndex;
+      const symbolOffset =
+        planetOverlap.baseSymbolOffset + idx * planetOverlap.overlapGap;
       const rSymbol = radius - symbolOffset;
       const rLineStart = radius - lineStartOffset;
       const rLineEnd = radius;
@@ -435,20 +433,24 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
         .attr("y1", y1)
         .attr("x2", x2)
         .attr("y2", y2)
+        .attr("stroke", "#ff914d") // antiscion color
         .attr("stroke", "black")
         .attr("stroke-width", 1);
 
-      // 6) desenha o símbolo EM PÉ (sem transform extra)
+      // 6) desenha o ícone do planeta
+      const iconSize = planet.type === "northNode" ? 16 : 13; // px
+      const iconSrc = `/planets/${planet.type}${
+        planet.isRetrograde ? "-rx" : ""
+      }.png`;
+
       baseGroup
-        .append("text")
-        .attr("x", xs)
-        .attr("y", ys)
-        .attr("font-size", 14)
-        .attr("text-anchor", "middle")
-        .attr("alignment-baseline", "middle")
-        .text(
-          `${getPlanetSymbol(planet.type)}${planet.isRetrograde ? "r" : ""}`
-        );
+        .append("image")
+        .attr("href", iconSrc) // no D3 v6+ use 'href'
+        .attr("width", iconSize)
+        .attr("height", iconSize)
+        // centraliza o ícone em (xs, ys)
+        .attr("x", xs - iconSize / 2)
+        .attr("y", ys - iconSize / 2);
     });
   }, [planets, housesData, rotation]);
 

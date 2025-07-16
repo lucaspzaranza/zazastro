@@ -48,7 +48,7 @@ export default function BirthArchArabicParts() {
   if (birthArchArabicParts.length === 0) return;
 
   return (
-    <div className="flex flex-col gap-2 mt-4 text-left">
+    <div className="w-full flex flex-col gap-2 mt-4">
       <h2 className="text-xl font-bold">
         Partes Árabes Por Arco Natal (
         {returnChart?.returnType === "solar" ? "Solar" : "Lunar"})

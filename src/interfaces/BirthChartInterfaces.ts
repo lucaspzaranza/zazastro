@@ -86,3 +86,10 @@ export interface SelectedCity {
   latitude: number;
   longitude: number;
 }
+
+export interface PlanetOverlap {
+  thresholdDeg: number;
+  baseSymbolOffset: number;
+  overlapGap: number;
+  planetOrder: number;
+}
