@@ -20,34 +20,6 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
   const ref = useRef<SVGSVGElement>(null);
   const [rotation, setRotation] = useState(0);
 
-  // console.log("housesData: ", housesData);
-
-  // const getHouseColor = (index: number): string => {
-  //   if (index === 0) {
-  //     return "red";
-  //   } else if (index % 3 === 0) {
-  //     return "black";
-  //   } else {
-  //     return "gray";
-  //   }
-  // };
-
-  const getRotationDifference = (asc: number) => {
-    const nextSignMultiple = Math.floor(asc / 30) + 1;
-    const nextSignLongitude = nextSignMultiple * 30;
-    const difference = (nextSignLongitude - asc) * 2;
-    return difference;
-  };
-
-  // const zodiacRotation =
-  //   housesData.ascendant - (30 - getRotationDifference(housesData.ascendant));
-
-  // const zodiacRotation =
-  //   housesData.ascendant -
-  //   (rotation - getRotationDifference(housesData.ascendant));
-
-  // const zodiacRotation = rotation;
-
   const zodiacRotation = 270 - housesData.ascendant;
 
   useEffect(() => {
@@ -378,9 +350,26 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
       const planetOverlap = planetOverlapData[planet.type];
 
       const overlappedPlanets: Planet[] = planets.filter((p) => {
-        const distance = Math.abs(
-          (p.longitudeRaw - planet.longitudeRaw - 360) % 360
-        );
+        const dist = p.longitudeRaw - planet.longitudeRaw;
+        const wrappedDist = // Segundo condicional caso a distância dê um valor perto de 360
+          dist < 0 || dist > 360 - planetOverlap.thresholdDeg
+            ? dist - 360
+            : dist;
+        const mod = Math.abs(wrappedDist % 360);
+        const distance = mod;
+        // const distance = Math.abs(
+        //   (p.longitudeRaw - planet.longitudeRaw - 360) % 360
+        // );
+
+        // if (planet.type === "neptune") {
+        //   console.log(
+        //     `
+        //     ${p.name}: ${p.longitudeRaw}, North Node: ${planet.longitudeRaw},
+        //     dist: ${dist},
+        //     wrappedDist: ${wrappedDist},
+        //     distance from ${p.name}: ${mod}`
+        //   );
+        // }
 
         return distance < planetOverlap.thresholdDeg;
       });
@@ -394,6 +383,9 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
 
     planets.forEach((planet) => {
       const overlappedPlanets = getOverlappedPlanets(planet);
+      // if (planet.type === "neptune") {
+      //   console.log(overlappedPlanets);
+      // }
       const overlapIndex =
         overlappedPlanets.length > 0 ? overlappedPlanets.indexOf(planet) : 0;
       const prevPlanet = overlappedPlanets[overlapIndex - 1]; // previous planet edge overlap data
@@ -455,12 +447,12 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
   }, [planets, housesData, rotation]);
 
   return (
-    <div className="flex flex-col justify-center items-center">
-      <input
+    <div className="flex flex-col justify-center items-center mt-8">
+      {/* <input
         type="number"
         className="border-1 mb-8"
         onChange={(e) => setRotation(Number.parseFloat(e.target.value))}
-      />
+      /> */}
       <svg ref={ref}></svg>
     </div>
   );

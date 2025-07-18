@@ -217,15 +217,39 @@ export function useArabicPartCalculations() {
     };
   }
 
+  function calculateLotOfChildren(chartData: BirthChart): ArabicPart {
+    const asc = chartData.housesData.ascendant;
+    const saturn = chartData.planets.find((p) => p.type === "saturn")!;
+    const jupiter = chartData.planets.find((p) => p.type === "jupiter")!;
+    // const sun = chartData.planets.find((p) => p.type === "sun")!;
+
+    const longitudeRaw = wrapZodiacLongitude(
+      asc + saturn.longitudeRaw - jupiter.longitudeRaw
+    );
+    const longitude = decimalToDegreesMinutes(longitudeRaw);
+    const zodiacRuler = getZodiacRuler(longitude);
+
+    return {
+      name: "Parte dos Filhos",
+      formulaDescription: "AC + Saturno - Júpiter",
+      longitudeRaw,
+      zodiacRuler,
+      ...getArabicPartData(longitudeRaw, asc),
+    };
+  }
+
   function calculateBirthArchArabicPart(
     arabicPart: ArabicPart,
-    chart: BirthChart
+    // chart: BirthChart
+    ascendant: number
   ): ArabicPart {
-    const asc = chart.housesData.ascendant;
+    // const asc = chart.housesData.ascendant;
+    const asc = ascendant;
     const longitudeRaw = asc + arabicPart.rawDistanceFromASC;
     const arabicPartData = getArabicPartData(
       longitudeRaw,
-      chart.housesData.ascendant
+      // chart.housesData.ascendant
+      ascendant
     );
 
     // console.log(
@@ -259,6 +283,7 @@ export function useArabicPartCalculations() {
     calculateLotOfCaptivity,
     calculateLotOfMarriage,
     calculateLotOfResignation,
+    calculateLotOfChildren,
     calculateBirthArchArabicPart,
   };
 }

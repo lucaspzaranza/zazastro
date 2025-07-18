@@ -25,4 +25,5 @@ export interface ArabicParts {
   captivity?: ArabicPart;
   marriage?: ArabicPart;
   resignation?: ArabicPart;
+  children?: ArabicPart;
 }

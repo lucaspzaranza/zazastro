@@ -1,3 +1,4 @@
+import { ArabicParts } from "@/interfaces/ArabicPartInterfaces";
 import {
   PlanetOverlap,
   PlanetType,
@@ -40,6 +41,19 @@ export function getPlanetSymbol(planet: PlanetType): string {
 
   return planetsSymbols[planet];
 }
+
+export const arabicPartKeys: (keyof ArabicParts)[] = [
+  "fortune",
+  "spirit",
+  "necessity",
+  "love",
+  "valor",
+  "victory",
+  "captivity",
+  "marriage",
+  "resignation",
+  "children",
+];
 
 /**
  * Returns the formatted longitude value with its corresponding Sign.
@@ -138,10 +152,22 @@ export function convertDegMinToDecimal(deg: number, min: number) {
   return parseFloat(decimal.toFixed(4));
 }
 
+export function convertDegMinNumberToDecimal(degMin: number) {
+  // console.log(degMin);
+  const degrees = Math.floor(degMin);
+  const minutes = Number.parseFloat(((degMin - degrees) * 100).toFixed(2));
+
+  const result = degrees + minutes / 60;
+  // console.log(
+  //   `degMin: ${degMin}, degrees: ${degrees}, minutes: ${minutes}, result: ${result}`
+  // );
+  return result;
+}
+
 export const planetOverlapData: Record<PlanetType, PlanetOverlap> = {
   moon: {
     baseSymbolOffset: 15,
-    overlapGap: 15,
+    overlapGap: 10,
     thresholdDeg: 4,
     planetOrder: 0,
   },
@@ -178,7 +204,7 @@ export const planetOverlapData: Record<PlanetType, PlanetOverlap> = {
   saturn: {
     baseSymbolOffset: 15,
     overlapGap: 10,
-    thresholdDeg: 5,
+    thresholdDeg: 4,
     planetOrder: 0,
   },
   uranus: {
@@ -190,7 +216,7 @@ export const planetOverlapData: Record<PlanetType, PlanetOverlap> = {
   neptune: {
     baseSymbolOffset: 15,
     overlapGap: 16.5,
-    thresholdDeg: 4,
+    thresholdDeg: 5,
     planetOrder: 0,
   },
   pluto: {
@@ -202,7 +228,7 @@ export const planetOverlapData: Record<PlanetType, PlanetOverlap> = {
   northNode: {
     baseSymbolOffset: 15,
     overlapGap: 15,
-    thresholdDeg: 4,
+    thresholdDeg: 6,
     planetOrder: 0,
   },
   southNode: {

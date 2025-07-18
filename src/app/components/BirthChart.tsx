@@ -28,23 +28,28 @@ export default function BirthChart() {
     longitude: -46.6388,
   };
 
-  // Meu
-  const birthDate: BirthDate = {
-    year: 1993,
-    month: 8,
-    day: 31,
-    time: convertDegMinToDecimal(6, 45).toString(),
-    coordinates,
+  const MontesClarosCoordinates: Coordinates = {
+    latitude: -16.737,
+    longitude: -43.8647,
   };
 
-  // Eli's birth
+  // Meu
   // const birthDate: BirthDate = {
-  //   year: 1994,
-  //   month: 6,
-  //   day: 23,
-  //   time: convertDegMinToDecimal(20, 19).toString(),
-  //   coordinates: SPCoordinates,
+  //   year: 1993,
+  //   month: 8,
+  //   day: 31,
+  //   time: convertDegMinToDecimal(6, 45).toString(),
+  //   coordinates,
   // };
+
+  // Eli's birth
+  const birthDate: BirthDate = {
+    year: 1994,
+    month: 6,
+    day: 23,
+    time: convertDegMinToDecimal(20, 19).toString(),
+    coordinates: SPCoordinates,
+  };
 
   // Jana's birth
   // const birthDate: BirthDate = {
@@ -62,6 +67,15 @@ export default function BirthChart() {
   //   day: 22,
   //   time: convertDegMinToDecimal(12, 39).toString(),
   //   coordinates,
+  // };
+
+  // Ana Flávia
+  // const birthDate: BirthDate = {
+  //   year: 1994,
+  //   month: 12,
+  //   day: 2,
+  //   time: convertDegMinToDecimal(5, 15).toString(),
+  //   coordinates: MontesClarosCoordinates,
   // };
 
   const getBirthChart = async () => {
@@ -94,10 +108,29 @@ export default function BirthChart() {
   };
 
   const getPlanetReturn = async (returnType: ReturnChartType) => {
+    // Meu
+    // const targetDate: BirthDate = {
+    //   ...birthDate,
+    //   year: returnType === "solar" ? 2022 : 2022,
+    // };
+
     const targetDate: BirthDate = {
       ...birthDate,
-      year: returnType === "solar" ? 2024 : 2025,
+      day: 30,
+      month: 7,
+      // time: birthDate.time,
+      year: returnType === "solar" ? 2024 : 2023,
     };
+
+    // Jana
+    // const targetDate: BirthDate = {
+    //   // ...birthDate,
+    //   coordinates: birthDate.coordinates,
+    //   day: 10,
+    //   month: 2,
+    //   time: birthDate.time,
+    //   year: returnType === "solar" ? 2024 : 2024,
+    // };
 
     const response = await fetch("http://localhost:3001/return/" + returnType, {
       method: "POST",
@@ -178,29 +211,36 @@ export default function BirthChart() {
             housesData={birthChart.housesData}
           />
 
-          <h2 className="font-bold text-lg mb-2">Casas Astrológicas:</h2>
-          <ul className="mb-4">
-            {birthChart.housesData.housesWithSigns?.map((house, index) => (
-              <li key={house}>
-                Casa {index + 1}: {house}
-              </li>
-            ))}
-          </ul>
+          <div className="flex flex-row justify-between mt-8">
+            <div>
+              <h2 className="font-bold text-lg mb-2">Casas:</h2>
+              <ul className="mb-4">
+                {birthChart.housesData.housesWithSigns?.map((house, index) => (
+                  <li key={house}>
+                    Casa {index + 1}: {house}
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          <h2 className="font-bold text-lg mb-2">Planetas:</h2>
-          <ul>
-            {birthChart.planets?.map((planet, index) => (
-              <li key={index}>
-                {birthChart.planetsWithSigns !== undefined && (
-                  <>
-                    {planet.name}: {birthChart.planetsWithSigns[index].position}
-                    &nbsp;Antiscion:{" "}
-                    {birthChart.planetsWithSigns[index].antiscion}
-                  </>
-                )}
-              </li>
-            ))}
-          </ul>
+            <div>
+              <h2 className="font-bold text-lg mb-2">Planetas:</h2>
+              <ul>
+                {birthChart.planets?.map((planet, index) => (
+                  <li key={index}>
+                    {birthChart.planetsWithSigns !== undefined && (
+                      <>
+                        {planet.name}:{" "}
+                        {birthChart.planetsWithSigns[index].position}
+                        &nbsp;Antiscion:{" "}
+                        {birthChart.planetsWithSigns[index].antiscion}
+                      </>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
 
           <ArabicParts />
         </div>

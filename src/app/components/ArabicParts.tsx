@@ -8,21 +8,12 @@ import type {
   ArabicPart,
 } from "@/interfaces/ArabicPartInterfaces";
 import { useEffect, useRef, useState } from "react";
+import { arabicPartKeys } from "../utils/chartUtils";
 
 export default function ArabicParts() {
   const { birthChart } = useBirthChart();
   const { arabicParts, updateArabicParts } = useArabicParts();
-  const {
-    calculateLotOfFortune,
-    calculateLotOfSpirit,
-    calculateLotOfNecessity,
-    calculateLotOfLove,
-    calculateLotOfValor,
-    calculateLotOfVictory,
-    calculateLotOfCaptivity,
-    calculateLotOfMarriage,
-    calculateLotOfResignation,
-  } = useArabicPartCalculations();
+  const lots = useArabicPartCalculations();
 
   const [parts, setParts] = useState<ArabicPart[]>([]);
 
@@ -30,8 +21,8 @@ export default function ArabicParts() {
     if (birthChart === undefined) return;
 
     updateArabicParts({
-      fortune: calculateLotOfFortune(birthChart),
-      spirit: calculateLotOfSpirit(birthChart),
+      fortune: lots.calculateLotOfFortune(birthChart),
+      spirit: lots.calculateLotOfSpirit(birthChart),
     });
   }, [birthChart]);
 
@@ -40,28 +31,29 @@ export default function ArabicParts() {
 
     if (arabicParts?.fortune && arabicParts.spirit) {
       updateArabicParts({
-        necessity: calculateLotOfNecessity(birthChart),
-        love: calculateLotOfLove(birthChart),
+        necessity: lots.calculateLotOfNecessity(birthChart),
+        love: lots.calculateLotOfLove(birthChart),
       });
     }
 
     if (arabicParts?.fortune) {
       updateArabicParts({
-        valor: calculateLotOfValor(birthChart),
-        captivity: calculateLotOfCaptivity(birthChart),
+        valor: lots.calculateLotOfValor(birthChart),
+        captivity: lots.calculateLotOfCaptivity(birthChart),
       });
     }
 
     if (arabicParts?.spirit) {
       updateArabicParts({
-        victory: calculateLotOfVictory(birthChart),
+        victory: lots.calculateLotOfVictory(birthChart),
       });
     }
 
     // Custom Arabic Parts
     updateArabicParts({
-      marriage: calculateLotOfMarriage(birthChart),
-      resignation: calculateLotOfResignation(birthChart),
+      marriage: lots.calculateLotOfMarriage(birthChart),
+      resignation: lots.calculateLotOfResignation(birthChart),
+      children: lots.calculateLotOfChildren(birthChart),
     });
   }, [arabicParts?.fortune]);
 
@@ -69,19 +61,7 @@ export default function ArabicParts() {
     if (arabicParts === undefined) return;
     setParts([]);
 
-    const keys: (keyof ArabicParts)[] = [
-      "fortune",
-      "spirit",
-      "necessity",
-      "love",
-      "valor",
-      "victory",
-      "captivity",
-      "marriage",
-      "resignation",
-    ];
-
-    keys.forEach((key) => {
+    arabicPartKeys.forEach((key) => {
       const part = arabicParts[key];
 
       if (part) {

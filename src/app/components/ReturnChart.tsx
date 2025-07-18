@@ -79,30 +79,36 @@ export default function BirthArch() {
             housesData={returnChart.housesData}
           />
 
-          <h2 className="font-bold text-lg mb-2">Casas Astrológicas:</h2>
-          <ul className="mb-4">
-            {returnChart.housesData.housesWithSigns?.map((house, index) => (
-              <li key={house}>
-                Casa {index + 1}: {house}
-              </li>
-            ))}
-          </ul>
+          <div className="flex flex-row justify-between mt-8">
+            <div>
+              <h2 className="font-bold text-lg mb-2">Casas:</h2>
+              <ul className="mb-4">
+                {returnChart.housesData.housesWithSigns?.map((house, index) => (
+                  <li key={house}>
+                    Casa {index + 1}: {house}
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          <h2 className="font-bold text-lg mb-2">Planetas:</h2>
-          <ul>
-            {returnChart.planets?.map((planet, index) => (
-              <li key={planet.name}>
-                {returnChart.planetsWithSigns !== undefined && (
-                  <>
-                    {planet.name}:{" "}
-                    {returnChart.planetsWithSigns[index].position}
-                    &nbsp;Antiscion:{" "}
-                    {returnChart.planetsWithSigns[index].antiscion}
-                  </>
-                )}
-              </li>
-            ))}
-          </ul>
+            <div>
+              <h2 className="font-bold text-lg mb-2">Planetas:</h2>
+              <ul>
+                {returnChart.planets?.map((planet, index) => (
+                  <li key={planet.name}>
+                    {returnChart.planetsWithSigns !== undefined && (
+                      <>
+                        {planet.name}:{" "}
+                        {returnChart.planetsWithSigns[index].position}
+                        &nbsp;Antiscion:{" "}
+                        {returnChart.planetsWithSigns[index].antiscion}
+                      </>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
 
           <BirthArchArabicParts />
         </div>
