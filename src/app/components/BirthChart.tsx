@@ -13,14 +13,21 @@ import { ChartDate } from "./ChartDate";
 import CitySearch from "./CitySearch";
 import AstroChart from "./AstroChart";
 import ArabicParts from "./ArabicParts";
+import { useArabicParts } from "@/contexts/ArabicPartsContext";
 
 export default function BirthChart() {
   const [loading, setLoading] = useState(false);
   const { birthChart, updateBirthChart } = useBirthChart();
+  const { arabicParts } = useArabicParts();
 
   const coordinates: Coordinates = {
     latitude: -3.71839, // Fortaleza
     longitude: -38.5434,
+  };
+
+  const quixabaCoordinates: Coordinates = {
+    latitude: -4.5461,
+    longitude: -37.6923,
   };
 
   const SPCoordinates: Coordinates = {
@@ -34,22 +41,31 @@ export default function BirthChart() {
   };
 
   // Meu
-  // const birthDate: BirthDate = {
-  //   year: 1993,
-  //   month: 8,
-  //   day: 31,
-  //   time: convertDegMinToDecimal(6, 45).toString(),
-  //   coordinates,
-  // };
+  const birthDate: BirthDate = {
+    year: 1993,
+    month: 8,
+    day: 31,
+    time: convertDegMinToDecimal(6, 45).toString(),
+    coordinates,
+  };
 
   // Eli's birth
-  const birthDate: BirthDate = {
-    year: 1994,
-    month: 6,
-    day: 23,
-    time: convertDegMinToDecimal(20, 19).toString(),
-    coordinates: SPCoordinates,
-  };
+  // const birthDate: BirthDate = {
+  //   year: 1994,
+  //   month: 6,
+  //   day: 23,
+  //   time: convertDegMinToDecimal(20, 19).toString(),
+  //   coordinates: SPCoordinates,
+  // };
+
+  // Noivado
+  // const birthDate: BirthDate = {
+  //   year: 2025,
+  //   month: 4,
+  //   day: 26,
+  //   time: convertDegMinToDecimal(17, 10).toString(),
+  //   coordinates: quixabaCoordinates,
+  // };
 
   // Jana's birth
   // const birthDate: BirthDate = {
@@ -116,10 +132,10 @@ export default function BirthChart() {
 
     const targetDate: BirthDate = {
       ...birthDate,
-      day: 30,
-      month: 7,
+      day: 1,
+      month: 11,
       // time: birthDate.time,
-      year: returnType === "solar" ? 2024 : 2023,
+      year: returnType === "solar" ? 2024 : 2025,
     };
 
     // Jana
@@ -209,6 +225,7 @@ export default function BirthChart() {
           <AstroChart
             planets={birthChart.planets}
             housesData={birthChart.housesData}
+            arabicParts={arabicParts}
           />
 
           <div className="flex flex-row justify-between mt-8">

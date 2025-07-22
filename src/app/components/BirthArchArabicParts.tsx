@@ -12,36 +12,51 @@ import {
 
 export default function BirthArchArabicParts() {
   const { birthChart, returnChart } = useBirthChart();
-  const { arabicParts } = useArabicParts();
+  const { arabicParts, archArabicParts, updateArchArabicParts } =
+    useArabicParts();
   const { calculateBirthArchArabicPart } = useArabicPartCalculations();
+  const [parts, setParts] = useState<ArabicPart[]>([]);
 
   const [customAscendant, setCustomAscendant] = useState<number | undefined>(
     undefined
   );
 
-  const [birthArchArabicParts, setBirthArchArabicParts] = useState<
-    ArabicPart[]
-  >([]);
+  const lots: ArabicParts = {};
 
   useEffect(() => {
     if (arabicParts === undefined) return;
 
-    setBirthArchArabicParts([]);
+    updateArchArabicParts({});
 
     arabicPartKeys.forEach((key) => {
       const part = arabicParts[key];
-      if (part && returnChart && !birthArchArabicParts.includes(part)) {
+      if (part && returnChart) {
         // console.log(`Parte Árabe: ${key}`, part);
-        const birthArchArabicPart = calculateBirthArchArabicPart(
+        const newArchArabicPart = calculateBirthArchArabicPart(
           part,
           customAscendant ?? returnChart.housesData.ascendant
         );
-        setBirthArchArabicParts((prev) => [...prev, birthArchArabicPart]);
+        lots[key] = newArchArabicPart;
+        // console.log("updatedArabicParts:", result);
+        updateArchArabicParts(lots);
       }
     });
   }, [arabicParts, customAscendant]);
 
-  if (birthArchArabicParts.length === 0) return;
+  useEffect(() => {
+    if (archArabicParts === undefined) return;
+    setParts([]);
+
+    arabicPartKeys.forEach((key) => {
+      const part = archArabicParts[key];
+
+      if (part) {
+        setParts((prev) => [...prev, part]);
+      }
+    });
+  }, [archArabicParts]);
+
+  if (archArabicParts === undefined) return;
 
   return (
     <div className="w-full flex flex-col gap-2 mt-4">
@@ -60,14 +75,13 @@ export default function BirthArchArabicParts() {
             const value = convertDegMinNumberToDecimal(
               Number.parseFloat(e.target.value)
             );
-            // console.log(value);
-
             setCustomAscendant(value > 0 ? value : undefined);
           }}
         />
       </div>
       <ul>
-        {birthArchArabicParts.map((arabicPart, index) => {
+        {/* {birthArchArabicParts.map((arabicPart, index) => { */}
+        {parts.map((arabicPart, index) => {
           return (
             <li key={index}>
               {arabicPart?.name}: {arabicPart.longitudeSign}&nbsp; Antiscion:{" "}

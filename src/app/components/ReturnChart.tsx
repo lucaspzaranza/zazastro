@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import { ChartDate } from "./ChartDate";
 import AstroChart from "./AstroChart";
 import BirthArchArabicParts from "./BirthArchArabicParts";
+import { useArabicParts } from "@/contexts/ArabicPartsContext";
 
 export default function BirthArch() {
   const [input, setInput] = useState(0);
   const { returnChart } = useBirthChart();
+  const { archArabicParts } = useArabicParts();
   const [isSolarReturn, setIsSolarReturn] = useState(true);
   const [targetDate, setTargetDate] = useState<BirthDate>({
     day: 0,
@@ -77,6 +79,7 @@ export default function BirthArch() {
           <AstroChart
             planets={returnChart.planets}
             housesData={returnChart.housesData}
+            arabicParts={archArabicParts}
           />
 
           <div className="flex flex-row justify-between mt-8">

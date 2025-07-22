@@ -3,24 +3,125 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
-import { getPlanetSymbol, planetOverlapData } from "../utils/chartUtils";
+import {
+  arabicPartKeys,
+  getPlanetSymbol,
+  planetOverlapData,
+} from "../utils/chartUtils";
 import {
   HousesData,
   Planet,
   PlanetOverlap,
   PlanetType,
 } from "@/interfaces/BirthChartInterfaces";
+import { useArabicParts } from "@/contexts/ArabicPartsContext";
+import { ArabicPart, ArabicParts } from "@/interfaces/ArabicPartInterfaces";
 
 interface Props {
   planets: Planet[];
   housesData: HousesData;
+  arabicParts?: ArabicParts;
 }
 
-const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
+interface PartsAndPlanets {
+  longitudeRaw: number;
+  name: string;
+}
+
+const AstroChart: React.FC<Props> = ({ planets, housesData, arabicParts }) => {
   const ref = useRef<SVGSVGElement>(null);
   const [rotation, setRotation] = useState(0);
+  const [showArabicParts, setShowArabicParts] = useState(false);
+  const [showPlanetsAntiscia, setShowPlanetsAntiscia] = useState(false);
+  const [showArabicPartsAntiscia, setShowArabicPartsAntiscia] = useState(false);
 
   const zodiacRotation = 270 - housesData.ascendant;
+
+  const getOverlappedPlanets = (planet: Planet) => {
+    const planetOverlap = planetOverlapData[planet.type];
+
+    const overlappedPlanets: Planet[] = planets.filter((p) => {
+      const dist = p.longitudeRaw - planet.longitudeRaw;
+      const wrappedDist = // Segundo condicional caso a distância dê um valor perto de 360
+        dist < 0 || dist > 360 - planetOverlap.thresholdDeg ? dist - 360 : dist;
+      const mod = Math.abs(wrappedDist % 360);
+      const distance = mod;
+      return distance < planetOverlap.thresholdDeg;
+    });
+
+    const sorted = overlappedPlanets.sort((a, b) =>
+      Math.abs((a.longitudeRaw - b.longitudeRaw - 360) % 360)
+    );
+
+    return sorted;
+  };
+
+  const getOverlappedArabicParts = (arabicPart: ArabicPart) => {
+    if (arabicParts === undefined) return;
+
+    const thresholdDeg = 3.5;
+    let partsAndPlanets: PartsAndPlanets[] = [];
+
+    planets.forEach((p) => {
+      partsAndPlanets.push({ longitudeRaw: p.longitudeRaw, name: p.type });
+    });
+
+    arabicPartKeys.forEach((key) => {
+      const part = arabicParts[key]!;
+      partsAndPlanets.push({ longitudeRaw: part.longitudeRaw, name: key });
+    });
+
+    const overlappedArabicParts = partsAndPlanets.filter((p) => {
+      const dist = p.longitudeRaw - arabicPart.longitudeRaw;
+      const wrappedDist = // Segundo condicional caso a distância dê um valor perto de 360
+        dist < 0 || dist > 360 - thresholdDeg ? dist - 360 : dist;
+      const mod = Math.abs(wrappedDist % 360);
+      const distance = mod;
+      return distance < thresholdDeg;
+    });
+
+    const sorted = overlappedArabicParts.sort((a, b) =>
+      Math.abs((a.longitudeRaw - b.longitudeRaw - 360) % 360)
+    );
+
+    return sorted;
+  };
+
+  const getOverlappedArabicPartsAntiscion = (arabicPart: ArabicPart) => {
+    if (arabicParts === undefined) return;
+
+    const thresholdDeg = 3.5;
+    let partsAndPlanets: PartsAndPlanets[] = [];
+
+    planets.forEach((p) => {
+      partsAndPlanets.push({ longitudeRaw: p.longitudeRaw, name: p.type });
+    });
+
+    arabicPartKeys.forEach((key) => {
+      const part = arabicParts[key]!;
+      partsAndPlanets.push({
+        longitudeRaw: showPlanetsAntiscia
+          ? part.longitudeRaw
+          : part.antiscionRaw,
+        name: key,
+      });
+    });
+
+    const overlappedArabicParts = partsAndPlanets.filter((p) => {
+      const dist = p.longitudeRaw - arabicPart.longitudeRaw;
+      const wrappedDist = // Segundo condicional caso a distância dê um valor perto de 360
+        dist < 0 || dist > 360 - thresholdDeg ? dist - 360 : dist;
+      const mod = Math.abs(wrappedDist % 360);
+      const distance = mod;
+      return distance < thresholdDeg;
+    });
+
+    const sorted = overlappedArabicParts.sort((a, b) =>
+      Math.abs((a.longitudeRaw - b.longitudeRaw - 360) % 360)
+    );
+
+    return sorted;
+  };
 
   useEffect(() => {
     if (!ref.current) return;
@@ -198,8 +299,6 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
     const asc = ((housesData.ascendant % 360) + 360) % 360;
     const cusps = housesData.house.map((a) => ((a % 360) + 360) % 360);
 
-    // raio médio do anel onde os números ficarão
-
     // percorre 0..11 diretamente (já é anti‑horário começando no Ascendente)
     for (let j = 0; j < 12; j++) {
       const startDeg = cusps[j];
@@ -346,41 +445,6 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
 
     const lineStartOffset = 6; // quão “para dentro” a linha começa
 
-    const getOverlappedPlanets = (planet: Planet) => {
-      const planetOverlap = planetOverlapData[planet.type];
-
-      const overlappedPlanets: Planet[] = planets.filter((p) => {
-        const dist = p.longitudeRaw - planet.longitudeRaw;
-        const wrappedDist = // Segundo condicional caso a distância dê um valor perto de 360
-          dist < 0 || dist > 360 - planetOverlap.thresholdDeg
-            ? dist - 360
-            : dist;
-        const mod = Math.abs(wrappedDist % 360);
-        const distance = mod;
-        // const distance = Math.abs(
-        //   (p.longitudeRaw - planet.longitudeRaw - 360) % 360
-        // );
-
-        // if (planet.type === "neptune") {
-        //   console.log(
-        //     `
-        //     ${p.name}: ${p.longitudeRaw}, North Node: ${planet.longitudeRaw},
-        //     dist: ${dist},
-        //     wrappedDist: ${wrappedDist},
-        //     distance from ${p.name}: ${mod}`
-        //   );
-        // }
-
-        return distance < planetOverlap.thresholdDeg;
-      });
-
-      const sorted = overlappedPlanets.sort((a, b) =>
-        Math.abs((a.longitudeRaw - b.longitudeRaw - 360) % 360)
-      );
-
-      return sorted;
-    };
-
     planets.forEach((planet) => {
       const overlappedPlanets = getOverlappedPlanets(planet);
       // if (planet.type === "neptune") {
@@ -443,8 +507,213 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
         // centraliza o ícone em (xs, ys)
         .attr("x", xs - iconSize / 2)
         .attr("y", ys - iconSize / 2);
+
+      if (showPlanetsAntiscia) {
+        // 1) ângulo zodiacal original (graus → rad)
+        const rawAntDeg = 180 - (planet.antiscion % 360) - 90;
+        const rawAntRad = (rawAntDeg * Math.PI) / 180;
+
+        // 2) compensa a rotação do zodíaco (transforma em ângulo final)
+        const rotAntRad = (zodiacRotation * Math.PI) / 180;
+        const angleAntRad = rawAntRad - rotAntRad;
+
+        // 3) offsets de sobreposição
+        const antIdx = overlapIndex;
+        const symbolAntOffset =
+          planetOverlap.baseSymbolOffset + antIdx * planetOverlap.overlapGap;
+        const rAntSymbol = radius - symbolAntOffset;
+        const rAntLineStart = radius - lineStartOffset;
+        const AntLineEnd = radius;
+
+        // 4) cálculos das coordenadas FINAIS
+        const xAnts = rAntSymbol * Math.cos(angleAntRad);
+        const yAnts = rAntSymbol * Math.sin(angleAntRad);
+        const xAnt1 = rAntLineStart * Math.cos(angleAntRad);
+        const yAnt1 = rAntLineStart * Math.sin(angleAntRad);
+        const xAnt2 = AntLineEnd * Math.cos(angleAntRad);
+        const yAnt2 = AntLineEnd * Math.sin(angleAntRad);
+
+        // 5) desenha a linha
+        baseGroup
+          .append("line")
+          .attr("x1", xAnt1)
+          .attr("y1", yAnt1)
+          .attr("x2", xAnt2)
+          .attr("y2", yAnt2)
+          .attr("stroke", "#ff914d") // antiscion color
+          .attr("stroke-width", 1);
+
+        // 6) desenha o ícone do planeta
+        const iconAntSize = planet.type === "northNode" ? 16 : 13; // px
+        const iconAntSrc = `/planets/antiscion/${planet.type}${
+          planet.isRetrograde ? "-rx" : ""
+        }.png`;
+
+        baseGroup
+          .append("image")
+          .attr("href", iconAntSrc) // no D3 v6+ use 'href'
+          .attr("width", iconAntSize)
+          .attr("height", iconAntSize)
+          // centraliza o ícone em (xs, ys)
+          .attr("x", xAnts - iconAntSize / 2)
+          .attr("y", yAnts - iconAntSize / 2);
+      }
     });
-  }, [planets, housesData, rotation]);
+
+    if (showArabicParts && arabicParts !== undefined) {
+      arabicPartKeys.forEach((key) => {
+        const lot = arabicParts[key];
+        const baseSymbolOffset = 15;
+        const overlapGap = 12.5;
+
+        if (lot !== undefined && lot.planet) {
+          const overlappedArabicParts = getOverlappedArabicParts(lot)!;
+
+          let overlapIndex = 0;
+          overlappedArabicParts.forEach((overlap, index) => {
+            if (overlap.longitudeRaw === lot.longitudeRaw) {
+              overlapIndex = index;
+            }
+          });
+
+          // 1) ângulo zodiacal original (graus → rad)
+          const rawDeg = 180 - (lot.longitude % 360) - 90;
+          const rawRad = (rawDeg * Math.PI) / 180;
+
+          // 2) compensa a rotação do zodíaco (transforma em ângulo final)
+          const rotRad = (zodiacRotation * Math.PI) / 180;
+          const angleRad = rawRad - rotRad;
+
+          // 3) offsets de sobreposição
+          const idx = overlapIndex;
+          // console.log(`index of ${lot.name}: ${idx}`);
+
+          const symbolOffset = baseSymbolOffset + idx * overlapGap;
+          const rSymbol = radius - symbolOffset;
+          const rLineStart = radius - lineStartOffset;
+          const rLineEnd = radius;
+
+          // 4) cálculos das coordenadas FINAIS
+          const xs = rSymbol * Math.cos(angleRad);
+          const ys = rSymbol * Math.sin(angleRad);
+          const x1 = rLineStart * Math.cos(angleRad);
+          const y1 = rLineStart * Math.sin(angleRad);
+          const x2 = rLineEnd * Math.cos(angleRad);
+          const y2 = rLineEnd * Math.sin(angleRad);
+
+          // 5) desenha a linha
+          baseGroup
+            .append("line")
+            .attr("x1", x1)
+            .attr("y1", y1)
+            .attr("x2", x2)
+            .attr("y2", y2)
+            .attr("stroke", "#ff914d") // antiscion color
+            .attr("stroke", "black")
+            .attr("stroke-width", 1);
+
+          // 6) desenha o ícone do planeta
+          const iconSize = 13; // px
+          const iconSrc = `/planets/${key}.png`;
+
+          baseGroup
+            .append("image")
+            .attr("href", iconSrc) // no D3 v6+ use 'href'
+            .attr("width", iconSize)
+            .attr("height", iconSize)
+            // centraliza o ícone em (xs, ys)
+            .attr("x", xs - iconSize / 2)
+            .attr("y", ys - iconSize / 2);
+        }
+      });
+    }
+
+    if (showArabicPartsAntiscia && arabicParts !== undefined) {
+      arabicPartKeys.forEach((key) => {
+        const lot = arabicParts[key];
+        const baseSymbolOffset = 15;
+        const overlapGap = 12.5;
+
+        if (lot !== undefined && lot.planet) {
+          const overlappedArabicParts = getOverlappedArabicPartsAntiscion(lot)!;
+
+          let overlapIndex = 0;
+          overlappedArabicParts.forEach((overlap, index) => {
+            if (overlap.longitudeRaw === lot.longitudeRaw) {
+              overlapIndex = index;
+            }
+          });
+
+          // 1) ângulo zodiacal original (graus → rad)
+          const rawDeg = 180 - (lot.antiscion % 360) - 90;
+          const rawRad = (rawDeg * Math.PI) / 180;
+
+          // 2) compensa a rotação do zodíaco (transforma em ângulo final)
+          const rotRad = (zodiacRotation * Math.PI) / 180;
+          const angleRad = rawRad - rotRad;
+
+          // 3) offsets de sobreposição
+          const idx = overlapIndex;
+          // console.log(`index of ${lot.name}: ${idx}`);
+
+          const symbolOffset = baseSymbolOffset + idx * overlapGap;
+          const rSymbol = radius - symbolOffset;
+          const rLineStart = radius - lineStartOffset;
+          const rLineEnd = radius;
+
+          // 4) cálculos das coordenadas FINAIS
+          const xs = rSymbol * Math.cos(angleRad);
+          const ys = rSymbol * Math.sin(angleRad);
+          const x1 = rLineStart * Math.cos(angleRad);
+          const y1 = rLineStart * Math.sin(angleRad);
+          const x2 = rLineEnd * Math.cos(angleRad);
+          const y2 = rLineEnd * Math.sin(angleRad);
+
+          // 5) desenha a linha
+          baseGroup
+            .append("line")
+            .attr("x1", x1)
+            .attr("y1", y1)
+            .attr("x2", x2)
+            .attr("y2", y2)
+            .attr("stroke", "#ff914d") // antiscion color
+            .attr("stroke-width", 1);
+
+          // 6) desenha o ícone do planeta
+          const iconSize = 13; // px
+          const iconSrc = `/planets/antiscion/${key}.png`;
+
+          baseGroup
+            .append("image")
+            .attr("href", iconSrc) // no D3 v6+ use 'href'
+            .attr("width", iconSize)
+            .attr("height", iconSize)
+            // centraliza o ícone em (xs, ys)
+            .attr("x", xs - iconSize / 2)
+            .attr("y", ys - iconSize / 2);
+        }
+      });
+    }
+  }, [
+    planets,
+    housesData,
+    rotation,
+    showArabicParts,
+    showPlanetsAntiscia,
+    showArabicPartsAntiscia,
+  ]);
+
+  const toggleArabicParts = () => {
+    setShowArabicParts((prev) => !prev);
+  };
+
+  const toggleAntiscia = () => {
+    setShowPlanetsAntiscia((prev) => !prev);
+  };
+
+  const toggleArabicPartsAntiscia = () => {
+    setShowArabicPartsAntiscia((prev) => !prev);
+  };
 
   return (
     <div className="flex flex-col justify-center items-center mt-8">
@@ -453,7 +722,29 @@ const AstroChart: React.FC<Props> = ({ planets, housesData }) => {
         className="border-1 mb-8"
         onChange={(e) => setRotation(Number.parseFloat(e.target.value))}
       /> */}
-      <svg ref={ref}></svg>
+
+      <svg ref={ref} className="mb-10"></svg>
+
+      <div className="flex flex-col gap-2">
+        <button
+          className="bg-blue-600 p-3 text-white rounded hover:bg-blue-700"
+          onClick={toggleArabicParts}
+        >
+          Partes Árabes
+        </button>
+        <button
+          className="bg-blue-600 p-3 text-white rounded hover:bg-blue-700"
+          onClick={toggleAntiscia}
+        >
+          Antiscion Planetas
+        </button>
+        <button
+          className="bg-blue-600 p-3 text-white rounded hover:bg-blue-700"
+          onClick={toggleArabicPartsAntiscia}
+        >
+          Antiscion Partes Árabes
+        </button>
+      </div>
     </div>
   );
 };

@@ -5,6 +5,8 @@ import React, { createContext, useState, useContext, ReactNode } from "react";
 interface ArabicPartsContextType {
   arabicParts: ArabicParts | undefined;
   updateArabicParts: (arabicPartsData: ArabicParts) => void;
+  archArabicParts: ArabicParts | undefined;
+  updateArchArabicParts: (archArabicPartsData: ArabicParts) => void;
 }
 
 const ArabicPartsContext = createContext<ArabicPartsContextType | undefined>(
@@ -15,6 +17,7 @@ export const ArabicPartsContextProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [arabicParts, setArabicParts] = useState<ArabicParts>();
+  const [archArabicParts, setArchArabicParts] = useState<ArabicParts>();
 
   const updateArabicParts = (arabicPartsData: ArabicParts) => {
     setArabicParts((previous) => {
@@ -22,8 +25,21 @@ export const ArabicPartsContextProvider: React.FC<{ children: ReactNode }> = ({
     });
   };
 
+  const updateArchArabicParts = (archArabicPartsData: ArabicParts) => {
+    setArchArabicParts((previous) => {
+      return { ...previous, ...archArabicPartsData };
+    });
+  };
+
   return (
-    <ArabicPartsContext.Provider value={{ arabicParts, updateArabicParts }}>
+    <ArabicPartsContext.Provider
+      value={{
+        arabicParts,
+        updateArabicParts,
+        archArabicParts,
+        updateArchArabicParts,
+      }}
+    >
       {children}
     </ArabicPartsContext.Provider>
   );
