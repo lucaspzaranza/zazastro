@@ -40,6 +40,16 @@ export default function BirthChart() {
     longitude: -43.8647,
   };
 
+  const icoordinates: Coordinates = {
+    latitude: -6.4011,
+    longitude: -38.8622,
+  };
+
+  const barbacenaCoordinates: Coordinates = {
+    latitude: -21.2264,
+    longitude: -43.7742,
+  };
+
   // Meu
   const birthDate: BirthDate = {
     year: 1993,
@@ -56,6 +66,15 @@ export default function BirthChart() {
   //   day: 23,
   //   time: convertDegMinToDecimal(20, 19).toString(),
   //   coordinates: SPCoordinates,
+  // };
+
+  // Alana
+  // const birthDate: BirthDate = {
+  //   year: 1997,
+  //   month: 5,
+  //   day: 1,
+  //   time: convertDegMinToDecimal(13, 47).toString(),
+  //   coordinates: icoordinates,
   // };
 
   // Noivado
@@ -92,6 +111,15 @@ export default function BirthChart() {
   //   day: 2,
   //   time: convertDegMinToDecimal(5, 15).toString(),
   //   coordinates: MontesClarosCoordinates,
+  // };
+
+  // Lay Curcio
+  // const birthDate: BirthDate = {
+  //   year: 1995,
+  //   month: 5,
+  //   day: 11,
+  //   time: convertDegMinToDecimal(8, 45).toString(),
+  //   coordinates: barbacenaCoordinates,
   // };
 
   const getBirthChart = async () => {
@@ -132,10 +160,10 @@ export default function BirthChart() {
 
     const targetDate: BirthDate = {
       ...birthDate,
-      day: 1,
-      month: 11,
+      day: 25,
+      month: 7,
       // time: birthDate.time,
-      year: returnType === "solar" ? 2024 : 2025,
+      year: returnType === "solar" ? 2025 : 2026,
     };
 
     // Jana

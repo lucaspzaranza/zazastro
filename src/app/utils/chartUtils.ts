@@ -5,6 +5,21 @@ import {
   planetTypes,
 } from "@/interfaces/BirthChartInterfaces";
 
+export const allSigns = [
+  "Áries ♈︎",
+  "Touro ♉︎",
+  "Gêmeos ♊︎",
+  "Câncer ♋︎",
+  "Leão ♌︎",
+  "Virgem ♍︎",
+  "Libra ♎︎",
+  "Escorpião ♏︎",
+  "Sagitário ♐︎",
+  "Capricórnio ♑︎",
+  "Aquário ♒︎",
+  "Peixes ♓︎",
+];
+
 export function getSign(longitude: number, getGlyphOnly = false): string {
   const signs = [
     `${!getGlyphOnly ? "Áries " : ""}♈︎`,

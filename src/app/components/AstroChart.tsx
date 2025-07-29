@@ -494,7 +494,7 @@ const AstroChart: React.FC<Props> = ({ planets, housesData, arabicParts }) => {
         .attr("stroke-width", 1);
 
       // 6) desenha o ícone do planeta
-      const iconSize = planet.type === "northNode" ? 16 : 13; // px
+      const iconSize = 13; // px
       const iconSrc = `/planets/${planet.type}${
         planet.isRetrograde ? "-rx" : ""
       }.png`;
