@@ -8,9 +8,10 @@ import { useArabicParts } from "@/contexts/ArabicPartsContext";
 
 export default function BirthArch() {
   const [input, setInput] = useState(0);
-  const { returnChart } = useBirthChart();
-  const { archArabicParts } = useArabicParts();
+  const { birthChart, returnChart } = useBirthChart();
+  const { arabicParts, archArabicParts } = useArabicParts();
   const [isSolarReturn, setIsSolarReturn] = useState(true);
+  const [combineWithBirthChart, setCombineWithBirthChart] = useState(false);
   const [targetDate, setTargetDate] = useState<BirthDate>({
     day: 0,
     month: 0,
@@ -37,6 +38,10 @@ export default function BirthArch() {
     }
   }
 
+  const toggleShowCombinedchart = () => {
+    setCombineWithBirthChart((prev) => !prev);
+  };
+
   useEffect(() => {
     setIsSolarReturn(returnChart?.returnType === "solar");
     if (returnChart?.targetDate) {
@@ -58,29 +63,31 @@ export default function BirthArch() {
               returnChart.targetDate?.year
             }`}
       </h1>
-      {/* <h2>Arco Natal</h2>
-      <input
-        className="outline-1"
-        placeholder="Ex: 120.50"
-        type="number"
-        name="birthArch"
-        value={input}
-        onChange={handleChange}
-        min={0}
-        max={359.59}
-      />
-      <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-        Calcular
-      </button> */}
 
       {returnChart && (
-        <div className="text-left">
+        <div className="w-full text-left flex flex-col">
           <ChartDate chartType="return" />
-          <AstroChart
-            planets={returnChart.planets}
-            housesData={returnChart.housesData}
-            arabicParts={archArabicParts}
-          />
+
+          {!combineWithBirthChart && (
+            <AstroChart
+              planets={returnChart.planets}
+              housesData={returnChart.housesData}
+              arabicParts={archArabicParts}
+              combineWithBirthChart={toggleShowCombinedchart}
+            />
+          )}
+
+          {combineWithBirthChart && birthChart && (
+            <AstroChart
+              planets={birthChart.planets}
+              housesData={birthChart.housesData}
+              arabicParts={arabicParts}
+              outerPlanets={returnChart.planets}
+              outerHouses={returnChart.housesData}
+              outerArabicParts={archArabicParts}
+              combineWithBirthChart={toggleShowCombinedchart}
+            />
+          )}
 
           <div className="flex flex-row justify-between mt-8">
             <div>

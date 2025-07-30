@@ -153,18 +153,18 @@ export default function BirthChart() {
 
   const getPlanetReturn = async (returnType: ReturnChartType) => {
     // Meu
-    // const targetDate: BirthDate = {
-    //   ...birthDate,
-    //   year: returnType === "solar" ? 2022 : 2022,
-    // };
-
     const targetDate: BirthDate = {
       ...birthDate,
-      day: 25,
-      month: 7,
-      // time: birthDate.time,
-      year: returnType === "solar" ? 2025 : 2026,
+      year: returnType === "solar" ? 2024 : 2022,
     };
+
+    // const targetDate: BirthDate = {
+    //   ...birthDate,
+    //   day: 25,
+    //   month: 7,
+    //   // time: birthDate.time,
+    //   year: returnType === "solar" ? 2024 : 2026,
+    // };
 
     // Jana
     // const targetDate: BirthDate = {
