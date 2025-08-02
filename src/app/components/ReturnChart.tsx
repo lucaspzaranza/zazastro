@@ -5,9 +5,12 @@ import { ChartDate } from "./ChartDate";
 import AstroChart from "./AstroChart";
 import BirthArchArabicParts from "./BirthArchArabicParts";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
+import LunarDerivedChart from "./LunarDerivedChart";
 
 export default function BirthArch() {
   const [input, setInput] = useState(0);
+  const [day, setDay] = useState(0);
+  const [month, setMonth] = useState(0);
   const { birthChart, returnChart } = useBirthChart();
   const { arabicParts, archArabicParts } = useArabicParts();
   const [isSolarReturn, setIsSolarReturn] = useState(true);
@@ -120,7 +123,14 @@ export default function BirthArch() {
             </div>
           </div>
 
-          <BirthArchArabicParts />
+          <BirthArchArabicParts useCustomASCControls />
+
+          {isSolarReturn && birthChart && returnChart && (
+            <LunarDerivedChart
+              birthChart={birthChart}
+              solarReturnChart={returnChart}
+            />
+          )}
         </div>
       )}
     </div>

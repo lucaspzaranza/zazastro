@@ -20,6 +20,21 @@ export const allSigns = [
   "Peixes ♓︎",
 ];
 
+export const monthsName = [
+  "Janeiro",
+  "Fevereiro",
+  "Março",
+  "Abril",
+  "Maio",
+  "Junho",
+  "Julho",
+  "Agosto",
+  "Setembro",
+  "Outubro",
+  "Novembro",
+  "Dezembro",
+];
+
 export function getSign(longitude: number, getGlyphOnly = false): string {
   const signs = [
     `${!getGlyphOnly ? "Áries " : ""}♈︎`,

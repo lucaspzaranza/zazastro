@@ -24,6 +24,7 @@ interface Props {
   outerHouses?: HousesData;
   outerArabicParts?: ArabicParts;
   combineWithBirthChart?: () => void;
+  combineWithReturnChart?: () => void;
 }
 
 interface PartsAndPlanets {
@@ -39,6 +40,7 @@ const AstroChart: React.FC<Props> = ({
   outerHouses,
   outerArabicParts,
   combineWithBirthChart,
+  combineWithReturnChart,
 }) => {
   const ref = useRef<SVGSVGElement>(null);
   const [rotation, setRotation] = useState(0);
@@ -48,6 +50,8 @@ const AstroChart: React.FC<Props> = ({
   const [showOuterchart, setShowOuterChart] = useState(
     outerPlanets !== undefined && outerHouses !== undefined
   );
+
+  const chartElementsLongitude: number[] = [];
 
   const zodiacRotation = 270 - housesData.ascendant;
 
@@ -61,6 +65,8 @@ const AstroChart: React.FC<Props> = ({
 
   const getOverlappedPlanets = (planet: Planet) => {
     const planetOverlap = planetOverlapData[planet.type];
+    // console.log(planet.type);
+    // console.log(planetOverlap);
 
     const overlappedPlanets: Planet[] = planets.filter((p) => {
       const dist = p.longitudeRaw - planet.longitudeRaw;
@@ -146,6 +152,10 @@ const AstroChart: React.FC<Props> = ({
   };
 
   useEffect(() => {
+    // console.log("planets: ", planets);
+    // console.log("housesData: ", housesData);
+    // console.log("arabicParts at AstroChart.tsx: ", arabicParts);
+
     if (!ref.current) return;
     const svg = d3.select(ref.current);
     svg.selectAll("*").remove();
@@ -479,6 +489,8 @@ const AstroChart: React.FC<Props> = ({
     }
 
     const lineStartOffset = 6; // quão “para dentro” a linha começa
+
+    // console.log("planets: ", planets);
 
     // Desenha os planetas
     planets.forEach((planet) => {
@@ -1083,6 +1095,17 @@ const AstroChart: React.FC<Props> = ({
             }}
           >
             Combinar com Mapa Natal
+          </button>
+        )}
+
+        {combineWithReturnChart !== undefined && (
+          <button
+            className="bg-blue-600 h-8 px-3 text-white rounded hover:bg-blue-700"
+            onClick={() => {
+              combineWithReturnChart();
+            }}
+          >
+            Combinar com Mapa Do Retorno Solar
           </button>
         )}
 

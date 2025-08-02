@@ -7,6 +7,7 @@ import { getHourAndMinute } from "../utils/chartUtils";
 export const ChartDate = (
   props: Readonly<{
     chartType: ChartType;
+    customReturnTime?: string;
   }>
 ) => {
   const { chartType } = props;
@@ -28,7 +29,8 @@ export const ChartDate = (
 
       setDate(transformedDate);
     } else if (birthChart.timezone) {
-      const returnDate = moment.tz(birthChart.returnTime, birthChart.timezone);
+      const returnTime = props.customReturnTime ?? birthChart.returnTime;
+      const returnDate = moment.tz(returnTime, birthChart.timezone);
       setDate({
         day: returnDate.date(),
         month: returnDate.month() + 1,
