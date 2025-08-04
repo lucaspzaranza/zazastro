@@ -62,7 +62,7 @@ export function useArabicPartCalculations() {
     );
 
     return {
-      name: "Parte da Fortuna",
+      name: "Fortuna",
       planet: "moon",
       formulaDescription: "ASC + Lua - Sol",
       longitudeRaw,
@@ -80,7 +80,7 @@ export function useArabicPartCalculations() {
     );
 
     return {
-      name: "Parte do Espírito",
+      name: "Espírito",
       planet: "sun",
       formulaDescription: "ASC + Sol - Lua",
       longitudeRaw,
@@ -98,7 +98,7 @@ export function useArabicPartCalculations() {
     );
 
     return {
-      name: "Parte da Necessidade",
+      name: "Necessidade",
       planet: "mercury",
       formulaDescription: "ASC + Parte da Fortuna - Parte do Espírito",
       longitudeRaw,
@@ -116,7 +116,7 @@ export function useArabicPartCalculations() {
     );
 
     return {
-      name: "Parte do Amor",
+      name: "Amor",
       planet: "venus",
       formulaDescription: "ASC + Parte do Espírito - Parte da Fortuna",
       longitudeRaw,
@@ -134,7 +134,7 @@ export function useArabicPartCalculations() {
     );
 
     return {
-      name: "Parte do Valor",
+      name: "Valor",
       planet: "mars",
       formulaDescription: "ASC + Parte da Fortuna - Marte",
       longitudeRaw,
@@ -152,7 +152,7 @@ export function useArabicPartCalculations() {
     );
 
     return {
-      name: "Parte da Vitória",
+      name: "Vitória",
       planet: "jupiter",
       formulaDescription: "ASC + Júpiter - Parte do Espírito",
       longitudeRaw,
@@ -170,7 +170,7 @@ export function useArabicPartCalculations() {
     );
 
     return {
-      name: "Parte do Cativeiro",
+      name: "Cativeiro",
       planet: "saturn",
       formulaDescription: "ASC + Parte da Fortuna - Saturno",
       longitudeRaw,
@@ -188,7 +188,7 @@ export function useArabicPartCalculations() {
     const zodiacRuler = getZodiacRuler(longitude);
 
     return {
-      name: "Parte do Casamento",
+      name: "Casamento",
       formulaDescription: "ASC + DSC - Vênus",
       longitudeRaw,
       zodiacRuler,
@@ -209,7 +209,7 @@ export function useArabicPartCalculations() {
     const zodiacRuler = getZodiacRuler(longitude);
 
     return {
-      name: "Parte da Renúncia",
+      name: "Renúncia",
       formulaDescription: "Saturno + Júpiter - Sol",
       longitudeRaw,
       zodiacRuler,
@@ -230,7 +230,7 @@ export function useArabicPartCalculations() {
     const zodiacRuler = getZodiacRuler(longitude);
 
     return {
-      name: "Parte dos Filhos",
+      name: "Filhos",
       formulaDescription: "AC + Saturno - Júpiter",
       longitudeRaw,
       zodiacRuler,

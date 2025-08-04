@@ -2,18 +2,8 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
-import {
-  arabicPartKeys,
-  getPlanetSymbol,
-  planetOverlapData,
-} from "../utils/chartUtils";
-import {
-  HousesData,
-  Planet,
-  PlanetOverlap,
-  PlanetType,
-} from "@/interfaces/BirthChartInterfaces";
-import { useArabicParts } from "@/contexts/ArabicPartsContext";
+import { arabicPartKeys } from "../utils/chartUtils";
+import { HousesData, Planet } from "@/interfaces/BirthChartInterfaces";
 import { ArabicPart, ArabicParts } from "@/interfaces/ArabicPartInterfaces";
 
 interface Props {
@@ -27,9 +17,12 @@ interface Props {
   combineWithReturnChart?: () => void;
 }
 
-interface PartsAndPlanets {
+interface ChartElement {
   longitudeRaw: number;
   name: string;
+  offset: number;
+  id: number;
+  isAntiscion: boolean;
 }
 
 const AstroChart: React.FC<Props> = ({
@@ -51,7 +44,7 @@ const AstroChart: React.FC<Props> = ({
     outerPlanets !== undefined && outerHouses !== undefined
   );
 
-  const chartElementsLongitude: number[] = [];
+  let chartElements: ChartElement[] = [];
 
   const zodiacRotation = 270 - housesData.ascendant;
 
@@ -63,44 +56,18 @@ const AstroChart: React.FC<Props> = ({
     9: "MC", // Casa 10 – Meio do Céu
   };
 
-  const getOverlappedPlanets = (planet: Planet) => {
-    const planetOverlap = planetOverlapData[planet.type];
-    // console.log(planet.type);
-    // console.log(planetOverlap);
+  const getElementOffset = (
+    element: Planet | ArabicPart,
+    useAntiscion: boolean = false
+  ): number => {
+    const thresholdDeg = 4;
+    let offset = 16;
 
-    const overlappedPlanets: Planet[] = planets.filter((p) => {
-      const dist = p.longitudeRaw - planet.longitudeRaw;
-      const wrappedDist = // Segundo condicional caso a distância dê um valor perto de 360
-        dist < 0 || dist > 360 - planetOverlap.thresholdDeg ? dist - 360 : dist;
-      const mod = Math.abs(wrappedDist % 360);
-      const distance = mod;
-      return distance < planetOverlap.thresholdDeg;
-    });
-
-    const sorted = overlappedPlanets.sort((a, b) =>
-      Math.abs((a.longitudeRaw - b.longitudeRaw - 360) % 360)
-    );
-
-    return sorted;
-  };
-
-  const getOverlappedArabicParts = (arabicPart: ArabicPart) => {
-    if (arabicParts === undefined) return;
-
-    const thresholdDeg = 3.5;
-    let partsAndPlanets: PartsAndPlanets[] = [];
-
-    planets.forEach((p) => {
-      partsAndPlanets.push({ longitudeRaw: p.longitudeRaw, name: p.type });
-    });
-
-    arabicPartKeys.forEach((key) => {
-      const part = arabicParts[key]!;
-      partsAndPlanets.push({ longitudeRaw: part.longitudeRaw, name: key });
-    });
-
-    const overlappedArabicParts = partsAndPlanets.filter((p) => {
-      const dist = p.longitudeRaw - arabicPart.longitudeRaw;
+    let nearElements = chartElements.filter((elementToCheck) => {
+      // const dist = elementToCheck.longitudeRaw - element.longitudeRaw;
+      const dist =
+        elementToCheck.longitudeRaw -
+        element[useAntiscion ? "antiscionRaw" : "longitudeRaw"];
       const wrappedDist = // Segundo condicional caso a distância dê um valor perto de 360
         dist < 0 || dist > 360 - thresholdDeg ? dist - 360 : dist;
       const mod = Math.abs(wrappedDist % 360);
@@ -108,54 +75,59 @@ const AstroChart: React.FC<Props> = ({
       return distance < thresholdDeg;
     });
 
-    const sorted = overlappedArabicParts.sort((a, b) =>
-      Math.abs((a.longitudeRaw - b.longitudeRaw - 360) % 360)
-    );
+    if (nearElements.length > 0) {
+      // console.log("nearElements from " + element.name + ":", nearElements);
+      const currentElement: ChartElement = {
+        id: chartElements.length,
+        offset: 0,
+        name: element.name,
+        longitudeRaw: element.longitudeRaw,
+        isAntiscion: useAntiscion,
+      };
 
-    return sorted;
+      nearElements.push(currentElement);
+
+      nearElements = nearElements.sort((a, b) =>
+        Math.abs((a.longitudeRaw - b.longitudeRaw - 360) % 360)
+      );
+
+      const index = nearElements.indexOf(currentElement) + 1;
+      offset = index * offset;
+
+      // if (useAntiscion && element.name === "Mercúrio") {
+      //   console.log(
+      //     "sorted nearElements with " + element.name + ":",
+      //     nearElements
+      //   );
+      //   console.log(`index of ${element.name}: ${index}, offset: ${offset}`);
+      // }
+    } else {
+      // console.log(
+      //   `Element ${element.name} has no near elements and his offset will be: ${offset}`
+      // );
+    }
+
+    return offset;
   };
 
-  const getOverlappedArabicPartsAntiscion = (arabicPart: ArabicPart) => {
-    if (arabicParts === undefined) return;
+  const addChartElementAndReturnOffset = (
+    element: Planet | ArabicPart,
+    useAntiscion: boolean = false
+  ): number => {
+    const chartElement: ChartElement = {
+      longitudeRaw: useAntiscion ? element.antiscionRaw : element.longitudeRaw,
+      name: element.name,
+      id: chartElements.length,
+      offset: getElementOffset(element, useAntiscion),
+      isAntiscion: useAntiscion,
+    };
 
-    const thresholdDeg = 3.5;
-    let partsAndPlanets: PartsAndPlanets[] = [];
+    chartElements.push(chartElement);
 
-    planets.forEach((p) => {
-      partsAndPlanets.push({ longitudeRaw: p.longitudeRaw, name: p.type });
-    });
-
-    arabicPartKeys.forEach((key) => {
-      const part = arabicParts[key]!;
-      partsAndPlanets.push({
-        longitudeRaw: showPlanetsAntiscia
-          ? part.longitudeRaw
-          : part.antiscionRaw,
-        name: key,
-      });
-    });
-
-    const overlappedArabicParts = partsAndPlanets.filter((p) => {
-      const dist = p.longitudeRaw - arabicPart.longitudeRaw;
-      const wrappedDist = // Segundo condicional caso a distância dê um valor perto de 360
-        dist < 0 || dist > 360 - thresholdDeg ? dist - 360 : dist;
-      const mod = Math.abs(wrappedDist % 360);
-      const distance = mod;
-      return distance < thresholdDeg;
-    });
-
-    const sorted = overlappedArabicParts.sort((a, b) =>
-      Math.abs((a.longitudeRaw - b.longitudeRaw - 360) % 360)
-    );
-
-    return sorted;
+    return chartElement.offset;
   };
 
   useEffect(() => {
-    // console.log("planets: ", planets);
-    // console.log("housesData: ", housesData);
-    // console.log("arabicParts at AstroChart.tsx: ", arabicParts);
-
     if (!ref.current) return;
     const svg = d3.select(ref.current);
     svg.selectAll("*").remove();
@@ -167,7 +139,7 @@ const AstroChart: React.FC<Props> = ({
     const radius = size / 2 - 40;
     const zodiacRadius = radius + 20;
     const outerZodiacRadius = zodiacRadius + 10;
-    const outerChartBorderRadius = outerZodiacRadius + 50;
+    const outerChartBorderRadius = outerZodiacRadius + 60;
 
     const zodiacSigns = [
       { glyph: "♈︎", radius: radius + 15 },
@@ -383,7 +355,7 @@ const AstroChart: React.FC<Props> = ({
     const continuationLength = 25; // comprimento do traço de continuidade
     const labelOffset = 25; // distância extra para posicionar o texto
 
-    // desenha cada cúspide das casas
+    // Desenha cada cúspide das casas
     for (let i = 0; i < 12; i++) {
       const start = cusps[i];
       const angleRad = ((-start - 90) * Math.PI) / 180;
@@ -490,19 +462,9 @@ const AstroChart: React.FC<Props> = ({
 
     const lineStartOffset = 6; // quão “para dentro” a linha começa
 
-    // console.log("planets: ", planets);
-
     // Desenha os planetas
+    chartElements = [];
     planets.forEach((planet) => {
-      const overlappedPlanets = getOverlappedPlanets(planet);
-      const overlapIndex =
-        overlappedPlanets.length > 0 ? overlappedPlanets.indexOf(planet) : 0;
-      const prevPlanet = overlappedPlanets[overlapIndex - 1]; // previous planet edge overlap data
-      const planetOverlap =
-        prevPlanet !== undefined
-          ? planetOverlapData[prevPlanet.type]
-          : planetOverlapData[planet.type];
-
       // 1) ângulo zodiacal original (graus → rad)
       const rawDeg = 180 - (planet.longitude % 360) - 90;
       const rawRad = (rawDeg * Math.PI) / 180;
@@ -512,9 +474,7 @@ const AstroChart: React.FC<Props> = ({
       const angleRad = rawRad - rotRad;
 
       // 3) offsets de sobreposição
-      const idx = overlapIndex;
-      const symbolOffset =
-        planetOverlap.baseSymbolOffset + idx * planetOverlap.overlapGap;
+      const symbolOffset = addChartElementAndReturnOffset(planet);
       const rSymbol = radius - symbolOffset;
       const rLineStart = radius - lineStartOffset;
       const rLineEnd = radius;
@@ -534,7 +494,6 @@ const AstroChart: React.FC<Props> = ({
         .attr("y1", y1)
         .attr("x2", x2)
         .attr("y2", y2)
-        .attr("stroke", "#ff914d") // antiscion color
         .attr("stroke", "black")
         .attr("stroke-width", 1);
 
@@ -549,7 +508,6 @@ const AstroChart: React.FC<Props> = ({
         .attr("href", iconSrc) // no D3 v6+ use 'href'
         .attr("width", iconSize)
         .attr("height", iconSize)
-        // centraliza o ícone em (xs, ys)
         .attr("x", xs - iconSize / 2)
         .attr("y", ys - iconSize / 2);
 
@@ -563,9 +521,7 @@ const AstroChart: React.FC<Props> = ({
         const angleAntRad = rawAntRad - rotAntRad;
 
         // 3) offsets de sobreposição
-        const antIdx = overlapIndex;
-        const symbolAntOffset =
-          planetOverlap.baseSymbolOffset + antIdx * planetOverlap.overlapGap;
+        const symbolAntOffset = addChartElementAndReturnOffset(planet, true);
         const rAntSymbol = radius - symbolAntOffset;
         const rAntLineStart = radius - lineStartOffset;
         const AntLineEnd = radius;
@@ -608,19 +564,8 @@ const AstroChart: React.FC<Props> = ({
     if (showArabicParts && arabicParts !== undefined) {
       arabicPartKeys.forEach((key) => {
         const lot = arabicParts[key];
-        const baseSymbolOffset = 15;
-        const overlapGap = 12.5;
 
         if (lot !== undefined && lot.planet) {
-          const overlappedArabicParts = getOverlappedArabicParts(lot)!;
-
-          let overlapIndex = 0;
-          overlappedArabicParts.forEach((overlap, index) => {
-            if (overlap.longitudeRaw === lot.longitudeRaw) {
-              overlapIndex = index;
-            }
-          });
-
           // 1) ângulo zodiacal original (graus → rad)
           const rawDeg = 180 - (lot.longitude % 360) - 90;
           const rawRad = (rawDeg * Math.PI) / 180;
@@ -630,10 +575,7 @@ const AstroChart: React.FC<Props> = ({
           const angleRad = rawRad - rotRad;
 
           // 3) offsets de sobreposição
-          const idx = overlapIndex;
-          // console.log(`index of ${lot.name}: ${idx}`);
-
-          const symbolOffset = baseSymbolOffset + idx * overlapGap;
+          const symbolOffset = addChartElementAndReturnOffset(lot);
           const rSymbol = radius - symbolOffset;
           const rLineStart = radius - lineStartOffset;
           const rLineEnd = radius;
@@ -653,7 +595,6 @@ const AstroChart: React.FC<Props> = ({
             .attr("y1", y1)
             .attr("x2", x2)
             .attr("y2", y2)
-            .attr("stroke", "#ff914d") // antiscion color
             .attr("stroke", "black")
             .attr("stroke-width", 1);
 
@@ -676,19 +617,8 @@ const AstroChart: React.FC<Props> = ({
     if (showArabicPartsAntiscia && arabicParts !== undefined) {
       arabicPartKeys.forEach((key) => {
         const lot = arabicParts[key];
-        const baseSymbolOffset = 15;
-        const overlapGap = 12.5;
 
         if (lot !== undefined && lot.planet) {
-          const overlappedArabicParts = getOverlappedArabicPartsAntiscion(lot)!;
-
-          let overlapIndex = 0;
-          overlappedArabicParts.forEach((overlap, index) => {
-            if (overlap.longitudeRaw === lot.longitudeRaw) {
-              overlapIndex = index;
-            }
-          });
-
           // 1) ângulo zodiacal original (graus → rad)
           const rawDeg = 180 - (lot.antiscion % 360) - 90;
           const rawRad = (rawDeg * Math.PI) / 180;
@@ -698,10 +628,7 @@ const AstroChart: React.FC<Props> = ({
           const angleRad = rawRad - rotRad;
 
           // 3) offsets de sobreposição
-          const idx = overlapIndex;
-          // console.log(`index of ${lot.name}: ${idx}`);
-
-          const symbolOffset = baseSymbolOffset + idx * overlapGap;
+          const symbolOffset = addChartElementAndReturnOffset(lot, true);
           const rSymbol = radius - symbolOffset;
           const rLineStart = radius - lineStartOffset;
           const rLineEnd = radius;
@@ -741,7 +668,6 @@ const AstroChart: React.FC<Props> = ({
     }
 
     if (showOuterchart && outerHouses) {
-      // const ascOuter = ((outerHouses.ascendant % 360) + 360) % 360;
       const cuspsOuter = outerHouses.house.map((a) => ((a % 360) + 360) % 360);
 
       // desenha cada cúspide das casas
@@ -775,7 +701,6 @@ const AstroChart: React.FC<Props> = ({
 
         let span = (endDeg - startDeg + 360) % 360;
         if (span === 0) span = 360;
-        // const midDeg = startDeg + span / 2;
         const degOffset = 2;
         const midDeg = startDeg + degOffset;
 
@@ -805,20 +730,9 @@ const AstroChart: React.FC<Props> = ({
       }
     }
 
-    // Offset pros planetas e partes árabes
-    const symbolOffset = 16;
-
     if (showOuterchart && outerPlanets) {
+      chartElements = [];
       outerPlanets.forEach((planet) => {
-        const overlappedPlanets = getOverlappedPlanets(planet);
-        const overlapIndex =
-          overlappedPlanets.length > 0 ? overlappedPlanets.indexOf(planet) : 0;
-        const prevPlanet = overlappedPlanets[overlapIndex - 1]; // previous planet edge overlap data
-        const planetOverlap =
-          prevPlanet !== undefined
-            ? planetOverlapData[prevPlanet.type]
-            : planetOverlapData[planet.type];
-
         // 1) ângulo zodiacal original (graus → rad)
         const rawDeg = 180 - (planet.longitude % 360) - 90;
         const rawRad = (rawDeg * Math.PI) / 180;
@@ -828,11 +742,8 @@ const AstroChart: React.FC<Props> = ({
         const angleRad = rawRad - rotRad;
 
         // 3) offsets de sobreposição
-        const idx = overlapIndex;
-        // const symbolOffset =
-        //   planetOverlap.baseSymbolOffset + idx * planetOverlap.overlapGap;
-
-        const rSymbol = outerZodiacRadius + symbolOffset;
+        const outerPlanetSymbolOffset = addChartElementAndReturnOffset(planet);
+        const rSymbol = outerZodiacRadius + outerPlanetSymbolOffset;
         const rLineStart = outerZodiacRadius + lineStartOffset;
         const rLineEnd = outerZodiacRadius;
 
@@ -865,7 +776,6 @@ const AstroChart: React.FC<Props> = ({
           .attr("href", iconSrc) // no D3 v6+ use 'href'
           .attr("width", iconSize)
           .attr("height", iconSize)
-          // centraliza o ícone em (xs, ys)
           .attr("x", xs - iconSize / 2)
           .attr("y", ys - iconSize / 2);
 
@@ -879,10 +789,8 @@ const AstroChart: React.FC<Props> = ({
           const angleAntRad = rawAntRad - rotAntRad;
 
           // 3) offsets de sobreposição
-          const antIdx = overlapIndex;
-          // const symbolAntOffset =
-          //   planetOverlap.baseSymbolOffset + antIdx * planetOverlap.overlapGap;
-          const rAntSymbol = outerZodiacRadius + symbolOffset;
+          const symbolAntOffset = addChartElementAndReturnOffset(planet, true);
+          const rAntSymbol = outerZodiacRadius + symbolAntOffset;
           const rAntLineStart = outerZodiacRadius + lineStartOffset;
           const AntLineEnd = outerZodiacRadius;
 
@@ -915,7 +823,6 @@ const AstroChart: React.FC<Props> = ({
             .attr("href", iconAntSrc) // no D3 v6+ use 'href'
             .attr("width", iconAntSize)
             .attr("height", iconAntSize)
-            // centraliza o ícone em (xs, ys)
             .attr("x", xAnts - iconAntSize / 2)
             .attr("y", yAnts - iconAntSize / 2);
         }
@@ -927,15 +834,6 @@ const AstroChart: React.FC<Props> = ({
         const lot = outerArabicParts[key];
 
         if (lot !== undefined && lot.planet) {
-          const overlappedArabicParts = getOverlappedArabicParts(lot)!;
-
-          let overlapIndex = 0;
-          overlappedArabicParts.forEach((overlap, index) => {
-            if (overlap.longitudeRaw === lot.longitudeRaw) {
-              overlapIndex = index;
-            }
-          });
-
           // 1) ângulo zodiacal original (graus → rad)
           const rawDeg = 180 - (lot.longitude % 360) - 90;
           const rawRad = (rawDeg * Math.PI) / 180;
@@ -945,11 +843,8 @@ const AstroChart: React.FC<Props> = ({
           const angleRad = rawRad - rotRad;
 
           // 3) offsets de sobreposição
-          const idx = overlapIndex;
-          // console.log(`index of ${lot.name}: ${idx}`);
-
-          // const symbolOffset = baseSymbolOffset + idx * overlapGap;
-          const rSymbol = outerZodiacRadius + symbolOffset;
+          const outerLotSymbolOffset = addChartElementAndReturnOffset(lot);
+          const rSymbol = outerZodiacRadius + outerLotSymbolOffset;
           const rLineStart = outerZodiacRadius + lineStartOffset;
           const rLineEnd = outerZodiacRadius;
 
@@ -968,7 +863,6 @@ const AstroChart: React.FC<Props> = ({
             .attr("y1", y1)
             .attr("x2", x2)
             .attr("y2", y2)
-            .attr("stroke", "#ff914d") // antiscion color
             .attr("stroke", "black")
             .attr("stroke-width", 1);
 
@@ -991,19 +885,7 @@ const AstroChart: React.FC<Props> = ({
     if (showOuterchart && showArabicPartsAntiscia && outerArabicParts) {
       arabicPartKeys.forEach((key) => {
         const lot = outerArabicParts[key];
-        const baseSymbolOffset = 15;
-        const overlapGap = 12.5;
-
         if (lot !== undefined && lot.planet) {
-          const overlappedArabicParts = getOverlappedArabicPartsAntiscion(lot)!;
-
-          let overlapIndex = 0;
-          overlappedArabicParts.forEach((overlap, index) => {
-            if (overlap.longitudeRaw === lot.longitudeRaw) {
-              overlapIndex = index;
-            }
-          });
-
           // 1) ângulo zodiacal original (graus → rad)
           const rawDeg = 180 - (lot.antiscion % 360) - 90;
           const rawRad = (rawDeg * Math.PI) / 180;
@@ -1013,11 +895,11 @@ const AstroChart: React.FC<Props> = ({
           const angleRad = rawRad - rotRad;
 
           // 3) offsets de sobreposição
-          const idx = overlapIndex;
-          // console.log(`index of ${lot.name}: ${idx}`);
-
-          const symbolOffset = baseSymbolOffset + idx * overlapGap;
-          const rSymbol = outerZodiacRadius + symbolOffset;
+          const lotAntiscionSymbolOffset = addChartElementAndReturnOffset(
+            lot,
+            true
+          );
+          const rSymbol = outerZodiacRadius + lotAntiscionSymbolOffset;
           const rLineStart = outerZodiacRadius + lineStartOffset;
           const rLineEnd = outerZodiacRadius;
 
@@ -1078,7 +960,7 @@ const AstroChart: React.FC<Props> = ({
   const containerClasses = showOuterchart ? "mb-20 mt-8" : "mb-10";
 
   return (
-    <div className="w-[38vw] flex flex-col justify-center items-center mt-8">
+    <div className="w-[38vw] flex flex-col justify-center items-center mt-8 mx-16">
       {/* <input
         type="number"
         className="border-1 mb-8"

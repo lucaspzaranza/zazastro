@@ -1,5 +1,8 @@
 import { ArabicParts } from "@/interfaces/ArabicPartInterfaces";
 import {
+  BirthChartProfile,
+  BirthDate,
+  Coordinates,
   PlanetOverlap,
   PlanetType,
   planetTypes,
@@ -53,24 +56,53 @@ export function getSign(longitude: number, getGlyphOnly = false): string {
   return signs[Math.floor(longitude / 30) % 12];
 }
 
-export function getPlanetSymbol(planet: PlanetType): string {
-  const planetsSymbols: Record<PlanetType, string> = {
-    sun: "☉",
-    moon: "☾",
-    mercury: "☿",
-    venus: "♀",
-    mars: "♂",
-    jupiter: "♃",
-    saturn: "♄",
-    uranus: "♅",
-    neptune: "♆",
-    pluto: "♇",
-    northNode: "Ω",
-    southNode: "ω",
-  };
+export const getSignGlyphUnicode = (signEmoji: string): string => {
+  if (signEmoji === "♈") return "\u2648\uFE0E";
+  else if (signEmoji === "♉") return "\u2649\uFE0E";
+  else if (signEmoji === "♊") return "\u264A\uFE0E";
+  else if (signEmoji === "♋") return "\u264B\uFE0E";
+  else if (signEmoji === "♌") return "\u264C\uFE0E";
+  else if (signEmoji === "♍") return "\u264D\uFE0E";
+  else if (signEmoji === "♎") return "\u264E\uFE0E";
+  else if (signEmoji === "♏") return "\u264F\uFE0E";
+  else if (signEmoji === "♐") return "\u2650\uFE0E";
+  else if (signEmoji === "♑") return "\u2651\uFE0E";
+  else if (signEmoji === "♒") return "\u2652\uFE0E";
+  else if (signEmoji === "♓") return "\u2653\uFE0E";
 
-  return planetsSymbols[planet];
+  return "\u2648\uFE0E"; // ♈︎
+};
+
+export const getSignColor = (signGlyph: string): string => {
+  if (signGlyph === "♈︎" || signGlyph === "♌︎" || signGlyph === "♐︎")
+    return "red";
+  else if (signGlyph === "♉︎" || signGlyph === "♍︎" || signGlyph === "♑︎")
+    return "green";
+  else if (signGlyph === "♊︎" || signGlyph === "♎︎" || signGlyph === "♒︎")
+    return "orange";
+  else if (signGlyph === "♋︎" || signGlyph === "♏︎" || signGlyph === "♓︎")
+    return "blue";
+
+  return "black";
+};
+
+export function getPlanetImage(planet: PlanetType): React.ReactNode {
+  const folder = "planets";
+  const path = `${folder}/${planet}.png`;
+  return <img src={path} width={15} />;
 }
+
+export const formatSignColor = (stringWithSign: string): React.ReactNode => {
+  const length = stringWithSign.length;
+  const sign = getSignGlyphUnicode(stringWithSign[length - 2]);
+  const color = getSignColor(sign);
+  return (
+    <>
+      <span>{stringWithSign.slice(0, length - 2)}</span>
+      <span style={{ color }}>{sign}</span>
+    </>
+  );
+};
 
 export const arabicPartKeys: (keyof ArabicParts)[] = [
   "fortune",
@@ -266,5 +298,133 @@ export const planetOverlapData: Record<PlanetType, PlanetOverlap> = {
     overlapGap: 15,
     thresholdDeg: 4,
     planetOrder: 0,
+  },
+};
+
+const coordinates: Coordinates = {
+  latitude: -3.71839, // Fortaleza
+  longitude: -38.5434,
+};
+
+const quixabaCoordinates: Coordinates = {
+  latitude: -4.5461,
+  longitude: -37.6923,
+};
+
+const aracatiCoordinates: Coordinates = {
+  latitude: -4.56273,
+  longitude: -37.7691,
+};
+
+const SPCoordinates: Coordinates = {
+  latitude: -23.5489,
+  longitude: -46.6388,
+};
+
+const MontesClarosCoordinates: Coordinates = {
+  latitude: -16.737,
+  longitude: -43.8647,
+};
+
+const icoordinates: Coordinates = {
+  latitude: -6.4011,
+  longitude: -38.8622,
+};
+
+const barbacenaCoordinates: Coordinates = {
+  latitude: -21.2264,
+  longitude: -43.7742,
+};
+
+export const presavedBirthDates: Record<string, BirthChartProfile> = {
+  lucasz: {
+    name: "Lucas Zaranza",
+    birthDate: {
+      year: 1993,
+      month: 8,
+      day: 31,
+      time: convertDegMinToDecimal(6, 45).toString(),
+      coordinates,
+    },
+  },
+  elisa: {
+    name: "Elisa Ferraz",
+    birthDate: {
+      year: 1994,
+      month: 6,
+      day: 23,
+      time: convertDegMinToDecimal(20, 19).toString(),
+      coordinates: SPCoordinates,
+    },
+  },
+  alana: {
+    name: "Alana Angelim",
+    birthDate: {
+      year: 1997,
+      month: 5,
+      day: 1,
+      time: convertDegMinToDecimal(13, 47).toString(),
+      coordinates: icoordinates,
+    },
+  },
+  noivado: {
+    name: "Noivado",
+    birthDate: {
+      year: 2025,
+      month: 4,
+      day: 26,
+      time: convertDegMinToDecimal(17, 10).toString(),
+      coordinates: aracatiCoordinates,
+    },
+  },
+  jana: {
+    name: "Janaina Libarino",
+    birthDate: {
+      year: 1995,
+      month: 6,
+      day: 20,
+      time: convertDegMinToDecimal(2, 20).toString(),
+      coordinates: SPCoordinates,
+    },
+  },
+  aline: {
+    name: "Aline Zaranza",
+    birthDate: {
+      year: 1999,
+      month: 3,
+      day: 22,
+      time: convertDegMinToDecimal(12, 39).toString(),
+      coordinates,
+    },
+  },
+  anaFlavia: {
+    name: "Ana Flávia",
+    birthDate: {
+      year: 1994,
+      month: 12,
+      day: 2,
+      time: convertDegMinToDecimal(5, 15).toString(),
+      coordinates: MontesClarosCoordinates,
+    },
+  },
+  layCurcio: {
+    name: "Laiza Curcio",
+    birthDate: {
+      year: 1995,
+      month: 5,
+      day: 11,
+      time: convertDegMinToDecimal(8, 45).toString(),
+      coordinates: barbacenaCoordinates,
+    },
+  },
+  eduardoLay: {
+    name: "Eduardo da Lay",
+    birthDate: {
+      year: 1995,
+      month: 5,
+      day: 24,
+      time: convertDegMinToDecimal(10, 45).toString(),
+      coordinates: barbacenaCoordinates,
+    },
   },
 };

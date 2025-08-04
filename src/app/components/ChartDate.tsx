@@ -46,7 +46,7 @@ export const ChartDate = (
   if (date === undefined) return;
 
   return (
-    <div>
+    <div className="text-center">
       <h2 className="font-bold text-lg mb-2">Dados do mapa:</h2>
       <p>
         {date?.day.toString().padStart(2, "0")}/

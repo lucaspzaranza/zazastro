@@ -38,9 +38,19 @@ export interface BirthDate {
   coordinates: Coordinates;
 }
 
+export interface BirthChartProfile {
+  name: string;
+  birthDate: BirthDate;
+}
+
+export interface PlanetWithSign {
+  position: string;
+  antiscion: string;
+}
+
 export interface BirthChart {
   planets: Planet[];
-  planetsWithSigns?: { position: string; antiscion: string }[];
+  planetsWithSigns?: PlanetWithSign[];
   housesData: HousesData;
   birthDate: BirthDate;
 

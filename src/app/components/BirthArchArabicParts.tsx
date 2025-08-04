@@ -167,7 +167,6 @@ export default function BirthArchArabicParts({
       )}
 
       <ul>
-        {/* {birthArchArabicParts.map((arabicPart, index) => { */}
         {parts.map((arabicPart, index) => {
           return (
             <li key={index}>

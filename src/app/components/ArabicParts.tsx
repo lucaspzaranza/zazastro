@@ -8,7 +8,7 @@ import type {
   ArabicPart,
 } from "@/interfaces/ArabicPartInterfaces";
 import { useEffect, useRef, useState } from "react";
-import { arabicPartKeys } from "../utils/chartUtils";
+import { arabicPartKeys, formatSignColor } from "../utils/chartUtils";
 
 export default function ArabicParts() {
   const { birthChart } = useBirthChart();
@@ -73,15 +73,20 @@ export default function ArabicParts() {
   if (arabicParts === undefined) return;
 
   return (
-    <div className="w-full flex flex-col gap-2 mt-4">
+    <div className="flex flex-col gap-2 mt-4">
       <h2 className="text-xl font-bold">Partes Árabes</h2>
 
       <ul>
         {parts.map((arabicPart, index) => {
           return (
+            // <li key={index}>
+            //   {arabicPart?.name}: {arabicPart.longitudeSign}&nbsp; Ant:{" "}
+            //   {arabicPart.antiscionSign}
+            // </li>
             <li key={index}>
-              {arabicPart?.name}: {arabicPart.longitudeSign}&nbsp; Antiscion:{" "}
-              {arabicPart.antiscionSign}
+              {arabicPart?.name}: {formatSignColor(arabicPart.longitudeSign)} -
+              Antiscion:&nbsp;
+              {formatSignColor(arabicPart.antiscionSign)}
             </li>
           );
         })}
