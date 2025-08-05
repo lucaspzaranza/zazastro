@@ -1,4 +1,4 @@
-import { ArabicParts } from "@/interfaces/ArabicPartInterfaces";
+import { ArabicPart, ArabicParts } from "@/interfaces/ArabicPartInterfaces";
 import {
   BirthChartProfile,
   BirthDate,
@@ -37,6 +37,14 @@ export const monthsName = [
   "Novembro",
   "Dezembro",
 ];
+
+// mapeamento das siglas das casas angulares
+export const angularLabels: Record<number, string> = {
+  0: "AC", // Casa 1 – Ascendente
+  3: "IC", // Casa 4 – Fundo do Céu
+  6: "DC", // Casa 7 – Descendente
+  9: "MC", // Casa 10 – Meio do Céu
+};
 
 export function getSign(longitude: number, getGlyphOnly = false): string {
   const signs = [
@@ -89,6 +97,13 @@ export const getSignColor = (signGlyph: string): string => {
 export function getPlanetImage(planet: PlanetType): React.ReactNode {
   const folder = "planets";
   const path = `${folder}/${planet}.png`;
+  return <img src={path} width={15} />;
+}
+
+export function getArabicPartImage(lot: ArabicPart): React.ReactNode {
+  const folder = "planets";
+  const part = lot.planet ? lot.partKey : "fortune";
+  const path = `${folder}/${part}.png`;
   return <img src={path} width={15} />;
 }
 

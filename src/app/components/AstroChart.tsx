@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
-import { arabicPartKeys } from "../utils/chartUtils";
+import { angularLabels, arabicPartKeys } from "../utils/chartUtils";
 import { HousesData, Planet } from "@/interfaces/BirthChartInterfaces";
 import { ArabicPart, ArabicParts } from "@/interfaces/ArabicPartInterfaces";
 
@@ -47,14 +47,6 @@ const AstroChart: React.FC<Props> = ({
   let chartElements: ChartElement[] = [];
 
   const zodiacRotation = 270 - housesData.ascendant;
-
-  // mapeamento das siglas das casas angulares
-  const angularLabels: Record<number, string> = {
-    0: "AC", // Casa 1 – Ascendente
-    3: "IC", // Casa 4 – Fundo do Céu
-    6: "DC", // Casa 7 – Descendente
-    9: "MC", // Casa 10 – Meio do Céu
-  };
 
   const getElementOffset = (
     element: Planet | ArabicPart,
@@ -960,7 +952,7 @@ const AstroChart: React.FC<Props> = ({
   const containerClasses = showOuterchart ? "mb-20 mt-8" : "mb-10";
 
   return (
-    <div className="w-[38vw] flex flex-col justify-center items-center mt-8 mx-16">
+    <div className="w-[38vw] flex flex-col justify-center items-center mt-8 mx-10">
       {/* <input
         type="number"
         className="border-1 mb-8"

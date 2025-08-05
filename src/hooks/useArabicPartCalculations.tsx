@@ -64,6 +64,7 @@ export function useArabicPartCalculations() {
     return {
       name: "Fortuna",
       planet: "moon",
+      partKey: "fortune",
       formulaDescription: "ASC + Lua - Sol",
       longitudeRaw,
       ...getArabicPartData(longitudeRaw, asc),
@@ -82,6 +83,7 @@ export function useArabicPartCalculations() {
     return {
       name: "Espírito",
       planet: "sun",
+      partKey: "spirit",
       formulaDescription: "ASC + Sol - Lua",
       longitudeRaw,
       ...getArabicPartData(longitudeRaw, asc),
@@ -100,6 +102,7 @@ export function useArabicPartCalculations() {
     return {
       name: "Necessidade",
       planet: "mercury",
+      partKey: "necessity",
       formulaDescription: "ASC + Parte da Fortuna - Parte do Espírito",
       longitudeRaw,
       ...getArabicPartData(longitudeRaw, asc),
@@ -118,6 +121,7 @@ export function useArabicPartCalculations() {
     return {
       name: "Amor",
       planet: "venus",
+      partKey: "love",
       formulaDescription: "ASC + Parte do Espírito - Parte da Fortuna",
       longitudeRaw,
       ...getArabicPartData(longitudeRaw, asc),
@@ -136,6 +140,7 @@ export function useArabicPartCalculations() {
     return {
       name: "Valor",
       planet: "mars",
+      partKey: "valor",
       formulaDescription: "ASC + Parte da Fortuna - Marte",
       longitudeRaw,
       ...getArabicPartData(longitudeRaw, asc),
@@ -154,6 +159,7 @@ export function useArabicPartCalculations() {
     return {
       name: "Vitória",
       planet: "jupiter",
+      partKey: "victory",
       formulaDescription: "ASC + Júpiter - Parte do Espírito",
       longitudeRaw,
       ...getArabicPartData(longitudeRaw, asc),
@@ -172,6 +178,7 @@ export function useArabicPartCalculations() {
     return {
       name: "Cativeiro",
       planet: "saturn",
+      partKey: "captivity",
       formulaDescription: "ASC + Parte da Fortuna - Saturno",
       longitudeRaw,
       ...getArabicPartData(longitudeRaw, asc),
@@ -189,6 +196,7 @@ export function useArabicPartCalculations() {
 
     return {
       name: "Casamento",
+      partKey: "marriage",
       formulaDescription: "ASC + DSC - Vênus",
       longitudeRaw,
       zodiacRuler,
@@ -210,6 +218,7 @@ export function useArabicPartCalculations() {
 
     return {
       name: "Renúncia",
+      partKey: "resignation",
       formulaDescription: "Saturno + Júpiter - Sol",
       longitudeRaw,
       zodiacRuler,
@@ -231,6 +240,7 @@ export function useArabicPartCalculations() {
 
     return {
       name: "Filhos",
+      partKey: "children",
       formulaDescription: "AC + Saturno - Júpiter",
       longitudeRaw,
       zodiacRuler,
