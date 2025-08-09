@@ -247,45 +247,7 @@ export default function BirthChart() {
       {birthChart && (
         <div className="w-full mt-6 text-left">
           <ChartDate chartType="birth" />
-          {/* <AstroChart
-            planets={birthChart.planets}
-            housesData={birthChart.housesData}
-            arabicParts={arabicParts}
-          /> */}
-
-          {/* <div className="flex flex-row justify-between mt-8">
-            <div>
-              <h2 className="font-bold text-lg mb-2">Casas:</h2>
-              <ul className="mb-4">
-                {birthChart.housesData.housesWithSigns?.map((house, index) => (
-                  <li key={house}>
-                    Casa {index + 1}: {house}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <h2 className="font-bold text-lg mb-2">Planetas:</h2>
-              <ul>
-                {birthChart.planets?.map((planet, index) => (
-                  <li key={index}>
-                    {birthChart.planetsWithSigns !== undefined && (
-                      <>
-                        {planet.name}:{" "}
-                        {birthChart.planetsWithSigns[index].position}
-                        &nbsp;Antiscion:{" "}
-                        {birthChart.planetsWithSigns[index].antiscion}
-                      </>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div> */}
-
           <ChartAndData birthChart={birthChart} useArchArabicParts={false}>
-            {/* <ArabicParts /> */}
             <AstroChart
               planets={birthChart.planets}
               housesData={birthChart.housesData}

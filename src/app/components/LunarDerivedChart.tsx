@@ -16,10 +16,11 @@ import {
 import AstroChart from "./AstroChart";
 import moment from "moment";
 import { ChartDate } from "./ChartDate";
-import { ArabicPart, ArabicParts } from "@/interfaces/ArabicPartInterfaces";
+import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import { useArabicPartCalculations } from "@/hooks/useArabicPartCalculations";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import BirthArchArabicParts from "./BirthArchArabicParts";
+import ChartAndData from "./ChartAndData";
 
 interface Props {
   birthChart: BirthChart;
@@ -37,13 +38,13 @@ const LunarDerivedChart: React.FC<Props> = ({
   const [year, setYear] = useState(0);
   const [lunarChart, setLunarChart] = useState<BirthChart | undefined>();
   const [returnTime, setReturnTime] = useState("");
-  const [parts, setParts] = useState<ArabicParts>({});
+  const [parts, setParts] = useState<ArabicPartsType>({});
   const [renderChart, setRenderChart] = useState(false);
   const [combineWithBirthChart, setCombineWithBirthChart] = useState(false);
   const [combineWithReturnChart, setCombineWithReturnChart] = useState(false);
   const { arabicParts, archArabicParts } = useArabicParts();
   const { calculateBirthArchArabicPart } = useArabicPartCalculations();
-  const lots: ArabicParts = {};
+  const lots: ArabicPartsType = {};
 
   const makeChart = async () => {
     const returnDate = moment.tz(birthChart.returnTime, birthChart.timezone!);
@@ -146,7 +147,7 @@ const LunarDerivedChart: React.FC<Props> = ({
           lunarChart.housesData.ascendant
         );
         lots[key] = newArchArabicPart;
-        const updatedParts: ArabicParts = { ...parts, ...lots };
+        const updatedParts: ArabicPartsType = { ...parts, ...lots };
         setParts(updatedParts);
       }
     });
@@ -179,7 +180,7 @@ const LunarDerivedChart: React.FC<Props> = ({
   };
 
   return (
-    <div className="flex flex-col mt-2">
+    <div className="flex flex-col items-center mt-2">
       <h1 className="font-bold text-lg">Retorno Lunar Derivado</h1>
       <form
         className="flex flex-row gap-2"
@@ -251,40 +252,58 @@ const LunarDerivedChart: React.FC<Props> = ({
           /> */}
 
           {!combineWithBirthChart && !combineWithReturnChart && (
-            <AstroChart
-              planets={lunarChart.planets}
-              housesData={lunarChart.housesData}
-              arabicParts={parts}
-              combineWithBirthChart={toggleShowBirthCombinedchart}
-              combineWithReturnChart={toggleShowReturnCombinedchart}
-            />
+            <ChartAndData
+              birthChart={lunarChart}
+              useArchArabicParts
+              customArabicParts={parts}
+            >
+              <AstroChart
+                planets={lunarChart.planets}
+                housesData={lunarChart.housesData}
+                arabicParts={parts}
+                combineWithBirthChart={toggleShowBirthCombinedchart}
+                combineWithReturnChart={toggleShowReturnCombinedchart}
+              />
+            </ChartAndData>
           )}
 
           {combineWithBirthChart && birthChart && (
-            <AstroChart
-              planets={birthChart.planets}
-              housesData={birthChart.housesData}
-              arabicParts={arabicParts}
-              outerPlanets={lunarChart.planets}
-              outerHouses={lunarChart.housesData}
-              outerArabicParts={parts}
-              combineWithBirthChart={toggleShowBirthCombinedchart}
-            />
+            <ChartAndData
+              birthChart={lunarChart}
+              useArchArabicParts
+              customArabicParts={parts}
+            >
+              <AstroChart
+                planets={birthChart.planets}
+                housesData={birthChart.housesData}
+                arabicParts={arabicParts}
+                outerPlanets={lunarChart.planets}
+                outerHouses={lunarChart.housesData}
+                outerArabicParts={parts}
+                combineWithBirthChart={toggleShowBirthCombinedchart}
+              />
+            </ChartAndData>
           )}
 
           {combineWithReturnChart && birthChart && (
-            <AstroChart
-              planets={solarReturnChart.planets}
-              housesData={solarReturnChart.housesData}
-              arabicParts={archArabicParts}
-              outerPlanets={lunarChart.planets}
-              outerHouses={lunarChart.housesData}
-              outerArabicParts={parts}
-              combineWithReturnChart={toggleShowReturnCombinedchart}
-            />
+            <ChartAndData
+              birthChart={lunarChart}
+              useArchArabicParts
+              customArabicParts={parts}
+            >
+              <AstroChart
+                planets={solarReturnChart.planets}
+                housesData={solarReturnChart.housesData}
+                arabicParts={archArabicParts}
+                outerPlanets={lunarChart.planets}
+                outerHouses={lunarChart.housesData}
+                outerArabicParts={parts}
+                combineWithReturnChart={toggleShowReturnCombinedchart}
+              />
+            </ChartAndData>
           )}
 
-          <div className="flex flex-row justify-between mt-8">
+          {/* <div className="flex flex-row justify-between mt-8">
             <div>
               <h2 className="font-bold text-lg mb-2">Casas:</h2>
               <ul className="mb-4">
@@ -318,7 +337,7 @@ const LunarDerivedChart: React.FC<Props> = ({
           <BirthArchArabicParts
             customArabicParts={parts}
             useCustomASCControls={false}
-          />
+          /> */}
         </div>
       )}
     </div>

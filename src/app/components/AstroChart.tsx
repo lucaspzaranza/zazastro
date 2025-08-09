@@ -4,15 +4,15 @@ import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import { angularLabels, arabicPartKeys } from "../utils/chartUtils";
 import { HousesData, Planet } from "@/interfaces/BirthChartInterfaces";
-import { ArabicPart, ArabicParts } from "@/interfaces/ArabicPartInterfaces";
+import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 
 interface Props {
   planets: Planet[];
   housesData: HousesData;
-  arabicParts?: ArabicParts;
+  arabicParts?: ArabicPartsType;
   outerPlanets?: Planet[];
   outerHouses?: HousesData;
-  outerArabicParts?: ArabicParts;
+  outerArabicParts?: ArabicPartsType;
   combineWithBirthChart?: () => void;
   combineWithReturnChart?: () => void;
 }
@@ -52,7 +52,7 @@ const AstroChart: React.FC<Props> = ({
     element: Planet | ArabicPart,
     useAntiscion: boolean = false
   ): number => {
-    const thresholdDeg = 4;
+    const thresholdDeg = 5;
     let offset = 16;
 
     let nearElements = chartElements.filter((elementToCheck) => {
@@ -985,16 +985,18 @@ const AstroChart: React.FC<Props> = ({
 
         <button
           className="bg-blue-600 h-8 px-3 text-white rounded hover:bg-blue-700"
-          onClick={toggleArabicParts}
-        >
-          Partes Árabes
-        </button>
-        <button
-          className="bg-blue-600 h-8 px-3 text-white rounded hover:bg-blue-700"
           onClick={toggleAntiscia}
         >
           Antiscion Planetas
         </button>
+
+        <button
+          className="bg-blue-600 h-8 px-3 text-white rounded hover:bg-blue-700"
+          onClick={toggleArabicParts}
+        >
+          Partes Árabes
+        </button>
+
         <button
           className="bg-blue-600 h-8 px-3 text-white rounded hover:bg-blue-700"
           onClick={toggleArabicPartsAntiscia}

@@ -13,10 +13,10 @@ export interface ArabicPart {
   rawDistanceFromASC: number;
   zodiacRuler?: PlanetType;
   planet?: PlanetType;
-  partKey: keyof ArabicParts;
+  partKey: keyof ArabicPartsType;
 }
 
-export interface ArabicParts {
+export interface ArabicPartsType {
   fortune?: ArabicPart;
   spirit?: ArabicPart;
   necessity?: ArabicPart;

@@ -6,6 +6,7 @@ import AstroChart from "./AstroChart";
 import BirthArchArabicParts from "./BirthArchArabicParts";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import LunarDerivedChart from "./LunarDerivedChart";
+import ChartAndData from "./ChartAndData";
 
 export default function BirthArch() {
   const [input, setInput] = useState(0);
@@ -58,7 +59,7 @@ export default function BirthArch() {
 
   return (
     <div className="mt-4 flex flex-col gap-3">
-      <h1 className="font-bold text-lg mb-2">
+      <h1 className="font-bold text-lg text-center">
         Mapa do Retorno {isSolarReturn ? "Solar" : "Lunar"} para&nbsp;
         {isSolarReturn
           ? `${targetDate.year}/${targetDate.year ? targetDate.year + 1 : ""}`
@@ -71,59 +72,30 @@ export default function BirthArch() {
         <div className="w-full text-left flex flex-col">
           <ChartDate chartType="return" />
 
-          {!combineWithBirthChart && (
-            <AstroChart
-              planets={returnChart.planets}
-              housesData={returnChart.housesData}
-              arabicParts={archArabicParts}
-              combineWithBirthChart={toggleShowCombinedchart}
-            />
+          {!combineWithBirthChart && returnChart && (
+            <ChartAndData birthChart={returnChart} useArchArabicParts>
+              <AstroChart
+                planets={returnChart.planets}
+                housesData={returnChart.housesData}
+                arabicParts={archArabicParts}
+                combineWithBirthChart={toggleShowCombinedchart}
+              />
+            </ChartAndData>
           )}
 
           {combineWithBirthChart && birthChart && (
-            <AstroChart
-              planets={birthChart.planets}
-              housesData={birthChart.housesData}
-              arabicParts={arabicParts}
-              outerPlanets={returnChart.planets}
-              outerHouses={returnChart.housesData}
-              outerArabicParts={archArabicParts}
-              combineWithBirthChart={toggleShowCombinedchart}
-            />
+            <ChartAndData birthChart={returnChart} useArchArabicParts>
+              <AstroChart
+                planets={birthChart.planets}
+                housesData={birthChart.housesData}
+                arabicParts={arabicParts}
+                outerPlanets={returnChart.planets}
+                outerHouses={returnChart.housesData}
+                outerArabicParts={archArabicParts}
+                combineWithBirthChart={toggleShowCombinedchart}
+              />
+            </ChartAndData>
           )}
-
-          <div className="flex flex-row justify-between mt-8">
-            <div>
-              <h2 className="font-bold text-lg mb-2">Casas:</h2>
-              <ul className="mb-4">
-                {returnChart.housesData.housesWithSigns?.map((house, index) => (
-                  <li key={house}>
-                    Casa {index + 1}: {house}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <h2 className="font-bold text-lg mb-2">Planetas:</h2>
-              <ul>
-                {returnChart.planets?.map((planet, index) => (
-                  <li key={planet.name}>
-                    {returnChart.planetsWithSigns !== undefined && (
-                      <>
-                        {planet.name}:{" "}
-                        {returnChart.planetsWithSigns[index].position}
-                        &nbsp;Antiscion:{" "}
-                        {returnChart.planetsWithSigns[index].antiscion}
-                      </>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <BirthArchArabicParts useCustomASCControls />
 
           {isSolarReturn && birthChart && returnChart && (
             <LunarDerivedChart

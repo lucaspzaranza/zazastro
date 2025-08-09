@@ -3,19 +3,21 @@
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import { useBirthChart } from "@/contexts/BirthChartContext";
 import { useArabicPartCalculations } from "@/hooks/useArabicPartCalculations";
-import { ArabicPart, ArabicParts } from "@/interfaces/ArabicPartInterfaces";
+import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import { useEffect, useRef, useState } from "react";
 import {
   allSigns,
   arabicPartKeys,
   convertDegMinNumberToDecimal,
+  formatSignColor,
+  getArabicPartImage,
 } from "../utils/chartUtils";
 
 export default function BirthArchArabicParts({
   customArabicParts,
   useCustomASCControls,
 }: {
-  customArabicParts?: ArabicParts;
+  customArabicParts?: ArabicPartsType;
   useCustomASCControls: boolean;
 }) {
   const { birthChart, returnChart } = useBirthChart();
@@ -30,7 +32,7 @@ export default function BirthArchArabicParts({
     undefined
   );
 
-  const lots: ArabicParts = {};
+  const lots: ArabicPartsType = {};
 
   const clampLongitude = (rawString: string, degthreshold: number): number => {
     if (rawString.length === 0) return 0;
@@ -92,8 +94,8 @@ export default function BirthArchArabicParts({
   return (
     <div className="w-full flex flex-col gap-2 mt-4">
       <h2 className="text-xl font-bold">
-        Partes Árabes Por Arco Natal (
-        {returnChart?.returnType === "solar" ? "Solar" : "Lunar"})
+        Partes Árabes Por Arco&nbsp;
+        {returnChart?.returnType === "solar" ? "Solar" : "Lunar"}
       </h2>
 
       {useCustomASCControls && (
@@ -169,9 +171,21 @@ export default function BirthArchArabicParts({
       <ul>
         {parts.map((arabicPart, index) => {
           return (
-            <li key={index}>
-              {arabicPart?.name}: {arabicPart.longitudeSign}&nbsp; Antiscion:{" "}
-              {arabicPart.antiscionSign}
+            <li key={index} className="flex flex-row items-center">
+              <div className="w-full flex flex-row">
+                <span className="w-[14rem] flex flex-row items-center ">
+                  {arabicPart?.name}&nbsp;{getArabicPartImage(arabicPart)}:
+                  <span className="w-full text-end pr-3">
+                    {formatSignColor(arabicPart.longitudeSign)}
+                  </span>
+                </span>
+                <span className="w-[12rem] flex flex-row items-center pl-2">
+                  Antiscion:&nbsp;
+                  <span className="w-full text-end">
+                    {formatSignColor(arabicPart.antiscionSign)}
+                  </span>
+                </span>
+              </div>
             </li>
           );
         })}

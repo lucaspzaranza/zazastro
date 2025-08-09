@@ -1,4 +1,4 @@
-import { ArabicPart, ArabicParts } from "@/interfaces/ArabicPartInterfaces";
+import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import {
   BirthChartProfile,
   BirthDate,
@@ -119,7 +119,7 @@ export const formatSignColor = (stringWithSign: string): React.ReactNode => {
   );
 };
 
-export const arabicPartKeys: (keyof ArabicParts)[] = [
+export const arabicPartKeys: (keyof ArabicPartsType)[] = [
   "fortune",
   "spirit",
   "necessity",
@@ -160,8 +160,13 @@ export function getDegreeAndSign(longitude: number, getGlyphOnly = false) {
  * @returns The longitude value in minute base.
  */
 export function decimalToDegreesMinutes(decimal: number) {
-  const degrees = Math.floor(decimal);
-  const minutes = Math.floor((decimal - degrees) * 61) / 100;
+  let degrees = Math.floor(decimal);
+  let minutes = Math.floor((decimal - degrees) * 61) / 100; // 61 pra que os números cheguem até 60
+  if (minutes === 0.6) {
+    // 60 minutos, ou seja: 1 grau
+    degrees++;
+    minutes = 0;
+  }
 
   const result = degrees + minutes;
   return result;
@@ -388,7 +393,7 @@ export const presavedBirthDates: Record<string, BirthChartProfile> = {
       year: 2025,
       month: 4,
       day: 26,
-      time: convertDegMinToDecimal(17, 10).toString(),
+      time: convertDegMinToDecimal(17, 5).toString(),
       coordinates: aracatiCoordinates,
     },
   },

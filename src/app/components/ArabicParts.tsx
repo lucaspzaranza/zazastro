@@ -4,7 +4,7 @@ import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import { useBirthChart } from "@/contexts/BirthChartContext";
 import { useArabicPartCalculations } from "@/hooks/useArabicPartCalculations";
 import type {
-  ArabicParts,
+  ArabicPartsType,
   ArabicPart,
 } from "@/interfaces/ArabicPartInterfaces";
 import { useEffect, useRef, useState } from "react";
@@ -87,11 +87,15 @@ export default function ArabicParts() {
               <div className="w-full flex flex-row">
                 <span className="w-[14rem] flex flex-row items-center">
                   {arabicPart?.name}&nbsp;{getArabicPartImage(arabicPart)}:
-                  {formatSignColor(arabicPart.longitudeSign)}
+                  <span className="w-full text-end pr-3">
+                    {formatSignColor(arabicPart.longitudeSign)}
+                  </span>
                 </span>
-                <span className="w-1/5 flex flex-row items-center">
+                <span className="w-[12rem] flex flex-row items-center pl-2">
                   Antiscion:&nbsp;
-                  {formatSignColor(arabicPart.antiscionSign)}
+                  <span className="w-full text-end">
+                    {formatSignColor(arabicPart.antiscionSign)}
+                  </span>
                 </span>
               </div>
             </li>

@@ -14,19 +14,22 @@ import {
   getSignColor,
   getSignGlyphUnicode,
 } from "../utils/chartUtils";
-import ArabicParts from "./ArabicParts";
+import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import BirthArchArabicParts from "./BirthArchArabicParts";
+import ArabicParts from "./ArabicParts";
 
 interface Props {
   birthChart: BirthChart;
   useArchArabicParts: boolean;
   children: React.ReactNode;
+  customArabicParts?: ArabicPartsType;
 }
 
 export default function ChartAndData({
   birthChart,
   useArchArabicParts,
   children,
+  customArabicParts,
 }: Props) {
   const getHouseAntiscion = (houseLong: number): React.ReactNode => {
     const antiscion = getAntiscion(houseLong, false);
@@ -52,15 +55,19 @@ export default function ChartAndData({
                   <div className="w-full flex flex-row">
                     <span className="w-[8rem] flex flex-row items-center">
                       {getPlanetImage(planet.type)}:&nbsp;
-                      {formatSignColor(
-                        birthChart.planetsWithSigns[index].position
-                      )}
+                      <span className="w-11/12 text-end pr-4">
+                        {formatSignColor(
+                          birthChart.planetsWithSigns[index].position
+                        )}
+                      </span>
                     </span>
-                    <span className="w-1/2 flex flex-row items-center">
+                    <span className="w-[11rem] flex flex-row items-center">
                       Antiscion:&nbsp;
-                      {formatSignColor(
-                        birthChart.planetsWithSigns[index].antiscion
-                      )}
+                      <span className="w-full text-end">
+                        {formatSignColor(
+                          birthChart.planetsWithSigns[index].antiscion
+                        )}
+                      </span>
                     </span>
                   </div>
                 )}
@@ -69,18 +76,26 @@ export default function ChartAndData({
           </ul>
         </div>
 
-        <div className="w-full">
+        <div>
           <h2 className="font-bold text-lg mb-2">Casas:</h2>
           <ul className="mb-4">
             {birthChart.housesData.housesWithSigns?.map((house, index) => (
               <li key={house} className="flex flex-row items-center">
-                <div className="w-full flex flex-row justify-between">
-                  <span className="w-[10rem] flex flex-row items-center">
-                    {getHouseLabel(index)}:&nbsp;{formatSignColor(house)}
+                <div className="flex flex-row justify-between">
+                  <span className="w-[8rem] flex flex-row items-center">
+                    <span className={index % 3 === 0 ? "font-bold" : ""}>
+                      {getHouseLabel(index)}:
+                    </span>
+                    &nbsp;
+                    <span className="w-full text-end pr-3">
+                      {formatSignColor(house)}
+                    </span>
                   </span>
-                  <span className="w-3/4 flex flex-row items-center">
+                  <span className="w-[11rem] flex flex-row">
                     Antiscion:&nbsp;
-                    {getHouseAntiscion(birthChart.housesData.house[index])}
+                    <span className="w-full text-end">
+                      {getHouseAntiscion(birthChart.housesData.house[index])}
+                    </span>
                   </span>
                 </div>
               </li>
@@ -93,7 +108,12 @@ export default function ChartAndData({
 
       <div>
         {!useArchArabicParts && <ArabicParts />}
-        {useArchArabicParts && <BirthArchArabicParts useCustomASCControls />}
+        {useArchArabicParts && (
+          <BirthArchArabicParts
+            useCustomASCControls
+            customArabicParts={customArabicParts}
+          />
+        )}
       </div>
     </div>
   );
