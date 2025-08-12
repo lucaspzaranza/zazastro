@@ -447,4 +447,14 @@ export const presavedBirthDates: Record<string, BirthChartProfile> = {
       coordinates: barbacenaCoordinates,
     },
   },
+  lala: {
+    name: "Laís Pontes",
+    birthDate: {
+      year: 2002,
+      month: 5,
+      day: 4,
+      time: convertDegMinToDecimal(2, 24).toString(),
+      coordinates: coordinates,
+    },
+  },
 };

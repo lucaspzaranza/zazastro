@@ -25,6 +25,15 @@ interface ChartElement {
   isAntiscion: boolean;
 }
 
+interface PlanetNode extends Planet {
+  x: number;
+  y: number;
+  fx: number;
+  fy: number;
+  xAtrb: number;
+  yAtrb: number;
+}
+
 const AstroChart: React.FC<Props> = ({
   planets,
   housesData,
@@ -50,9 +59,10 @@ const AstroChart: React.FC<Props> = ({
 
   const getElementOffset = (
     element: Planet | ArabicPart,
+    isOuterChart: boolean,
     useAntiscion: boolean = false
   ): number => {
-    const thresholdDeg = 5;
+    const thresholdDeg = isOuterChart ? 2 : 3.2;
     let offset = 16;
 
     let nearElements = chartElements.filter((elementToCheck) => {
@@ -104,13 +114,14 @@ const AstroChart: React.FC<Props> = ({
 
   const addChartElementAndReturnOffset = (
     element: Planet | ArabicPart,
+    isOuterChart: boolean,
     useAntiscion: boolean = false
   ): number => {
     const chartElement: ChartElement = {
       longitudeRaw: useAntiscion ? element.antiscionRaw : element.longitudeRaw,
       name: element.name,
       id: chartElements.length,
-      offset: getElementOffset(element, useAntiscion),
+      offset: getElementOffset(element, isOuterChart, useAntiscion),
       isAntiscion: useAntiscion,
     };
 
@@ -456,6 +467,7 @@ const AstroChart: React.FC<Props> = ({
 
     // Desenha os planetas
     chartElements = [];
+    let nodes: PlanetNode[] = [];
     planets.forEach((planet) => {
       // 1) ângulo zodiacal original (graus → rad)
       const rawDeg = 180 - (planet.longitude % 360) - 90;
@@ -466,7 +478,7 @@ const AstroChart: React.FC<Props> = ({
       const angleRad = rawRad - rotRad;
 
       // 3) offsets de sobreposição
-      const symbolOffset = addChartElementAndReturnOffset(planet);
+      const symbolOffset = addChartElementAndReturnOffset(planet, false);
       const rSymbol = radius - symbolOffset;
       const rLineStart = radius - lineStartOffset;
       const rLineEnd = radius;
@@ -478,6 +490,7 @@ const AstroChart: React.FC<Props> = ({
       const y1 = rLineStart * Math.sin(angleRad);
       const x2 = rLineEnd * Math.cos(angleRad);
       const y2 = rLineEnd * Math.sin(angleRad);
+      const iconSize = 13; // px
 
       // 5) desenha a linha
       baseGroup
@@ -490,7 +503,6 @@ const AstroChart: React.FC<Props> = ({
         .attr("stroke-width", 1);
 
       // 6) desenha o ícone do planeta
-      const iconSize = 13; // px
       const iconSrc = `/planets/${planet.type}${
         planet.isRetrograde ? "-rx" : ""
       }.png`;
@@ -513,7 +525,11 @@ const AstroChart: React.FC<Props> = ({
         const angleAntRad = rawAntRad - rotAntRad;
 
         // 3) offsets de sobreposição
-        const symbolAntOffset = addChartElementAndReturnOffset(planet, true);
+        const symbolAntOffset = addChartElementAndReturnOffset(
+          planet,
+          false,
+          true
+        );
         const rAntSymbol = radius - symbolAntOffset;
         const rAntLineStart = radius - lineStartOffset;
         const AntLineEnd = radius;
@@ -567,7 +583,11 @@ const AstroChart: React.FC<Props> = ({
           const angleRad = rawRad - rotRad;
 
           // 3) offsets de sobreposição
-          const symbolOffset = addChartElementAndReturnOffset(lot);
+          const symbolOffset = addChartElementAndReturnOffset(
+            lot,
+            false,
+            false
+          );
           const rSymbol = radius - symbolOffset;
           const rLineStart = radius - lineStartOffset;
           const rLineEnd = radius;
@@ -620,7 +640,7 @@ const AstroChart: React.FC<Props> = ({
           const angleRad = rawRad - rotRad;
 
           // 3) offsets de sobreposição
-          const symbolOffset = addChartElementAndReturnOffset(lot, true);
+          const symbolOffset = addChartElementAndReturnOffset(lot, false, true);
           const rSymbol = radius - symbolOffset;
           const rLineStart = radius - lineStartOffset;
           const rLineEnd = radius;
@@ -734,7 +754,10 @@ const AstroChart: React.FC<Props> = ({
         const angleRad = rawRad - rotRad;
 
         // 3) offsets de sobreposição
-        const outerPlanetSymbolOffset = addChartElementAndReturnOffset(planet);
+        const outerPlanetSymbolOffset = addChartElementAndReturnOffset(
+          planet,
+          true
+        );
         const rSymbol = outerZodiacRadius + outerPlanetSymbolOffset;
         const rLineStart = outerZodiacRadius + lineStartOffset;
         const rLineEnd = outerZodiacRadius;
@@ -781,7 +804,11 @@ const AstroChart: React.FC<Props> = ({
           const angleAntRad = rawAntRad - rotAntRad;
 
           // 3) offsets de sobreposição
-          const symbolAntOffset = addChartElementAndReturnOffset(planet, true);
+          const symbolAntOffset = addChartElementAndReturnOffset(
+            planet,
+            true,
+            true
+          );
           const rAntSymbol = outerZodiacRadius + symbolAntOffset;
           const rAntLineStart = outerZodiacRadius + lineStartOffset;
           const AntLineEnd = outerZodiacRadius;
@@ -835,7 +862,10 @@ const AstroChart: React.FC<Props> = ({
           const angleRad = rawRad - rotRad;
 
           // 3) offsets de sobreposição
-          const outerLotSymbolOffset = addChartElementAndReturnOffset(lot);
+          const outerLotSymbolOffset = addChartElementAndReturnOffset(
+            lot,
+            true
+          );
           const rSymbol = outerZodiacRadius + outerLotSymbolOffset;
           const rLineStart = outerZodiacRadius + lineStartOffset;
           const rLineEnd = outerZodiacRadius;
@@ -889,6 +919,7 @@ const AstroChart: React.FC<Props> = ({
           // 3) offsets de sobreposição
           const lotAntiscionSymbolOffset = addChartElementAndReturnOffset(
             lot,
+            true,
             true
           );
           const rSymbol = outerZodiacRadius + lotAntiscionSymbolOffset;
@@ -928,6 +959,10 @@ const AstroChart: React.FC<Props> = ({
         }
       });
     }
+
+    // return () => {
+    //   simulation.stop();
+    // };
   }, [
     planets,
     housesData,
