@@ -45,7 +45,7 @@ export default function ChartAndData({
 
   return (
     <div className="flex flex-row items-start justify-center mt-8">
-      <div className="w-[20rem] flex flex-col justify-start gap-2">
+      {/* <div className="w-[20rem] flex flex-col justify-start gap-2">
         <div className="w-full">
           <h2 className="font-bold text-lg mb-2">Planetas:</h2>
           <ul>
@@ -102,11 +102,11 @@ export default function ChartAndData({
             ))}
           </ul>
         </div>
-      </div>
+      </div> */}
 
       <div>{children}</div>
 
-      <div>
+      {/* <div>
         {!useArchArabicParts && <ArabicParts />}
         {useArchArabicParts && (
           <BirthArchArabicParts
@@ -114,7 +114,7 @@ export default function ChartAndData({
             customArabicParts={customArabicParts}
           />
         )}
-      </div>
+      </div> */}
     </div>
   );
 }
