@@ -47,6 +47,7 @@ const AstroChart: React.FC<AstroChartProps> = ({
     outerPlanets !== undefined && outerHouses !== undefined
   );
   const symbolOffset = 16;
+  const antiscionName = " (Antiscion)";
 
   let chartElements: ChartElement[] = [];
   let chartElementsForAspect: ChartElement[] = [];
@@ -86,6 +87,7 @@ const AstroChart: React.FC<AstroChartProps> = ({
           (element as Planet) !== undefined
             ? (element as Planet).type
             : undefined,
+        isFromOuterChart: isOuterChart,
       };
 
       nearElements.push(currentElement);
@@ -129,6 +131,7 @@ const AstroChart: React.FC<AstroChartProps> = ({
         (element as Planet) !== undefined
           ? (element as Planet).type
           : undefined,
+      isFromOuterChart: isOuterChart,
     };
 
     chartElements.push(chartElement);
@@ -451,9 +454,16 @@ const AstroChart: React.FC<AstroChartProps> = ({
     aspectedElement: ChartElement,
     aspect: Aspect
   ): string {
-    return `${element.planetType ?? element.name}-${aspect.type}-${
+    const elementKey: string = (element.planetType ?? element.name).replace(
+      antiscionName,
+      ""
+    );
+
+    const aspectedElementKey: string = (
       aspectedElement.planetType ?? aspectedElement.name
-    }`;
+    ).replace(antiscionName, "");
+
+    return `${elementKey}-${aspect.type}-${aspectedElementKey}`;
   }
 
   function aspectAlreadyRegistered(
@@ -479,6 +489,38 @@ const AstroChart: React.FC<AstroChartProps> = ({
     return 3; // default orb for planets
   }
 
+  function elementIsEqualsTo(
+    element: ChartElement,
+    elToCheck: ChartElement
+  ): boolean {
+    const firstName = element.isAntiscion
+      ? element.name.replace(antiscionName, "")
+      : element.name;
+    const secondName = elToCheck.isAntiscion
+      ? elToCheck.name.replace(antiscionName, "")
+      : elToCheck.name;
+    return firstName === secondName;
+  }
+
+  function aspectNotRenderedYet(
+    aspectsData: PlanetAspectData[],
+    element: ChartElement,
+    elToCheck: ChartElement,
+    aspectToCheck: Aspect
+  ): boolean {
+    if (element.isAntiscion && elToCheck.isAntiscion)
+      // is both are antiscion, the aspect has already been rendered into their normal position
+      return false;
+
+    // Reverse the elements because if there's some aspect already registered with these keys,
+    // they're with the reversed keys
+    const aspect = aspectsData.find(
+      (asp) => asp.key === generateAspectKey(element, elToCheck, aspectToCheck)
+    );
+
+    return aspect === undefined;
+  }
+
   function getAspects(elements: ChartElement[]): PlanetAspectData[] {
     const aspectsData: PlanetAspectData[] = [];
     const aspectableElements = elements.filter((el) => isAspectableElement(el));
@@ -487,8 +529,12 @@ const AstroChart: React.FC<AstroChartProps> = ({
       ASPECTS.forEach((aspect) => {
         if (aspectCanBeUsed(element, aspect)) {
           const elementsWithAspect = aspectableElements.filter((elToCheck) => {
-            if (elToCheck !== element && aspectCanBeUsed(elToCheck, aspect)) {
-              const orb = getAspectOrb(element, elToCheck); // 3 Para planetas, 1 para partes árabes
+            if (
+              !elementIsEqualsTo(element, elToCheck) &&
+              aspectCanBeUsed(elToCheck, aspect) &&
+              aspectNotRenderedYet(aspectsData, element, elToCheck, aspect)
+            ) {
+              const orb = getAspectOrb(element, elToCheck);
               const valToCheck = mod360(element.longitude + aspect.angle);
               const lowerLimit = mod360(elToCheck.longitude - orb);
               const upperLimit = mod360(elToCheck.longitude + orb);
@@ -512,11 +558,13 @@ const AstroChart: React.FC<AstroChartProps> = ({
                     name: element.planetType ?? element.name,
                     longitude: element.longitude,
                     isPlanet: element.planetType !== undefined,
+                    isFromOuterChart: element.isFromOuterChart!,
                   },
                   aspectedElement: {
                     name: elWithAsp.planetType ?? elWithAsp.name,
                     longitude: elWithAsp.longitude,
-                    isPlanet: element.planetType !== undefined,
+                    isPlanet: elWithAsp.planetType !== undefined,
+                    isFromOuterChart: elWithAsp.isFromOuterChart!,
                   },
                   key: generateAspectKey(element, elWithAsp, aspect),
                 });
@@ -1097,6 +1145,7 @@ const AstroChart: React.FC<AstroChartProps> = ({
         offset: 0,
         isPlanet: true,
         planetType: planet.type,
+        isFromOuterChart: false,
       });
 
       if (showPlanetsAntiscia) {
@@ -1157,10 +1206,11 @@ const AstroChart: React.FC<AstroChartProps> = ({
           id: chartElementsForAspect.length,
           isAntiscion: true,
           longitude: planet.antiscion,
-          name: planet.name + " (Antiscion)",
+          name: planet.name + antiscionName,
           offset: 0,
           isPlanet: true,
           planetType: planet.type,
+          isFromOuterChart: false,
         });
       }
     });
@@ -1226,6 +1276,7 @@ const AstroChart: React.FC<AstroChartProps> = ({
             name: lot.partKey,
             offset: 0,
             isPlanet: false,
+            isFromOuterChart: false,
           });
         }
       });
@@ -1285,9 +1336,10 @@ const AstroChart: React.FC<AstroChartProps> = ({
             id: chartElementsForAspect.length,
             isAntiscion: true,
             longitude: lot.antiscion,
-            name: lot.partKey + " (Antiscion)",
+            name: lot.partKey + antiscionName,
             offset: 0,
             isPlanet: false,
+            isFromOuterChart: false,
           });
         }
       });
@@ -1409,6 +1461,17 @@ const AstroChart: React.FC<AstroChartProps> = ({
           .attr("x", xs - iconSize / 2)
           .attr("y", ys - iconSize / 2);
 
+        chartElementsForAspect.push({
+          id: chartElementsForAspect.length,
+          isAntiscion: false,
+          longitude: planet.longitude,
+          name: planet.name,
+          offset: 0,
+          isPlanet: true,
+          planetType: planet.type,
+          isFromOuterChart: true,
+        });
+
         if (showPlanetsAntiscia) {
           // 1) ângulo zodiacal original (graus → rad)
           const rawAntDeg = 180 - (planet.antiscion % 360) - 90;
@@ -1460,6 +1523,17 @@ const AstroChart: React.FC<AstroChartProps> = ({
             .attr("height", iconAntSize)
             .attr("x", xAnts - iconAntSize / 2)
             .attr("y", yAnts - iconAntSize / 2);
+
+          chartElementsForAspect.push({
+            id: chartElementsForAspect.length,
+            isAntiscion: true,
+            longitude: planet.antiscion,
+            name: planet.name + antiscionName,
+            offset: 0,
+            isPlanet: true,
+            planetType: planet.type,
+            isFromOuterChart: true,
+          });
         }
       });
     }
@@ -1517,6 +1591,16 @@ const AstroChart: React.FC<AstroChartProps> = ({
             // centraliza o ícone em (xs, ys)
             .attr("x", xs - iconSize / 2)
             .attr("y", ys - iconSize / 2);
+
+          chartElementsForAspect.push({
+            id: chartElementsForAspect.length,
+            isAntiscion: false,
+            longitude: lot.longitude,
+            name: lot.name,
+            offset: 0,
+            isPlanet: false,
+            isFromOuterChart: true,
+          });
         }
       });
     }
@@ -1574,6 +1658,16 @@ const AstroChart: React.FC<AstroChartProps> = ({
             // centraliza o ícone em (xs, ys)
             .attr("x", xs - iconSize / 2)
             .attr("y", ys - iconSize / 2);
+
+          chartElementsForAspect.push({
+            id: chartElementsForAspect.length,
+            isAntiscion: true,
+            longitude: lot.antiscion,
+            name: lot.name + antiscionName,
+            offset: 0,
+            isPlanet: false,
+            isFromOuterChart: true,
+          });
         }
       });
     }

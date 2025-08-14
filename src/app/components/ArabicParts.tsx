@@ -76,8 +76,6 @@ export default function ArabicParts() {
 
   if (arabicParts === undefined) return;
 
-  // return; // REMOVE THIS, IT'LL PREVENT THE CODE BELOW TO BE RENDERED
-
   return (
     <div className="flex flex-col gap-2 mt-4">
       <h2 className="text-xl font-bold">Partes Árabes</h2>

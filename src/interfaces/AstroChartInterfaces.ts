@@ -20,6 +20,7 @@ export interface ChartElement {
   isAntiscion: boolean;
   isPlanet: boolean;
   planetType?: PlanetType;
+  isFromOuterChart: boolean;
 }
 
 export type AspectType =
@@ -43,6 +44,7 @@ export interface AspectedElement {
   name: string;
   longitude: number;
   isPlanet: boolean;
+  isFromOuterChart: boolean;
 }
 
 export interface PlanetAspectData {
