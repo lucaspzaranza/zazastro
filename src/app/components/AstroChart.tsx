@@ -2,7 +2,12 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
-import { angularLabels, arabicPartKeys } from "../utils/chartUtils";
+import {
+  angularLabels,
+  arabicPartKeys,
+  decimalToDegreesMinutes,
+  getDegreesInsideASign,
+} from "../utils/chartUtils";
 import { HousesData, Planet } from "@/interfaces/BirthChartInterfaces";
 import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import {
@@ -57,10 +62,10 @@ const AstroChart: React.FC<AstroChartProps> = ({
     let offset = 16;
 
     let nearElements = chartElements.filter((elementToCheck) => {
-      // const dist = elementToCheck.longitudeRaw - element.longitudeRaw;
+      // const dist = elementToCheck.longitude - element.longitude;
       const dist =
-        elementToCheck.longitudeRaw -
-        element[useAntiscion ? "antiscionRaw" : "longitudeRaw"];
+        elementToCheck.longitude -
+        element[useAntiscion ? "antiscion" : "longitude"];
       const wrappedDist = // Segundo condicional caso a distância dê um valor perto de 360
         dist < 0 || dist > 360 - thresholdDeg ? dist - 360 : dist;
       const mod = Math.abs(wrappedDist % 360);
@@ -74,7 +79,7 @@ const AstroChart: React.FC<AstroChartProps> = ({
         id: chartElements.length,
         offset: 0,
         name: element.name,
-        longitudeRaw: element.longitudeRaw,
+        longitude: element.longitude,
         isAntiscion: useAntiscion,
         isPlanet: (element as Planet) !== undefined,
         planetType:
@@ -86,7 +91,7 @@ const AstroChart: React.FC<AstroChartProps> = ({
       nearElements.push(currentElement);
 
       nearElements = nearElements.sort((a, b) =>
-        Math.abs((a.longitudeRaw - b.longitudeRaw - 360) % 360)
+        Math.abs((a.longitude - b.longitude - 360) % 360)
       );
 
       const index = nearElements.indexOf(currentElement) + 1;
@@ -114,7 +119,7 @@ const AstroChart: React.FC<AstroChartProps> = ({
     useAntiscion: boolean = false
   ): number => {
     const chartElement: ChartElement = {
-      longitudeRaw: useAntiscion ? element.antiscionRaw : element.longitudeRaw,
+      longitude: useAntiscion ? element.antiscionRaw : element.longitude,
       name: element.name,
       id: chartElements.length,
       offset: getElementOffset(element, isOuterChart, useAntiscion),
@@ -411,6 +416,8 @@ const AstroChart: React.FC<AstroChartProps> = ({
     });
   }
 
+  const mod360 = (n: number) => ((n % 360) + 360) % 360; // garante 0..359.999
+
   function isAspectableElement(element: ChartElement): boolean {
     const isPlanet = element.planetType !== undefined;
     if (isPlanet) {
@@ -431,6 +438,9 @@ const AstroChart: React.FC<AstroChartProps> = ({
 
     if (isArabicPart) {
       return aspect.type === "conjunction" || aspect.type === "opposition";
+    } else {
+      if (element.isAntiscion)
+        return aspect.type === "conjunction" || aspect.type === "opposition";
     }
 
     return true;
@@ -458,6 +468,17 @@ const AstroChart: React.FC<AstroChartProps> = ({
     return foundAspect !== undefined;
   }
 
+  function getAspectOrb(
+    element: ChartElement,
+    aspectedElement: ChartElement
+  ): number {
+    if (!element.isPlanet || !aspectedElement.isPlanet)
+      // some of them is arabic part, so the orb will be only 1 degree
+      return 1;
+
+    return 3; // default orb for planets
+  }
+
   function getAspects(elements: ChartElement[]): PlanetAspectData[] {
     const aspectsData: PlanetAspectData[] = [];
     const aspectableElements = elements.filter((el) => isAspectableElement(el));
@@ -466,11 +487,11 @@ const AstroChart: React.FC<AstroChartProps> = ({
       ASPECTS.forEach((aspect) => {
         if (aspectCanBeUsed(element, aspect)) {
           const elementsWithAspect = aspectableElements.filter((elToCheck) => {
-            if (elToCheck !== element) {
-              const offset = element.planetType !== undefined ? 3 : 1; // 3 Para planetas, 1 para partes árabes
-              const valToCheck = element.longitudeRaw + aspect.angle;
-              const lowerLimit = elToCheck.longitudeRaw - offset;
-              const upperLimit = elToCheck.longitudeRaw + offset;
+            if (elToCheck !== element && aspectCanBeUsed(elToCheck, aspect)) {
+              const orb = getAspectOrb(element, elToCheck); // 3 Para planetas, 1 para partes árabes
+              const valToCheck = mod360(element.longitude + aspect.angle);
+              const lowerLimit = mod360(elToCheck.longitude - orb);
+              const upperLimit = mod360(elToCheck.longitude + orb);
               return valToCheck >= lowerLimit && valToCheck <= upperLimit;
             }
           });
@@ -489,12 +510,12 @@ const AstroChart: React.FC<AstroChartProps> = ({
                   aspectType: aspect.type,
                   element: {
                     name: element.planetType ?? element.name,
-                    longitude: element.longitudeRaw,
+                    longitude: element.longitude,
                     isPlanet: element.planetType !== undefined,
                   },
                   aspectedElement: {
                     name: elWithAsp.planetType ?? elWithAsp.name,
-                    longitude: elWithAsp.longitudeRaw,
+                    longitude: elWithAsp.longitude,
                     isPlanet: element.planetType !== undefined,
                   },
                   key: generateAspectKey(element, elWithAsp, aspect),
@@ -549,45 +570,103 @@ const AstroChart: React.FC<AstroChartProps> = ({
       .attr("stroke-width", 1);
   }
 
+  function getAspectColor(aspect: PlanetAspectData): string {
+    if (
+      aspect.aspectType === "conjunction" ||
+      aspect.aspectType === "square" ||
+      aspect.aspectType === "opposition"
+    ) {
+      return "red";
+    }
+
+    // Sextil e trígono
+    return "blue";
+  }
+
+  function getAspectStrokeWidth(aspect: PlanetAspectData): number {
+    if (aspect.aspectType === "conjunction") return 6;
+
+    const angle = ASPECTS.find((asp) => asp.type === aspect.aspectType)?.angle;
+    let diff = 0;
+    let width = 1;
+
+    if (angle) {
+      const angle = getDegreesInsideASign(aspect.element.longitude);
+      const aspectedAngle = getDegreesInsideASign(
+        aspect.aspectedElement.longitude
+      );
+      diff = decimalToDegreesMinutes(Math.abs(aspectedAngle - angle));
+      // console.log(
+      //   `Aspecto ${aspect.key}, com ${aspect.element.name}: ${angle} e
+      // ${aspect.aspectedElement.name}: ${aspectedAngle} com diff de ${diff}`
+      // );
+
+      if (diff <= 0.3) {
+        // The perfect aspect
+        width = 2;
+      } else if (diff > 0.3 && diff <= 1.3) {
+        // The mid-high width aspect
+        width = 1.5;
+      } else if (diff > 1.3 && diff <= 2.3) {
+        // The mid-lower aspect
+        width = 1.25;
+      }
+    }
+
+    // console.log(
+    //   `Aspecto ${aspect.key} com dif = ${diff}, com espessura ${width}`
+    // );
+    return width; // default
+  }
+
   function drawAspectStroke(options: {
     baseGroup: d3.Selection<SVGGElement, unknown, null, undefined>;
-    element: AspectedElement;
-    aspectedElement: AspectedElement;
+    aspect: PlanetAspectData;
     radius: number;
     lineStartOffset: number;
   }) {
+    const { aspect, radius, lineStartOffset, baseGroup } = { ...options };
+
     // 1) ângulo zodiacal original (graus → rad)
-    const rawDeg = 180 - (options.element.longitude % 360) - 90;
-    const rawRad = (rawDeg * Math.PI) / 180;
+    const startRawDeg = 180 - mod360(aspect.element.longitude) - 90;
+    const startRawRad = (startRawDeg * Math.PI) / 180;
+
+    const endRawDeg = 180 - mod360(aspect.aspectedElement.longitude) - 90;
+    const endRawRad = (endRawDeg * Math.PI) / 180;
 
     // 2) compensa a rotação do zodíaco (transforma em ângulo final)
-    const rotRad = (zodiacRotation * Math.PI) / 180;
-    const angleRad = rawRad - rotRad;
+    const startRodRad = (zodiacRotation * Math.PI) / 180;
+    const startAngleRad = startRawRad - startRodRad;
 
-    // 3) offsets de sobreposição
-    const rSymbol = options.radius - symbolOffset;
-    const rLineStart = options.radius - options.lineStartOffset;
-    const rLineEnd = options.radius;
+    const endRodRad = (zodiacRotation * Math.PI) / 180;
+    const endAngleRad = endRawRad - endRodRad;
 
-    // 4) cálculos das coordenadas FINAIS
-    const xs = rSymbol * Math.cos(angleRad);
-    const ys = rSymbol * Math.sin(angleRad);
+    // 3) offsets de sobreposição — ambos positivos (corrige inversão de 180°)
+    const rLineStart = radius - lineStartOffset;
+    const rLineEnd = radius - lineStartOffset;
 
-    const x1 = rLineStart * Math.cos(angleRad);
-    const y1 = rLineStart * Math.sin(angleRad);
-    const x2 = rLineEnd * Math.cos(angleRad);
-    const y2 = rLineEnd * Math.sin(angleRad);
+    const x1 = rLineStart * Math.cos(startAngleRad);
+    const y1 = rLineStart * Math.sin(startAngleRad);
+    const x2 = rLineEnd * Math.cos(endAngleRad);
+    const y2 = rLineEnd * Math.sin(endAngleRad);
+
+    // ângulo da linha (opcional, útil se for rotacionar um grupo)
+    const angleLineRad = Math.atan2(y2 - y1, x2 - x1);
+    const angleLineDeg = (angleLineRad * 180) / Math.PI;
 
     // 5) desenha a linha
-    options.baseGroup
-      .attr("data-name", options.element.name)
+    baseGroup
+      .attr("data-name", aspect.element.name)
       .append("line")
       .attr("x1", x1)
       .attr("y1", y1)
       .attr("x2", x2)
       .attr("y2", y2)
-      .attr("stroke", "blue")
-      .attr("stroke-width", 1);
+      .attr("stroke", getAspectColor(aspect))
+      .attr("stroke-width", getAspectStrokeWidth(aspect));
+
+    // se quiser ver o ângulo no console pra debug:
+    // console.log('aspect', aspect.element.name, 'angleDeg', angleLineDeg);
   }
 
   function drawAspects(
@@ -610,6 +689,13 @@ const AstroChart: React.FC<AstroChartProps> = ({
       drawAspectElementTrace({
         ...options,
         element: aspect.aspectedElement,
+      });
+
+      drawAspectStroke({
+        ...options,
+        lineStartOffset:
+          aspect.aspectType === "conjunction" ? 3 : options.lineStartOffset,
+        aspect,
       });
     });
   }
@@ -1006,7 +1092,7 @@ const AstroChart: React.FC<AstroChartProps> = ({
       chartElementsForAspect.push({
         id: chartElementsForAspect.length,
         isAntiscion: false,
-        longitudeRaw: planet.longitudeRaw,
+        longitude: planet.longitude,
         name: planet.name,
         offset: 0,
         isPlanet: true,
@@ -1070,7 +1156,7 @@ const AstroChart: React.FC<AstroChartProps> = ({
         chartElementsForAspect.push({
           id: chartElementsForAspect.length,
           isAntiscion: true,
-          longitudeRaw: planet.antiscionRaw,
+          longitude: planet.antiscion,
           name: planet.name + " (Antiscion)",
           offset: 0,
           isPlanet: true,
@@ -1132,6 +1218,15 @@ const AstroChart: React.FC<AstroChartProps> = ({
             // centraliza o ícone em (xs, ys)
             .attr("x", xs - iconSize / 2)
             .attr("y", ys - iconSize / 2);
+
+          chartElementsForAspect.push({
+            id: chartElementsForAspect.length,
+            isAntiscion: false,
+            longitude: lot.longitude,
+            name: lot.partKey,
+            offset: 0,
+            isPlanet: false,
+          });
         }
       });
     }
@@ -1185,6 +1280,15 @@ const AstroChart: React.FC<AstroChartProps> = ({
             // centraliza o ícone em (xs, ys)
             .attr("x", xs - iconSize / 2)
             .attr("y", ys - iconSize / 2);
+
+          chartElementsForAspect.push({
+            id: chartElementsForAspect.length,
+            isAntiscion: true,
+            longitude: lot.antiscion,
+            name: lot.partKey + " (Antiscion)",
+            offset: 0,
+            isPlanet: false,
+          });
         }
       });
     }
@@ -1515,11 +1619,11 @@ const AstroChart: React.FC<AstroChartProps> = ({
 
   return (
     <div className="w-[38vw] flex flex-col justify-center items-center mt-8 mx-10">
-      <input
+      {/* <input
         type="number"
         className="border-1 mb-8"
         onChange={(e) => setRotation(Number.parseFloat(e.target.value))}
-      />
+      /> */}
       <svg className={containerClasses} ref={ref}></svg>
 
       <div className="flex flex-col gap-2">

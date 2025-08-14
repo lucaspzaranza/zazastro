@@ -133,6 +133,20 @@ export const arabicPartKeys: (keyof ArabicPartsType)[] = [
 ];
 
 /**
+ * Gets degrees and minutes inside a sign.
+ * @param longitude The longitude value.
+ * @returns Example: 124.55 Returns 4°55'♌︎ at 4.55 format.
+ */
+export function getDegreesInsideASign(longitude: number): number {
+  const previousSign = Math.floor(longitude / 30);
+  const rest = Number.parseFloat((longitude - previousSign * 30).toFixed(2));
+  const degrees = Math.floor(rest);
+  const minutes = Number.parseFloat((rest - degrees).toFixed(2));
+
+  return degrees + minutes;
+}
+
+/**
  * Returns the formatted longitude value with its corresponding Sign.
  * @param longitude The longitude value to be formatted.
  * @param getGlyphOnly If true, it'll show only the sign glyph without its name.

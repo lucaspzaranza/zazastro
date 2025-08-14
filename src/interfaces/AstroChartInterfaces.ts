@@ -13,7 +13,7 @@ export interface AstroChartProps {
 }
 
 export interface ChartElement {
-  longitudeRaw: number;
+  longitude: number;
   name: string;
   offset: number;
   id: number;
