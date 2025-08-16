@@ -2,14 +2,16 @@ import { ArabicPartsType } from "./ArabicPartInterfaces";
 import { HousesData, Planet, PlanetType } from "./BirthChartInterfaces";
 
 export interface AstroChartProps {
-  planets: Planet[];
-  housesData: HousesData;
-  arabicParts?: ArabicPartsType;
-  outerPlanets?: Planet[];
-  outerHouses?: HousesData;
-  outerArabicParts?: ArabicPartsType;
-  combineWithBirthChart?: () => void;
-  combineWithReturnChart?: () => void;
+  props: {
+    planets?: Planet[];
+    housesData?: HousesData;
+    arabicParts?: ArabicPartsType;
+    outerPlanets?: Planet[];
+    outerHouses?: HousesData;
+    outerArabicParts?: ArabicPartsType;
+    combineWithBirthChart?: () => void;
+    combineWithReturnChart?: () => void;
+  };
 }
 
 export interface ChartElement {
@@ -46,6 +48,7 @@ export interface AspectedElement {
   longitude: number;
   elementType: ElementType;
   isFromOuterChart: boolean;
+  isAntiscion: boolean;
 }
 
 export interface PlanetAspectData {

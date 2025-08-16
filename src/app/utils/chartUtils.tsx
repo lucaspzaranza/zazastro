@@ -90,6 +90,12 @@ export function getSign(longitude: number, getGlyphOnly = false): string {
   return signs[Math.floor(longitude / 30) % 12];
 }
 
+export const fixedNames = {
+  antiscionName: " (Antiscion)",
+  houseName: "house",
+  outerKeyPrefix: "outer",
+};
+
 export const getSignGlyphUnicode = (signEmoji: string): string => {
   if (signEmoji === "♈") return "\u2648\uFE0E";
   else if (signEmoji === "♉") return "\u2649\uFE0E";
@@ -120,20 +126,36 @@ export const getSignColor = (signGlyph: string): string => {
   return "black";
 };
 
-export function getPlanetImage(planet: PlanetType, size = 15): React.ReactNode {
+interface ImgOptions {
+  size?: number;
+  isAntiscion: boolean;
+}
+
+export function getPlanetImage(
+  planet: PlanetType,
+  options: ImgOptions = {
+    isAntiscion: false,
+  }
+): React.ReactNode {
   const folder = "planets";
-  const path = `${folder}/${planet}.png`;
-  return <img src={path} width={size} />;
+  const path = `${folder}${
+    options.isAntiscion ? "/antiscion" : ""
+  }/${planet}.png`;
+  return <img src={path} width={options.size ?? 15} />;
 }
 
 export function getArabicPartImage(
   lot: ArabicPart,
-  size = 15
+  options: ImgOptions = {
+    isAntiscion: false,
+  }
 ): React.ReactNode {
   const folder = "planets";
   const part = lot.planet ? lot.partKey : "fortune";
-  const path = `${folder}/${part}.png`;
-  return <img src={path} width={size} />;
+  const path = `${folder}${
+    options.isAntiscion ? "/antiscion" : ""
+  }/${part}.png`;
+  return <img src={path} width={options.size ?? 15} />;
 }
 
 export function getAspectImage(

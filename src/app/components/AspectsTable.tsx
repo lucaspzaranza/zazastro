@@ -10,6 +10,7 @@ import {
   arabicPartKeys,
   caldaicOrder,
   decimalToDegreesMinutes,
+  fixedNames,
   getArabicPartImage,
   getAspectImage,
   getDegreesInsideASign,
@@ -17,14 +18,23 @@ import {
 } from "../utils/chartUtils";
 import { PlanetType } from "@/interfaces/BirthChartInterfaces";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
-import { ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
+import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import { useBirthChart } from "@/contexts/BirthChartContext";
+
+/**
+ * Próximos passos:
+ * 1 - Diferenciar elementos do mapa externo do mapa interno;
+ * 2 - Diferenciar tipo de aspecto entre aplicativo ou separativo;
+ * 3 - Inserir paginação;
+ * 4 - Inserir opção de filtro por: elemento, aspecto, elemento aspectado,
+ *     mapa interno ou externo, distância, e tipo de aspecto (aplicativo ou separativo)
+ */
 
 export default function AspectsTable() {
   const { aspects } = useAspectsData();
   const { arabicParts, archArabicParts } = useArabicParts();
   const { birthChart, returnChart } = useBirthChart();
-  const houseBackupValue = useRef(0);
+  const backupValue = useRef(0);
 
   const tdClasses =
     "w-full border-r-1 flex flex-row items-center justify-center";
@@ -32,6 +42,17 @@ export default function AspectsTable() {
   function extractHouseNumber(input: string): number | null {
     const match = input.match(/-(1[0-2]|[1-9])$/);
     return match ? parseInt(match[1], 10) : null;
+  }
+
+  function getArabicPartKeyFromElement(
+    element: AspectedElement
+  ): keyof ArabicPartsType | undefined {
+    const name = element.isAntiscion
+      ? element.name.replace(fixedNames.antiscionName, "")
+      : element.name;
+    const key = name as keyof ArabicPartsType;
+
+    return key;
   }
 
   function getHouseName(element: AspectedElement): string {
@@ -47,14 +68,18 @@ export default function AspectsTable() {
 
   function getElementImage(element: AspectedElement): React.ReactNode {
     if (element.elementType === "planet") {
-      return getPlanetImage(element.name as PlanetType);
+      return getPlanetImage(element.name as PlanetType, {
+        isAntiscion: element.isAntiscion,
+      });
     }
 
     if (element.elementType === "arabicPart" && arabicParts) {
-      const key = element.name as keyof ArabicPartsType;
+      const key = getArabicPartKeyFromElement(element)!;
       const arabicPart = arabicParts[key];
       if (arabicPart) {
-        return getArabicPartImage(arabicPart);
+        return getArabicPartImage(arabicPart, {
+          isAntiscion: element.isAntiscion,
+        });
       }
     }
 
@@ -76,26 +101,35 @@ export default function AspectsTable() {
         (planet) => planet.type === element.name
       );
 
-      if (originalElement) rawLongitude = originalElement.longitudeRaw;
+      if (originalElement)
+        rawLongitude = element.isAntiscion
+          ? originalElement.antiscionRaw
+          : originalElement.longitudeRaw;
     } else if (element.elementType === "house") {
       let houseIndex = extractHouseNumber(element.name)! + 1;
 
       if (chart) {
         const index = houseIndex - 1;
-        houseBackupValue.current = chart.housesData.house[index];
-        console.log(
-          `element: ${element.name}, houseIndex: ${houseIndex}, array index: ${index}, rawLong: ${houseBackupValue.current},`
-        );
-        // if (houseIndex + 1 === 12) {
-        // }
+        backupValue.current = chart.housesData.house[index];
+        // console.log(
+        //   `element: ${element.name}, houseIndex: ${houseIndex}, array index: ${index}, rawLong: ${backupValue.current},`
+        // );
       }
 
-      rawLongitude = houseBackupValue.current;
+      rawLongitude = backupValue.current;
     } else if (element.elementType === "arabicPart") {
-      const key = element.name as keyof ArabicPartsType;
+      // if (element.isAntiscion) {
+      //   console.log(`element: ${element.name}, rawLong: ${rawLongitude}`);
+      // }
+
+      const key = getArabicPartKeyFromElement(element)!;
       if (lots) {
         const originalArabicPart = lots[key];
-        rawLongitude = originalArabicPart?.longitudeRaw!;
+        if (originalArabicPart) {
+          rawLongitude = element.isAntiscion
+            ? originalArabicPart.antiscionRaw
+            : originalArabicPart.longitudeRaw;
+        }
       }
     }
 
@@ -113,8 +147,9 @@ export default function AspectsTable() {
     // console.log(aspect.element.longitude - aspect.aspectedElement.longitude);
 
     if (
-      aspect.aspectType === "trine" &&
-      aspect.aspectedElement.elementType === "house"
+      aspect.aspectType === "opposition" &&
+      aspect.element.name.includes("mercury") &&
+      aspect.aspectedElement.isAntiscion
     ) {
       console.log(
         `1st: ${_1stSignLong}, 2nd raw: ${_2ndElementRawLongitude}, 2nd: ${_2ndSignLong}`
@@ -136,7 +171,6 @@ export default function AspectsTable() {
     }
 
     return `${deg}°${min ?? "00"}'`;
-    // return decimalToDegreesMinutes(distance);
   }
 
   function getAspectType(aspect: PlanetAspectData): string {
@@ -155,7 +189,7 @@ export default function AspectsTable() {
               <th className="w-full text-center border-r-1">Elemento</th>
               <th className="w-full text-center border-r-1">Aspecto</th>
               <th className="w-full text-center border-r-1">Aspectado</th>
-              <th className="w-full text-center border-r-1">Dist.</th>
+              <th className="w-full text-center border-r-1">Distância</th>
               <th className="w-full text-center">Tipo</th>
             </tr>
           </thead>

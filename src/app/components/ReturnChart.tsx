@@ -73,28 +73,23 @@ export default function BirthArch() {
           <ChartDate chartType="return" />
 
           {!combineWithBirthChart && returnChart && (
-            <ChartAndData birthChart={returnChart} useArchArabicParts>
-              <AstroChart
-                planets={returnChart.planets}
-                housesData={returnChart.housesData}
-                arabicParts={archArabicParts}
-                combineWithBirthChart={toggleShowCombinedchart}
-              />
-            </ChartAndData>
+            <ChartAndData
+              birthChart={returnChart}
+              arabicParts={archArabicParts!}
+              combineWithBirthChart={toggleShowCombinedchart}
+              useArchArabicPartsForDataVisualization
+            />
           )}
 
           {combineWithBirthChart && birthChart && (
-            <ChartAndData birthChart={returnChart} useArchArabicParts>
-              <AstroChart
-                planets={birthChart.planets}
-                housesData={birthChart.housesData}
-                arabicParts={arabicParts}
-                outerPlanets={returnChart.planets}
-                outerHouses={returnChart.housesData}
-                outerArabicParts={archArabicParts}
-                combineWithBirthChart={toggleShowCombinedchart}
-              />
-            </ChartAndData>
+            <ChartAndData
+              birthChart={birthChart}
+              outerChart={returnChart}
+              arabicParts={arabicParts!}
+              outerArabicParts={archArabicParts}
+              useArchArabicPartsForDataVisualization
+              combineWithBirthChart={toggleShowCombinedchart}
+            />
           )}
 
           {isSolarReturn && birthChart && returnChart && (

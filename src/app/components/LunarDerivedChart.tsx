@@ -245,62 +245,39 @@ const LunarDerivedChart: React.FC<Props> = ({
       {lunarChart && renderChart && (
         <div>
           <ChartDate chartType="return" customReturnTime={returnTime} />
-          {/* <AstroChart
-            planets={lunarChart.planets}
-            housesData={lunarChart.housesData}
-            arabicParts={parts}
-          /> */}
-
           {!combineWithBirthChart && !combineWithReturnChart && (
             <ChartAndData
               birthChart={lunarChart}
-              useArchArabicParts
-              customArabicParts={parts}
-            >
-              <AstroChart
-                planets={lunarChart.planets}
-                housesData={lunarChart.housesData}
-                arabicParts={parts}
-                combineWithBirthChart={toggleShowBirthCombinedchart}
-                combineWithReturnChart={toggleShowReturnCombinedchart}
-              />
-            </ChartAndData>
+              useArchArabicPartsForDataVisualization
+              arabicParts={parts}
+              customPartsForDataVisualization={parts}
+              combineWithBirthChart={toggleShowBirthCombinedchart}
+              combineWithReturnChart={toggleShowReturnCombinedchart}
+            />
           )}
 
           {combineWithBirthChart && birthChart && (
             <ChartAndData
-              birthChart={lunarChart}
-              useArchArabicParts
-              customArabicParts={parts}
-            >
-              <AstroChart
-                planets={birthChart.planets}
-                housesData={birthChart.housesData}
-                arabicParts={arabicParts}
-                outerPlanets={lunarChart.planets}
-                outerHouses={lunarChart.housesData}
-                outerArabicParts={parts}
-                combineWithBirthChart={toggleShowBirthCombinedchart}
-              />
-            </ChartAndData>
+              birthChart={birthChart}
+              outerChart={lunarChart}
+              useArchArabicPartsForDataVisualization
+              arabicParts={arabicParts}
+              customPartsForDataVisualization={parts}
+              outerArabicParts={parts}
+              combineWithBirthChart={toggleShowBirthCombinedchart}
+            />
           )}
 
           {combineWithReturnChart && birthChart && (
             <ChartAndData
-              birthChart={lunarChart}
-              useArchArabicParts
-              customArabicParts={parts}
-            >
-              <AstroChart
-                planets={solarReturnChart.planets}
-                housesData={solarReturnChart.housesData}
-                arabicParts={archArabicParts}
-                outerPlanets={lunarChart.planets}
-                outerHouses={lunarChart.housesData}
-                outerArabicParts={parts}
-                combineWithReturnChart={toggleShowReturnCombinedchart}
-              />
-            </ChartAndData>
+              birthChart={solarReturnChart}
+              outerChart={lunarChart}
+              arabicParts={archArabicParts}
+              outerArabicParts={parts}
+              useArchArabicPartsForDataVisualization
+              customPartsForDataVisualization={parts}
+              combineWithReturnChart={toggleShowReturnCombinedchart}
+            />
           )}
 
           {/* <div className="flex flex-row justify-between mt-8">

@@ -3,7 +3,7 @@ import {
   HousesData,
   Planet,
 } from "@/interfaces/BirthChartInterfaces";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   angularLabels,
   formatSignColor,
@@ -18,20 +18,36 @@ import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import BirthArchArabicParts from "./BirthArchArabicParts";
 import ArabicParts from "./ArabicParts";
 import AspectsTable from "./AspectsTable";
+import AstroChart from "./AstroChart";
+import { AstroChartProps } from "@/interfaces/AstroChartInterfaces";
 
 interface Props {
+  useArchArabicPartsForDataVisualization: boolean;
   birthChart: BirthChart;
-  useArchArabicParts: boolean;
-  children: React.ReactNode;
-  customArabicParts?: ArabicPartsType;
+  outerChart?: BirthChart;
+  arabicParts?: ArabicPartsType;
+  outerArabicParts?: ArabicPartsType;
+  customPartsForDataVisualization?: ArabicPartsType;
+  combineWithBirthChart?: () => void;
+  combineWithReturnChart?: () => void;
 }
 
-export default function ChartAndData({
-  birthChart,
-  useArchArabicParts,
-  children,
-  customArabicParts,
-}: Props) {
+export default function ChartAndData(props: Props) {
+  const {
+    birthChart,
+    outerChart,
+    arabicParts,
+    customPartsForDataVisualization,
+    outerArabicParts,
+    useArchArabicPartsForDataVisualization,
+    combineWithBirthChart,
+    combineWithReturnChart,
+  } = {
+    ...props,
+  };
+
+  const [chart, setChart] = useState(outerChart ?? birthChart);
+
   const getHouseAntiscion = (houseLong: number): React.ReactNode => {
     const antiscion = getAntiscion(houseLong, false);
     const antiscionString = getDegreeAndSign(antiscion, true);
@@ -50,15 +66,15 @@ export default function ChartAndData({
         <div className="w-full">
           <h2 className="font-bold text-lg mb-2">Planetas:</h2>
           <ul>
-            {birthChart.planets?.map((planet, index) => (
+            {chart?.planets?.map((planet, index) => (
               <li key={index} className="flex flex-row items-center">
-                {birthChart.planetsWithSigns !== undefined && (
+                {chart.planetsWithSigns !== undefined && (
                   <div className="w-full flex flex-row">
                     <span className="w-[8rem] flex flex-row items-center">
                       {getPlanetImage(planet.type)}:&nbsp;
                       <span className="w-11/12 text-end pr-4">
                         {formatSignColor(
-                          birthChart.planetsWithSigns[index].position
+                          chart.planetsWithSigns[index].position
                         )}
                       </span>
                     </span>
@@ -66,7 +82,7 @@ export default function ChartAndData({
                       Antiscion:&nbsp;
                       <span className="w-full text-end">
                         {formatSignColor(
-                          birthChart.planetsWithSigns[index].antiscion
+                          chart.planetsWithSigns[index].antiscion
                         )}
                       </span>
                     </span>
@@ -80,7 +96,7 @@ export default function ChartAndData({
         <div>
           <h2 className="font-bold text-lg mb-2">Casas:</h2>
           <ul className="mb-4">
-            {birthChart.housesData.housesWithSigns?.map((house, index) => (
+            {chart.housesData.housesWithSigns?.map((house, index) => (
               <li key={house} className="flex flex-row items-center">
                 <div className="flex flex-row justify-between">
                   <span className="w-[8rem] flex flex-row items-center">
@@ -105,14 +121,33 @@ export default function ChartAndData({
         </div>
       </div>
 
-      <div>{children}</div>
+      {/* <div>{children}</div> */}
+
+      <div>
+        <AstroChart
+          props={{
+            planets: birthChart.planets,
+            housesData: birthChart.housesData,
+            arabicParts,
+            outerPlanets: outerChart?.planets,
+            outerHouses: outerChart?.housesData,
+            outerArabicParts,
+            combineWithBirthChart,
+            combineWithReturnChart,
+          }}
+        />
+      </div>
+
+      {/* planets={birthChart.planets}
+          housesData={birthChart.housesData}
+          arabicParts={arabicParts} */}
 
       <div className="flex flex-col gap-2 -z-10">
-        {!useArchArabicParts && <ArabicParts />}
-        {useArchArabicParts && (
+        {!useArchArabicPartsForDataVisualization && <ArabicParts />}
+        {useArchArabicPartsForDataVisualization && (
           <BirthArchArabicParts
             useCustomASCControls
-            customArabicParts={customArabicParts}
+            customArabicParts={customPartsForDataVisualization}
           />
         )}
         <AspectsTable />

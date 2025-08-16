@@ -247,13 +247,11 @@ export default function BirthChart() {
       {birthChart && (
         <div className="w-full mt-6 text-left">
           <ChartDate chartType="birth" />
-          <ChartAndData birthChart={birthChart} useArchArabicParts={false}>
-            <AstroChart
-              planets={birthChart.planets}
-              housesData={birthChart.housesData}
-              arabicParts={arabicParts}
-            />
-          </ChartAndData>
+          <ChartAndData
+            birthChart={birthChart}
+            arabicParts={arabicParts!}
+            useArchArabicPartsForDataVisualization={false}
+          />
         </div>
       )}
     </div>

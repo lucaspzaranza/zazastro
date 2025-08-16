@@ -6,6 +6,7 @@ import {
   angularLabels,
   arabicPartKeys,
   decimalToDegreesMinutes,
+  fixedNames,
   getDegreesInsideASign,
   getSign,
   signsGlpyphs,
@@ -32,15 +33,27 @@ const ASPECTS: Aspect[] = [
 ];
 
 const AstroChart: React.FC<AstroChartProps> = ({
-  planets,
-  housesData,
-  arabicParts,
-  outerPlanets,
-  outerHouses,
-  outerArabicParts,
-  combineWithBirthChart,
-  combineWithReturnChart,
+  // planets,
+  // housesData,
+  // arabicParts,
+  // outerPlanets,
+  // outerHouses,
+  // outerArabicParts,
+  // combineWithBirthChart,
+  // combineWithReturnChart,
+  props,
 }) => {
+  const {
+    planets,
+    housesData,
+    arabicParts,
+    outerPlanets,
+    outerHouses,
+    outerArabicParts,
+    combineWithBirthChart,
+    combineWithReturnChart,
+  } = { ...props };
+
   const ref = useRef<SVGSVGElement>(null);
   const [rotation, setRotation] = useState(0);
   const [showArabicParts, setShowArabicParts] = useState(false);
@@ -51,14 +64,15 @@ const AstroChart: React.FC<AstroChartProps> = ({
   );
   const { updateAspectsData } = useAspectsData();
   const symbolOffset = 16;
-  const antiscionName = " (Antiscion)";
-  const houseName = "house";
-  const outerKeyPrefix = "outer";
 
   let chartElements: ChartElement[] = [];
   let chartElementsForAspect: ChartElement[] = [];
 
-  const zodiacRotation = 270 - housesData.ascendant;
+  const mod360 = (n: number) => ((n % 360) + 360) % 360; // garante 0..359.999
+
+  const getHouseDataAscendant = () => housesData?.ascendant ?? 0;
+
+  const zodiacRotation = 270 - getHouseDataAscendant();
 
   function resolveOverlapsRowsThenDiagonal(
     svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
@@ -340,8 +354,6 @@ const AstroChart: React.FC<AstroChartProps> = ({
     });
   }
 
-  const mod360 = (n: number) => ((n % 360) + 360) % 360; // garante 0..359.999
-
   function isAspectableElement(element: ChartElement): boolean {
     // console.log(element.elementType);
 
@@ -375,13 +387,13 @@ const AstroChart: React.FC<AstroChartProps> = ({
     aspect: Aspect
   ): string {
     const elementKey: string = (element.planetType ?? element.name).replace(
-      antiscionName,
+      fixedNames.antiscionName,
       ""
     );
 
     const aspectedElementKey: string = (
       aspectedElement.planetType ?? aspectedElement.name
-    ).replace(antiscionName, "");
+    ).replace(fixedNames.antiscionName, "");
 
     return `${elementKey}-${aspect.type}-${aspectedElementKey}`;
   }
@@ -404,10 +416,13 @@ const AstroChart: React.FC<AstroChartProps> = ({
     aspect: Aspect
   ): number {
     if (
-      element.elementType === "arabicPart" ||
-      aspectedElement.elementType === "arabicPart"
+      (element.elementType === "arabicPart" &&
+        aspectedElement.elementType !== "house") ||
+      (element.elementType !== "house" &&
+        aspectedElement.elementType === "arabicPart")
     )
-      // some of them is arabic part, so the orb will be only 1 degree
+      // some of them is arabic part and the other isn't house, so may be arabicPart or a planet,
+      // so the orb will be only 1 degree
       return 1;
     else if (
       (element.elementType === "house" ||
@@ -424,10 +439,10 @@ const AstroChart: React.FC<AstroChartProps> = ({
     elToCheck: ChartElement
   ): boolean {
     const firstName = element.isAntiscion
-      ? element.name.replace(antiscionName, "")
+      ? element.name.replace(fixedNames.antiscionName, "")
       : element.name;
     const secondName = elToCheck.isAntiscion
-      ? elToCheck.name.replace(antiscionName, "")
+      ? elToCheck.name.replace(fixedNames.antiscionName, "")
       : elToCheck.name;
     return firstName === secondName;
   }
@@ -477,9 +492,15 @@ const AstroChart: React.FC<AstroChartProps> = ({
     let expected2ndSign = _1stElementSign;
 
     if (aspect.type === "conjunction") {
+      return _1stElementSign === _2ndElementSign;
+    } else if (aspect.type === "opposition") {
+      expected2ndSign = signsGlpyphs.find((_, index) => {
+        return (_1stSignIndex + 6) % 12 === index;
+      })!;
+
       // if (
-      //   element.planetType === "saturn" &&
-      //   elToCheck.name.includes("house-7")
+      //   element.planetType === "mercury" &&
+      //   elToCheck.name.includes("captivity")
       // ) {
       //   console.log(
       //     `${aspect.type}, 1st: ${
@@ -492,13 +513,7 @@ const AstroChart: React.FC<AstroChartProps> = ({
       //   );
       // }
 
-      return _1stElementSign === _2ndElementSign;
-    } else if (aspect.type === "opposition") {
-      expected2ndSign = signsGlpyphs.find((_, index) => {
-        return (_1stSignIndex + 6) % 12 === index;
-      })!;
-
-      return _1stElementSign === expected2ndSign;
+      return expected2ndSign.includes(_2ndElementSign);
     } else if (aspect.type === "trine") {
       expected2ndSign = signsGlpyphs.find((_, index) => {
         return (_1stSignIndex - 4 + 12) % 12 === index;
@@ -568,12 +583,14 @@ const AstroChart: React.FC<AstroChartProps> = ({
                     longitude: element.longitude,
                     elementType: element.elementType,
                     isFromOuterChart: element.isFromOuterChart!,
+                    isAntiscion: element.isAntiscion,
                   },
                   aspectedElement: {
                     name: elWithAsp.planetType ?? elWithAsp.name,
                     longitude: elWithAsp.longitude,
                     elementType: elWithAsp.elementType,
                     isFromOuterChart: elWithAsp.isFromOuterChart!,
+                    isAntiscion: elWithAsp.isAntiscion,
                   },
                   key: generateAspectKey(element, elWithAsp, aspect),
                 });
@@ -744,7 +761,6 @@ const AstroChart: React.FC<AstroChartProps> = ({
   ) {
     const aspectsData = getAspects(elements);
     updateAspectsData(aspectsData);
-    // console.log(aspectsData);
 
     aspectsData.forEach((aspect) => {
       if (!isAspectWithHouse(aspect)) {
@@ -917,7 +933,7 @@ const AstroChart: React.FC<AstroChartProps> = ({
         .text(sign.glyph);
     });
 
-    const housesRotation = housesData.ascendant - 90;
+    const housesRotation = getHouseDataAscendant() - 90;
     const rotatedGroup = baseGroup
       .append("g")
       .attr("transform", `rotate(${housesRotation})`);
@@ -954,12 +970,16 @@ const AstroChart: React.FC<AstroChartProps> = ({
     const midRadius = (smallInnerRadius + smallOuterRadius) / 2;
 
     // normaliza Ascendente e cúspides
-    const asc = ((housesData.ascendant % 360) + 360) % 360;
-    const cusps = housesData.house.map((a) => ((a % 360) + 360) % 360);
+    const asc = ((getHouseDataAscendant() % 360) + 360) % 360;
+    const cusps = housesData?.house.map((a) => ((a % 360) + 360) % 360);
 
     // Números das casas.
     // Percorre 0 a 11 diretamente (já é anti‑horário começando no Ascendente)
     for (let j = 0; j < 12; j++) {
+      if (cusps === undefined) {
+        break;
+      }
+
       const startDeg = cusps[j];
       const endDeg = cusps[(j + 1) % 12];
 
@@ -998,72 +1018,6 @@ const AstroChart: React.FC<AstroChartProps> = ({
 
     const continuationLength = 25; // comprimento do traço de continuidade
     const labelOffset = 25; // distância extra para posicionar o texto
-
-    // Desenha cada cúspide das casas
-    for (let i = 0; i < 12; i++) {
-      const start = cusps[i];
-      const angleRad = ((-start - 90) * Math.PI) / 180;
-
-      // ponto inicial da linha (já definido por você)
-      const x1 = i % 3 === 0 ? 0 : innerCircleRadius * Math.cos(angleRad);
-      const y1 = i % 3 === 0 ? 0 : innerCircleRadius * Math.sin(angleRad);
-      // ponto final da cúspide
-      const x2 = radius * Math.cos(angleRad);
-      const y2 = radius * Math.sin(angleRad);
-
-      // desenha a cúspide
-      rotatedGroup
-        .append("line")
-        .attr("x1", x1)
-        .attr("y1", y1)
-        .attr("x2", x2)
-        .attr("y2", y2)
-        .attr("stroke", "black")
-        .attr("stroke-width", houseLineStrokeWidth(i));
-
-      // Só para as casas angulares, adiciona traço e sigla
-      if (!showOuterchart && i % 3 === 0) {
-        // 1) pequeno traço de continuidade
-        const originLineX = outerZodiacRadius * Math.cos(angleRad);
-        const originLineY = outerZodiacRadius * Math.sin(angleRad);
-
-        const finalLineX = (outerZodiacRadius + 12) * Math.cos(angleRad);
-        const finalLineY = (outerZodiacRadius + 12) * Math.sin(angleRad);
-
-        // 2) sigla da casa
-        const labelRadius = radius + continuationLength + labelOffset;
-        const lx = labelRadius * Math.cos(angleRad);
-        const ly = labelRadius * Math.sin(angleRad);
-
-        rotatedGroup
-          .append("text")
-          .attr("x", lx)
-          .attr("y", ly)
-          .attr("font-size", 12)
-          .attr("text-anchor", "middle")
-          .attr("alignment-baseline", "middle")
-          .attr("transform", `rotate(${-housesRotation}, ${lx}, ${ly})`)
-          .text(angularLabels[i]);
-
-        rotatedGroup
-          .append("line")
-          .attr("x1", originLineX)
-          .attr("y1", originLineY)
-          .attr("x2", finalLineX)
-          .attr("y2", finalLineY)
-          .attr("stroke", "black")
-          .attr("stroke-width", 2);
-      }
-
-      chartElementsForAspect.push({
-        id: chartElementsForAspect.length,
-        isAntiscion: false,
-        longitude: decimalToDegreesMinutes(start),
-        name: `${houseName}-${i}`,
-        elementType: "house",
-        isFromOuterChart: false,
-      });
-    }
 
     // Linhas externas de grau (a cada 10°)
     if (!showOuterchart) {
@@ -1115,7 +1069,7 @@ const AstroChart: React.FC<AstroChartProps> = ({
 
     // Desenha os planetas
     const lineStartOffset = 6; // quão “para dentro” a linha começa
-    planets.forEach((planet) => {
+    planets?.forEach((planet) => {
       // 1) ângulo zodiacal original (graus → rad)
       const rawDeg = 180 - (planet.longitude % 360) - 90;
       const rawRad = (rawDeg * Math.PI) / 180;
@@ -1234,7 +1188,7 @@ const AstroChart: React.FC<AstroChartProps> = ({
           id: chartElementsForAspect.length,
           isAntiscion: true,
           longitude: planet.antiscion,
-          name: planet.name + antiscionName,
+          name: planet.name + fixedNames.antiscionName,
           elementType: "planet",
           planetType: planet.type,
           isFromOuterChart: false,
@@ -1362,7 +1316,7 @@ const AstroChart: React.FC<AstroChartProps> = ({
             id: chartElementsForAspect.length,
             isAntiscion: true,
             longitude: lot.antiscion,
-            name: lot.partKey + antiscionName,
+            name: lot.partKey + fixedNames.antiscionName,
             elementType: "arabicPart",
             isFromOuterChart: false,
           });
@@ -1370,76 +1324,72 @@ const AstroChart: React.FC<AstroChartProps> = ({
       });
     }
 
-    if (showOuterchart && outerHouses) {
-      const cuspsOuter = outerHouses.house.map((a) => ((a % 360) + 360) % 360);
+    // Desenha as cúspide das casas do mapa interno
+    for (let i = 0; i < 12; i++) {
+      if (cusps === undefined) break;
 
-      // desenha cada cúspide das casas
-      for (let i = 0; i < 12; i++) {
-        const start = cuspsOuter[i];
-        const angleRad = ((-start - 90) * Math.PI) / 180;
+      const start = cusps[i];
+      const angleRad = ((-start - 90) * Math.PI) / 180;
 
-        // ponto inicial da linha (já definido por você)
-        const x1 = outerChartBorderRadius * Math.cos(angleRad);
-        const y1 = outerChartBorderRadius * Math.sin(angleRad);
-        // ponto final da cúspide
-        const x2 = outerZodiacRadius * Math.cos(angleRad);
-        const y2 = outerZodiacRadius * Math.sin(angleRad);
+      // ponto inicial da linha (já definido por você)
+      const x1 = i % 3 === 0 ? 0 : innerCircleRadius * Math.cos(angleRad);
+      const y1 = i % 3 === 0 ? 0 : innerCircleRadius * Math.sin(angleRad);
+      // ponto final da cúspide
+      const x2 = radius * Math.cos(angleRad);
+      const y2 = radius * Math.sin(angleRad);
 
-        // desenha a cúspide
+      // desenha a cúspide
+      rotatedGroup
+        .append("line")
+        .attr("x1", x1)
+        .attr("y1", y1)
+        .attr("x2", x2)
+        .attr("y2", y2)
+        .attr("stroke", "black")
+        .attr("stroke-width", houseLineStrokeWidth(i));
+
+      // Só para as casas angulares, adiciona traço e sigla
+      if (!showOuterchart && i % 3 === 0) {
+        // 1) pequeno traço de continuidade
+        const originLineX = outerZodiacRadius * Math.cos(angleRad);
+        const originLineY = outerZodiacRadius * Math.sin(angleRad);
+
+        const finalLineX = (outerZodiacRadius + 12) * Math.cos(angleRad);
+        const finalLineY = (outerZodiacRadius + 12) * Math.sin(angleRad);
+
+        // 2) sigla da casa
+        const labelRadius = radius + continuationLength + labelOffset;
+        const lx = labelRadius * Math.cos(angleRad);
+        const ly = labelRadius * Math.sin(angleRad);
+
+        rotatedGroup
+          .append("text")
+          .attr("x", lx)
+          .attr("y", ly)
+          .attr("font-size", 12)
+          .attr("text-anchor", "middle")
+          .attr("alignment-baseline", "middle")
+          .attr("transform", `rotate(${-housesRotation}, ${lx}, ${ly})`)
+          .text(angularLabels[i]);
+
         rotatedGroup
           .append("line")
-          .attr("x1", x1)
-          .attr("y1", y1)
-          .attr("x2", x2)
-          .attr("y2", y2)
+          .attr("x1", originLineX)
+          .attr("y1", originLineY)
+          .attr("x2", finalLineX)
+          .attr("y2", finalLineY)
           .attr("stroke", "black")
-          .attr("stroke-width", houseLineStrokeWidth(i));
+          .attr("stroke-width", 2);
       }
 
-      // Números das casas.
-      // Percorre 0 a 11 diretamente (já é anti‑horário começando no Ascendente)
-      for (let j = 0; j < 12; j++) {
-        const startDeg = cuspsOuter[j];
-        const endDeg = cuspsOuter[(j + 1) % 12];
-
-        let span = (endDeg - startDeg + 360) % 360;
-        if (span === 0) span = 360;
-        const degOffset = 2;
-        const midDeg = startDeg + degOffset;
-
-        const degFromAsc = (midDeg - asc + 360) % 360;
-
-        // **AQUI**: invertendo para anti‑horário
-        const angleRad = Math.PI - (degFromAsc * Math.PI) / 180;
-        const outerCuspRadius = outerChartBorderRadius - 10;
-        const x = outerCuspRadius * Math.cos(angleRad);
-        const y = outerCuspRadius * Math.sin(angleRad);
-
-        let txt = (j + 1).toString();
-        if (j % 3 === 0) {
-          // angular house
-          txt = angularLabels[j];
-        }
-
-        centerCircles
-          .append("text")
-          .attr("x", x)
-          .attr("y", y)
-          .attr("font-size", 10)
-          .attr("text-anchor", "middle")
-          .attr("font-weight", j % 3 === 0 ? "bold" : "plain")
-          .attr("alignment-baseline", "middle")
-          .text(txt);
-
-        chartElementsForAspect.push({
-          id: chartElementsForAspect.length,
-          isAntiscion: false,
-          longitude: decimalToDegreesMinutes(startDeg),
-          name: `${outerKeyPrefix}-${houseName}-${j}`,
-          elementType: "house",
-          isFromOuterChart: true,
-        });
-      }
+      chartElementsForAspect.push({
+        id: chartElementsForAspect.length,
+        isAntiscion: false,
+        longitude: decimalToDegreesMinutes(start),
+        name: `${fixedNames.houseName}-${i}`,
+        elementType: "house",
+        isFromOuterChart: false,
+      });
     }
 
     if (showOuterchart && outerPlanets) {
@@ -1561,7 +1511,7 @@ const AstroChart: React.FC<AstroChartProps> = ({
             id: chartElementsForAspect.length,
             isAntiscion: true,
             longitude: planet.antiscion,
-            name: planet.name + antiscionName,
+            name: planet.name + fixedNames.antiscionName,
             elementType: "planet",
             planetType: planet.type,
             isFromOuterChart: true,
@@ -1694,12 +1644,85 @@ const AstroChart: React.FC<AstroChartProps> = ({
             id: chartElementsForAspect.length,
             isAntiscion: true,
             longitude: lot.antiscion,
-            name: lot.name + antiscionName,
+            name: lot.name + fixedNames.antiscionName,
             elementType: "arabicPart",
             isFromOuterChart: true,
           });
         }
       });
+    }
+
+    // Desenha as cúspide das casas do mapa externo
+    if (showOuterchart && outerHouses) {
+      const cuspsOuter = outerHouses.house.map((a) => ((a % 360) + 360) % 360);
+
+      // desenha cada cúspide das casas
+      for (let i = 0; i < 12; i++) {
+        const start = cuspsOuter[i];
+        const angleRad = ((-start - 90) * Math.PI) / 180;
+
+        // ponto inicial da linha (já definido por você)
+        const x1 = outerChartBorderRadius * Math.cos(angleRad);
+        const y1 = outerChartBorderRadius * Math.sin(angleRad);
+        // ponto final da cúspide
+        const x2 = outerZodiacRadius * Math.cos(angleRad);
+        const y2 = outerZodiacRadius * Math.sin(angleRad);
+
+        // desenha a cúspide
+        rotatedGroup
+          .append("line")
+          .attr("x1", x1)
+          .attr("y1", y1)
+          .attr("x2", x2)
+          .attr("y2", y2)
+          .attr("stroke", "black")
+          .attr("stroke-width", houseLineStrokeWidth(i));
+      }
+
+      // Números das casas.
+      // Percorre 0 a 11 diretamente (já é anti‑horário começando no Ascendente)
+      for (let j = 0; j < 12; j++) {
+        const startDeg = cuspsOuter[j];
+        const endDeg = cuspsOuter[(j + 1) % 12];
+
+        let span = (endDeg - startDeg + 360) % 360;
+        if (span === 0) span = 360;
+        const degOffset = 2;
+        const midDeg = startDeg + degOffset;
+
+        const degFromAsc = (midDeg - asc + 360) % 360;
+
+        // **AQUI**: invertendo para anti‑horário
+        const angleRad = Math.PI - (degFromAsc * Math.PI) / 180;
+        const outerCuspRadius = outerChartBorderRadius - 10;
+        const x = outerCuspRadius * Math.cos(angleRad);
+        const y = outerCuspRadius * Math.sin(angleRad);
+
+        let txt = (j + 1).toString();
+        if (j % 3 === 0) {
+          // angular house
+          txt = angularLabels[j];
+        }
+
+        centerCircles
+          .append("text")
+          .attr("x", x)
+          .attr("y", y)
+          .attr("font-size", 10)
+          .attr("text-anchor", "middle")
+          .attr("font-weight", j % 3 === 0 ? "bold" : "plain")
+          .attr("alignment-baseline", "middle")
+          .text(txt);
+
+        chartElementsForAspect.push({
+          id: chartElementsForAspect.length,
+          isAntiscion: false,
+          longitude: decimalToDegreesMinutes(startDeg),
+          name: `${fixedNames.outerKeyPrefix}-${fixedNames.houseName}-${j}`,
+          elementType: "house",
+          isFromOuterChart: true,
+        });
+      }
     }
 
     resolveOverlapsRowsThenDiagonal(svg, {
