@@ -3,9 +3,8 @@
 import { BirthChartContextProvider } from "@/contexts/BirthChartContext";
 import { ArabicPartsContextProvider } from "@/contexts/ArabicPartsContext";
 import BirthChart from "./components/BirthChart";
-import ArabicParts from "./components/ArabicParts";
 import ReturnChart from "./components/ReturnChart";
-import BirthArchArabicParts from "./components/BirthArchArabicParts";
+import { AspectsContextProvider } from "@/contexts/AspectsContext";
 
 export default function Home() {
   return (
@@ -13,8 +12,10 @@ export default function Home() {
       <h1>Zazastro</h1>
       <BirthChartContextProvider>
         <ArabicPartsContextProvider>
-          <BirthChart />
-          <ReturnChart />
+          <AspectsContextProvider>
+            <BirthChart />
+            <ReturnChart />
+          </AspectsContextProvider>
         </ArabicPartsContextProvider>
       </BirthChartContextProvider>
     </div>

@@ -17,6 +17,7 @@ import {
 import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import BirthArchArabicParts from "./BirthArchArabicParts";
 import ArabicParts from "./ArabicParts";
+import AspectsTable from "./AspectsTable";
 
 interface Props {
   birthChart: BirthChart;
@@ -106,7 +107,7 @@ export default function ChartAndData({
 
       <div>{children}</div>
 
-      <div>
+      <div className="flex flex-col gap-2 -z-10">
         {!useArchArabicParts && <ArabicParts />}
         {useArchArabicParts && (
           <BirthArchArabicParts
@@ -114,6 +115,7 @@ export default function ChartAndData({
             customArabicParts={customArabicParts}
           />
         )}
+        <AspectsTable />
       </div>
     </div>
   );

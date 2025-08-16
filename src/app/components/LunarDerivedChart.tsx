@@ -11,7 +11,7 @@ import {
   decimalToDegreesMinutes,
   getAntiscion,
   getDegreeAndSign,
-  monthsName,
+  monthsNames,
 } from "../utils/chartUtils";
 import AstroChart from "./AstroChart";
 import moment from "moment";
@@ -209,7 +209,7 @@ const LunarDerivedChart: React.FC<Props> = ({
           className="border-2 rounded-sm"
           onChange={(e) => setMonth(Number.parseInt(e.target.value) + 1)}
         >
-          {monthsName.map((month, index) => (
+          {monthsNames.map((month, index) => (
             <option key={index} value={index}>
               {month}
             </option>

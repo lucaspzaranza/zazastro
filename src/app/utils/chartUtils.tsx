@@ -1,4 +1,5 @@
 import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
+import { PlanetAspectData } from "@/interfaces/AstroChartInterfaces";
 import {
   BirthChartProfile,
   BirthDate,
@@ -23,7 +24,22 @@ export const allSigns = [
   "Peixes ♓︎",
 ];
 
-export const monthsName = [
+export const signsGlpyphs = [
+  "♈︎",
+  "♉︎",
+  "♊︎",
+  "♋︎",
+  "♌︎",
+  "♍︎",
+  "♎︎",
+  "♏︎",
+  "♐︎",
+  "♑︎",
+  "♒︎",
+  "♓︎",
+];
+
+export const monthsNames = [
   "Janeiro",
   "Fevereiro",
   "Março",
@@ -45,6 +61,16 @@ export const angularLabels: Record<number, string> = {
   6: "DC", // Casa 7 – Descendente
   9: "MC", // Casa 10 – Meio do Céu
 };
+
+export const caldaicOrder: PlanetType[] = [
+  "moon",
+  "mercury",
+  "venus",
+  "sun",
+  "mars",
+  "jupiter",
+  "saturn",
+];
 
 export function getSign(longitude: number, getGlyphOnly = false): string {
   const signs = [
@@ -94,17 +120,31 @@ export const getSignColor = (signGlyph: string): string => {
   return "black";
 };
 
-export function getPlanetImage(planet: PlanetType): React.ReactNode {
+export function getPlanetImage(planet: PlanetType, size = 15): React.ReactNode {
   const folder = "planets";
   const path = `${folder}/${planet}.png`;
-  return <img src={path} width={15} />;
+  return <img src={path} width={size} />;
 }
 
-export function getArabicPartImage(lot: ArabicPart): React.ReactNode {
+export function getArabicPartImage(
+  lot: ArabicPart,
+  size = 15
+): React.ReactNode {
   const folder = "planets";
   const part = lot.planet ? lot.partKey : "fortune";
   const path = `${folder}/${part}.png`;
-  return <img src={path} width={15} />;
+  return <img src={path} width={size} />;
+}
+
+export function getAspectImage(
+  aspect: PlanetAspectData,
+  size = 15
+): React.ReactNode {
+  const folder = "aspects";
+  const aspectType = aspect.aspectType;
+  const path = `${folder}/${aspectType}.png`;
+
+  return <img src={path} width={size} />;
 }
 
 export const formatSignColor = (stringWithSign: string): React.ReactNode => {

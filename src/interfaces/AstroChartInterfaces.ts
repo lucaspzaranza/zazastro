@@ -15,13 +15,14 @@ export interface AstroChartProps {
 export interface ChartElement {
   longitude: number;
   name: string;
-  offset: number;
   id: number;
   isAntiscion: boolean;
-  isPlanet: boolean;
+  elementType: ElementType;
   planetType?: PlanetType;
   isFromOuterChart: boolean;
 }
+
+export type ElementType = "planet" | "arabicPart" | "house";
 
 export type AspectType =
   | "conjunction"
@@ -43,7 +44,7 @@ export interface AspectDataItem {
 export interface AspectedElement {
   name: string;
   longitude: number;
-  isPlanet: boolean;
+  elementType: ElementType;
   isFromOuterChart: boolean;
 }
 

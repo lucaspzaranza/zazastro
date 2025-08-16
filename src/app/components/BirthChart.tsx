@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   convertDegMinToDecimal,
   getHourAndMinute,
-  monthsName,
+  monthsNames,
   presavedBirthDates,
 } from "../utils/chartUtils";
 import {
@@ -208,7 +208,7 @@ export default function BirthChart() {
                 setLunarMonth(Number.parseInt(e.target.value) + 1)
               }
             >
-              {monthsName.map((month, index) => (
+              {monthsNames.map((month, index) => (
                 <option key={index} value={index}>
                   {month}
                 </option>
