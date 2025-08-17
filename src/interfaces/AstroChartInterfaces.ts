@@ -11,6 +11,7 @@ export interface AstroChartProps {
     outerArabicParts?: ArabicPartsType;
     combineWithBirthChart?: () => void;
     combineWithReturnChart?: () => void;
+    onUpdateAspectsData?: (aspectsData: PlanetAspectData[]) => void;
   };
 }
 

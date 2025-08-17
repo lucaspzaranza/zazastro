@@ -19,7 +19,10 @@ import BirthArchArabicParts from "./BirthArchArabicParts";
 import ArabicParts from "./ArabicParts";
 import AspectsTable from "./AspectsTable";
 import AstroChart from "./AstroChart";
-import { AstroChartProps } from "@/interfaces/AstroChartInterfaces";
+import {
+  AstroChartProps,
+  PlanetAspectData,
+} from "@/interfaces/AstroChartInterfaces";
 
 interface Props {
   useArchArabicPartsForDataVisualization: boolean;
@@ -47,6 +50,7 @@ export default function ChartAndData(props: Props) {
   };
 
   const [chart, setChart] = useState(outerChart ?? birthChart);
+  const [aspectsData, setAspectsData] = useState<PlanetAspectData[]>([]);
 
   const getHouseAntiscion = (houseLong: number): React.ReactNode => {
     const antiscion = getAntiscion(houseLong, false);
@@ -59,6 +63,10 @@ export default function ChartAndData(props: Props) {
       ? angularLabels[houseIndex]
       : (houseIndex + 1).toString();
   };
+
+  function handleOnUpdateAspectsData(newAspectData: PlanetAspectData[]) {
+    setAspectsData(newAspectData);
+  }
 
   return (
     <div className="flex flex-row items-start justify-center mt-8">
@@ -134,13 +142,10 @@ export default function ChartAndData(props: Props) {
             outerArabicParts,
             combineWithBirthChart,
             combineWithReturnChart,
+            onUpdateAspectsData: handleOnUpdateAspectsData,
           }}
         />
       </div>
-
-      {/* planets={birthChart.planets}
-          housesData={birthChart.housesData}
-          arabicParts={arabicParts} */}
 
       <div className="flex flex-col gap-2 -z-10">
         {!useArchArabicPartsForDataVisualization && <ArabicParts />}
@@ -150,7 +155,13 @@ export default function ChartAndData(props: Props) {
             customArabicParts={customPartsForDataVisualization}
           />
         )}
-        <AspectsTable />
+        <AspectsTable
+          aspects={aspectsData}
+          birthChart={birthChart}
+          outerChart={outerChart}
+          arabicParts={arabicParts!}
+          outerArabicParts={outerArabicParts}
+        />
       </div>
     </div>
   );

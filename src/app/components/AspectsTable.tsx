@@ -16,7 +16,7 @@ import {
   getDegreesInsideASign,
   getPlanetImage,
 } from "../utils/chartUtils";
-import { PlanetType } from "@/interfaces/BirthChartInterfaces";
+import { BirthChart, PlanetType } from "@/interfaces/BirthChartInterfaces";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import { useBirthChart } from "@/contexts/BirthChartContext";
@@ -30,14 +30,28 @@ import { useBirthChart } from "@/contexts/BirthChartContext";
  *     mapa interno ou externo, distância, e tipo de aspecto (aplicativo ou separativo)
  */
 
-export default function AspectsTable() {
-  const { aspects } = useAspectsData();
-  const { arabicParts, archArabicParts } = useArabicParts();
-  const { birthChart, returnChart } = useBirthChart();
+export default function AspectsTable({
+  aspects,
+  birthChart,
+  outerChart,
+  arabicParts,
+  outerArabicParts,
+}: {
+  aspects: PlanetAspectData[];
+  birthChart: BirthChart;
+  outerChart?: BirthChart;
+  arabicParts: ArabicPartsType;
+  outerArabicParts?: ArabicPartsType;
+}) {
+  // const { aspects } = useAspectsData();
+  // const { arabicParts, archArabicParts } = useArabicParts();
+  // const { birthChart, returnChart } = useBirthChart();
   const backupValue = useRef(0);
 
   const tdClasses =
     "w-full border-r-1 flex flex-row items-center justify-center";
+
+  // console.log(aspects);
 
   function extractHouseNumber(input: string): number | null {
     const match = input.match(/-(1[0-2]|[1-9])$/);
@@ -60,51 +74,70 @@ export default function AspectsTable() {
     const houseNumber = extractHouseNumber(element.name)! + 1; // 0 - 11 to 1 - 12
 
     if ((houseNumber - 1) % 3 === 0) {
-      return angularLabels[houseNumber - 1];
+      return `${angularLabels[houseNumber - 1]}${
+        element.isFromOuterChart ? "(E)" : ""
+      }`;
     }
 
-    return `Casa ${houseNumber}`;
+    return `C${houseNumber}${element.isFromOuterChart ? "(E)" : ""}`;
   }
 
   function getElementImage(element: AspectedElement): React.ReactNode {
     if (element.elementType === "planet") {
-      return getPlanetImage(element.name as PlanetType, {
-        isAntiscion: element.isAntiscion,
-      });
+      return (
+        <>
+          {getPlanetImage(element.name as PlanetType, {
+            isAntiscion: element.isAntiscion,
+          })}
+          {element.isFromOuterChart ? "(E)" : ""}
+        </>
+      );
     }
 
     if (element.elementType === "arabicPart" && arabicParts) {
       const key = getArabicPartKeyFromElement(element)!;
       const arabicPart = arabicParts[key];
       if (arabicPart) {
-        return getArabicPartImage(arabicPart, {
-          isAntiscion: element.isAntiscion,
-        });
+        return (
+          <>
+            {getArabicPartImage(arabicPart, {
+              isAntiscion: element.isAntiscion,
+            })}
+            {element.isFromOuterChart ? "(E)" : ""}
+          </>
+        );
       }
     }
 
     if (element.elementType === "house") {
-      return <span>{getHouseName(element)}</span>;
+      return getHouseName(element);
     }
 
-    return <span>-</span>;
+    // return <span>-</span>;
+    return <span className="text-sm">{element.name}</span>;
   }
 
   function getElementRawLongitude(element: AspectedElement): number {
     let rawLongitude = 0;
 
-    const chart = element.isFromOuterChart ? returnChart : birthChart;
-    const lots = element.isFromOuterChart ? archArabicParts : arabicParts;
+    const chart = element.isFromOuterChart ? outerChart : birthChart;
+    const lots = element.isFromOuterChart ? outerArabicParts : arabicParts;
 
     if (element.elementType === "planet") {
       const originalElement = chart?.planets.find(
-        (planet) => planet.type === element.name
+        (planet) => planet.type === (element.name as PlanetType)
       );
 
-      if (originalElement)
-        rawLongitude = element.isAntiscion
+      if (element.name.includes("saturn") && !element.isFromOuterChart) {
+        // console.log(element);
+        // console.log(originalElement);
+      }
+
+      if (originalElement) {
+        backupValue.current = element.isAntiscion
           ? originalElement.antiscionRaw
           : originalElement.longitudeRaw;
+      }
     } else if (element.elementType === "house") {
       let houseIndex = extractHouseNumber(element.name)! + 1;
 
@@ -115,8 +148,6 @@ export default function AspectsTable() {
         //   `element: ${element.name}, houseIndex: ${houseIndex}, array index: ${index}, rawLong: ${backupValue.current},`
         // );
       }
-
-      rawLongitude = backupValue.current;
     } else if (element.elementType === "arabicPart") {
       // if (element.isAntiscion) {
       //   console.log(`element: ${element.name}, rawLong: ${rawLongitude}`);
@@ -126,12 +157,15 @@ export default function AspectsTable() {
       if (lots) {
         const originalArabicPart = lots[key];
         if (originalArabicPart) {
-          rawLongitude = element.isAntiscion
+          backupValue.current = element.isAntiscion
             ? originalArabicPart.antiscionRaw
             : originalArabicPart.longitudeRaw;
         }
       }
     }
+
+    rawLongitude = backupValue.current;
+    backupValue.current = 0;
 
     return rawLongitude;
   }
@@ -146,15 +180,15 @@ export default function AspectsTable() {
 
     // console.log(aspect.element.longitude - aspect.aspectedElement.longitude);
 
-    if (
-      aspect.aspectType === "opposition" &&
-      aspect.element.name.includes("mercury") &&
-      aspect.aspectedElement.isAntiscion
-    ) {
-      console.log(
-        `1st: ${_1stSignLong}, 2nd raw: ${_2ndElementRawLongitude}, 2nd: ${_2ndSignLong}`
-      );
-    }
+    // if (
+    //   aspect.aspectType === "conjunction" &&
+    //   aspect.element.name.includes("saturn") &&
+    //   !aspect.aspectedElement.isFromOuterChart
+    // ) {
+    //   console.log(
+    //     `1st: ${_1stSignLong}, 2nd raw: ${_2ndElementRawLongitude}, 2nd: ${_2ndSignLong}`
+    //   );
+    // }
 
     const distance = decimalToDegreesMinutes(
       Math.abs(_1stSignLong - _2ndSignLong)
@@ -165,6 +199,26 @@ export default function AspectsTable() {
     const parts = distance.split(".");
     const deg = parts[0];
     let min = parts[1];
+
+    // if (
+    //   distance === "24.10" &&
+    //   aspect.element.name.includes("saturn") &&
+    //   !aspect.aspectedElement.isFromOuterChart &&
+    //   aspect.aspectedElement.elementType === "house" &&
+    //   aspect.aspectType === "conjunction"
+    // ) {
+    //   console.log(
+    //     ` aspect: ${aspect.aspectType},
+    //     1st: ${aspect.element.name} - ${_1stSignLong},
+    //      2nd: ${aspect.aspectedElement.name} - ${_2ndSignLong}, distance: ${distance}`
+    //   );
+    //   // console.log(aspect);
+    //   // console.log(parts);
+    //   console.log("birthChart", birthChart);
+    //   console.log("outerChart", outerChart);
+    //   console.log(aspect);
+    //   console.log(aspects);
+    // }
 
     if (min && min.length === 1) {
       min = min + "0";
@@ -190,7 +244,7 @@ export default function AspectsTable() {
               <th className="w-full text-center border-r-1">Aspecto</th>
               <th className="w-full text-center border-r-1">Aspectado</th>
               <th className="w-full text-center border-r-1">Distância</th>
-              <th className="w-full text-center">Tipo</th>
+              <th className="w-3/4 text-center">Tipo</th>
             </tr>
           </thead>
           <tbody className="flex flex-col">
@@ -205,7 +259,7 @@ export default function AspectsTable() {
                     {getElementImage(aspect.aspectedElement)}
                   </td>
                   <td className={tdClasses}>{getAspectDistance(aspect)}</td>
-                  <td className="w-full">A</td>
+                  <td className="w-3/4">A</td>
                 </tr>
               );
             })}

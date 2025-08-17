@@ -32,17 +32,7 @@ const ASPECTS: Aspect[] = [
   { type: "opposition", angle: 180 },
 ];
 
-const AstroChart: React.FC<AstroChartProps> = ({
-  // planets,
-  // housesData,
-  // arabicParts,
-  // outerPlanets,
-  // outerHouses,
-  // outerArabicParts,
-  // combineWithBirthChart,
-  // combineWithReturnChart,
-  props,
-}) => {
+const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   const {
     planets,
     housesData,
@@ -52,6 +42,7 @@ const AstroChart: React.FC<AstroChartProps> = ({
     outerArabicParts,
     combineWithBirthChart,
     combineWithReturnChart,
+    onUpdateAspectsData,
   } = { ...props };
 
   const ref = useRef<SVGSVGElement>(null);
@@ -760,7 +751,8 @@ const AstroChart: React.FC<AstroChartProps> = ({
     }
   ) {
     const aspectsData = getAspects(elements);
-    updateAspectsData(aspectsData);
+    onUpdateAspectsData?.(aspectsData);
+    // updateAspectsData(aspectsData);
 
     aspectsData.forEach((aspect) => {
       if (!isAspectWithHouse(aspect)) {
@@ -1578,7 +1570,7 @@ const AstroChart: React.FC<AstroChartProps> = ({
             id: chartElementsForAspect.length,
             isAntiscion: false,
             longitude: lot.longitude,
-            name: lot.name,
+            name: lot.partKey,
             elementType: "arabicPart",
             isFromOuterChart: true,
           });
@@ -1644,7 +1636,7 @@ const AstroChart: React.FC<AstroChartProps> = ({
             id: chartElementsForAspect.length,
             isAntiscion: true,
             longitude: lot.antiscion,
-            name: lot.name + fixedNames.antiscionName,
+            name: lot.partKey + fixedNames.antiscionName,
             elementType: "arabicPart",
             isFromOuterChart: true,
           });
