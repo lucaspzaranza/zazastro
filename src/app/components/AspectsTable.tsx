@@ -16,19 +16,25 @@ import {
   getDegreesInsideASign,
   getPlanetImage,
 } from "../utils/chartUtils";
-import { BirthChart, PlanetType } from "@/interfaces/BirthChartInterfaces";
+import {
+  BirthChart,
+  Planet,
+  PlanetType,
+} from "@/interfaces/BirthChartInterfaces";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import { useBirthChart } from "@/contexts/BirthChartContext";
 
 /**
  * Próximos passos:
- * 1 - Diferenciar elementos do mapa externo do mapa interno;
+ * 1 - Diferenciar elementos do mapa externo do mapa interno; (Ok)
  * 2 - Diferenciar tipo de aspecto entre aplicativo ou separativo;
  * 3 - Inserir paginação;
  * 4 - Inserir opção de filtro por: elemento, aspecto, elemento aspectado,
  *     mapa interno ou externo, distância, e tipo de aspecto (aplicativo ou separativo)
  */
+
+type ElementLongitudeParameterType = "smallest" | "biggest";
 
 export default function AspectsTable({
   aspects,
@@ -43,15 +49,10 @@ export default function AspectsTable({
   arabicParts: ArabicPartsType;
   outerArabicParts?: ArabicPartsType;
 }) {
-  // const { aspects } = useAspectsData();
-  // const { arabicParts, archArabicParts } = useArabicParts();
-  // const { birthChart, returnChart } = useBirthChart();
   const backupValue = useRef(0);
 
   const tdClasses =
-    "w-full border-r-1 flex flex-row items-center justify-center";
-
-  // console.log(aspects);
+    "w-full border-r-2 flex flex-row items-center justify-center";
 
   function extractHouseNumber(input: string): number | null {
     const match = input.match(/-(1[0-2]|[1-9])$/);
@@ -117,6 +118,14 @@ export default function AspectsTable({
     return <span className="text-sm">{element.name}</span>;
   }
 
+  function getPlanetInfo(element: AspectedElement): Planet | undefined {
+    const chart = element.isFromOuterChart ? outerChart : birthChart;
+
+    return chart?.planets.find(
+      (planet) => planet.type === (element.name as PlanetType)
+    );
+  }
+
   function getElementRawLongitude(element: AspectedElement): number {
     let rawLongitude = 0;
 
@@ -124,14 +133,7 @@ export default function AspectsTable({
     const lots = element.isFromOuterChart ? outerArabicParts : arabicParts;
 
     if (element.elementType === "planet") {
-      const originalElement = chart?.planets.find(
-        (planet) => planet.type === (element.name as PlanetType)
-      );
-
-      if (element.name.includes("saturn") && !element.isFromOuterChart) {
-        // console.log(element);
-        // console.log(originalElement);
-      }
+      const originalElement = getPlanetInfo(element);
 
       if (originalElement) {
         backupValue.current = element.isAntiscion
@@ -227,9 +229,109 @@ export default function AspectsTable({
     return `${deg}°${min ?? "00"}'`;
   }
 
+  function getFastestPlanetFromAspect(
+    aspect: PlanetAspectData
+  ): AspectedElement {
+    const firstIndex = caldaicOrder.findIndex(
+      (planet) => planet === (aspect.element.name as PlanetType)
+    );
+
+    const secondIndex = caldaicOrder.findIndex(
+      (planet) => planet === (aspect.aspectedElement.name as PlanetType)
+    );
+
+    if (secondIndex < firstIndex) return aspect.aspectedElement;
+
+    return aspect.element;
+  }
+
+  /**
+   * Get element from aspect with the smallest or biggest longitude.
+   */
+  function getElementWithLongitudeFromAspect(
+    aspect: PlanetAspectData,
+    smallestOrBiggest: ElementLongitudeParameterType
+  ): AspectedElement {
+    const _1stSignLong = getDegreesInsideASign(
+      getElementRawLongitude(aspect.element)
+    );
+
+    const _2ndSignLong = getDegreesInsideASign(
+      getElementRawLongitude(aspect.aspectedElement)
+    );
+
+    const matchSecondElementLogic =
+      smallestOrBiggest === "smallest"
+        ? _2ndSignLong < _1stSignLong
+        : _2ndSignLong > _1stSignLong;
+
+    if (matchSecondElementLogic) return aspect.aspectedElement;
+
+    return aspect.element;
+  }
+
+  function getPlanetFromAspect(aspect: PlanetAspectData): AspectedElement {
+    if (aspect.element.elementType === "planet") return aspect.element;
+
+    return aspect.aspectedElement;
+  }
+
   function getAspectType(aspect: PlanetAspectData): string {
-    // const elementIndex = caldaicOrder.indexOf(aspect.element.name as )
-    return "";
+    const applicative = "A";
+    const separative = "S";
+
+    if (
+      aspect.element.elementType !== "planet" &&
+      aspect.aspectedElement.elementType !== "planet"
+    )
+      return applicative;
+
+    if (
+      aspect.element.elementType === "planet" &&
+      aspect.aspectedElement.elementType === "planet"
+    ) {
+      const fastestPlanet = getFastestPlanetFromAspect(aspect);
+      const planetSmallestLongInfo = getPlanetInfo(
+        getElementWithLongitudeFromAspect(aspect, "smallest")
+      );
+
+      const planetBiggestLongInfo = getPlanetInfo(
+        getElementWithLongitudeFromAspect(aspect, "biggest")
+      );
+
+      if (
+        planetSmallestLongInfo?.isRetrograde &&
+        planetBiggestLongInfo?.isRetrograde
+      ) {
+        if (planetSmallestLongInfo.type === fastestPlanet.name)
+          return separative;
+        else return applicative;
+      }
+
+      if (planetSmallestLongInfo?.type === fastestPlanet.name) {
+        if (planetSmallestLongInfo.isRetrograde) return separative;
+        else return applicative;
+      } else {
+        if (planetBiggestLongInfo?.isRetrograde) return applicative;
+        else return separative;
+      }
+    } else {
+      // planet w/ house or lot
+      const planetFromAspect = getPlanetFromAspect(aspect);
+      const planetInfo = getPlanetInfo(planetFromAspect);
+      const elWithSmallestLong = getElementWithLongitudeFromAspect(
+        aspect,
+        "smallest"
+      );
+
+      if (planetInfo?.type === elWithSmallestLong.name) {
+        if (planetInfo.isRetrograde) return separative;
+        else return applicative;
+      } else {
+        if (planetInfo?.isRetrograde) return applicative;
+        else return separative;
+      }
+    }
   }
 
   return (
@@ -237,20 +339,20 @@ export default function AspectsTable({
       <h2 className="font-bold text-lg mb-2">Aspectos:</h2>
 
       {aspects && aspects.length > 0 && (
-        <table className="w-full flex flex-col border-1 text-sm text-center">
+        <table className="w-full flex flex-col border-2 text-sm text-center">
           <thead>
             <tr className="flex flex-row justify-between">
-              <th className="w-full text-center border-r-1">Elemento</th>
-              <th className="w-full text-center border-r-1">Aspecto</th>
-              <th className="w-full text-center border-r-1">Aspectado</th>
-              <th className="w-full text-center border-r-1">Distância</th>
+              <th className="w-full text-center border-r-2">Elemento</th>
+              <th className="w-full text-center border-r-2">Aspecto</th>
+              <th className="w-full text-center border-r-2">Aspectado</th>
+              <th className="w-full text-center border-r-2">Distância</th>
               <th className="w-3/4 text-center">Tipo</th>
             </tr>
           </thead>
           <tbody className="flex flex-col">
             {aspects.map((aspect, index) => {
               return (
-                <tr className="flex flex-row border-t-1" key={index}>
+                <tr className="flex flex-row border-t-2" key={index}>
                   <td className={tdClasses}>
                     {getElementImage(aspect.element)}
                   </td>
@@ -259,7 +361,7 @@ export default function AspectsTable({
                     {getElementImage(aspect.aspectedElement)}
                   </td>
                   <td className={tdClasses}>{getAspectDistance(aspect)}</td>
-                  <td className="w-3/4">A</td>
+                  <td className="w-3/4">{getAspectType(aspect)}</td>
                 </tr>
               );
             })}
@@ -268,14 +370,14 @@ export default function AspectsTable({
       )}
 
       {(aspects === undefined || aspects.length === 0) && (
-        <table className="w-full flex flex-col border-1 text-sm text-center">
-          <thead className="border-b-1">
+        <table className="w-full flex flex-col border-2 text-sm text-center">
+          <thead className="border-b-2">
             <tr className="flex flex-row justify-between">
-              <th className="w-full text-center border-r-1">Planeta</th>
-              <th className="w-full text-center border-r-1">Aspecto</th>
-              <th className="w-full text-center border-r-1">Aspectado</th>
-              <th className="w-full text-center border-r-1">Dist.</th>
-              <th className="w-full text-center">Tipo</th>
+              <th className="w-full text-center border-r-2">Planeta</th>
+              <th className="w-full text-center border-r-2">Aspecto</th>
+              <th className="w-full text-center border-r-2">Aspectado</th>
+              <th className="w-full text-center border-r-2">Distância</th>
+              <th className="w-3/4 text-center">Tipo</th>
             </tr>
           </thead>
           <tbody className="flex flex-col">

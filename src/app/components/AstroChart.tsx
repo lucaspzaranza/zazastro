@@ -475,63 +475,34 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     aspect: Aspect
   ): boolean {
     const _1stElementSign = getSign(element.longitude, true);
-    // const _1stElementSign = "♉︎";
     const _2ndElementSign = getSign(elToCheck.longitude, true);
-
     const _1stSignIndex = signsGlpyphs.indexOf(_1stElementSign);
-
     let expected2ndSign = _1stElementSign;
 
     if (aspect.type === "conjunction") {
       return _1stElementSign === _2ndElementSign;
-    } else if (aspect.type === "opposition") {
+    } else {
+      let aspectOffset = 0;
+
+      if (aspect.type === "opposition") aspectOffset = 6;
+      else if (aspect.type === "trine") aspectOffset = 4;
+      else if (aspect.type === "square") aspectOffset = 3;
+      else if (aspect.type === "sextile") aspectOffset = 2;
+
       expected2ndSign = signsGlpyphs.find((_, index) => {
-        return (_1stSignIndex + 6) % 12 === index;
+        return (_1stSignIndex + aspectOffset) % 12 === index;
       })!;
 
-      // if (
-      //   element.planetType === "mercury" &&
-      //   elToCheck.name.includes("captivity")
-      // ) {
-      //   console.log(
-      //     `${aspect.type}, 1st: ${
-      //       element.name
-      //     }, sign: ${_1stElementSign}, 2nd: ${
-      //       elToCheck.name
-      //     }, sign: ${_2ndElementSign}, expected: ${expected2ndSign}, is in proper sign? ${expected2ndSign.includes(
-      //       _2ndElementSign
-      //     )}`
-      //   );
-      // }
-
-      return expected2ndSign.includes(_2ndElementSign);
-    } else if (aspect.type === "trine") {
-      expected2ndSign = signsGlpyphs.find((_, index) => {
-        return (_1stSignIndex - 4 + 12) % 12 === index;
-      })!;
-
-      expected2ndSign +=
-        ", " +
-        signsGlpyphs.find((_, index) => {
-          return (_1stSignIndex + 4) % 12 === index;
-        })!;
-
-      return expected2ndSign.includes(_2ndElementSign);
-    } else if (aspect.type === "square") {
-      expected2ndSign = signsGlpyphs.find((_, index) => {
-        return (_1stSignIndex - 3 + 12) % 12 === index;
-      })!;
-
-      expected2ndSign +=
-        ", " +
-        signsGlpyphs.find((_, index) => {
-          return (_1stSignIndex + 3) % 12 === index;
-        })!;
+      if (aspect.type !== "opposition") {
+        expected2ndSign +=
+          ", " +
+          signsGlpyphs.find((_, index) => {
+            return (_1stSignIndex - aspectOffset) % 12 === index;
+          })!;
+      }
 
       return expected2ndSign.includes(_2ndElementSign);
     }
-
-    return false;
   }
 
   function getAspects(elements: ChartElement[]): PlanetAspectData[] {
@@ -751,6 +722,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     }
   ) {
     const aspectsData = getAspects(elements);
+    console.log(aspectsData);
     onUpdateAspectsData?.(aspectsData);
     // updateAspectsData(aspectsData);
 

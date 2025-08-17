@@ -68,6 +68,10 @@ export default function ChartAndData(props: Props) {
     setAspectsData(newAspectData);
   }
 
+  useEffect(() => {
+    setChart(outerChart ?? birthChart);
+  }, [birthChart, outerChart]);
+
   return (
     <div className="flex flex-row items-start justify-center mt-8">
       <div className="w-[20rem] flex flex-col justify-start gap-2">

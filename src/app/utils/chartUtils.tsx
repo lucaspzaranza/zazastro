@@ -378,6 +378,16 @@ export const presavedBirthDates: Record<string, BirthChartProfile> = {
       coordinates: SPCoordinates,
     },
   },
+  aline: {
+    name: "Aline Zaranza",
+    birthDate: {
+      year: 1999,
+      month: 3,
+      day: 22,
+      time: convertDegMinToDecimal(12, 39).toString(),
+      coordinates,
+    },
+  },
   alana: {
     name: "Alana Angelim",
     birthDate: {
@@ -406,16 +416,6 @@ export const presavedBirthDates: Record<string, BirthChartProfile> = {
       day: 20,
       time: convertDegMinToDecimal(2, 20).toString(),
       coordinates: SPCoordinates,
-    },
-  },
-  aline: {
-    name: "Aline Zaranza",
-    birthDate: {
-      year: 1999,
-      month: 3,
-      day: 22,
-      time: convertDegMinToDecimal(12, 39).toString(),
-      coordinates,
     },
   },
   anaFlavia: {
