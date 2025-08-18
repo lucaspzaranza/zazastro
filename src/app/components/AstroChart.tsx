@@ -722,9 +722,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     }
   ) {
     const aspectsData = getAspects(elements);
-    console.log(aspectsData);
     onUpdateAspectsData?.(aspectsData);
-    // updateAspectsData(aspectsData);
 
     aspectsData.forEach((aspect) => {
       if (!isAspectWithHouse(aspect)) {

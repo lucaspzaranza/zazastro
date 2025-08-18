@@ -133,9 +133,7 @@ export default function ChartAndData(props: Props) {
         </div>
       </div>
 
-      {/* <div>{children}</div> */}
-
-      <div>
+      <div className="z-10">
         <AstroChart
           props={{
             planets: birthChart.planets,
@@ -151,7 +149,7 @@ export default function ChartAndData(props: Props) {
         />
       </div>
 
-      <div className="flex flex-col gap-2 -z-10">
+      <div className="flex flex-col gap-2">
         {!useArchArabicPartsForDataVisualization && <ArabicParts />}
         {useArchArabicPartsForDataVisualization && (
           <BirthArchArabicParts

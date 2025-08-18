@@ -4,7 +4,7 @@ import {
   ChartElement,
   PlanetAspectData,
 } from "@/interfaces/AstroChartInterfaces";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   angularLabels,
   arabicPartKeys,
@@ -15,6 +15,7 @@ import {
   getAspectImage,
   getDegreesInsideASign,
   getPlanetImage,
+  monthsNames,
 } from "../utils/chartUtils";
 import {
   BirthChart,
@@ -28,8 +29,8 @@ import { useBirthChart } from "@/contexts/BirthChartContext";
 /**
  * Próximos passos:
  * 1 - Diferenciar elementos do mapa externo do mapa interno; (Ok)
- * 2 - Diferenciar tipo de aspecto entre aplicativo ou separativo;
- * 3 - Inserir paginação;
+ * 2 - Diferenciar tipo de aspecto entre aplicativo ou separativo; (Ok)
+ * 3 - Inserir paginação; (Ok)
  * 4 - Inserir opção de filtro por: elemento, aspecto, elemento aspectado,
  *     mapa interno ou externo, distância, e tipo de aspecto (aplicativo ou separativo)
  */
@@ -51,8 +52,18 @@ export default function AspectsTable({
 }) {
   const backupValue = useRef(0);
 
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [tableCurrentPage, setTableCurrentPage] = useState(1);
+  const [tablePageCount, setTablePageCount] = useState(1);
+
   const tdClasses =
     "w-full border-r-2 flex flex-row items-center justify-center";
+
+  useEffect(() => {
+    if (aspects.length > 0) {
+      updateTablePaginationAndPageCount();
+    }
+  }, [aspects]);
 
   function extractHouseNumber(input: string): number | null {
     const match = input.match(/-(1[0-2]|[1-9])$/);
@@ -114,7 +125,6 @@ export default function AspectsTable({
       return getHouseName(element);
     }
 
-    // return <span>-</span>;
     return <span className="text-sm">{element.name}</span>;
   }
 
@@ -146,15 +156,8 @@ export default function AspectsTable({
       if (chart) {
         const index = houseIndex - 1;
         backupValue.current = chart.housesData.house[index];
-        // console.log(
-        //   `element: ${element.name}, houseIndex: ${houseIndex}, array index: ${index}, rawLong: ${backupValue.current},`
-        // );
       }
     } else if (element.elementType === "arabicPart") {
-      // if (element.isAntiscion) {
-      //   console.log(`element: ${element.name}, rawLong: ${rawLongitude}`);
-      // }
-
       const key = getArabicPartKeyFromElement(element)!;
       if (lots) {
         const originalArabicPart = lots[key];
@@ -180,18 +183,6 @@ export default function AspectsTable({
     const _1stSignLong = getDegreesInsideASign(_1stElementRawLongitude);
     const _2ndSignLong = getDegreesInsideASign(_2ndElementRawLongitude);
 
-    // console.log(aspect.element.longitude - aspect.aspectedElement.longitude);
-
-    // if (
-    //   aspect.aspectType === "conjunction" &&
-    //   aspect.element.name.includes("saturn") &&
-    //   !aspect.aspectedElement.isFromOuterChart
-    // ) {
-    //   console.log(
-    //     `1st: ${_1stSignLong}, 2nd raw: ${_2ndElementRawLongitude}, 2nd: ${_2ndSignLong}`
-    //   );
-    // }
-
     const distance = decimalToDegreesMinutes(
       Math.abs(_1stSignLong - _2ndSignLong)
     )
@@ -201,26 +192,6 @@ export default function AspectsTable({
     const parts = distance.split(".");
     const deg = parts[0];
     let min = parts[1];
-
-    // if (
-    //   distance === "24.10" &&
-    //   aspect.element.name.includes("saturn") &&
-    //   !aspect.aspectedElement.isFromOuterChart &&
-    //   aspect.aspectedElement.elementType === "house" &&
-    //   aspect.aspectType === "conjunction"
-    // ) {
-    //   console.log(
-    //     ` aspect: ${aspect.aspectType},
-    //     1st: ${aspect.element.name} - ${_1stSignLong},
-    //      2nd: ${aspect.aspectedElement.name} - ${_2ndSignLong}, distance: ${distance}`
-    //   );
-    //   // console.log(aspect);
-    //   // console.log(parts);
-    //   console.log("birthChart", birthChart);
-    //   console.log("outerChart", outerChart);
-    //   console.log(aspect);
-    //   console.log(aspects);
-    // }
 
     if (min && min.length === 1) {
       min = min + "0";
@@ -334,6 +305,82 @@ export default function AspectsTable({
     }
   }
 
+  function updateTablePaginationAndPageCount() {
+    let newPageCount = Math.floor(aspects.length / itemsPerPage);
+    newPageCount += aspects.length % itemsPerPage > 0 ? 1 : 0;
+
+    let newCurrentPage =
+      newPageCount > tablePageCount ? tablePageCount : newPageCount;
+    setTablePageCount(newPageCount);
+    setTableCurrentPage(newCurrentPage);
+  }
+
+  function updateTablePageCount(newItemsPerPage: number) {
+    let pageCount = Math.floor(aspects.length / newItemsPerPage);
+    pageCount += aspects.length % newItemsPerPage > 0 ? 1 : 0;
+    setTablePageCount(pageCount);
+  }
+
+  function getLastRowItemCount(): number {
+    return aspects.length - (tableCurrentPage - 1) * itemsPerPage;
+  }
+
+  function isLastPage(): boolean {
+    return tableCurrentPage === tablePageCount;
+  }
+
+  function updateTableItemsPerPage(newItemsPerPage: number) {
+    setItemsPerPage(newItemsPerPage);
+    updateTablePageCount(newItemsPerPage);
+
+    if (newItemsPerPage === itemsPerPage) return;
+
+    let currentItemsShown = 0;
+    let newTableCurrentPage = 0;
+
+    if (newItemsPerPage > itemsPerPage) {
+      currentItemsShown = tableCurrentPage * itemsPerPage;
+    }
+
+    const lastRowItemCount = getLastRowItemCount();
+
+    currentItemsShown = isLastPage()
+      ? itemsPerPage * (tableCurrentPage - 1) + lastRowItemCount
+      : itemsPerPage;
+
+    newTableCurrentPage = Math.floor(currentItemsShown / newItemsPerPage);
+    newTableCurrentPage += currentItemsShown % newItemsPerPage > 0 ? 1 : 0;
+
+    setTableCurrentPage(newTableCurrentPage);
+  }
+
+  function updateTableCurrentPage(direction: number) {
+    if (direction < 0) {
+      setTableCurrentPage((prev) => Math.max(1, prev + direction));
+    } else {
+      setTableCurrentPage((prev) => Math.min(prev + direction, tablePageCount));
+    }
+  }
+
+  function getEmptyTableRows(): React.ReactNode {
+    const lastRowItemCount = getLastRowItemCount();
+    const emptyRowsCount = itemsPerPage - lastRowItemCount;
+    const rows: React.ReactNode[] = [];
+
+    for (let index = 0; index < emptyRowsCount; index++) {
+      const trClasses = `flex flex-row border-t-2 ${
+        index > 0 ? "border-white" : ""
+      }`;
+      rows.push(
+        <tr key={index} className={trClasses}>
+          <td>&nbsp;</td>
+        </tr>
+      );
+    }
+
+    return rows;
+  }
+
   return (
     <div>
       <h2 className="font-bold text-lg mb-2">Aspectos:</h2>
@@ -349,23 +396,80 @@ export default function AspectsTable({
               <th className="w-3/4 text-center">Tipo</th>
             </tr>
           </thead>
-          <tbody className="flex flex-col">
-            {aspects.map((aspect, index) => {
-              return (
-                <tr className="flex flex-row border-t-2" key={index}>
-                  <td className={tdClasses}>
-                    {getElementImage(aspect.element)}
-                  </td>
-                  <td className={tdClasses}>{getAspectImage(aspect)}</td>
-                  <td className={tdClasses}>
-                    {getElementImage(aspect.aspectedElement)}
-                  </td>
-                  <td className={tdClasses}>{getAspectDistance(aspect)}</td>
-                  <td className="w-3/4">{getAspectType(aspect)}</td>
-                </tr>
-              );
-            })}
+          <tbody className="flex flex-col border-b-2">
+            {aspects
+              .filter(
+                (_, index) =>
+                  index >= itemsPerPage * (tableCurrentPage - 1) &&
+                  index < itemsPerPage * tableCurrentPage
+              )
+              .map((aspect, index) => {
+                return (
+                  <tr className="flex flex-row border-t-2" key={index}>
+                    <td className={tdClasses}>
+                      {getElementImage(aspect.element)}
+                    </td>
+                    <td className={tdClasses}>{getAspectImage(aspect)}</td>
+                    <td className={tdClasses}>
+                      {getElementImage(aspect.aspectedElement)}
+                    </td>
+                    <td className={tdClasses}>{getAspectDistance(aspect)}</td>
+                    <td className="w-3/4">{getAspectType(aspect)}</td>
+                  </tr>
+                );
+              })}
+
+            {getEmptyTableRows()}
           </tbody>
+          <tfoot className="h-7 flex flex-row items-center justify-around p-2 font-bold">
+            <tr className="w-full flex flex-row">
+              <td className="mr-[-20px]">
+                <span>Ítens por página&nbsp;</span>
+                <select
+                  value={itemsPerPage}
+                  className="border-2 mr-10"
+                  onChange={(e) => {
+                    updateTableItemsPerPage(Number.parseInt(e.target.value));
+                  }}
+                >
+                  <option value={5}>5</option>
+                  <option value={10}>10</option>
+                  <option value={15}>15</option>
+                </select>
+              </td>
+
+              <td className="w-[50px] flex flex-row items-center justify-center">
+                {tableCurrentPage}/{tablePageCount}
+              </td>
+
+              <td className="flex flex-row gap-2">
+                <button
+                  className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
+                  onClick={() => updateTableCurrentPage(-999)}
+                >
+                  |◀
+                </button>
+                <button
+                  className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
+                  onClick={() => updateTableCurrentPage(-1)}
+                >
+                  ◀
+                </button>
+                <button
+                  className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
+                  onClick={() => updateTableCurrentPage(1)}
+                >
+                  ▶
+                </button>
+                <button
+                  className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
+                  onClick={() => updateTableCurrentPage(999)}
+                >
+                  ▶|
+                </button>
+              </td>
+            </tr>
+          </tfoot>
         </table>
       )}
 
