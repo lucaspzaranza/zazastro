@@ -1,5 +1,8 @@
 import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
-import { PlanetAspectData } from "@/interfaces/AstroChartInterfaces";
+import {
+  AspectType,
+  PlanetAspectData,
+} from "@/interfaces/AstroChartInterfaces";
 import {
   BirthChartProfile,
   BirthDate,
@@ -159,11 +162,11 @@ export function getArabicPartImage(
 }
 
 export function getAspectImage(
-  aspect: PlanetAspectData,
+  aspectType: AspectType,
   size = 15
 ): React.ReactNode {
   const folder = "aspects";
-  const aspectType = aspect.aspectType;
+  // const aspectType = aspect.aspectType;
   const path = `${folder}/${aspectType}.png`;
 
   return <img src={path} width={size} />;

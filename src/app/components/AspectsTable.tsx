@@ -25,6 +25,13 @@ import {
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import { useBirthChart } from "@/contexts/BirthChartContext";
+import AspectTableFilter from "./AspectTableFilter";
+import {
+  AspectDistance,
+  AspectTableColumn,
+  AspectDistanceType,
+  ElementLongitudeParameterType,
+} from "@/interfaces/AspectTableInterfaces";
 
 /**
  * Próximos passos:
@@ -33,9 +40,8 @@ import { useBirthChart } from "@/contexts/BirthChartContext";
  * 3 - Inserir paginação; (Ok)
  * 4 - Inserir opção de filtro por: elemento, aspecto, elemento aspectado,
  *     mapa interno ou externo, distância, e tipo de aspecto (aplicativo ou separativo)
+ *     4.1 - Só permitir um modal de pesquisa aberto por vez.
  */
-
-type ElementLongitudeParameterType = "smallest" | "biggest";
 
 export default function AspectsTable({
   aspects,
@@ -55,6 +61,10 @@ export default function AspectsTable({
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [tableCurrentPage, setTableCurrentPage] = useState(1);
   const [tablePageCount, setTablePageCount] = useState(1);
+  const [filteredAspects, setFilteredAspects] = useState(aspects);
+
+  const distanceValues: AspectDistance[] = [];
+  const distanceTypes: AspectDistanceType[] = [];
 
   const tdClasses =
     "w-full border-r-2 flex flex-row items-center justify-center";
@@ -183,11 +193,13 @@ export default function AspectsTable({
     const _1stSignLong = getDegreesInsideASign(_1stElementRawLongitude);
     const _2ndSignLong = getDegreesInsideASign(_2ndElementRawLongitude);
 
-    const distance = decimalToDegreesMinutes(
-      Math.abs(_1stSignLong - _2ndSignLong)
-    )
-      .toFixed(2)
-      .toString();
+    const numericDistance = Number.parseFloat(
+      decimalToDegreesMinutes(Math.abs(_1stSignLong - _2ndSignLong)).toFixed(2)
+    );
+
+    distanceValues.push({ key: aspect.key, distance: numericDistance });
+
+    const distance = numericDistance.toString();
 
     const parts = distance.split(".");
     const deg = parts[0];
@@ -247,15 +259,16 @@ export default function AspectsTable({
     return aspect.aspectedElement;
   }
 
-  function getAspectType(aspect: PlanetAspectData): string {
+  function getAspectDistanceType(aspect: PlanetAspectData): string {
     const applicative = "A";
     const separative = "S";
+    let result: string;
 
     if (
       aspect.element.elementType !== "planet" &&
       aspect.aspectedElement.elementType !== "planet"
     )
-      return applicative;
+      result = applicative;
 
     if (
       aspect.element.elementType === "planet" &&
@@ -275,16 +288,16 @@ export default function AspectsTable({
         planetBiggestLongInfo?.isRetrograde
       ) {
         if (planetSmallestLongInfo.type === fastestPlanet.name)
-          return separative;
-        else return applicative;
+          result = separative;
+        else result = applicative;
       }
 
       if (planetSmallestLongInfo?.type === fastestPlanet.name) {
-        if (planetSmallestLongInfo.isRetrograde) return separative;
-        else return applicative;
+        if (planetSmallestLongInfo.isRetrograde) result = separative;
+        else result = applicative;
       } else {
-        if (planetBiggestLongInfo?.isRetrograde) return applicative;
-        else return separative;
+        if (planetBiggestLongInfo?.isRetrograde) result = applicative;
+        else result = separative;
       }
     } else {
       // planet w/ house or lot
@@ -296,13 +309,20 @@ export default function AspectsTable({
       );
 
       if (planetInfo?.type === elWithSmallestLong.name) {
-        if (planetInfo.isRetrograde) return separative;
-        else return applicative;
+        if (planetInfo.isRetrograde) result = separative;
+        else result = applicative;
       } else {
-        if (planetInfo?.isRetrograde) return applicative;
-        else return separative;
+        if (planetInfo?.isRetrograde) result = applicative;
+        else result = separative;
       }
     }
+
+    distanceTypes.push({
+      key: aspect.key,
+      type: result,
+    });
+
+    return result;
   }
 
   function updateTablePaginationAndPageCount() {
@@ -381,6 +401,24 @@ export default function AspectsTable({
     return rows;
   }
 
+  function getColumnAspectedElements(
+    column: "element" | "aspectedElement"
+  ): AspectedElement[] {
+    let elements: AspectedElement[] = [];
+
+    if (column === "element") {
+      elements = aspects.map((aspect) => {
+        return aspect.element;
+      });
+    } else if (column === "aspectedElement") {
+      elements = aspects.map((aspect) => {
+        return aspect.aspectedElement;
+      });
+    }
+
+    return elements;
+  }
+
   return (
     <div>
       <h2 className="font-bold text-lg mb-2">Aspectos:</h2>
@@ -394,6 +432,35 @@ export default function AspectsTable({
               <th className="w-full text-center border-r-2">Aspectado</th>
               <th className="w-full text-center border-r-2">Distância</th>
               <th className="w-3/4 text-center">Tipo</th>
+            </tr>
+            <tr className="flex flex-row items-center justify-between border-t-2">
+              <th className="w-full h-full text-center border-r-2 text-[0.85rem]">
+                <AspectTableFilter
+                  column="element"
+                  elements={getColumnAspectedElements("element")}
+                />
+              </th>
+              <th className="w-full text-center border-r-2">
+                <AspectTableFilter column="aspect" />
+              </th>
+              <th className="w-full text-center border-r-2">
+                <AspectTableFilter
+                  column="aspectedElement"
+                  elements={getColumnAspectedElements("aspectedElement")}
+                />
+              </th>
+              <th className="w-full text-center border-r-2">
+                <AspectTableFilter
+                  column="distance"
+                  distanceValues={distanceValues}
+                />
+              </th>
+              <th className="w-3/4 text-center">
+                <AspectTableFilter
+                  column="aspectDistanceType"
+                  distanceTypes={distanceTypes}
+                />
+              </th>
             </tr>
           </thead>
           <tbody className="flex flex-col border-b-2">
@@ -409,12 +476,14 @@ export default function AspectsTable({
                     <td className={tdClasses}>
                       {getElementImage(aspect.element)}
                     </td>
-                    <td className={tdClasses}>{getAspectImage(aspect)}</td>
+                    <td className={tdClasses}>
+                      {getAspectImage(aspect.aspectType)}
+                    </td>
                     <td className={tdClasses}>
                       {getElementImage(aspect.aspectedElement)}
                     </td>
                     <td className={tdClasses}>{getAspectDistance(aspect)}</td>
-                    <td className="w-3/4">{getAspectType(aspect)}</td>
+                    <td className="w-3/4">{getAspectDistanceType(aspect)}</td>
                   </tr>
                 );
               })}
@@ -423,7 +492,7 @@ export default function AspectsTable({
           </tbody>
           <tfoot className="h-7 flex flex-row items-center justify-around p-2 font-bold">
             <tr className="w-full flex flex-row">
-              <td className="mr-[-20px]">
+              <td className="mr-[-30px]">
                 <span>Ítens por página&nbsp;</span>
                 <select
                   value={itemsPerPage}
@@ -436,6 +505,16 @@ export default function AspectsTable({
                   <option value={10}>10</option>
                   <option value={15}>15</option>
                 </select>
+              </td>
+
+              <td className="flex flex-row items-center">
+                <button
+                  className="cursor-pointer"
+                  onClick={() => alert("Limpar Filtros")}
+                  title="Limpar Filtros"
+                >
+                  <img src="trash.png" width={15} height={15} />
+                </button>
               </td>
 
               <td className="w-[50px] flex flex-row items-center justify-center">
