@@ -94,7 +94,7 @@ export function getSign(longitude: number, getGlyphOnly = false): string {
 }
 
 export const fixedNames = {
-  antiscionName: " (Antiscion)",
+  antiscionName: "antiscion",
   houseName: "house",
   outerKeyPrefix: "outer",
 };

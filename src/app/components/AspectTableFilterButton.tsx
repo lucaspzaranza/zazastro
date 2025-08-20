@@ -4,65 +4,79 @@ import {
   AspectDistance,
   AspectTableColumn,
   AspectDistanceType,
+  TableFilterOptions,
+  AspectFilterOptions,
 } from "@/interfaces/AspectTableInterfaces";
 import { AspectedElement, AspectType } from "@/interfaces/AstroChartInterfaces";
 import React, { useEffect, useState } from "react";
 import { getAspectImage } from "../utils/chartUtils";
-import AspectTableFilterModal from "./AspectTableFilterModal";
+import AspectTableFilterModal from "./AspectTableFilterModalLayout";
+import AspectFilterModal from "./AspectFilterModal";
 
 interface TableFilterProps {
   column: AspectTableColumn;
   elements?: AspectedElement[];
   distanceValues?: AspectDistance[];
   distanceTypes?: AspectDistanceType[];
+  modalIndex: number;
+  openModal: boolean;
+  disableFilterBtn: boolean;
+  onModalButtonClick?: (index: number) => void;
   onCancel?: () => void;
-  onConfirm?: () => void;
+  onConfirm?: (options?: TableFilterOptions) => void;
 }
 
-const aspects: AspectType[] = [
-  "sextile",
-  "square",
-  "trine",
-  "opposition",
-  "conjunction",
-];
-
-export default function AspectTableFilter({
+export default function AspectTableFilterButton({
   column,
   elements,
   distanceValues,
   distanceTypes,
+  modalIndex,
+  openModal,
+  disableFilterBtn,
+  onModalButtonClick,
   onCancel,
   onConfirm,
 }: TableFilterProps) {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [aspectsNodes, setAspectsNodes] = useState<React.ReactNode[]>([]);
+  const [memorizedOptions, setMemorizedOptions] = useState<any>(undefined);
 
   useEffect(() => {
-    if (column === "aspect") {
-      setAspectsNodes(aspects.map((aspect) => getAspectImage(aspect)));
-      console.log(aspects);
-    }
-  }, []);
+    setModalIsOpen(openModal);
+
+    if (modalIsOpen) console.log(memorizedOptions);
+  }, [openModal]);
 
   function handleOnCancel() {
     onCancel?.();
-    setModalIsOpen(false);
+    onModalButtonClick?.(modalIndex);
   }
 
-  function handleOnConfirm() {
-    onConfirm?.();
-    setModalIsOpen(false);
+  function handleOnConfirm(options?: TableFilterOptions) {
+    if (options) {
+      setMemorizedOptions(options);
+    }
+
+    onConfirm?.(options);
+    onModalButtonClick?.(modalIndex);
   }
+
+  const imgClasses = `${disableFilterBtn ? "opacity-40" : ""}`;
 
   return (
     <div className="w-full relative">
       <button
-        className="w-full cursor-pointer flex flex-row text-[0.7rem] pt-px items-center justify-center bg-gray-200 hover:bg-gray-300 active:bg-gray-400"
-        onClick={() => setModalIsOpen((prev) => !prev)}
+        disabled={disableFilterBtn}
+        className="w-full disabled:bg-white h-5 flex flex-row text-[0.7rem] pt-px items-center justify-center bg-gray-200 hover:bg-gray-300 active:bg-gray-400"
+        onClick={() =>
+          /* Toggle Filter On/Off */
+          onModalButtonClick?.(modalIndex)
+        }
         title="Filtro de Pesquisa"
       >
-        ▼
+        {/* ▼ */}
+        <img className={imgClasses} src={"filter.png"} width={12} />
       </button>
 
       {modalIsOpen && column === "element" && (
@@ -72,23 +86,11 @@ export default function AspectTableFilter({
       )}
 
       {modalIsOpen && column === "aspect" && (
-        <AspectTableFilterModal
-          title="Filtrar por Aspecto"
-          onCancel={handleOnCancel}
+        <AspectFilterModal
+          memorizedOptions={memorizedOptions}
           onConfirm={handleOnConfirm}
-        >
-          <div className="grid grid-cols-3 gap-2 p-2">
-            {aspectsNodes.map((node, index) => (
-              <div
-                key={index}
-                className="flex flex-row items-center justify-start gap-2"
-              >
-                <input type="checkbox" id={`aspect-${index}`} />{" "}
-                <label htmlFor={`aspect-${index}`}>{node}</label>
-              </div>
-            ))}
-          </div>
-        </AspectTableFilterModal>
+          onCancel={handleOnCancel}
+        />
       )}
 
       {modalIsOpen && column === "aspectedElement" && (

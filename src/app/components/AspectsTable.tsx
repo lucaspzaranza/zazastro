@@ -25,12 +25,13 @@ import {
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import { useBirthChart } from "@/contexts/BirthChartContext";
-import AspectTableFilter from "./AspectTableFilter";
+import AspectTableFilterButton from "./AspectTableFilterButton";
 import {
   AspectDistance,
   AspectTableColumn,
   AspectDistanceType,
   ElementLongitudeParameterType,
+  TableFilterOptions,
 } from "@/interfaces/AspectTableInterfaces";
 
 /**
@@ -62,6 +63,13 @@ export default function AspectsTable({
   const [tableCurrentPage, setTableCurrentPage] = useState(1);
   const [tablePageCount, setTablePageCount] = useState(1);
   const [filteredAspects, setFilteredAspects] = useState(aspects);
+  const [filterModalIsOpenArray, setFilterModalIsOpenArray] = useState([
+    false, // Element
+    false, // Aspect
+    false, // Aspected
+    false, // Distance
+    false, // DistanceType
+  ]);
 
   const distanceValues: AspectDistance[] = [];
   const distanceTypes: AspectDistanceType[] = [];
@@ -83,9 +91,10 @@ export default function AspectsTable({
   function getArabicPartKeyFromElement(
     element: AspectedElement
   ): keyof ArabicPartsType | undefined {
-    const name = element.isAntiscion
-      ? element.name.replace(fixedNames.antiscionName, "")
-      : element.name;
+    const name = element.name
+      .replace(`-${fixedNames.antiscionName}`, "")
+      .replace(`${fixedNames.outerKeyPrefix}-`, "");
+
     const key = name as keyof ArabicPartsType;
 
     return key;
@@ -419,6 +428,37 @@ export default function AspectsTable({
     return elements;
   }
 
+  const toggleFilterModalOpeningArray = (modalIndex: number) =>
+    filterModalIsOpenArray.map((filterIsOpen, index) => {
+      if (index === modalIndex) return !filterIsOpen;
+      else return filterIsOpen;
+    });
+
+  function toggleFilterModalOpening(modalIndex: number) {
+    let newArrayData = toggleFilterModalOpeningArray(modalIndex);
+
+    const hasOtherModalOpen = newArrayData.some(
+      (filterIsOpen, index) => modalIndex !== index && filterIsOpen
+    );
+
+    if (newArrayData[modalIndex] && !hasOtherModalOpen) {
+      setFilterModalIsOpenArray(newArrayData);
+    } else if (!newArrayData[modalIndex]) {
+      newArrayData = toggleFilterModalOpeningArray(modalIndex); // Reseting modal opening to false
+      setFilterModalIsOpenArray(newArrayData);
+    }
+  }
+
+  function disableFilter(modalIndex: number): boolean {
+    const hasOtherModalOpen = filterModalIsOpenArray.some(
+      (filterIsOpen, index) => modalIndex !== index && filterIsOpen
+    );
+
+    return hasOtherModalOpen;
+  }
+
+  function handleOnConfirmFilter(options?: TableFilterOptions) {}
+
   return (
     <div>
       <h2 className="font-bold text-lg mb-2">Aspectos:</h2>
@@ -435,30 +475,57 @@ export default function AspectsTable({
             </tr>
             <tr className="flex flex-row items-center justify-between border-t-2">
               <th className="w-full h-full text-center border-r-2 text-[0.85rem]">
-                <AspectTableFilter
+                <AspectTableFilterButton
                   column="element"
+                  openModal={filterModalIsOpenArray[0]}
+                  modalIndex={0}
+                  disableFilterBtn={disableFilter(0)}
                   elements={getColumnAspectedElements("element")}
+                  onModalButtonClick={toggleFilterModalOpening}
+                  onConfirm={handleOnConfirmFilter}
                 />
               </th>
               <th className="w-full text-center border-r-2">
-                <AspectTableFilter column="aspect" />
+                <AspectTableFilterButton
+                  column="aspect"
+                  openModal={filterModalIsOpenArray[1]}
+                  modalIndex={1}
+                  disableFilterBtn={disableFilter(1)}
+                  onModalButtonClick={toggleFilterModalOpening}
+                  onConfirm={handleOnConfirmFilter}
+                />
               </th>
               <th className="w-full text-center border-r-2">
-                <AspectTableFilter
+                <AspectTableFilterButton
                   column="aspectedElement"
+                  openModal={filterModalIsOpenArray[2]}
+                  modalIndex={2}
+                  disableFilterBtn={disableFilter(2)}
                   elements={getColumnAspectedElements("aspectedElement")}
+                  onModalButtonClick={toggleFilterModalOpening}
+                  onConfirm={handleOnConfirmFilter}
                 />
               </th>
               <th className="w-full text-center border-r-2">
-                <AspectTableFilter
+                <AspectTableFilterButton
                   column="distance"
+                  openModal={filterModalIsOpenArray[3]}
+                  modalIndex={3}
+                  disableFilterBtn={disableFilter(3)}
                   distanceValues={distanceValues}
+                  onModalButtonClick={toggleFilterModalOpening}
+                  onConfirm={handleOnConfirmFilter}
                 />
               </th>
               <th className="w-3/4 text-center">
-                <AspectTableFilter
+                <AspectTableFilterButton
                   column="aspectDistanceType"
+                  openModal={filterModalIsOpenArray[4]}
+                  modalIndex={4}
+                  disableFilterBtn={disableFilter(4)}
                   distanceTypes={distanceTypes}
+                  onModalButtonClick={toggleFilterModalOpening}
+                  onConfirm={handleOnConfirmFilter}
                 />
               </th>
             </tr>
@@ -491,12 +558,12 @@ export default function AspectsTable({
             {getEmptyTableRows()}
           </tbody>
           <tfoot className="h-7 flex flex-row items-center justify-around p-2 font-bold">
-            <tr className="w-full flex flex-row">
-              <td className="mr-[-30px]">
+            <tr className="w-full flex flex-row justify-between">
+              <td>
                 <span>Ítens por página&nbsp;</span>
                 <select
                   value={itemsPerPage}
-                  className="border-2 mr-10"
+                  className="border-2"
                   onChange={(e) => {
                     updateTableItemsPerPage(Number.parseInt(e.target.value));
                   }}
@@ -507,7 +574,7 @@ export default function AspectsTable({
                 </select>
               </td>
 
-              <td className="flex flex-row items-center">
+              <td className="flex flex-row items-center ml-1">
                 <button
                   className="cursor-pointer"
                   onClick={() => alert("Limpar Filtros")}
@@ -517,7 +584,7 @@ export default function AspectsTable({
                 </button>
               </td>
 
-              <td className="w-[50px] flex flex-row items-center justify-center">
+              <td className="flex flex-row items-center justify-center">
                 {tableCurrentPage}/{tablePageCount}
               </td>
 

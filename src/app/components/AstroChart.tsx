@@ -377,14 +377,17 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     aspectedElement: ChartElement,
     aspect: Aspect
   ): string {
-    const elementKey: string = (element.planetType ?? element.name).replace(
-      fixedNames.antiscionName,
-      ""
-    );
+    const elementKey: string =
+      (element.isFromOuterChart ? `${fixedNames.outerKeyPrefix}-` : "") +
+      (element.planetType ?? element.name)
+        .replace(fixedNames.antiscionName, "")
+        .replace("-", "");
 
-    const aspectedElementKey: string = (
-      aspectedElement.planetType ?? aspectedElement.name
-    ).replace(fixedNames.antiscionName, "");
+    const aspectedElementKey: string =
+      (element.isFromOuterChart ? `${fixedNames.outerKeyPrefix}-` : "") +
+      (aspectedElement.planetType ?? aspectedElement.name)
+        .replace(fixedNames.antiscionName, "")
+        .replace("-", "");
 
     return `${elementKey}-${aspect.type}-${aspectedElementKey}`;
   }
@@ -448,11 +451,25 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       // is both are antiscion, the aspect has already been rendered into their normal position
       return false;
 
-    // Reverse the elements because if there's some aspect already registered with these keys,
-    // they're with the reversed keys
+    if (
+      aspectToCheck.type === "conjunction" &&
+      element.planetType === "mars" &&
+      elToCheck.planetType === "jupiter"
+    ) {
+      // console.log(element);
+      // console.log(elToCheck);
+      // const key = generateAspectKey(element, elToCheck, aspectToCheck);
+      // console.log(key);
+    }
+
     const aspect = aspectsData.find(
       (asp) => asp.key === generateAspectKey(element, elToCheck, aspectToCheck)
     );
+
+    // if (aspect !== undefined && aspect.aspectedElement.name.includes("mars")) {
+    //   console.log(`aspect ${aspect.key} already been rendered`);
+    //   console.log(aspect);
+    // }
 
     return aspect === undefined;
   }
@@ -562,6 +579,8 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         }
       });
     });
+
+    // console.log(aspectsData);
 
     return aspectsData;
   }
@@ -1150,7 +1169,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
           id: chartElementsForAspect.length,
           isAntiscion: true,
           longitude: planet.antiscion,
-          name: planet.name + fixedNames.antiscionName,
+          name: `${planet.name}-${fixedNames.antiscionName}`,
           elementType: "planet",
           planetType: planet.type,
           isFromOuterChart: false,
@@ -1278,7 +1297,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             id: chartElementsForAspect.length,
             isAntiscion: true,
             longitude: lot.antiscion,
-            name: lot.partKey + fixedNames.antiscionName,
+            name: `${lot.partKey}-${fixedNames.antiscionName}`,
             elementType: "arabicPart",
             isFromOuterChart: false,
           });
@@ -1473,7 +1492,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             id: chartElementsForAspect.length,
             isAntiscion: true,
             longitude: planet.antiscion,
-            name: planet.name + fixedNames.antiscionName,
+            name: `${fixedNames.outerKeyPrefix}-${planet.name}-${fixedNames.antiscionName}`,
             elementType: "planet",
             planetType: planet.type,
             isFromOuterChart: true,
@@ -1540,7 +1559,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             id: chartElementsForAspect.length,
             isAntiscion: false,
             longitude: lot.longitude,
-            name: lot.partKey,
+            name: `${fixedNames.outerKeyPrefix}-${lot.partKey}`,
             elementType: "arabicPart",
             isFromOuterChart: true,
           });
@@ -1606,7 +1625,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             id: chartElementsForAspect.length,
             isAntiscion: true,
             longitude: lot.antiscion,
-            name: lot.partKey + fixedNames.antiscionName,
+            name: `${fixedNames.outerKeyPrefix}-${lot.partKey}-${fixedNames.antiscionName}`,
             elementType: "arabicPart",
             isFromOuterChart: true,
           });

@@ -5,18 +5,26 @@ import React from "react";
 interface FilterModalProps {
   title: string;
   children: React.ReactNode;
+  widthClass?: string;
+  heightClass?: string;
   onCancel?: () => void;
   onConfirm?: () => void;
 }
 
-export default function AspectTableFilterModal({
+export default function AspectTableFilterModalLayout({
   title,
   children,
+  widthClass,
+  heightClass,
   onCancel,
   onConfirm,
 }: FilterModalProps) {
+  const containerClasses = `absolute flex flex-col z-10 bg-white outline-2 ${
+    widthClass ?? "w-[200px]"
+  } ${heightClass ?? ""}`;
+
   return (
-    <div className="absolute w-[200%] flex flex-col z-10 bg-white outline-2">
+    <div className={containerClasses}>
       <span className=" border-b-2 p-1">{title}</span>
       {children}
       <div className="flex flex-row items-center justify-around mb-1">
