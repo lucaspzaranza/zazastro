@@ -1,7 +1,14 @@
 "use client";
 
 import { AspectType } from "@/interfaces/AstroChartInterfaces";
-import React, { useEffect, useState } from "react";
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { getAspectImage } from "../utils/chartUtils";
 import {
   AspectFilterOptions,
@@ -18,84 +25,149 @@ const aspects: AspectType[] = [
   "conjunction",
 ];
 
-export default function AspectFilterModal({
-  memorizedOptions,
-  onCancel,
-  onConfirm,
-}: {
+interface FilterModalProps {
+  isVisible: boolean;
   memorizedOptions?: TableFilterOptions;
+  initialState?: TableFilterOptions;
   onCancel?: (options?: TableFilterOptions) => void;
   onConfirm?: (options?: TableFilterOptions) => void;
-}) {
+  applyFilterIsActiveClasses?: (isActive: boolean) => void;
+}
+
+export type AspectFilterModalImperativeHandle = {
+  clearFilterModalFields: () => void;
+  getOptions: () => TableFilterOptions;
+};
+
+function AspectFilterModalFn(
+  props: FilterModalProps,
+  ref: React.ForwardedRef<AspectFilterModalImperativeHandle>
+) {
+  const {
+    isVisible,
+    memorizedOptions,
+    initialState,
+    onCancel,
+    onConfirm,
+    applyFilterIsActiveClasses,
+  } = props;
+
+  // default (imutável) — sempre criar fora do estado
+  const defaultCheckboxes = useMemo<AspectFilterModalCheckboxState[]>(
+    () => [
+      { aspect: "sextile", isChecked: true },
+      { aspect: "square", isChecked: true },
+      { aspect: "trine", isChecked: true },
+      { aspect: "opposition", isChecked: true },
+      { aspect: "conjunction", isChecked: true },
+    ],
+    []
+  );
+
+  // ref que guarda o snapshot inicial (não muda ao longo das interações)
+  const initialSnapshotRef = useRef<AspectFilterModalCheckboxState[]>(
+    defaultCheckboxes.map((c) => ({ ...c }))
+  );
+
   const [checkboxesChecked, setCheckboxesChecked] = useState<
     AspectFilterModalCheckboxState[]
-  >([
-    { aspect: "sextile", isChecked: true },
-    { aspect: "square", isChecked: true },
-    { aspect: "trine", isChecked: true },
-    { aspect: "opposition", isChecked: true },
-    { aspect: "conjunction", isChecked: true },
-  ]);
-
-  const [initialState, setInitialState] = useState<
-    AspectFilterModalCheckboxState[]
-  >([]);
+  >(initialSnapshotRef.current.map((c) => ({ ...c })));
 
   const [allCheckboxesChecked, setAllCheckboxesChecked] = useState(true);
-
   const [aspectsNodes, setAspectsNodes] = useState<React.ReactNode[]>([]);
 
+  // quando o modal abre / quando memorizedOptions (ou initialState) mudar,
+  // definimos o snapshot inicial (cópia!) e atualizamos o estado local.
   useEffect(() => {
-    if (memorizedOptions?.aspectsFilter) {
-      const newData = memorizedOptions?.aspectsFilter?.checkboxesStates?.map(
-        (checkbox) => checkbox
-      );
+    const source =
+      memorizedOptions?.aspectsFilter?.checkboxesStates ??
+      initialState?.aspectsFilter?.checkboxesStates ??
+      defaultCheckboxes;
 
-      setAllCheckboxesChecked(newData.every((checkbox) => checkbox.isChecked));
-      setCheckboxesChecked(newData);
-    }
+    // clone para garantir que não mantemos referências externas
+    const clonedInitial = source.map((c) => ({ ...c }));
 
-    setInitialState(checkboxesChecked);
+    initialSnapshotRef.current = clonedInitial; // guarda snapshot
+    setCheckboxesChecked(clonedInitial.map((c) => ({ ...c })));
+    setAllCheckboxesChecked(clonedInitial.every((c) => c.isChecked));
+
     setAspectsNodes(aspects.map((aspect) => getAspectImage(aspect)));
-  }, []);
+  }, [memorizedOptions, initialState]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      clearFilterModalFields() {
+        setCheckboxesChecked((prev) =>
+          prev.map((c) => ({ ...c, isChecked: true }))
+        );
+        setAllCheckboxesChecked(true);
+      },
+
+      getOptions() {
+        return {
+          aspectsFilter: {
+            checkboxesStates: checkboxesChecked.map((c) => ({ ...c })),
+          },
+        };
+      },
+    }),
+    [checkboxesChecked]
+  );
 
   const toggleSingleCheckbox = (index: number) => {
-    const newChecked = [...checkboxesChecked];
-    newChecked[index].isChecked = !newChecked[index].isChecked;
-
-    setCheckboxesChecked([...newChecked]);
-    setAllCheckboxesChecked(newChecked.every((check) => check.isChecked));
+    setCheckboxesChecked((prev) => {
+      const next = prev.map((c, i) =>
+        i === index ? { ...c, isChecked: !c.isChecked } : c
+      );
+      setAllCheckboxesChecked(next.every((c) => c.isChecked));
+      return next;
+    });
   };
 
   const toggleAllCheckboxes = () => {
     const newValue = !allCheckboxesChecked;
-
-    const allChecksUnmarked: AspectFilterModalCheckboxState[] = [];
-    checkboxesChecked.forEach((checkbox) => {
-      allChecksUnmarked.push({
-        aspect: checkbox.aspect,
-        isChecked: newValue,
-      });
-    });
-
-    setCheckboxesChecked(allChecksUnmarked);
+    setCheckboxesChecked((prev) =>
+      prev.map((c) => ({ ...c, isChecked: newValue }))
+    );
     setAllCheckboxesChecked(newValue);
   };
 
+  /**
+   * Checks if Aspect Filter is applied. To verify this,
+   * this function checks if not all the checkboxes are marked, i.e,
+   * the values are different from the default value, which is all
+   * checkboxes marked.
+   */
+  function checkIfFilterIsActive(): boolean {
+    return !allCheckboxesChecked;
+  }
+
   function confirmWithAspectesChecked() {
     onConfirm?.({
-      aspectsFilter: { checkboxesStates: checkboxesChecked },
+      aspectsFilter: {
+        checkboxesStates: checkboxesChecked.map((c) => ({ ...c })),
+      },
+    });
+
+    applyFilterIsActiveClasses?.(checkIfFilterIsActive());
+  }
+
+  function cancelAndResetState() {
+    // restaura do snapshot inicial (clonando para garantir imutabilidade)
+    const original = initialSnapshotRef.current.map((c) => ({ ...c }));
+    setCheckboxesChecked(original);
+    setAllCheckboxesChecked(original.every((c) => c.isChecked));
+    onCancel?.({
+      aspectsFilter: { checkboxesStates: original },
     });
   }
 
   return (
     <AspectTableFilterModalLayout
+      isVisible={isVisible}
       title="Filtrar por Aspecto"
-      onCancel={() =>
-        onCancel?.({
-          aspectsFilter: { checkboxesStates: initialState },
-        })
-      }
+      onCancel={cancelAndResetState}
       onConfirm={confirmWithAspectesChecked}
       widthClass="w-[190px]"
     >
@@ -109,7 +181,7 @@ export default function AspectFilterModal({
               <input
                 type="checkbox"
                 id={`aspect-${index}`}
-                checked={checkboxesChecked[index].isChecked || false}
+                checked={checkboxesChecked[index]?.isChecked ?? false}
                 onChange={() => toggleSingleCheckbox(index)}
               />
               <label htmlFor={`aspect-${index}`}>{node}</label>
@@ -130,3 +202,11 @@ export default function AspectFilterModal({
     </AspectTableFilterModalLayout>
   );
 }
+
+const AspectFilterModal = forwardRef<
+  AspectFilterModalImperativeHandle,
+  FilterModalProps
+>(AspectFilterModalFn);
+AspectFilterModal.displayName = "AspectFilterModal";
+
+export default AspectFilterModal;

@@ -25,13 +25,16 @@ import {
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import { useBirthChart } from "@/contexts/BirthChartContext";
-import AspectTableFilterButton from "./AspectTableFilterButton";
+import AspectTableFilterButton, {
+  AspectFilterButtonImperativeHandle,
+} from "./AspectTableFilterButton";
 import {
   AspectDistance,
   AspectTableColumn,
   AspectDistanceType,
   ElementLongitudeParameterType,
   TableFilterOptions,
+  AspectFilterOptions,
 } from "@/interfaces/AspectTableInterfaces";
 
 /**
@@ -57,12 +60,18 @@ export default function AspectsTable({
   arabicParts: ArabicPartsType;
   outerArabicParts?: ArabicPartsType;
 }) {
+  const aspectButtonRef = useRef<AspectFilterButtonImperativeHandle | null>(
+    null
+  );
+
   const backupValue = useRef(0);
 
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [tableCurrentPage, setTableCurrentPage] = useState(1);
   const [tablePageCount, setTablePageCount] = useState(1);
-  const [filteredAspects, setFilteredAspects] = useState(aspects);
+  const [filteredAspects, setFilteredAspects] = useState<PlanetAspectData[]>(
+    []
+  );
   const [filterModalIsOpenArray, setFilterModalIsOpenArray] = useState([
     false, // Element
     false, // Aspect
@@ -78,10 +87,16 @@ export default function AspectsTable({
     "w-full border-r-2 flex flex-row items-center justify-center";
 
   useEffect(() => {
-    if (aspects.length > 0) {
+    setFilteredAspects((prev) =>
+      aspects.map((asp) => ({ ...asp } as PlanetAspectData))
+    );
+  }, [aspects]);
+
+  useEffect(() => {
+    if (filteredAspects.length > 0) {
       updateTablePaginationAndPageCount();
     }
-  }, [aspects]);
+  }, [filteredAspects]);
 
   function extractHouseNumber(input: string): number | null {
     const match = input.match(/-(1[0-2]|[1-9])$/);
@@ -335,8 +350,8 @@ export default function AspectsTable({
   }
 
   function updateTablePaginationAndPageCount() {
-    let newPageCount = Math.floor(aspects.length / itemsPerPage);
-    newPageCount += aspects.length % itemsPerPage > 0 ? 1 : 0;
+    let newPageCount = Math.floor(filteredAspects.length / itemsPerPage);
+    newPageCount += filteredAspects.length % itemsPerPage > 0 ? 1 : 0;
 
     let newCurrentPage =
       newPageCount > tablePageCount ? tablePageCount : newPageCount;
@@ -345,13 +360,13 @@ export default function AspectsTable({
   }
 
   function updateTablePageCount(newItemsPerPage: number) {
-    let pageCount = Math.floor(aspects.length / newItemsPerPage);
-    pageCount += aspects.length % newItemsPerPage > 0 ? 1 : 0;
+    let pageCount = Math.floor(filteredAspects.length / newItemsPerPage);
+    pageCount += filteredAspects.length % newItemsPerPage > 0 ? 1 : 0;
     setTablePageCount(pageCount);
   }
 
   function getLastRowItemCount(): number {
-    return aspects.length - (tableCurrentPage - 1) * itemsPerPage;
+    return filteredAspects.length - (tableCurrentPage - 1) * itemsPerPage;
   }
 
   function isLastPage(): boolean {
@@ -416,11 +431,11 @@ export default function AspectsTable({
     let elements: AspectedElement[] = [];
 
     if (column === "element") {
-      elements = aspects.map((aspect) => {
+      elements = filteredAspects.map((aspect) => {
         return aspect.element;
       });
     } else if (column === "aspectedElement") {
-      elements = aspects.map((aspect) => {
+      elements = filteredAspects.map((aspect) => {
         return aspect.aspectedElement;
       });
     }
@@ -457,81 +472,103 @@ export default function AspectsTable({
     return hasOtherModalOpen;
   }
 
-  function handleOnConfirmFilter(options?: TableFilterOptions) {}
+  function handleOnConfirmFilter(options?: TableFilterOptions) {
+    if (options?.aspectsFilter) {
+      const cb = options.aspectsFilter.checkboxesStates;
+      if (!cb.length) {
+        setFilteredAspects([]);
+        return;
+      }
+
+      const checkedAspects = new Set(
+        cb.filter((c) => c.isChecked).map((c) => c.aspect)
+      );
+
+      setFilteredAspects(
+        aspects.filter((asp) => checkedAspects.has(asp.aspectType))
+      );
+    }
+  }
+
+  function clearFilters() {
+    aspectButtonRef.current?.clearFilter();
+    setFilteredAspects([...aspects]);
+  }
 
   return (
     <div>
       <h2 className="font-bold text-lg mb-2">Aspectos:</h2>
 
-      {aspects && aspects.length > 0 && (
-        <table className="w-full flex flex-col border-2 text-sm text-center">
-          <thead>
-            <tr className="flex flex-row justify-between">
-              <th className="w-full text-center border-r-2">Elemento</th>
-              <th className="w-full text-center border-r-2">Aspecto</th>
-              <th className="w-full text-center border-r-2">Aspectado</th>
-              <th className="w-full text-center border-r-2">Distância</th>
-              <th className="w-3/4 text-center">Tipo</th>
-            </tr>
-            <tr className="flex flex-row items-center justify-between border-t-2">
-              <th className="w-full h-full text-center border-r-2 text-[0.85rem]">
-                <AspectTableFilterButton
-                  column="element"
-                  openModal={filterModalIsOpenArray[0]}
-                  modalIndex={0}
-                  disableFilterBtn={disableFilter(0)}
-                  elements={getColumnAspectedElements("element")}
-                  onModalButtonClick={toggleFilterModalOpening}
-                  onConfirm={handleOnConfirmFilter}
-                />
-              </th>
-              <th className="w-full text-center border-r-2">
-                <AspectTableFilterButton
-                  column="aspect"
-                  openModal={filterModalIsOpenArray[1]}
-                  modalIndex={1}
-                  disableFilterBtn={disableFilter(1)}
-                  onModalButtonClick={toggleFilterModalOpening}
-                  onConfirm={handleOnConfirmFilter}
-                />
-              </th>
-              <th className="w-full text-center border-r-2">
-                <AspectTableFilterButton
-                  column="aspectedElement"
-                  openModal={filterModalIsOpenArray[2]}
-                  modalIndex={2}
-                  disableFilterBtn={disableFilter(2)}
-                  elements={getColumnAspectedElements("aspectedElement")}
-                  onModalButtonClick={toggleFilterModalOpening}
-                  onConfirm={handleOnConfirmFilter}
-                />
-              </th>
-              <th className="w-full text-center border-r-2">
-                <AspectTableFilterButton
-                  column="distance"
-                  openModal={filterModalIsOpenArray[3]}
-                  modalIndex={3}
-                  disableFilterBtn={disableFilter(3)}
-                  distanceValues={distanceValues}
-                  onModalButtonClick={toggleFilterModalOpening}
-                  onConfirm={handleOnConfirmFilter}
-                />
-              </th>
-              <th className="w-3/4 text-center">
-                <AspectTableFilterButton
-                  column="aspectDistanceType"
-                  openModal={filterModalIsOpenArray[4]}
-                  modalIndex={4}
-                  disableFilterBtn={disableFilter(4)}
-                  distanceTypes={distanceTypes}
-                  onModalButtonClick={toggleFilterModalOpening}
-                  onConfirm={handleOnConfirmFilter}
-                />
-              </th>
-            </tr>
-          </thead>
+      <table className="w-full flex flex-col border-2 text-sm text-center">
+        <thead>
+          <tr className="flex flex-row justify-between">
+            <th className="w-full text-center border-r-2">Elemento</th>
+            <th className="w-full text-center border-r-2">Aspecto</th>
+            <th className="w-full text-center border-r-2">Aspectado</th>
+            <th className="w-full text-center border-r-2">Distância</th>
+            <th className="w-3/4 text-center">Tipo</th>
+          </tr>
+          <tr className="flex flex-row items-center justify-between border-t-2">
+            <th className="w-full h-full text-center border-r-2 text-[0.85rem]">
+              <AspectTableFilterButton
+                column="element"
+                openModal={filterModalIsOpenArray[0]}
+                modalIndex={0}
+                disableFilterBtn={disableFilter(0)}
+                elements={getColumnAspectedElements("element")}
+                onModalButtonClick={toggleFilterModalOpening}
+                onConfirm={handleOnConfirmFilter}
+              />
+            </th>
+            <th className="w-full text-center border-r-2">
+              <AspectTableFilterButton
+                ref={aspectButtonRef}
+                column="aspect"
+                openModal={filterModalIsOpenArray[1]}
+                modalIndex={1}
+                disableFilterBtn={disableFilter(1)}
+                onModalButtonClick={toggleFilterModalOpening}
+                onConfirm={handleOnConfirmFilter}
+              />
+            </th>
+            <th className="w-full text-center border-r-2">
+              <AspectTableFilterButton
+                column="aspectedElement"
+                openModal={filterModalIsOpenArray[2]}
+                modalIndex={2}
+                disableFilterBtn={disableFilter(2)}
+                elements={getColumnAspectedElements("aspectedElement")}
+                onModalButtonClick={toggleFilterModalOpening}
+                onConfirm={handleOnConfirmFilter}
+              />
+            </th>
+            <th className="w-full text-center border-r-2">
+              <AspectTableFilterButton
+                column="distance"
+                openModal={filterModalIsOpenArray[3]}
+                modalIndex={3}
+                disableFilterBtn={disableFilter(3)}
+                distanceValues={distanceValues}
+                onModalButtonClick={toggleFilterModalOpening}
+                onConfirm={handleOnConfirmFilter}
+              />
+            </th>
+            <th className="w-3/4 text-center">
+              <AspectTableFilterButton
+                column="aspectDistanceType"
+                openModal={filterModalIsOpenArray[4]}
+                modalIndex={4}
+                disableFilterBtn={disableFilter(4)}
+                distanceTypes={distanceTypes}
+                onModalButtonClick={toggleFilterModalOpening}
+                onConfirm={handleOnConfirmFilter}
+              />
+            </th>
+          </tr>
+        </thead>
+        {filteredAspects && filteredAspects.length > 0 && (
           <tbody className="flex flex-col border-b-2">
-            {aspects
+            {filteredAspects
               .filter(
                 (_, index) =>
                   index >= itemsPerPage * (tableCurrentPage - 1) &&
@@ -557,86 +594,75 @@ export default function AspectsTable({
 
             {getEmptyTableRows()}
           </tbody>
-          <tfoot className="h-7 flex flex-row items-center justify-around p-2 font-bold">
-            <tr className="w-full flex flex-row justify-between">
-              <td>
-                <span>Ítens por página&nbsp;</span>
-                <select
-                  value={itemsPerPage}
-                  className="border-2"
-                  onChange={(e) => {
-                    updateTableItemsPerPage(Number.parseInt(e.target.value));
-                  }}
-                >
-                  <option value={5}>5</option>
-                  <option value={10}>10</option>
-                  <option value={15}>15</option>
-                </select>
-              </td>
+        )}
 
-              <td className="flex flex-row items-center ml-1">
-                <button
-                  className="cursor-pointer"
-                  onClick={() => alert("Limpar Filtros")}
-                  title="Limpar Filtros"
-                >
-                  <img src="trash.png" width={15} height={15} />
-                </button>
-              </td>
-
-              <td className="flex flex-row items-center justify-center">
-                {tableCurrentPage}/{tablePageCount}
-              </td>
-
-              <td className="flex flex-row gap-2">
-                <button
-                  className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
-                  onClick={() => updateTableCurrentPage(-999)}
-                >
-                  |◀
-                </button>
-                <button
-                  className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
-                  onClick={() => updateTableCurrentPage(-1)}
-                >
-                  ◀
-                </button>
-                <button
-                  className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
-                  onClick={() => updateTableCurrentPage(1)}
-                >
-                  ▶
-                </button>
-                <button
-                  className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
-                  onClick={() => updateTableCurrentPage(999)}
-                >
-                  ▶|
-                </button>
-              </td>
-            </tr>
-          </tfoot>
-        </table>
-      )}
-
-      {(aspects === undefined || aspects.length === 0) && (
-        <table className="w-full flex flex-col border-2 text-sm text-center">
-          <thead className="border-b-2">
-            <tr className="flex flex-row justify-between">
-              <th className="w-full text-center border-r-2">Planeta</th>
-              <th className="w-full text-center border-r-2">Aspecto</th>
-              <th className="w-full text-center border-r-2">Aspectado</th>
-              <th className="w-full text-center border-r-2">Distância</th>
-              <th className="w-3/4 text-center">Tipo</th>
-            </tr>
-          </thead>
-          <tbody className="flex flex-col">
+        {(filteredAspects === undefined || filteredAspects.length === 0) && (
+          <tbody className="flex flex-col border-y-2">
             <tr className="flex flex-row">
-              <td className="w-full">Mapa sem aspectos.</td>
+              <td className="w-full">Nenhum aspecto encontrado.</td>
             </tr>
           </tbody>
-        </table>
-      )}
+        )}
+        <tfoot className="h-7 flex flex-row items-center justify-around p-2 font-bold">
+          <tr className="w-full flex flex-row justify-between">
+            <td>
+              <span>Ítens por página&nbsp;</span>
+              <select
+                value={itemsPerPage}
+                className="border-2"
+                onChange={(e) => {
+                  updateTableItemsPerPage(Number.parseInt(e.target.value));
+                }}
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={15}>15</option>
+              </select>
+            </td>
+
+            <td className="flex flex-row items-center ml-1">
+              <button
+                className="hover:outline-2 outline-offset-[-1px] p-1 active:bg-gray-200"
+                onClick={() => clearFilters()}
+                title="Limpar Filtros"
+              >
+                <img src="trash.png" width={15} height={15} />
+              </button>
+            </td>
+
+            <td className="flex flex-row items-center justify-center">
+              {tableCurrentPage}/{tablePageCount}
+            </td>
+
+            <td className="flex flex-row gap-2">
+              <button
+                className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
+                onClick={() => updateTableCurrentPage(-999)}
+              >
+                |◀
+              </button>
+              <button
+                className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
+                onClick={() => updateTableCurrentPage(-1)}
+              >
+                ◀
+              </button>
+              <button
+                className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
+                onClick={() => updateTableCurrentPage(1)}
+              >
+                ▶
+              </button>
+              <button
+                className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
+                onClick={() => updateTableCurrentPage(999)}
+              >
+                ▶|
+              </button>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
     </div>
   );
 }

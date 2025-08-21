@@ -8,10 +8,22 @@ import {
   AspectFilterOptions,
 } from "@/interfaces/AspectTableInterfaces";
 import { AspectedElement, AspectType } from "@/interfaces/AstroChartInterfaces";
-import React, { useEffect, useState } from "react";
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import { getAspectImage } from "../utils/chartUtils";
 import AspectTableFilterModal from "./AspectTableFilterModalLayout";
-import AspectFilterModal from "./AspectFilterModal";
+import AspectFilterModal, {
+  AspectFilterModalImperativeHandle,
+} from "./AspectFilterModal";
+
+export type AspectFilterButtonImperativeHandle = {
+  clearFilter: () => void;
+};
 
 interface TableFilterProps {
   column: AspectTableColumn;
@@ -22,39 +34,54 @@ interface TableFilterProps {
   openModal: boolean;
   disableFilterBtn: boolean;
   onModalButtonClick?: (index: number) => void;
-  onCancel?: () => void;
+  onCancel?: (options?: TableFilterOptions) => void;
   onConfirm?: (options?: TableFilterOptions) => void;
 }
 
-export default function AspectTableFilterButton({
-  column,
-  elements,
-  distanceValues,
-  distanceTypes,
-  modalIndex,
-  openModal,
-  disableFilterBtn,
-  onModalButtonClick,
-  onCancel,
-  onConfirm,
-}: TableFilterProps) {
+function AspectTableFilterButtonFn(
+  props: TableFilterProps,
+  ref: React.ForwardedRef<AspectFilterButtonImperativeHandle>
+) {
+  const {
+    column,
+    elements,
+    distanceValues,
+    distanceTypes,
+    modalIndex,
+    openModal,
+    disableFilterBtn,
+    onModalButtonClick,
+    onCancel,
+    onConfirm,
+  } = props;
+
+  const aspectModalRef = useRef<AspectFilterModalImperativeHandle | null>(null);
+
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [aspectsNodes, setAspectsNodes] = useState<React.ReactNode[]>([]);
   const [memorizedOptions, setMemorizedOptions] = useState<any>(undefined);
+  const optionsInitialState = useRef<any>(undefined);
+  const [filterIsActive, setFilterIsActive] = useState(false);
 
   useEffect(() => {
     setModalIsOpen(openModal);
-
-    if (modalIsOpen) console.log(memorizedOptions);
   }, [openModal]);
 
-  function handleOnCancel() {
-    onCancel?.();
+  useImperativeHandle(ref, () => ({
+    clearFilter() {
+      setFilterIsActive(false);
+
+      aspectModalRef.current?.clearFilterModalFields();
+    },
+  }));
+
+  function handleOnCancel(options?: TableFilterOptions) {
+    onCancel?.(options);
     onModalButtonClick?.(modalIndex);
   }
 
   function handleOnConfirm(options?: TableFilterOptions) {
     if (options) {
+      optionsInitialState.current = options;
       setMemorizedOptions(options);
     }
 
@@ -62,7 +89,12 @@ export default function AspectTableFilterButton({
     onModalButtonClick?.(modalIndex);
   }
 
+  function handleOnApplyFilterIsActiveClasses(isActive: boolean) {
+    setFilterIsActive(isActive);
+  }
+
   const imgClasses = `${disableFilterBtn ? "opacity-40" : ""}`;
+  const imgSrc = `${filterIsActive ? "filter-on.png" : "filter.png"}`;
 
   return (
     <div className="w-full relative">
@@ -70,13 +102,12 @@ export default function AspectTableFilterButton({
         disabled={disableFilterBtn}
         className="w-full disabled:bg-white h-5 flex flex-row text-[0.7rem] pt-px items-center justify-center bg-gray-200 hover:bg-gray-300 active:bg-gray-400"
         onClick={() =>
-          /* Toggle Filter On/Off */
+          /* Toggle Filter Modal On/Off */
           onModalButtonClick?.(modalIndex)
         }
         title="Filtro de Pesquisa"
       >
-        {/* ▼ */}
-        <img className={imgClasses} src={"filter.png"} width={12} />
+        <img className={imgClasses} src={imgSrc} width={14} />
       </button>
 
       {modalIsOpen && column === "element" && (
@@ -85,11 +116,15 @@ export default function AspectTableFilterButton({
         </div>
       )}
 
-      {modalIsOpen && column === "aspect" && (
+      {column === "aspect" && (
         <AspectFilterModal
+          isVisible={modalIsOpen}
+          ref={aspectModalRef}
+          initialState={optionsInitialState.current}
           memorizedOptions={memorizedOptions}
           onConfirm={handleOnConfirm}
           onCancel={handleOnCancel}
+          applyFilterIsActiveClasses={handleOnApplyFilterIsActiveClasses}
         />
       )}
 
@@ -113,3 +148,10 @@ export default function AspectTableFilterButton({
     </div>
   );
 }
+
+const AspectTableFilterButton = forwardRef<
+  AspectFilterButtonImperativeHandle,
+  TableFilterProps
+>(AspectTableFilterButtonFn);
+
+export default AspectTableFilterButton;

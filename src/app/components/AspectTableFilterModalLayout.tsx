@@ -4,6 +4,7 @@ import React from "react";
 
 interface FilterModalProps {
   title: string;
+  isVisible: boolean;
   children: React.ReactNode;
   widthClass?: string;
   heightClass?: string;
@@ -13,6 +14,7 @@ interface FilterModalProps {
 
 export default function AspectTableFilterModalLayout({
   title,
+  isVisible,
   children,
   widthClass,
   heightClass,
@@ -21,7 +23,7 @@ export default function AspectTableFilterModalLayout({
 }: FilterModalProps) {
   const containerClasses = `absolute flex flex-col z-10 bg-white outline-2 ${
     widthClass ?? "w-[200px]"
-  } ${heightClass ?? ""}`;
+  } ${heightClass ?? ""} ${isVisible ? "block" : "hidden"}`;
 
   return (
     <div className={containerClasses}>
