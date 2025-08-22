@@ -12,6 +12,8 @@ import {
   planetTypes,
 } from "@/interfaces/BirthChartInterfaces";
 
+export const ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT = 5;
+
 export const allSigns = [
   "Áries ♈︎",
   "Touro ♉︎",

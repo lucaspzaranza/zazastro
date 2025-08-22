@@ -43,7 +43,6 @@ export default function BirthChart() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           birthDate,
-          // hour: birthTime,
         }),
       });
 

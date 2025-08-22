@@ -6,6 +6,7 @@ import {
   AspectDistanceType,
   TableFilterOptions,
   AspectFilterOptions,
+  AspectDistanceTypeInterface,
 } from "@/interfaces/AspectTableInterfaces";
 import { AspectedElement, AspectType } from "@/interfaces/AstroChartInterfaces";
 import React, {
@@ -20,6 +21,7 @@ import AspectTableFilterModal from "./AspectTableFilterModalLayout";
 import AspectFilterModal, {
   AspectFilterModalImperativeHandle,
 } from "./AspectFilterModal";
+import DistanceTypeFilterModal from "./DistanceTypeFilterModal";
 
 export type AspectFilterButtonImperativeHandle = {
   clearFilter: () => void;
@@ -29,7 +31,7 @@ interface TableFilterProps {
   column: AspectTableColumn;
   elements?: AspectedElement[];
   distanceValues?: AspectDistance[];
-  distanceTypes?: AspectDistanceType[];
+  distanceTypes?: AspectDistanceTypeInterface[];
   modalIndex: number;
   openModal: boolean;
   disableFilterBtn: boolean;
@@ -56,6 +58,9 @@ function AspectTableFilterButtonFn(
   } = props;
 
   const aspectModalRef = useRef<AspectFilterModalImperativeHandle | null>(null);
+  const distanceTypeModalRef = useRef<AspectFilterModalImperativeHandle | null>(
+    null
+  );
 
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [memorizedOptions, setMemorizedOptions] = useState<any>(undefined);
@@ -71,6 +76,7 @@ function AspectTableFilterButtonFn(
       setFilterIsActive(false);
 
       aspectModalRef.current?.clearFilterModalFields();
+      distanceTypeModalRef.current?.clearFilterModalFields();
     },
   }));
 
@@ -140,10 +146,17 @@ function AspectTableFilterButtonFn(
         </div>
       )}
 
-      {modalIsOpen && column === "aspectDistanceType" && (
-        <div className="absolute w-[200%] h-[200%] bg-gray-100 right-0">
-          <span>Filtrar por Tipo de Distância</span>
-        </div>
+      {column === "aspectDistanceType" && (
+        <DistanceTypeFilterModal
+          isVisible={modalIsOpen}
+          className="absolute right-0"
+          ref={distanceTypeModalRef}
+          initialState={optionsInitialState.current}
+          memorizedOptions={memorizedOptions}
+          onConfirm={handleOnConfirm}
+          onCancel={handleOnCancel}
+          applyFilterIsActiveClasses={handleOnApplyFilterIsActiveClasses}
+        />
       )}
     </div>
   );

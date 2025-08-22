@@ -14,6 +14,7 @@ import {
   AspectFilterOptions,
   AspectFilterModalCheckboxState,
   TableFilterOptions,
+  FilterModalProps,
 } from "@/interfaces/AspectTableInterfaces";
 import AspectTableFilterModalLayout from "./AspectTableFilterModalLayout";
 
@@ -24,15 +25,6 @@ const aspects: AspectType[] = [
   "opposition",
   "conjunction",
 ];
-
-interface FilterModalProps {
-  isVisible: boolean;
-  memorizedOptions?: TableFilterOptions;
-  initialState?: TableFilterOptions;
-  onCancel?: (options?: TableFilterOptions) => void;
-  onConfirm?: (options?: TableFilterOptions) => void;
-  applyFilterIsActiveClasses?: (isActive: boolean) => void;
-}
 
 export type AspectFilterModalImperativeHandle = {
   clearFilterModalFields: () => void;
@@ -116,6 +108,10 @@ function AspectFilterModalFn(
   );
 
   const toggleSingleCheckbox = (index: number) => {
+    if (allCheckboxesChecked) {
+      toggleAllCheckboxes();
+    }
+
     setCheckboxesChecked((prev) => {
       const next = prev.map((c, i) =>
         i === index ? { ...c, isChecked: !c.isChecked } : c
@@ -169,7 +165,7 @@ function AspectFilterModalFn(
       title="Filtrar por Aspecto"
       onCancel={cancelAndResetState}
       onConfirm={confirmWithAspectesChecked}
-      widthClass="w-[190px]"
+      className="w-[190px]"
     >
       {checkboxesChecked && (
         <div className="w-full grid grid-cols-3 gap-2 p-2">

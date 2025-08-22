@@ -7,6 +7,7 @@ import {
 import React, { useEffect, useState } from "react";
 import {
   arabicPartKeys,
+  ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT,
   convertDegMinToDecimal,
   decimalToDegreesMinutes,
   getAntiscion,
@@ -45,6 +46,9 @@ const LunarDerivedChart: React.FC<Props> = ({
   const { arabicParts, archArabicParts } = useArabicParts();
   const { calculateBirthArchArabicPart } = useArabicPartCalculations();
   const lots: ArabicPartsType = {};
+  const [tableItemsPerPage, setTableItemsPerPage] = useState(
+    ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT
+  );
 
   const makeChart = async () => {
     const returnDate = moment.tz(birthChart.returnTime, birthChart.timezone!);
@@ -72,10 +76,6 @@ const LunarDerivedChart: React.FC<Props> = ({
       coordinates: birthChart.birthDate.coordinates,
     };
 
-    // console.log("birthDate: ", birthDate);
-    // console.log("birthDate:", birthDate);
-    // console.log("targetDate:", targetDate);
-
     const response = await fetch("http://localhost:3001/return/lunar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -91,7 +91,6 @@ const LunarDerivedChart: React.FC<Props> = ({
     }
 
     const data = await response.json();
-    console.log(data);
 
     setLunarChart({
       ...data,
@@ -161,14 +160,6 @@ const LunarDerivedChart: React.FC<Props> = ({
     }
   }, [lunarChart]);
 
-  // useEffect(() => {
-  //   if (renderChart) {
-  //     console.log(parts);
-  //     console.log(lunarChart?.planets);
-  //     console.log(lunarChart?.housesData);
-  //   }
-  // }, [renderChart]);
-
   const toggleShowBirthCombinedchart = () => {
     if (combineWithReturnChart) setCombineWithReturnChart(false);
     setCombineWithBirthChart((prev) => !prev);
@@ -178,6 +169,10 @@ const LunarDerivedChart: React.FC<Props> = ({
     if (combineWithBirthChart) setCombineWithBirthChart(false);
     setCombineWithReturnChart((prev) => !prev);
   };
+
+  function handleOnItemsPerPagechanged(newItemsPerPage: number) {
+    setTableItemsPerPage(newItemsPerPage);
+  }
 
   return (
     <div className="flex flex-col items-center mt-2">
@@ -253,6 +248,8 @@ const LunarDerivedChart: React.FC<Props> = ({
               customPartsForDataVisualization={parts}
               combineWithBirthChart={toggleShowBirthCombinedchart}
               combineWithReturnChart={toggleShowReturnCombinedchart}
+              tableItemsPerPage={tableItemsPerPage}
+              onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
             />
           )}
 
@@ -265,6 +262,8 @@ const LunarDerivedChart: React.FC<Props> = ({
               customPartsForDataVisualization={parts}
               outerArabicParts={parts}
               combineWithBirthChart={toggleShowBirthCombinedchart}
+              tableItemsPerPage={tableItemsPerPage}
+              onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
             />
           )}
 
@@ -277,44 +276,10 @@ const LunarDerivedChart: React.FC<Props> = ({
               useArchArabicPartsForDataVisualization
               customPartsForDataVisualization={parts}
               combineWithReturnChart={toggleShowReturnCombinedchart}
+              tableItemsPerPage={tableItemsPerPage}
+              onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
             />
           )}
-
-          {/* <div className="flex flex-row justify-between mt-8">
-            <div>
-              <h2 className="font-bold text-lg mb-2">Casas:</h2>
-              <ul className="mb-4">
-                {lunarChart.housesData.housesWithSigns?.map((house, index) => (
-                  <li key={house}>
-                    Casa {index + 1}: {house}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <h2 className="font-bold text-lg mb-2">Planetas:</h2>
-              <ul>
-                {lunarChart.planets?.map((planet, index) => (
-                  <li key={planet.name}>
-                    {lunarChart.planetsWithSigns !== undefined && (
-                      <>
-                        {planet.name}:{" "}
-                        {lunarChart.planetsWithSigns[index].position}
-                        &nbsp;Antiscion:{" "}
-                        {lunarChart.planetsWithSigns[index].antiscion}
-                      </>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <BirthArchArabicParts
-            customArabicParts={parts}
-            useCustomASCControls={false}
-          /> */}
         </div>
       )}
     </div>

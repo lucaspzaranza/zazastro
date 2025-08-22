@@ -7,6 +7,7 @@ import BirthArchArabicParts from "./BirthArchArabicParts";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import LunarDerivedChart from "./LunarDerivedChart";
 import ChartAndData from "./ChartAndData";
+import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT } from "../utils/chartUtils";
 
 export default function BirthArch() {
   const [input, setInput] = useState(0);
@@ -27,20 +28,9 @@ export default function BirthArch() {
     },
   });
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    if (e.target.value.length > 0) {
-      const value = Number.parseFloat(e.target.value);
-      setInput(value);
-
-      if (value < 0) {
-        setInput(0);
-      } else if (value >= 360) {
-        setInput(359.59);
-      }
-    } else {
-      setInput(0);
-    }
-  }
+  const [tableItemsPerPage, setTableItemsPerPage] = useState(
+    ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT
+  );
 
   const toggleShowCombinedchart = () => {
     setCombineWithBirthChart((prev) => !prev);
@@ -54,6 +44,10 @@ export default function BirthArch() {
       });
     }
   }, [returnChart]);
+
+  function handleOnItemsPerPagechanged(newItemsPerPage: number) {
+    setTableItemsPerPage(newItemsPerPage);
+  }
 
   if (returnChart === undefined) return;
 
@@ -78,6 +72,8 @@ export default function BirthArch() {
               arabicParts={archArabicParts!}
               combineWithBirthChart={toggleShowCombinedchart}
               useArchArabicPartsForDataVisualization
+              tableItemsPerPage={tableItemsPerPage}
+              onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
             />
           )}
 
@@ -89,6 +85,8 @@ export default function BirthArch() {
               outerArabicParts={archArabicParts}
               useArchArabicPartsForDataVisualization
               combineWithBirthChart={toggleShowCombinedchart}
+              tableItemsPerPage={tableItemsPerPage}
+              onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
             />
           )}
 

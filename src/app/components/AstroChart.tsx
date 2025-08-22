@@ -20,6 +20,7 @@ import {
   AspectType,
   AstroChartProps,
   ChartElement,
+  OrbCalculationOrientation,
   PlanetAspectData,
 } from "@/interfaces/AstroChartInterfaces";
 import { useAspectsData } from "@/contexts/AspectsContext";
@@ -404,6 +405,29 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     return foundAspect !== undefined;
   }
 
+  function getAspectLimitLongitude(
+    valueToCheck: number,
+    orb: number,
+    orientation: OrbCalculationOrientation
+  ): number {
+    const valueSign = getSign(valueToCheck, true);
+    let limit =
+      orientation === "upper" ? valueToCheck + orb : valueToCheck - orb;
+    const limitSign = getSign(limit, true);
+
+    if (valueSign !== limitSign) {
+      const signIndex = signsGlpyphs.indexOf(valueSign);
+      limit = signIndex * 30 + (orientation === "upper" ? 29.59 : 0);
+
+      // console.log(
+      //   `valueSign: ${valueSign}, limitSign: ${limitSign}, limit is ${limit}`
+      // );
+      return limit;
+    }
+
+    return limit;
+  }
+
   function getAspectOrb(
     element: ChartElement,
     aspectedElement: ChartElement,
@@ -451,25 +475,9 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       // is both are antiscion, the aspect has already been rendered into their normal position
       return false;
 
-    if (
-      aspectToCheck.type === "conjunction" &&
-      element.planetType === "mars" &&
-      elToCheck.planetType === "jupiter"
-    ) {
-      // console.log(element);
-      // console.log(elToCheck);
-      // const key = generateAspectKey(element, elToCheck, aspectToCheck);
-      // console.log(key);
-    }
-
     const aspect = aspectsData.find(
       (asp) => asp.key === generateAspectKey(element, elToCheck, aspectToCheck)
     );
-
-    // if (aspect !== undefined && aspect.aspectedElement.name.includes("mars")) {
-    //   console.log(`aspect ${aspect.key} already been rendered`);
-    //   console.log(aspect);
-    // }
 
     return aspect === undefined;
   }
@@ -539,8 +547,18 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             ) {
               const orb = getAspectOrb(element, elToCheck, aspect);
               const valToCheck = mod360(element.longitude + aspect.angle);
-              const lowerLimit = mod360(elToCheck.longitude - orb);
-              const upperLimit = mod360(elToCheck.longitude + orb);
+
+              const lowerLimit = getAspectLimitLongitude(
+                elToCheck.longitude,
+                orb,
+                "lower"
+              );
+              const upperLimit = getAspectLimitLongitude(
+                elToCheck.longitude,
+                orb,
+                "upper"
+              );
+
               return valToCheck >= lowerLimit && valToCheck <= upperLimit;
             }
           });
@@ -741,6 +759,8 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     }
   ) {
     const aspectsData = getAspects(elements);
+    // console.log(aspectsData);
+
     onUpdateAspectsData?.(aspectsData);
 
     aspectsData.forEach((aspect) => {

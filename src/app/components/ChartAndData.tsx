@@ -6,6 +6,7 @@ import {
 import React, { useEffect, useState } from "react";
 import {
   angularLabels,
+  ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT,
   formatSignColor,
   getAntiscion,
   getDegreeAndSign,
@@ -33,6 +34,8 @@ interface Props {
   customPartsForDataVisualization?: ArabicPartsType;
   combineWithBirthChart?: () => void;
   combineWithReturnChart?: () => void;
+  tableItemsPerPage?: number;
+  onTableItemsPerPageChanged?: (newItemsPerPage: number) => void;
 }
 
 export default function ChartAndData(props: Props) {
@@ -45,12 +48,19 @@ export default function ChartAndData(props: Props) {
     useArchArabicPartsForDataVisualization,
     combineWithBirthChart,
     combineWithReturnChart,
+    tableItemsPerPage,
+    onTableItemsPerPageChanged,
   } = {
     ...props,
   };
 
   const [chart, setChart] = useState(outerChart ?? birthChart);
   const [aspectsData, setAspectsData] = useState<PlanetAspectData[]>([]);
+  const itemsPerPage = tableItemsPerPage ?? ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT;
+
+  useEffect(() => {
+    setChart(outerChart ?? birthChart);
+  }, [birthChart, outerChart]);
 
   const getHouseAntiscion = (houseLong: number): React.ReactNode => {
     const antiscion = getAntiscion(houseLong, false);
@@ -68,9 +78,9 @@ export default function ChartAndData(props: Props) {
     setAspectsData(newAspectData);
   }
 
-  useEffect(() => {
-    setChart(outerChart ?? birthChart);
-  }, [birthChart, outerChart]);
+  function handleOnItemsPerPagechanged(newItemsPerPage: number) {
+    onTableItemsPerPageChanged?.(newItemsPerPage);
+  }
 
   return (
     <div className="flex flex-row items-start justify-center mt-8">
@@ -163,6 +173,8 @@ export default function ChartAndData(props: Props) {
           outerChart={outerChart}
           arabicParts={arabicParts!}
           outerArabicParts={outerArabicParts}
+          initialItemsPerPage={itemsPerPage}
+          onItemsPerPageChanged={handleOnItemsPerPagechanged}
         />
       </div>
     </div>

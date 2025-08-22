@@ -31,10 +31,11 @@ import AspectTableFilterButton, {
 import {
   AspectDistance,
   AspectTableColumn,
-  AspectDistanceType,
+  AspectDistanceTypeInterface,
   ElementLongitudeParameterType,
   TableFilterOptions,
   AspectFilterOptions,
+  AspectDistanceType,
 } from "@/interfaces/AspectTableInterfaces";
 
 /**
@@ -53,20 +54,27 @@ export default function AspectsTable({
   outerChart,
   arabicParts,
   outerArabicParts,
+  initialItemsPerPage,
+  onItemsPerPageChanged,
 }: {
   aspects: PlanetAspectData[];
   birthChart: BirthChart;
   outerChart?: BirthChart;
   arabicParts: ArabicPartsType;
   outerArabicParts?: ArabicPartsType;
+  initialItemsPerPage?: number;
+  onItemsPerPageChanged?: (newItemsPerPage: number) => void;
 }) {
   const aspectButtonRef = useRef<AspectFilterButtonImperativeHandle | null>(
     null
   );
 
+  const distanceTypeButtonRef =
+    useRef<AspectFilterButtonImperativeHandle | null>(null);
+
   const backupValue = useRef(0);
 
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage ?? 5);
   const [tableCurrentPage, setTableCurrentPage] = useState(1);
   const [tablePageCount, setTablePageCount] = useState(1);
   const [filteredAspects, setFilteredAspects] = useState<PlanetAspectData[]>(
@@ -79,14 +87,18 @@ export default function AspectsTable({
     false, // Distance
     false, // DistanceType
   ]);
+  const [cumulatedOptions, setCumulatedOptions] =
+    useState<TableFilterOptions>();
 
   const distanceValues: AspectDistance[] = [];
-  const distanceTypes: AspectDistanceType[] = [];
+  const distanceTypes: AspectDistanceTypeInterface[] = [];
 
   const tdClasses =
     "w-full border-r-2 flex flex-row items-center justify-center";
 
   useEffect(() => {
+    clearFilters();
+
     setFilteredAspects((prev) =>
       aspects.map((asp) => ({ ...asp } as PlanetAspectData))
     );
@@ -396,6 +408,8 @@ export default function AspectsTable({
     newTableCurrentPage += currentItemsShown % newItemsPerPage > 0 ? 1 : 0;
 
     setTableCurrentPage(newTableCurrentPage);
+
+    onItemsPerPageChanged?.(newItemsPerPage);
   }
 
   function updateTableCurrentPage(direction: number) {
@@ -473,8 +487,16 @@ export default function AspectsTable({
   }
 
   function handleOnConfirmFilter(options?: TableFilterOptions) {
-    if (options?.aspectsFilter) {
-      const cb = options.aspectsFilter.checkboxesStates;
+    const optionsToCheck: TableFilterOptions | undefined = {
+      ...cumulatedOptions,
+      ...options,
+    };
+
+    const array = optionsToCheck === undefined ? aspects : filteredAspects;
+    let filteredAspectsArray: PlanetAspectData[] = [...array];
+
+    if (optionsToCheck?.aspectsFilter) {
+      const cb = optionsToCheck.aspectsFilter.checkboxesStates;
       if (!cb.length) {
         setFilteredAspects([]);
         return;
@@ -484,15 +506,47 @@ export default function AspectsTable({
         cb.filter((c) => c.isChecked).map((c) => c.aspect)
       );
 
-      setFilteredAspects(
-        aspects.filter((asp) => checkedAspects.has(asp.aspectType))
+      filteredAspectsArray = aspects.filter((asp) =>
+        checkedAspects.has(asp.aspectType)
       );
+
+      setCumulatedOptions((prev) => ({
+        ...prev,
+        aspectsFilter: optionsToCheck.aspectsFilter,
+      }));
     }
+
+    if (optionsToCheck?.distanceTypesFilter) {
+      const cb = optionsToCheck.distanceTypesFilter.distanceTypes;
+      if (!cb.length) {
+        setFilteredAspects([]);
+        return;
+      }
+
+      const checkedAspects = new Set(
+        cb.filter((c) => c.isChecked).map((c) => c.distanceType)
+      );
+
+      filteredAspectsArray = filteredAspectsArray.filter((asp) =>
+        checkedAspects.has(
+          getAspectDistanceType(asp) === "A" ? "applicative" : "separative"
+        )
+      );
+
+      setCumulatedOptions((prev) => ({
+        ...prev,
+        distanceTypesFilter: optionsToCheck.distanceTypesFilter,
+      }));
+    }
+
+    setFilteredAspects(filteredAspectsArray.map((asp) => ({ ...asp })));
   }
 
   function clearFilters() {
     aspectButtonRef.current?.clearFilter();
+    distanceTypeButtonRef.current?.clearFilter();
     setFilteredAspects([...aspects]);
+    setCumulatedOptions(undefined);
   }
 
   return (
@@ -555,6 +609,7 @@ export default function AspectsTable({
             </th>
             <th className="w-3/4 text-center">
               <AspectTableFilterButton
+                ref={distanceTypeButtonRef}
                 column="aspectDistanceType"
                 openModal={filterModalIsOpenArray[4]}
                 modalIndex={4}

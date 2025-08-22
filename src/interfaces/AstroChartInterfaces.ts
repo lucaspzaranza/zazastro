@@ -1,6 +1,8 @@
 import { ArabicPartsType } from "./ArabicPartInterfaces";
 import { HousesData, Planet, PlanetType } from "./BirthChartInterfaces";
 
+export type OrbCalculationOrientation = "upper" | "lower";
+
 export interface AstroChartProps {
   props: {
     planets?: Planet[];
