@@ -2,8 +2,8 @@
 
 import { BirthChartContextProvider } from "@/contexts/BirthChartContext";
 import { ArabicPartsContextProvider } from "@/contexts/ArabicPartsContext";
-import BirthChart from "./components/BirthChart";
-import ReturnChart from "./components/ReturnChart";
+import BirthChart from "./components/charts/BirthChart";
+import ReturnChart from "./components/charts/ReturnChart";
 import { AspectsContextProvider } from "@/contexts/AspectsContext";
 
 export default function Home() {

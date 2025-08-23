@@ -13,15 +13,15 @@ import {
   getAntiscion,
   getDegreeAndSign,
   monthsNames,
-} from "../utils/chartUtils";
+} from "../../utils/chartUtils";
 import AstroChart from "./AstroChart";
 import moment from "moment";
-import { ChartDate } from "./ChartDate";
+import { ChartDate } from ".././ChartDate";
 import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import { useArabicPartCalculations } from "@/hooks/useArabicPartCalculations";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
-import BirthArchArabicParts from "./BirthArchArabicParts";
-import ChartAndData from "./ChartAndData";
+import BirthArchArabicParts from ".././BirthArchArabicParts";
+import ChartAndData from ".././ChartAndData";
 
 interface Props {
   birthChart: BirthChart;

@@ -9,7 +9,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { getAspectImage } from "../utils/chartUtils";
+import { getAspectImage } from "../../utils/chartUtils";
 import {
   AspectFilterOptions,
   AspectFilterModalCheckboxState,

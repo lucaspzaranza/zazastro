@@ -1,13 +1,13 @@
 import { useBirthChart } from "@/contexts/BirthChartContext";
 import { BirthDate } from "@/interfaces/BirthChartInterfaces";
 import { useEffect, useState } from "react";
-import { ChartDate } from "./ChartDate";
+import { ChartDate } from ".././ChartDate";
 import AstroChart from "./AstroChart";
-import BirthArchArabicParts from "./BirthArchArabicParts";
+import BirthArchArabicParts from ".././BirthArchArabicParts";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import LunarDerivedChart from "./LunarDerivedChart";
-import ChartAndData from "./ChartAndData";
-import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT } from "../utils/chartUtils";
+import ChartAndData from ".././ChartAndData";
+import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT } from "../../utils/chartUtils";
 
 export default function BirthArch() {
   const [input, setInput] = useState(0);

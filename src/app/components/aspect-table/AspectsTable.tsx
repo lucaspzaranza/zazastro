@@ -16,7 +16,7 @@ import {
   getDegreesInsideASign,
   getPlanetImage,
   monthsNames,
-} from "../utils/chartUtils";
+} from "../../utils/chartUtils";
 import {
   BirthChart,
   Planet,
@@ -492,8 +492,7 @@ export default function AspectsTable({
       ...options,
     };
 
-    const array = optionsToCheck === undefined ? aspects : filteredAspects;
-    let filteredAspectsArray: PlanetAspectData[] = [...array];
+    let array: PlanetAspectData[] = [...aspects];
 
     if (optionsToCheck?.aspectsFilter) {
       const cb = optionsToCheck.aspectsFilter.checkboxesStates;
@@ -506,9 +505,7 @@ export default function AspectsTable({
         cb.filter((c) => c.isChecked).map((c) => c.aspect)
       );
 
-      filteredAspectsArray = aspects.filter((asp) =>
-        checkedAspects.has(asp.aspectType)
-      );
+      array = aspects.filter((asp) => checkedAspects.has(asp.aspectType));
 
       setCumulatedOptions((prev) => ({
         ...prev,
@@ -527,7 +524,7 @@ export default function AspectsTable({
         cb.filter((c) => c.isChecked).map((c) => c.distanceType)
       );
 
-      filteredAspectsArray = filteredAspectsArray.filter((asp) =>
+      array = array.filter((asp) =>
         checkedAspects.has(
           getAspectDistanceType(asp) === "A" ? "applicative" : "separative"
         )
@@ -539,7 +536,7 @@ export default function AspectsTable({
       }));
     }
 
-    setFilteredAspects(filteredAspectsArray.map((asp) => ({ ...asp })));
+    setFilteredAspects(array.map((asp) => ({ ...asp })));
   }
 
   function clearFilters() {

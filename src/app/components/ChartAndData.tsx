@@ -18,8 +18,8 @@ import {
 import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import BirthArchArabicParts from "./BirthArchArabicParts";
 import ArabicParts from "./ArabicParts";
-import AspectsTable from "./AspectsTable";
-import AstroChart from "./AstroChart";
+import AspectsTable from "./aspect-table/AspectsTable";
+import AstroChart from "./charts/AstroChart";
 import {
   AstroChartProps,
   PlanetAspectData,

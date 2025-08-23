@@ -10,7 +10,7 @@ import {
   getDegreesInsideASign,
   getSign,
   signsGlpyphs,
-} from "../utils/chartUtils";
+} from "../../utils/chartUtils";
 import { HousesData, Planet } from "@/interfaces/BirthChartInterfaces";
 import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import {
@@ -549,12 +549,12 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
               const valToCheck = mod360(element.longitude + aspect.angle);
 
               const lowerLimit = getAspectLimitLongitude(
-                elToCheck.longitude,
+                mod360(elToCheck.longitude),
                 orb,
                 "lower"
               );
               const upperLimit = getAspectLimitLongitude(
-                elToCheck.longitude,
+                mod360(elToCheck.longitude),
                 orb,
                 "upper"
               );

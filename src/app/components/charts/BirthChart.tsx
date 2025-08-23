@@ -7,20 +7,17 @@ import {
   getHourAndMinute,
   monthsNames,
   presavedBirthDates,
-} from "../utils/chartUtils";
+} from "../../utils/chartUtils";
 import {
   BirthDate,
   Coordinates,
   ReturnChartType,
   SelectedCity,
 } from "@/interfaces/BirthChartInterfaces";
-import { ChartDate } from "./ChartDate";
-import CitySearch from "./CitySearch";
-import AstroChart from "./AstroChart";
-import ArabicParts from "./ArabicParts";
+import { ChartDate } from ".././ChartDate";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
-import HousesAndPlanetsData from "./ChartAndData";
-import ChartAndData from "./ChartAndData";
+import HousesAndPlanetsData from ".././ChartAndData";
+import ChartAndData from ".././ChartAndData";
 
 export default function BirthChart() {
   const [loading, setLoading] = useState(false);

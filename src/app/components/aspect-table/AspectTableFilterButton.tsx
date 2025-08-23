@@ -3,9 +3,7 @@
 import {
   AspectDistance,
   AspectTableColumn,
-  AspectDistanceType,
   TableFilterOptions,
-  AspectFilterOptions,
   AspectDistanceTypeInterface,
 } from "@/interfaces/AspectTableInterfaces";
 import { AspectedElement, AspectType } from "@/interfaces/AstroChartInterfaces";
@@ -16,12 +14,10 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { getAspectImage } from "../utils/chartUtils";
-import AspectTableFilterModal from "./AspectTableFilterModalLayout";
 import AspectFilterModal, {
   AspectFilterModalImperativeHandle,
-} from "./AspectFilterModal";
-import DistanceTypeFilterModal from "./DistanceTypeFilterModal";
+} from "../modals/AspectFilterModal";
+import DistanceTypeFilterModal from "../modals/DistanceTypeFilterModal";
 
 export type AspectFilterButtonImperativeHandle = {
   clearFilter: () => void;
