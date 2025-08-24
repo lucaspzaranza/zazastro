@@ -15,6 +15,7 @@ import {
   AspectFilterModalCheckboxState,
   TableFilterOptions,
   FilterModalProps,
+  FilterModalImperativeHandle,
 } from "@/interfaces/AspectTableInterfaces";
 import AspectTableFilterModalLayout from "./AspectTableFilterModalLayout";
 
@@ -26,14 +27,9 @@ const aspects: AspectType[] = [
   "conjunction",
 ];
 
-export type AspectFilterModalImperativeHandle = {
-  clearFilterModalFields: () => void;
-  getOptions: () => TableFilterOptions;
-};
-
 function AspectFilterModalFn(
   props: FilterModalProps,
-  ref: React.ForwardedRef<AspectFilterModalImperativeHandle>
+  ref: React.ForwardedRef<FilterModalImperativeHandle>
 ) {
   const {
     isVisible,
@@ -200,7 +196,7 @@ function AspectFilterModalFn(
 }
 
 const AspectFilterModal = forwardRef<
-  AspectFilterModalImperativeHandle,
+  FilterModalImperativeHandle,
   FilterModalProps
 >(AspectFilterModalFn);
 AspectFilterModal.displayName = "AspectFilterModal";

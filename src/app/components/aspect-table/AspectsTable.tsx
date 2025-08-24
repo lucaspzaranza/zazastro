@@ -69,6 +69,10 @@ export default function AspectsTable({
     null
   );
 
+  const distanceButtonRef = useRef<AspectFilterButtonImperativeHandle | null>(
+    null
+  );
+
   const distanceTypeButtonRef =
     useRef<AspectFilterButtonImperativeHandle | null>(null);
 
@@ -513,6 +517,48 @@ export default function AspectsTable({
       }));
     }
 
+    if (optionsToCheck?.distanceFilter) {
+      const options = optionsToCheck.distanceFilter.distanceOptions;
+      if (
+        (!options.useLowerLimit && !options.useUpperLimit) ||
+        (options.lowerLimitFilterFunc === undefined &&
+          options.upperLimitFilterFunc === undefined)
+      ) {
+        setFilteredAspects([]);
+        return;
+      }
+
+      const fnToCheck = (val: number): boolean => {
+        let result =
+          options.lowerLimitFilterFunc?.(val, options.lowerLimitValue) ?? true;
+
+        if (result)
+          result =
+            options.upperLimitFilterFunc?.(val, options.upperLimitValue) ??
+            true;
+
+        return result;
+      };
+
+      array = array.filter((asp) => {
+        const rawDistance = getAspectDistance(asp)
+          .replace("°", ".")
+          .replace("'", "");
+        const numericValue = Number.parseFloat(rawDistance);
+
+        console.log(
+          `rawDistance: ${rawDistance}, numericValue: ${numericValue}`
+        );
+
+        return fnToCheck(numericValue);
+      });
+
+      setCumulatedOptions((prev) => ({
+        ...prev,
+        distanceFilter: { ...optionsToCheck.distanceFilter! },
+      }));
+    }
+
     if (optionsToCheck?.distanceTypesFilter) {
       const cb = optionsToCheck.distanceTypesFilter.distanceTypes;
       if (!cb.length) {
@@ -541,6 +587,7 @@ export default function AspectsTable({
 
   function clearFilters() {
     aspectButtonRef.current?.clearFilter();
+    distanceButtonRef?.current?.clearFilter();
     distanceTypeButtonRef.current?.clearFilter();
     setFilteredAspects([...aspects]);
     setCumulatedOptions(undefined);
@@ -595,11 +642,11 @@ export default function AspectsTable({
             </th>
             <th className="w-full text-center border-r-2">
               <AspectTableFilterButton
+                ref={distanceButtonRef}
                 column="distance"
                 openModal={filterModalIsOpenArray[3]}
                 modalIndex={3}
                 disableFilterBtn={disableFilter(3)}
-                distanceValues={distanceValues}
                 onModalButtonClick={toggleFilterModalOpening}
                 onConfirm={handleOnConfirmFilter}
               />

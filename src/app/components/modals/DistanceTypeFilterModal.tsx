@@ -3,6 +3,7 @@
 import {
   AspectDistanceType,
   DistanceTypeFilterModalCheckboxState,
+  FilterModalImperativeHandle,
   FilterModalProps,
   TableFilterOptions,
 } from "@/interfaces/AspectTableInterfaces";
@@ -16,14 +17,9 @@ import React, {
 } from "react";
 import AspectTableFilterModalLayout from "./AspectTableFilterModalLayout";
 
-export type DistanceTypeFilterModalImperativeHandle = {
-  clearFilterModalFields: () => void;
-  getOptions: () => TableFilterOptions;
-};
-
 function DistanceTypeFilterModalFn(
   props: FilterModalProps,
-  ref: React.ForwardedRef<DistanceTypeFilterModalImperativeHandle>
+  ref: React.ForwardedRef<FilterModalImperativeHandle>
 ) {
   const {
     isVisible,
@@ -186,7 +182,7 @@ function DistanceTypeFilterModalFn(
 }
 
 const DistanceTypeFilterModal = forwardRef<
-  DistanceTypeFilterModalImperativeHandle,
+  FilterModalImperativeHandle,
   FilterModalProps
 >(DistanceTypeFilterModalFn);
 DistanceTypeFilterModal.displayName = "DistanceTypeFilterModal";

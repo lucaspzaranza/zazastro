@@ -5,6 +5,7 @@ import {
   AspectTableColumn,
   TableFilterOptions,
   AspectDistanceTypeInterface,
+  FilterModalImperativeHandle,
 } from "@/interfaces/AspectTableInterfaces";
 import { AspectedElement, AspectType } from "@/interfaces/AstroChartInterfaces";
 import React, {
@@ -14,10 +15,9 @@ import React, {
   useRef,
   useState,
 } from "react";
-import AspectFilterModal, {
-  AspectFilterModalImperativeHandle,
-} from "../modals/AspectFilterModal";
+import AspectFilterModal from "../modals/AspectFilterModal";
 import DistanceTypeFilterModal from "../modals/DistanceTypeFilterModal";
+import DistanceFilterModal from "../modals/DistanceFilterModal";
 
 export type AspectFilterButtonImperativeHandle = {
   clearFilter: () => void;
@@ -53,10 +53,9 @@ function AspectTableFilterButtonFn(
     onConfirm,
   } = props;
 
-  const aspectModalRef = useRef<AspectFilterModalImperativeHandle | null>(null);
-  const distanceTypeModalRef = useRef<AspectFilterModalImperativeHandle | null>(
-    null
-  );
+  const aspectModalRef = useRef<FilterModalImperativeHandle | null>(null);
+  const distanceModalRef = useRef<FilterModalImperativeHandle | null>(null);
+  const distanceTypeModalRef = useRef<FilterModalImperativeHandle | null>(null);
 
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [memorizedOptions, setMemorizedOptions] = useState<any>(undefined);
@@ -72,6 +71,7 @@ function AspectTableFilterButtonFn(
       setFilterIsActive(false);
 
       aspectModalRef.current?.clearFilterModalFields();
+      distanceModalRef.current?.clearFilterModalFields();
       distanceTypeModalRef.current?.clearFilterModalFields();
     },
   }));
@@ -136,10 +136,17 @@ function AspectTableFilterButtonFn(
         </div>
       )}
 
-      {modalIsOpen && column === "distance" && (
-        <div className="absolute w-[200%] h-[200%] bg-gray-100 right-0">
-          <span>Filtrar por Distância</span>
-        </div>
+      {column === "distance" && (
+        <DistanceFilterModal
+          isVisible={modalIsOpen}
+          className="absolute top-[21px] right-[0px]"
+          ref={distanceModalRef}
+          initialState={optionsInitialState.current}
+          memorizedOptions={memorizedOptions}
+          onConfirm={handleOnConfirm}
+          onCancel={handleOnCancel}
+          applyFilterIsActiveClasses={handleOnApplyFilterIsActiveClasses}
+        />
       )}
 
       {column === "aspectDistanceType" && (

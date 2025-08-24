@@ -327,6 +327,31 @@ export function convertDegMinNumberToDecimal(degMin: number) {
   return result;
 }
 
+/**
+ * Returns the longitude within a degThreshold and with [0 - 59] minutes.
+ */
+export const clampLongitude = (
+  rawString: string,
+  degThreshold: number
+): number => {
+  if (rawString.length === 0) return 0;
+
+  const deg = rawString.split(".")[0];
+  const min = rawString.split(".")[1];
+
+  let degNumber = deg === undefined ? 0 : Number.parseInt(deg);
+  let minNumber = min === undefined ? 0 : Number.parseInt(min);
+
+  if (degNumber < 0) degNumber = 0;
+  else if (degNumber > degThreshold) degNumber = degThreshold;
+
+  if (minNumber > 59) minNumber = 59;
+
+  const result = degNumber + minNumber / 100;
+
+  return result;
+};
+
 const coordinates: Coordinates = {
   latitude: -3.71839, // Fortaleza
   longitude: -38.5434,

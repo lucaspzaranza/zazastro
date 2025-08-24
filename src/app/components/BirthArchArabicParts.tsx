@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   allSigns,
   arabicPartKeys,
+  clampLongitude,
   convertDegMinNumberToDecimal,
   formatSignColor,
   getArabicPartImage,
@@ -33,25 +34,6 @@ export default function BirthArchArabicParts({
   );
 
   const lots: ArabicPartsType = {};
-
-  const clampLongitude = (rawString: string, degthreshold: number): number => {
-    if (rawString.length === 0) return 0;
-
-    const deg = rawString.split(".")[0];
-    const min = rawString.split(".")[1];
-
-    let degNumber = deg === undefined ? 0 : Number.parseInt(deg);
-    let minNumber = min === undefined ? 0 : Number.parseInt(min);
-
-    if (degNumber < 0) degNumber = 0;
-    else if (degNumber > degthreshold) degNumber = degthreshold;
-
-    if (minNumber > 59) minNumber = 59;
-
-    const result = degNumber + minNumber / 100;
-
-    return result;
-  };
 
   useEffect(() => {
     if (arabicParts === undefined) return;
