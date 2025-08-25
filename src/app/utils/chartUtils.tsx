@@ -1,5 +1,6 @@
 import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import {
+  AspectedElement,
   AspectType,
   PlanetAspectData,
 } from "@/interfaces/AstroChartInterfaces";
@@ -75,6 +76,19 @@ export const caldaicOrder: PlanetType[] = [
   "mars",
   "jupiter",
   "saturn",
+];
+
+export const arabicPartKeys: (keyof ArabicPartsType)[] = [
+  "fortune",
+  "spirit",
+  "necessity",
+  "love",
+  "valor",
+  "victory",
+  "captivity",
+  "marriage",
+  "resignation",
+  "children",
 ];
 
 export function getSign(longitude: number, getGlyphOnly = false): string {
@@ -185,19 +199,6 @@ export const formatSignColor = (stringWithSign: string): React.ReactNode => {
     </>
   );
 };
-
-export const arabicPartKeys: (keyof ArabicPartsType)[] = [
-  "fortune",
-  "spirit",
-  "necessity",
-  "love",
-  "valor",
-  "victory",
-  "captivity",
-  "marriage",
-  "resignation",
-  "children",
-];
 
 /**
  * Gets degrees and minutes inside a sign.
@@ -387,6 +388,11 @@ const barbacenaCoordinates: Coordinates = {
   longitude: -43.7742,
 };
 
+const pindaCoords: Coordinates = {
+  latitude: -22.9236,
+  longitude: -45.4598,
+};
+
 export const presavedBirthDates: Record<string, BirthChartProfile> = {
   lucasz: {
     name: "Lucas Zaranza",
@@ -486,6 +492,16 @@ export const presavedBirthDates: Record<string, BirthChartProfile> = {
       day: 4,
       time: convertDegMinToDecimal(2, 24).toString(),
       coordinates: coordinates,
+    },
+  },
+  zanin: {
+    name: "Amanda Zanin",
+    birthDate: {
+      year: 1994,
+      month: 8,
+      day: 10,
+      time: convertDegMinToDecimal(12, 5).toString(),
+      coordinates: pindaCoords,
     },
   },
 };

@@ -35,6 +35,7 @@ function AspectFilterModalFn(
     isVisible,
     memorizedOptions,
     initialState,
+    className,
     onCancel,
     onConfirm,
     applyFilterIsActiveClasses,
@@ -146,7 +147,6 @@ function AspectFilterModalFn(
   }
 
   function cancelAndResetState() {
-    // restaura do snapshot inicial (clonando para garantir imutabilidade)
     const original = initialSnapshotRef.current.map((c) => ({ ...c }));
     setCheckboxesChecked(original);
     setAllCheckboxesChecked(original.every((c) => c.isChecked));
@@ -161,7 +161,7 @@ function AspectFilterModalFn(
       title="Filtrar por Aspecto"
       onCancel={cancelAndResetState}
       onConfirm={confirmWithAspectesChecked}
-      className="w-[190px]"
+      className={`w-[190px] ${className}`}
     >
       {checkboxesChecked && (
         <div className="w-full grid grid-cols-3 gap-2 p-2">

@@ -65,9 +65,16 @@ export default function AspectsTable({
   initialItemsPerPage?: number;
   onItemsPerPageChanged?: (newItemsPerPage: number) => void;
 }) {
+  const elementButtonRef = useRef<AspectFilterButtonImperativeHandle | null>(
+    null
+  );
+
   const aspectButtonRef = useRef<AspectFilterButtonImperativeHandle | null>(
     null
   );
+
+  const aspectedElementButtonRef =
+    useRef<AspectFilterButtonImperativeHandle | null>(null);
 
   const distanceButtonRef = useRef<AspectFilterButtonImperativeHandle | null>(
     null
@@ -119,18 +126,6 @@ export default function AspectsTable({
     return match ? parseInt(match[1], 10) : null;
   }
 
-  function getArabicPartKeyFromElement(
-    element: AspectedElement
-  ): keyof ArabicPartsType | undefined {
-    const name = element.name
-      .replace(`-${fixedNames.antiscionName}`, "")
-      .replace(`${fixedNames.outerKeyPrefix}-`, "");
-
-    const key = name as keyof ArabicPartsType;
-
-    return key;
-  }
-
   function getHouseName(element: AspectedElement): string {
     if (element.elementType !== "house") return "-";
     const houseNumber = extractHouseNumber(element.name)! + 1; // 0 - 11 to 1 - 12
@@ -144,15 +139,35 @@ export default function AspectsTable({
     return `C${houseNumber}${element.isFromOuterChart ? "(E)" : ""}`;
   }
 
+  function getPlanetInfo(element: AspectedElement): Planet | undefined {
+    const chart = element.isFromOuterChart ? outerChart : birthChart;
+
+    return chart?.planets.find(
+      (planet) => planet.type === (element.name as PlanetType)
+    );
+  }
+
+  function getArabicPartKeyFromElement(
+    element: AspectedElement
+  ): keyof ArabicPartsType | undefined {
+    const name = element.name
+      .replace(`-${fixedNames.antiscionName}`, "")
+      .replace(`${fixedNames.outerKeyPrefix}-`, "");
+
+    const key = name as keyof ArabicPartsType;
+
+    return key;
+  }
+
   function getElementImage(element: AspectedElement): React.ReactNode {
     if (element.elementType === "planet") {
       return (
-        <>
+        <div className="w-full flex flex-row items-center justify-center">
           {getPlanetImage(element.name as PlanetType, {
             isAntiscion: element.isAntiscion,
           })}
           {element.isFromOuterChart ? "(E)" : ""}
-        </>
+        </div>
       );
     }
 
@@ -161,12 +176,12 @@ export default function AspectsTable({
       const arabicPart = arabicParts[key];
       if (arabicPart) {
         return (
-          <>
+          <div className="w-full flex flex-row items-center justify-center">
             {getArabicPartImage(arabicPart, {
               isAntiscion: element.isAntiscion,
             })}
             {element.isFromOuterChart ? "(E)" : ""}
-          </>
+          </div>
         );
       }
     }
@@ -176,14 +191,6 @@ export default function AspectsTable({
     }
 
     return <span className="text-sm">{element.name}</span>;
-  }
-
-  function getPlanetInfo(element: AspectedElement): Planet | undefined {
-    const chart = element.isFromOuterChart ? outerChart : birthChart;
-
-    return chart?.planets.find(
-      (planet) => planet.type === (element.name as PlanetType)
-    );
   }
 
   function getElementRawLongitude(element: AspectedElement): number {
@@ -500,10 +507,10 @@ export default function AspectsTable({
 
     if (optionsToCheck?.aspectsFilter) {
       const cb = optionsToCheck.aspectsFilter.checkboxesStates;
-      if (!cb.length) {
-        setFilteredAspects([]);
-        return;
-      }
+      // if (!cb.length) {
+      //   setFilteredAspects([]);
+      //   return;
+      // }
 
       const checkedAspects = new Set(
         cb.filter((c) => c.isChecked).map((c) => c.aspect)
@@ -519,14 +526,14 @@ export default function AspectsTable({
 
     if (optionsToCheck?.distanceFilter) {
       const options = optionsToCheck.distanceFilter.distanceOptions;
-      if (
-        (!options.useLowerLimit && !options.useUpperLimit) ||
-        (options.lowerLimitFilterFunc === undefined &&
-          options.upperLimitFilterFunc === undefined)
-      ) {
-        setFilteredAspects([]);
-        return;
-      }
+      // if (
+      //   (!options.useLowerLimit && !options.useUpperLimit) ||
+      //   (options.lowerLimitFilterFunc === undefined &&
+      //     options.upperLimitFilterFunc === undefined)
+      // ) {
+      //   setFilteredAspects([]);
+      //   return;
+      // }
 
       const fnToCheck = (val: number): boolean => {
         let result =
@@ -546,10 +553,6 @@ export default function AspectsTable({
           .replace("'", "");
         const numericValue = Number.parseFloat(rawDistance);
 
-        console.log(
-          `rawDistance: ${rawDistance}, numericValue: ${numericValue}`
-        );
-
         return fnToCheck(numericValue);
       });
 
@@ -561,10 +564,10 @@ export default function AspectsTable({
 
     if (optionsToCheck?.distanceTypesFilter) {
       const cb = optionsToCheck.distanceTypesFilter.distanceTypes;
-      if (!cb.length) {
-        setFilteredAspects([]);
-        return;
-      }
+      // if (!cb.length) {
+      //   setFilteredAspects([]);
+      //   return;
+      // }
 
       const checkedAspects = new Set(
         cb.filter((c) => c.isChecked).map((c) => c.distanceType)
@@ -609,19 +612,21 @@ export default function AspectsTable({
           <tr className="flex flex-row items-center justify-between border-t-2">
             <th className="w-full h-full text-center border-r-2 text-[0.85rem]">
               <AspectTableFilterButton
-                column="element"
+                ref={elementButtonRef}
+                type="element"
                 openModal={filterModalIsOpenArray[0]}
                 modalIndex={0}
                 disableFilterBtn={disableFilter(0)}
                 elements={getColumnAspectedElements("element")}
                 onModalButtonClick={toggleFilterModalOpening}
                 onConfirm={handleOnConfirmFilter}
+                getElementImage={getElementImage}
               />
             </th>
             <th className="w-full text-center border-r-2">
               <AspectTableFilterButton
                 ref={aspectButtonRef}
-                column="aspect"
+                type="aspect"
                 openModal={filterModalIsOpenArray[1]}
                 modalIndex={1}
                 disableFilterBtn={disableFilter(1)}
@@ -631,19 +636,21 @@ export default function AspectsTable({
             </th>
             <th className="w-full text-center border-r-2">
               <AspectTableFilterButton
-                column="aspectedElement"
+                ref={aspectedElementButtonRef}
+                type="aspectedElement"
                 openModal={filterModalIsOpenArray[2]}
                 modalIndex={2}
                 disableFilterBtn={disableFilter(2)}
                 elements={getColumnAspectedElements("aspectedElement")}
                 onModalButtonClick={toggleFilterModalOpening}
                 onConfirm={handleOnConfirmFilter}
+                getElementImage={getElementImage}
               />
             </th>
             <th className="w-full text-center border-r-2">
               <AspectTableFilterButton
                 ref={distanceButtonRef}
-                column="distance"
+                type="distance"
                 openModal={filterModalIsOpenArray[3]}
                 modalIndex={3}
                 disableFilterBtn={disableFilter(3)}
@@ -654,7 +661,7 @@ export default function AspectsTable({
             <th className="w-3/4 text-center">
               <AspectTableFilterButton
                 ref={distanceTypeButtonRef}
-                column="aspectDistanceType"
+                type="aspectDistanceType"
                 openModal={filterModalIsOpenArray[4]}
                 modalIndex={4}
                 disableFilterBtn={disableFilter(4)}

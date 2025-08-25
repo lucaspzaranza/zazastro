@@ -1,4 +1,9 @@
-import { AspectType } from "./AstroChartInterfaces";
+import {
+  AspectedElement,
+  AspectType,
+  ChartElement,
+  ElementType,
+} from "./AstroChartInterfaces";
 
 export type ElementLongitudeParameterType = "smallest" | "biggest";
 export type AspectDistanceType = "applicative" | "separative";
@@ -25,6 +30,21 @@ export interface AspectDistanceTypeInterface {
   type: string;
 }
 
+export interface ElementFilterNode {
+  name: string;
+  elementType: ElementType;
+  isAntiscion: boolean;
+}
+
+export interface ElementFilterModalCheckboxState {
+  element: ElementFilterNode;
+  isChecked: boolean;
+}
+
+export interface ElementFilterOptions {
+  elements: ElementFilterModalCheckboxState[];
+}
+
 export interface AspectFilterModalCheckboxState {
   aspect: AspectType;
   isChecked: boolean;
@@ -48,7 +68,9 @@ export interface DistanceFilterOptions {
 }
 
 export interface TableFilterOptions {
+  elementsFilter?: ElementFilterOptions;
   aspectsFilter?: AspectFilterOptions;
+  aspectedElementsFilter?: ElementFilterOptions;
   distanceTypesFilter?: DistanceTypeFilterOptions;
   distanceFilter?: DistanceFilterOptions;
 }
