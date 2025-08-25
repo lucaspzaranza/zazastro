@@ -19,11 +19,15 @@ export const outerPlanets: AspectedElement[] = [
 ];
 
 export const outerPlanetsAntiscion: AspectedElement[] = [
-  ...planetsAntiscion.map((planet) => ({ ...planet, isFromOuterChart: true })),
+  ...planetsAntiscion.map((planet) => ({
+    ...planet,
+    isFromOuterChart: true,
+    isAntiscion: true,
+  })),
 ];
 
 export const arabicParts: AspectedElement[] = arabicPartKeys
-  .slice(0, 6)
+  .slice(0, 7)
   .map((key) => ({
     name: key,
     elementType: "arabicPart",
@@ -45,6 +49,7 @@ export const outerArabicPartsAntiscion: AspectedElement[] = [
   ...arabicPartsAntiscion.map((lot) => ({
     ...lot,
     isFromOuterChart: true,
+    isAntiscion: true,
   })),
 ];
 

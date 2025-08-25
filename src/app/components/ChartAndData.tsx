@@ -167,15 +167,17 @@ export default function ChartAndData(props: Props) {
             customArabicParts={customPartsForDataVisualization}
           />
         )}
-        <AspectsTable
-          aspects={aspectsData}
-          birthChart={birthChart}
-          outerChart={outerChart}
-          arabicParts={arabicParts!}
-          outerArabicParts={outerArabicParts}
-          initialItemsPerPage={itemsPerPage}
-          onItemsPerPageChanged={handleOnItemsPerPagechanged}
-        />
+        {arabicParts && (
+          <AspectsTable
+            aspects={aspectsData}
+            birthChart={birthChart}
+            outerChart={outerChart}
+            arabicParts={arabicParts}
+            outerArabicParts={outerArabicParts}
+            initialItemsPerPage={itemsPerPage}
+            onItemsPerPageChanged={handleOnItemsPerPagechanged}
+          />
+        )}
       </div>
     </div>
   );

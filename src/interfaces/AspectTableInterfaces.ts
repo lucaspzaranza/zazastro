@@ -33,6 +33,7 @@ export interface AspectDistanceTypeInterface {
 export interface ElementFilterNode {
   name: string;
   elementType: ElementType;
+  isFromOuterChart: boolean;
   isAntiscion: boolean;
 }
 

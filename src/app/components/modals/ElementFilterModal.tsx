@@ -77,9 +77,9 @@ function ElementFilterModalFn(
   const [useOuterHouses, setUseOuterHouses] = useState(true);
 
   function getElements(): AspectedElement[] {
-    console.log(
-      `getElements with ${useInnerChartElements} and ${useOuterChartElements}`
-    );
+    // console.log(
+    //   `getElements with ${useInnerChartElements} and ${useOuterChartElements}`
+    // );
 
     let result: AspectedElement[] = [];
 
@@ -195,6 +195,22 @@ function ElementFilterModalFn(
     useOuterHouses,
   ]);
 
+  function resetAllCheckboxes() {
+    setUseInnerChartElements(true);
+    setUseInnerPlanets(true);
+    setUseInnerPlanetsAntiscion(true);
+    setUseInnerArabicParts(true);
+    setUseInnerArabicPartsAntiscion(true);
+    setUseInnerHouses(true);
+
+    setUseOuterChartElements(true);
+    setUseOuterPlanets(true);
+    setUseOuterPlanetsAntiscion(true);
+    setUseOuterArabicParts(true);
+    setUseOuterArabicPartsAntiscion(true);
+    setUseOuterHouses(true);
+  }
+
   useImperativeHandle(
     ref,
     () => ({
@@ -203,10 +219,19 @@ function ElementFilterModalFn(
           prev.map((c) => ({ ...c, isChecked: true }))
         );
         setAllCheckboxesChecked(true);
+        resetAllCheckboxes();
       },
 
       getOptions() {
-        const options: TableFilterOptions = {};
+        const propName = getOption();
+        const options: TableFilterOptions = {
+          elementsFilter:
+            propName === "elementsFilter" ? { elements: [] } : undefined,
+          aspectedElementsFilter:
+            propName === "aspectedElementsFilter"
+              ? { elements: [] }
+              : undefined,
+        };
         options[getOption()]!.elements = checkboxesChecked.map((c) => ({
           ...c,
         }));
@@ -244,8 +269,15 @@ function ElementFilterModalFn(
   }
 
   function confirmWithAspectesChecked() {
-    const options: TableFilterOptions = {};
-    options[getOption()]!.elements = checkboxesChecked.map((c) => ({
+    const propName = getOption();
+    const options: TableFilterOptions = {
+      elementsFilter:
+        propName === "elementsFilter" ? { elements: [] } : undefined,
+      aspectedElementsFilter:
+        propName === "aspectedElementsFilter" ? { elements: [] } : undefined,
+    };
+
+    options[propName]!.elements = checkboxesChecked.map((c) => ({
       ...c,
     }));
 
@@ -258,8 +290,14 @@ function ElementFilterModalFn(
     setCheckboxesChecked(original);
     setAllCheckboxesChecked(original.every((c) => c.isChecked));
 
-    const options: TableFilterOptions = {};
-    options[getOption()]!.elements = original.map((c) => ({
+    const propName = getOption();
+    const options: TableFilterOptions = {
+      elementsFilter:
+        propName === "elementsFilter" ? { elements: [] } : undefined,
+      aspectedElementsFilter:
+        propName === "aspectedElementsFilter" ? { elements: [] } : undefined,
+    };
+    options[propName]!.elements = original.map((c) => ({
       ...c,
     }));
     onCancel?.(options);
@@ -358,7 +396,7 @@ function ElementFilterModalFn(
                 checked={useOuterChartElements}
                 onChange={() => setUseOuterChartElements((prev) => !prev)}
               />
-              <label htmlFor="useOuterElements">Elementos Externos</label>
+              <label htmlFor="useOuterElements">Elementos Externos (E)</label>
             </div>
 
             {useOuterChartElements && (
@@ -443,15 +481,17 @@ function ElementFilterModalFn(
             </div>
           ))}
 
-          <div className="flex flex-row items-center justify-start gap-1">
-            <input
-              type="checkbox"
-              id="aspect-all"
-              checked={allCheckboxesChecked}
-              onChange={toggleAllCheckboxes}
-            />
-            <label htmlFor="aspect-all">Todos</label>
-          </div>
+          {(useInnerChartElements || useOuterChartElements) && (
+            <div className="flex flex-row items-center justify-start gap-1">
+              <input
+                type="checkbox"
+                id="aspect-all"
+                checked={allCheckboxesChecked}
+                onChange={toggleAllCheckboxes}
+              />
+              <label htmlFor="aspect-all">Todos</label>
+            </div>
+          )}
         </div>
       )}
     </AspectTableFilterModalLayout>

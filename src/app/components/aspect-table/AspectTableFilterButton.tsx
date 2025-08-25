@@ -81,7 +81,9 @@ function AspectTableFilterButtonFn(
     clearFilter() {
       setFilterIsActive(false);
 
+      elementModalRef.current?.clearFilterModalFields();
       aspectModalRef.current?.clearFilterModalFields();
+      aspectedElementModalRef.current?.clearFilterModalFields();
       distanceModalRef.current?.clearFilterModalFields();
       distanceTypeModalRef.current?.clearFilterModalFields();
     },
@@ -123,7 +125,6 @@ function AspectTableFilterButtonFn(
         <img className={imgClasses} src={imgSrc} width={14} />
       </button>
 
-      {/* elements={elements.map((asp) => ({ ...asp }))} */}
       {elements && elements?.length > 0 && type === "element" && (
         <ElementFilterModal
           columnType="element"
@@ -152,10 +153,19 @@ function AspectTableFilterButtonFn(
         />
       )}
 
-      {modalIsOpen && type === "aspectedElement" && (
-        <div className="absolute w-[200%] h-[200%] bg-gray-100">
-          <span>Filtrar por Aspectado</span>
-        </div>
+      {elements && elements?.length > 0 && type === "aspectedElement" && (
+        <ElementFilterModal
+          columnType="aspectedElement"
+          isVisible={modalIsOpen}
+          className="absolute top-[21px] right-0"
+          ref={aspectedElementModalRef}
+          initialState={optionsInitialState.current}
+          memorizedOptions={memorizedOptions}
+          onConfirm={handleOnConfirm}
+          onCancel={handleOnCancel}
+          applyFilterIsActiveClasses={handleOnApplyFilterIsActiveClasses}
+          getElementImage={getElementImage}
+        />
       )}
 
       {type === "distance" && (

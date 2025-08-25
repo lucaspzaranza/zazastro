@@ -36,17 +36,8 @@ import {
   TableFilterOptions,
   AspectFilterOptions,
   AspectDistanceType,
+  ElementFilterNode,
 } from "@/interfaces/AspectTableInterfaces";
-
-/**
- * Próximos passos:
- * 1 - Diferenciar elementos do mapa externo do mapa interno; (Ok)
- * 2 - Diferenciar tipo de aspecto entre aplicativo ou separativo; (Ok)
- * 3 - Inserir paginação; (Ok)
- * 4 - Inserir opção de filtro por: elemento, aspecto, elemento aspectado,
- *     mapa interno ou externo, distância, e tipo de aspecto (aplicativo ou separativo)
- *     4.1 - Só permitir um modal de pesquisa aberto por vez.
- */
 
 export default function AspectsTable({
   aspects,
@@ -183,6 +174,9 @@ export default function AspectsTable({
             {element.isFromOuterChart ? "(E)" : ""}
           </div>
         );
+      } else {
+        console.log(`key: ${key}`);
+        console.log(arabicParts);
       }
     }
 
@@ -497,6 +491,19 @@ export default function AspectsTable({
     return hasOtherModalOpen;
   }
 
+  function elementNodeArrayContaisAspectElement(
+    array: ElementFilterNode[],
+    element: AspectedElement
+  ): boolean {
+    return array.some(
+      (node) =>
+        node.elementType === element.elementType &&
+        node.name === element.name &&
+        node.isAntiscion === element.isAntiscion &&
+        node.isFromOuterChart === element.isFromOuterChart
+    );
+  }
+
   function handleOnConfirmFilter(options?: TableFilterOptions) {
     const optionsToCheck: TableFilterOptions | undefined = {
       ...cumulatedOptions,
@@ -505,13 +512,23 @@ export default function AspectsTable({
 
     let array: PlanetAspectData[] = [...aspects];
 
+    if (optionsToCheck?.elementsFilter) {
+      const elements = optionsToCheck.elementsFilter.elements
+        .filter((el) => el.isChecked)
+        .map((el) => el.element);
+
+      array = array.filter((aspect) =>
+        elementNodeArrayContaisAspectElement(elements, aspect.element)
+      );
+
+      setCumulatedOptions((prev) => ({
+        ...prev,
+        elementsFilter: optionsToCheck.elementsFilter,
+      }));
+    }
+
     if (optionsToCheck?.aspectsFilter) {
       const cb = optionsToCheck.aspectsFilter.checkboxesStates;
-      // if (!cb.length) {
-      //   setFilteredAspects([]);
-      //   return;
-      // }
-
       const checkedAspects = new Set(
         cb.filter((c) => c.isChecked).map((c) => c.aspect)
       );
@@ -524,17 +541,23 @@ export default function AspectsTable({
       }));
     }
 
+    if (optionsToCheck?.aspectedElementsFilter) {
+      const elements = optionsToCheck.aspectedElementsFilter.elements
+        .filter((el) => el.isChecked)
+        .map((el) => el.element);
+
+      array = array.filter((aspect) =>
+        elementNodeArrayContaisAspectElement(elements, aspect.aspectedElement)
+      );
+
+      setCumulatedOptions((prev) => ({
+        ...prev,
+        aspectedElementsFilter: optionsToCheck.aspectedElementsFilter,
+      }));
+    }
+
     if (optionsToCheck?.distanceFilter) {
       const options = optionsToCheck.distanceFilter.distanceOptions;
-      // if (
-      //   (!options.useLowerLimit && !options.useUpperLimit) ||
-      //   (options.lowerLimitFilterFunc === undefined &&
-      //     options.upperLimitFilterFunc === undefined)
-      // ) {
-      //   setFilteredAspects([]);
-      //   return;
-      // }
-
       const fnToCheck = (val: number): boolean => {
         let result =
           options.lowerLimitFilterFunc?.(val, options.lowerLimitValue) ?? true;
@@ -564,11 +587,6 @@ export default function AspectsTable({
 
     if (optionsToCheck?.distanceTypesFilter) {
       const cb = optionsToCheck.distanceTypesFilter.distanceTypes;
-      // if (!cb.length) {
-      //   setFilteredAspects([]);
-      //   return;
-      // }
-
       const checkedAspects = new Set(
         cb.filter((c) => c.isChecked).map((c) => c.distanceType)
       );
@@ -589,7 +607,9 @@ export default function AspectsTable({
   }
 
   function clearFilters() {
+    elementButtonRef.current?.clearFilter();
     aspectButtonRef.current?.clearFilter();
+    aspectedElementButtonRef.current?.clearFilter();
     distanceButtonRef?.current?.clearFilter();
     distanceTypeButtonRef.current?.clearFilter();
     setFilteredAspects([...aspects]);
