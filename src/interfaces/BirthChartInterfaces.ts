@@ -53,6 +53,7 @@ export interface BirthChart {
   planetsWithSigns?: PlanetWithSign[];
   housesData: HousesData;
   birthDate: BirthDate;
+  fixedStars: FixedStar[];
 
   // If it is a return chart, these props will be needed
   returnType?: ReturnChartType;
@@ -102,4 +103,11 @@ export interface PlanetOverlap {
   baseSymbolOffset: number;
   overlapGap: number;
   planetOrder: number;
+}
+
+export interface FixedStar {
+  name: string;
+  longitude: number;
+  longitudeSign: string;
+  latitude: number;
 }

@@ -44,7 +44,7 @@ export default function BirthChart() {
       });
 
       const data = await response.json();
-      // console.log(data);
+      console.log(data);
       updateBirthChart({
         chartData: {
           ...data,
@@ -111,6 +111,7 @@ export default function BirthChart() {
           birthDate,
           targetDate,
           returnTime: data.returnTime,
+          fixedStars: data.fixedStars,
         },
       });
     }

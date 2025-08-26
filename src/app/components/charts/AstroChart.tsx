@@ -346,8 +346,12 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     });
   }
 
-  function isAspectableElement(element: ChartElement): boolean {
-    // console.log(element.elementType);
+  function isAspectableElement(
+    element: ChartElement,
+    fixedStarAspect: boolean = false
+  ): boolean {
+    if (fixedStarAspect && element.isAntiscion) return false;
+    if (fixedStarAspect && element.elementType === "arabicPart") return false;
 
     if (element.elementType === "planet") {
       const isAspectablePlanet =
@@ -533,6 +537,83 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   function getAspects(elements: ChartElement[]): PlanetAspectData[] {
     const aspectsData: PlanetAspectData[] = [];
     const aspectableElements = elements.filter((el) => isAspectableElement(el));
+
+    aspectableElements.forEach((element, index) => {
+      ASPECTS.forEach((aspect) => {
+        if (aspectCanBeUsed(element, aspect)) {
+          const elementsWithAspect = aspectableElements.filter((elToCheck) => {
+            if (
+              !elementIsEqualsTo(element, elToCheck) &&
+              !bothElementsAreHouses(element, elToCheck) &&
+              aspectCanBeUsed(elToCheck, aspect) &&
+              aspectNotRenderedYet(aspectsData, element, elToCheck, aspect) &&
+              aspectElementsAreInProperSigns(element, elToCheck, aspect)
+            ) {
+              const orb = getAspectOrb(element, elToCheck, aspect);
+              const valToCheck = mod360(element.longitude + aspect.angle);
+
+              const lowerLimit = getAspectLimitLongitude(
+                mod360(elToCheck.longitude),
+                orb,
+                "lower"
+              );
+              const upperLimit = getAspectLimitLongitude(
+                mod360(elToCheck.longitude),
+                orb,
+                "upper"
+              );
+
+              return valToCheck >= lowerLimit && valToCheck <= upperLimit;
+            }
+          });
+
+          if (elementsWithAspect.length > 0) {
+            elementsWithAspect.forEach((elWithAsp) => {
+              if (
+                !aspectAlreadyRegistered(
+                  aspectsData,
+                  element,
+                  elWithAsp,
+                  aspect
+                )
+              ) {
+                aspectsData.push({
+                  aspectType: aspect.type,
+                  element: {
+                    name: element.planetType ?? element.name,
+                    longitude: element.longitude,
+                    elementType: element.elementType,
+                    isFromOuterChart: element.isFromOuterChart!,
+                    isAntiscion: element.isAntiscion,
+                  },
+                  aspectedElement: {
+                    name: elWithAsp.planetType ?? elWithAsp.name,
+                    longitude: elWithAsp.longitude,
+                    elementType: elWithAsp.elementType,
+                    isFromOuterChart: elWithAsp.isFromOuterChart!,
+                    isAntiscion: elWithAsp.isAntiscion,
+                  },
+                  key: generateAspectKey(element, elWithAsp, aspect),
+                });
+              }
+            });
+          }
+        }
+      });
+    });
+
+    // console.log(aspectsData);
+
+    return aspectsData;
+  }
+
+  function getAspectsWithFixedStars(
+    elements: ChartElement[]
+  ): PlanetAspectData[] {
+    const aspectsData: PlanetAspectData[] = [];
+    const aspectableElements = elements.filter(
+      (el) => isAspectableElement(el, true) // flag for fixed stars
+    );
 
     aspectableElements.forEach((element, index) => {
       ASPECTS.forEach((aspect) => {
