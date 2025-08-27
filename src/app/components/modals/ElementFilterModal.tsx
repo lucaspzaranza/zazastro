@@ -26,6 +26,7 @@ import {
   allElements,
   arabicParts,
   arabicPartsAntiscion,
+  fixedStar,
   houses,
   outerArabicParts,
   outerArabicPartsAntiscion,
@@ -134,6 +135,10 @@ function ElementFilterModalFn(
       if (useOuterHouses) {
         result = [...result, ...outerHouses.map((planet) => ({ ...planet }))];
       }
+    }
+
+    if (columnType === "aspectedElement") {
+      result.push(fixedStar);
     }
 
     return result;

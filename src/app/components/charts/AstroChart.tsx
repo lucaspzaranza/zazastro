@@ -466,7 +466,14 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     aspectedElement: ChartElement,
     aspect: Aspect
   ): number {
-    if (aspectedElement.elementType === "fixedStar") return 1.5;
+    if (aspectedElement.elementType === "fixedStar") {
+      const fixedStar = aspectedElement as FixedStar;
+
+      if (fixedStar.magnitude >= 3) return 1;
+      if (fixedStar.magnitude < 3 && fixedStar.magnitude >= 2) return 1.5;
+      if (fixedStar.magnitude < 2 && fixedStar.magnitude >= 1) return 2;
+      if (fixedStar.magnitude < 1) return 3;
+    }
 
     if (
       (element.elementType === "arabicPart" &&

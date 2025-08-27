@@ -99,6 +99,12 @@ export default function AspectsTable({
   const tdClasses =
     "w-full border-r-2 flex flex-row items-center justify-center";
 
+  const tdClasses3W4 =
+    "w-3/4 border-r-2 flex flex-row items-center justify-center";
+
+  const tdClasses10W12 =
+    "w-10/12 border-r-2 flex flex-row items-center justify-center";
+
   useEffect(() => {
     clearFilters();
 
@@ -175,14 +181,15 @@ export default function AspectsTable({
             {element.isFromOuterChart ? "(E)" : ""}
           </div>
         );
-      } else {
-        console.log(`key: ${key}`);
-        console.log(arabicParts);
       }
     }
 
     if (element.elementType === "house") {
       return getHouseName(element);
+    }
+
+    if (element.elementType === "fixedStar") {
+      return <img src="stars.png" width={40} />;
     }
 
     return <span className="text-sm">{element.name}</span>;
@@ -493,14 +500,23 @@ export default function AspectsTable({
     return hasOtherModalOpen;
   }
 
-  function elementNodeArrayContaisAspectElement(
+  function elementNodeArrayContainsAspectElement(
     array: ElementFilterNode[],
     element: AspectedElement
   ): boolean {
+    // array.forEach((node) => {
+    //   console.log(`element type: ${node.elementType} x ${element.elementType}
+    //     \nname: ${node.name} x ${element.name}
+    //     \nisantiscion: ${node.isAntiscion} x ${element.isAntiscion}
+    //     \nisFromOuterchart: ${node.isFromOuterChart} x ${element.isFromOuterChart}`);
+    // });
+
     return array.some(
       (node) =>
         node.elementType === element.elementType &&
-        node.name === element.name &&
+        (element.elementType !== "fixedStar"
+          ? node.name === element.name
+          : true) &&
         node.isAntiscion === element.isAntiscion &&
         node.isFromOuterChart === element.isFromOuterChart
     );
@@ -519,8 +535,10 @@ export default function AspectsTable({
         .filter((el) => el.isChecked)
         .map((el) => el.element);
 
+      console.log(elements);
+
       array = array.filter((aspect) =>
-        elementNodeArrayContaisAspectElement(elements, aspect.element)
+        elementNodeArrayContainsAspectElement(elements, aspect.element)
       );
 
       setCumulatedOptions((prev) => ({
@@ -548,8 +566,10 @@ export default function AspectsTable({
         .filter((el) => el.isChecked)
         .map((el) => el.element);
 
+      // console.log(array, elements);
+
       array = array.filter((aspect) =>
-        elementNodeArrayContaisAspectElement(elements, aspect.aspectedElement)
+        elementNodeArrayContainsAspectElement(elements, aspect.aspectedElement)
       );
 
       setCumulatedOptions((prev) => ({
@@ -625,14 +645,14 @@ export default function AspectsTable({
       <table className="w-full flex flex-col border-2 text-sm text-center">
         <thead>
           <tr className="flex flex-row justify-between">
-            <th className="w-full text-center border-r-2">Elemento</th>
-            <th className="w-full text-center border-r-2">Aspecto</th>
+            <th className="w-3/4 text-center border-r-2">Elemento</th>
+            <th className="w-3/4 text-center border-r-2">Aspecto</th>
             <th className="w-full text-center border-r-2">Aspectado</th>
-            <th className="w-full text-center border-r-2">Distância</th>
-            <th className="w-3/4 text-center">Tipo</th>
+            <th className="w-10/12 text-center border-r-2">Distância</th>
+            <th className="w-1/2 text-center">Tipo</th>
           </tr>
           <tr className="flex flex-row items-center justify-between border-t-2">
-            <th className="w-full h-full text-center border-r-2 text-[0.85rem]">
+            <th className="w-3/4 h-full text-center border-r-2 text-[0.85rem]">
               <AspectTableFilterButton
                 ref={elementButtonRef}
                 type="element"
@@ -645,7 +665,7 @@ export default function AspectsTable({
                 getElementImage={getElementImage}
               />
             </th>
-            <th className="w-full text-center border-r-2">
+            <th className="w-3/4 text-center border-r-2">
               <AspectTableFilterButton
                 ref={aspectButtonRef}
                 type="aspect"
@@ -669,7 +689,7 @@ export default function AspectsTable({
                 getElementImage={getElementImage}
               />
             </th>
-            <th className="w-full text-center border-r-2">
+            <th className="w-10/12 text-center border-r-2">
               <AspectTableFilterButton
                 ref={distanceButtonRef}
                 type="distance"
@@ -680,7 +700,7 @@ export default function AspectsTable({
                 onConfirm={handleOnConfirmFilter}
               />
             </th>
-            <th className="w-3/4 text-center">
+            <th className="w-1/2 text-center">
               <AspectTableFilterButton
                 ref={distanceTypeButtonRef}
                 type="aspectDistanceType"
@@ -705,14 +725,15 @@ export default function AspectsTable({
               .map((aspect, index) => {
                 return (
                   <tr className="flex flex-row border-t-2" key={index}>
-                    <td className={tdClasses}>
+                    <td className={tdClasses3W4}>
                       {getElementImage(aspect.element)}
                     </td>
-                    <td className={tdClasses}>
+                    <td className={tdClasses3W4}>
                       {getAspectImage(aspect.aspectType)}
                     </td>
                     {aspect.aspectedElement.elementType !== "fixedStar" && (
                       <td className={tdClasses}>
+                        {" "}
                         {getElementImage(aspect.aspectedElement)}
                       </td>
                     )}
@@ -721,7 +742,7 @@ export default function AspectsTable({
                       <td className={tdClasses}>
                         <div
                           className={
-                            "w-full ml-1 flex flex-row items-center gap-1 text-[0.7rem] font-bold"
+                            "w-full pl-1 flex flex-row items-center gap-1 text-[0.7rem] font-bold break-words"
                           }
                         >
                           <img src="star.png" width={10} />
@@ -730,8 +751,10 @@ export default function AspectsTable({
                       </td>
                     )}
 
-                    <td className={tdClasses}>{getAspectDistance(aspect)}</td>
-                    <td className="w-3/4 flex flex-row items-center justify-center">
+                    <td className={tdClasses10W12}>
+                      {getAspectDistance(aspect)}
+                    </td>
+                    <td className="w-1/2 flex flex-row items-center justify-center">
                       {getAspectDistanceType(aspect)}
                     </td>
                   </tr>

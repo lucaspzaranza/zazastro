@@ -80,6 +80,14 @@ export const outerHouses: AspectedElement[] = [
   ...houses.map((house) => ({ ...house, isFromOuterChart: true })),
 ];
 
+export const fixedStar: AspectedElement = {
+  elementType: "fixedStar",
+  isAntiscion: false,
+  isFromOuterChart: false,
+  longitude: 0,
+  name: "Estrelas Fixas",
+};
+
 export const allElements: AspectedElement[] = [
   ...planets,
   ...arabicParts,
@@ -91,4 +99,5 @@ export const allElements: AspectedElement[] = [
   ...outerPlanetsAntiscion,
   ...outerArabicPartsAntiscion,
   ...outerHouses,
+  fixedStar,
 ];
