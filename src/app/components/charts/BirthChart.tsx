@@ -44,7 +44,7 @@ export default function BirthChart() {
       });
 
       const data = await response.json();
-      console.log(data);
+      // console.log(data.fixedStars);
       updateBirthChart({
         chartData: {
           ...data,

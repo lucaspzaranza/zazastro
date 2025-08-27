@@ -11,7 +11,11 @@ import {
   getSign,
   signsGlpyphs,
 } from "../../utils/chartUtils";
-import { HousesData, Planet } from "@/interfaces/BirthChartInterfaces";
+import {
+  FixedStar,
+  HousesData,
+  Planet,
+} from "@/interfaces/BirthChartInterfaces";
 import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import {
   Aspect,
@@ -41,6 +45,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     outerPlanets,
     outerHouses,
     outerArabicParts,
+    fixedStars,
     combineWithBirthChart,
     combineWithReturnChart,
     onUpdateAspectsData,
@@ -54,11 +59,25 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   const [showOuterchart, setShowOuterChart] = useState(
     outerPlanets !== undefined && outerHouses !== undefined
   );
+  const [fixedStarsAspects, setFixedStarAspects] = useState<PlanetAspectData[]>(
+    []
+  );
   const { updateAspectsData } = useAspectsData();
   const symbolOffset = 16;
 
   let chartElements: ChartElement[] = [];
   let chartElementsForAspect: ChartElement[] = [];
+
+  const size = 400;
+  const scaleFactor = showOuterchart ? 1.25 : 1.5;
+  const scaledSize = size * scaleFactor;
+  const center = size / 2;
+  const radius = size / 2 - 40;
+  const zodiacRadius = radius + 20;
+  const outerZodiacRadius = zodiacRadius + 10;
+  const outerChartBorderRadius = outerZodiacRadius + 60;
+  const baseGroupRef =
+    useRef<d3.Selection<SVGGElement, unknown, null, undefined>>(undefined);
 
   const mod360 = (n: number) => ((n % 360) + 360) % 360; // garante 0..359.999
 
@@ -388,11 +407,21 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         .replace(fixedNames.antiscionName, "")
         .replace("-", "");
 
-    const aspectedElementKey: string =
+    const aspectedName =
+      aspectedElement.elementType === "fixedStar"
+        ? aspectedElement.name.toLowerCase().replace(" ", "-")
+        : aspectedElement.name;
+
+    let aspectedElementKey: string =
       (element.isFromOuterChart ? `${fixedNames.outerKeyPrefix}-` : "") +
-      (aspectedElement.planetType ?? aspectedElement.name)
-        .replace(fixedNames.antiscionName, "")
-        .replace("-", "");
+      (aspectedElement.planetType ?? aspectedName).replace(
+        fixedNames.antiscionName,
+        ""
+      );
+
+    if (aspectedElement.elementType !== "fixedStar") {
+      aspectedElementKey = aspectedElementKey.replace("-", "");
+    }
 
     return `${elementKey}-${aspect.type}-${aspectedElementKey}`;
   }
@@ -437,6 +466,8 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     aspectedElement: ChartElement,
     aspect: Aspect
   ): number {
+    if (aspectedElement.elementType === "fixedStar") return 1.5;
+
     if (
       (element.elementType === "arabicPart" &&
         aspectedElement.elementType !== "house") ||
@@ -466,7 +497,17 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     const secondName = elToCheck.isAntiscion
       ? elToCheck.name.replace(fixedNames.antiscionName, "")
       : elToCheck.name;
-    return firstName === secondName;
+
+    let result = firstName === secondName;
+
+    if (result) {
+      result =
+        (element.isFromOuterChart && elToCheck.isFromOuterChart) ||
+        (!element.isFromOuterChart && !elToCheck.isFromOuterChart);
+      return result;
+    }
+
+    return result;
   }
 
   function aspectNotRenderedYet(
@@ -615,68 +656,57 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       (el) => isAspectableElement(el, true) // flag for fixed stars
     );
 
+    if (fixedStars === undefined) return [];
+
+    const conjunction: Aspect = { type: "conjunction", angle: 0 };
+
     aspectableElements.forEach((element, index) => {
-      ASPECTS.forEach((aspect) => {
-        if (aspectCanBeUsed(element, aspect)) {
-          const elementsWithAspect = aspectableElements.filter((elToCheck) => {
-            if (
-              !elementIsEqualsTo(element, elToCheck) &&
-              !bothElementsAreHouses(element, elToCheck) &&
-              aspectCanBeUsed(elToCheck, aspect) &&
-              aspectNotRenderedYet(aspectsData, element, elToCheck, aspect) &&
-              aspectElementsAreInProperSigns(element, elToCheck, aspect)
-            ) {
-              const orb = getAspectOrb(element, elToCheck, aspect);
-              const valToCheck = mod360(element.longitude + aspect.angle);
+      const starsWithAspects = fixedStars.filter((star) => {
+        if (aspectElementsAreInProperSigns(element, star, conjunction)) {
+          const orb = getAspectOrb(element, star, conjunction);
+          const valToCheck = mod360(element.longitude + conjunction.angle);
 
-              const lowerLimit = getAspectLimitLongitude(
-                mod360(elToCheck.longitude),
-                orb,
-                "lower"
-              );
-              const upperLimit = getAspectLimitLongitude(
-                mod360(elToCheck.longitude),
-                orb,
-                "upper"
-              );
+          const lowerLimit = getAspectLimitLongitude(
+            mod360(star.longitude),
+            orb,
+            "lower"
+          );
+          const upperLimit = getAspectLimitLongitude(
+            mod360(star.longitude),
+            orb,
+            "upper"
+          );
 
-              return valToCheck >= lowerLimit && valToCheck <= upperLimit;
-            }
-          });
-
-          if (elementsWithAspect.length > 0) {
-            elementsWithAspect.forEach((elWithAsp) => {
-              if (
-                !aspectAlreadyRegistered(
-                  aspectsData,
-                  element,
-                  elWithAsp,
-                  aspect
-                )
-              ) {
-                aspectsData.push({
-                  aspectType: aspect.type,
-                  element: {
-                    name: element.planetType ?? element.name,
-                    longitude: element.longitude,
-                    elementType: element.elementType,
-                    isFromOuterChart: element.isFromOuterChart!,
-                    isAntiscion: element.isAntiscion,
-                  },
-                  aspectedElement: {
-                    name: elWithAsp.planetType ?? elWithAsp.name,
-                    longitude: elWithAsp.longitude,
-                    elementType: elWithAsp.elementType,
-                    isFromOuterChart: elWithAsp.isFromOuterChart!,
-                    isAntiscion: elWithAsp.isAntiscion,
-                  },
-                  key: generateAspectKey(element, elWithAsp, aspect),
-                });
-              }
-            });
-          }
+          return valToCheck >= lowerLimit && valToCheck <= upperLimit;
         }
       });
+
+      if (starsWithAspects.length > 0) {
+        starsWithAspects.forEach((star) => {
+          if (
+            !aspectAlreadyRegistered(aspectsData, element, star, conjunction)
+          ) {
+            aspectsData.push({
+              aspectType: conjunction.type,
+              element: {
+                name: element.planetType ?? element.name,
+                longitude: element.longitude,
+                elementType: element.elementType,
+                isFromOuterChart: element.isFromOuterChart!,
+                isAntiscion: element.isAntiscion,
+              },
+              aspectedElement: {
+                name: star.name,
+                longitude: star.longitude,
+                elementType: "fixedStar",
+                isFromOuterChart: false,
+                isAntiscion: false,
+              },
+              key: generateAspectKey(element, star, conjunction),
+            });
+          }
+        });
+      }
     });
 
     // console.log(aspectsData);
@@ -840,9 +870,11 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     }
   ) {
     const aspectsData = getAspects(elements);
+    const aspectsWithFixedStars = getAspectsWithFixedStars(elements);
+    setFixedStarAspects(aspectsWithFixedStars);
     // console.log(aspectsData);
 
-    onUpdateAspectsData?.(aspectsData);
+    onUpdateAspectsData?.([...aspectsData, ...aspectsWithFixedStars]);
 
     aspectsData.forEach((aspect) => {
       if (!isAspectWithHouse(aspect)) {
@@ -870,15 +902,6 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     if (!ref.current) return;
     const svg = d3.select(ref.current);
     svg.selectAll("*").remove();
-
-    const size = 400;
-    const scaleFactor = showOuterchart ? 1.25 : 1.5;
-    const scaledSize = size * scaleFactor;
-    const center = size / 2;
-    const radius = size / 2 - 40;
-    const zodiacRadius = radius + 20;
-    const outerZodiacRadius = zodiacRadius + 10;
-    const outerChartBorderRadius = outerZodiacRadius + 60;
 
     chartElements = [];
     chartElementsForAspect = [];
@@ -932,6 +955,8 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
           center * scaleFactor
         }) scale(${scaleFactor})`
       );
+
+    baseGroupRef.current = baseGroup;
 
     // Eixos centrais
     baseGroup
@@ -1830,7 +1855,40 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     showArabicParts,
     showPlanetsAntiscia,
     showArabicPartsAntiscia,
+    ,
   ]);
+
+  useEffect(() => {
+    fixedStarsAspects.forEach((asp) => {
+      // 1) ângulo zodiacal original (graus → rad)
+      const rawDeg = 180 - (asp.aspectedElement.longitude % 360) - 90;
+      const rawRad = (rawDeg * Math.PI) / 180;
+
+      // 2) compensa a rotação do zodíaco (transforma em ângulo final)
+      const rotRad = (zodiacRotation * Math.PI) / 180;
+      const angleRad = rawRad - rotRad;
+
+      const starOffset = symbolOffset - 12;
+      const rSymbol = radius + starOffset;
+
+      // 4) cálculos das coordenadas FINAIS
+      const xs = rSymbol * Math.cos(angleRad);
+      const ys = rSymbol * Math.sin(angleRad);
+
+      // 5) desenha o ícone da estrela
+      const iconSize = 9; // px
+      const iconSrc = "star-1.png";
+
+      baseGroupRef.current
+        ?.append("image")
+        .attr("href", iconSrc) // no D3 v6+ use 'href'
+        .attr("width", iconSize)
+        .attr("height", iconSize)
+        .attr("x", xs - iconSize / 2)
+        .attr("y", ys - iconSize / 2)
+        .attr("opacity", 0.5);
+    });
+  }, [fixedStarsAspects]);
 
   const toggleArabicParts = () => {
     setShowArabicParts((prev) => !prev);

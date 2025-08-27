@@ -1,5 +1,10 @@
 import { ArabicPartsType } from "./ArabicPartInterfaces";
-import { HousesData, Planet, PlanetType } from "./BirthChartInterfaces";
+import {
+  FixedStar,
+  HousesData,
+  Planet,
+  PlanetType,
+} from "./BirthChartInterfaces";
 
 export type OrbCalculationOrientation = "upper" | "lower";
 
@@ -11,6 +16,7 @@ export interface AstroChartProps {
     outerPlanets?: Planet[];
     outerHouses?: HousesData;
     outerArabicParts?: ArabicPartsType;
+    fixedStars?: FixedStar[];
     combineWithBirthChart?: () => void;
     combineWithReturnChart?: () => void;
     onUpdateAspectsData?: (aspectsData: PlanetAspectData[]) => void;
@@ -27,7 +33,7 @@ export interface ChartElement {
   isFromOuterChart: boolean;
 }
 
-export type ElementType = "planet" | "arabicPart" | "house";
+export type ElementType = "planet" | "arabicPart" | "house" | "fixedStar";
 
 export type AspectType =
   | "conjunction"

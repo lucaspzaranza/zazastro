@@ -152,6 +152,7 @@ export default function ChartAndData(props: Props) {
             outerPlanets: outerChart?.planets,
             outerHouses: outerChart?.housesData,
             outerArabicParts,
+            fixedStars: birthChart.fixedStars,
             combineWithBirthChart,
             combineWithReturnChart,
             onUpdateAspectsData: handleOnUpdateAspectsData,

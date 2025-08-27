@@ -9,6 +9,7 @@ import {
   angularLabels,
   arabicPartKeys,
   caldaicOrder,
+  convertDegMinToDecimal,
   decimalToDegreesMinutes,
   fixedNames,
   getArabicPartImage,
@@ -228,9 +229,10 @@ export default function AspectsTable({
 
   function getAspectDistance(aspect: PlanetAspectData): string {
     const _1stElementRawLongitude = getElementRawLongitude(aspect.element);
-    const _2ndElementRawLongitude = getElementRawLongitude(
-      aspect.aspectedElement
-    );
+    const _2ndElementRawLongitude =
+      aspect.aspectedElement.elementType === "fixedStar"
+        ? aspect.aspectedElement.longitude
+        : getElementRawLongitude(aspect.aspectedElement);
     const _1stSignLong = getDegreesInsideASign(_1stElementRawLongitude);
     const _2ndSignLong = getDegreesInsideASign(_2ndElementRawLongitude);
 
@@ -709,11 +711,29 @@ export default function AspectsTable({
                     <td className={tdClasses}>
                       {getAspectImage(aspect.aspectType)}
                     </td>
-                    <td className={tdClasses}>
-                      {getElementImage(aspect.aspectedElement)}
-                    </td>
+                    {aspect.aspectedElement.elementType !== "fixedStar" && (
+                      <td className={tdClasses}>
+                        {getElementImage(aspect.aspectedElement)}
+                      </td>
+                    )}
+
+                    {aspect.aspectedElement.elementType === "fixedStar" && (
+                      <td className={tdClasses}>
+                        <div
+                          className={
+                            "w-full ml-1 flex flex-row items-center gap-1 text-[0.7rem] font-bold"
+                          }
+                        >
+                          <img src="star.png" width={10} />
+                          {aspect.aspectedElement.name}
+                        </div>
+                      </td>
+                    )}
+
                     <td className={tdClasses}>{getAspectDistance(aspect)}</td>
-                    <td className="w-3/4">{getAspectDistanceType(aspect)}</td>
+                    <td className="w-3/4 flex flex-row items-center justify-center">
+                      {getAspectDistanceType(aspect)}
+                    </td>
                   </tr>
                 );
               })}

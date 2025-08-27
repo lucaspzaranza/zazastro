@@ -77,6 +77,9 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
 
             fixedStars: chartData.fixedStars.map((star) => ({
               ...star,
+              elementType: "fixedStar",
+              isAntiscion: false,
+              isFromOuterChart: false,
               longitudeSign: getDegreeAndSign(
                 decimalToDegreesMinutes(star.longitude),
                 getGlyphOnly
@@ -84,7 +87,7 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
             })),
           };
 
-    console.log(chartObject);
+    // console.log(chartObject);
 
     if (!isReturnChart) setBirthChart(chartObject);
     else setReturnChart(chartObject);

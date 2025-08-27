@@ -1,3 +1,5 @@
+import { ChartElement } from "./AstroChartInterfaces";
+
 export type PlanetType =
   | "sun"
   | "moon"
@@ -105,9 +107,8 @@ export interface PlanetOverlap {
   planetOrder: number;
 }
 
-export interface FixedStar {
-  name: string;
-  longitude: number;
+export interface FixedStar extends ChartElement {
   longitudeSign: string;
   latitude: number;
+  magnitude: number;
 }
