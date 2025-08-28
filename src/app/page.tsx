@@ -8,13 +8,16 @@ import { AspectsContextProvider } from "@/contexts/AspectsContext";
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center sm:p-20 font-[family-name:var(--font-geist-mono)]">
-      <h1>Zazastro</h1>
+    <div className="min-h-[100vh] flex flex-col items-center justify-start sm:p-20 font-[family-name:var(--font-geist-mono)]">
+      <section className="flex flex-row items-start gap-2">
+        <h1 className="text-3xl font-bold">Zazastro</h1>
+        <img src="pisces.png" width={30} />
+      </section>
+
       <BirthChartContextProvider>
         <ArabicPartsContextProvider>
           <AspectsContextProvider>
             <BirthChart />
-            <ReturnChart />
           </AspectsContextProvider>
         </ArabicPartsContextProvider>
       </BirthChartContextProvider>

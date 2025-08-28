@@ -52,7 +52,7 @@ export default function BirthArch() {
   if (returnChart === undefined) return;
 
   return (
-    <div className="mt-4 flex flex-col gap-3">
+    <div className="mt-4 flex flex-col gap-3 mb-4">
       <h1 className="font-bold text-lg text-center">
         Mapa do Retorno {isSolarReturn ? "Solar" : "Lunar"} para&nbsp;
         {isSolarReturn

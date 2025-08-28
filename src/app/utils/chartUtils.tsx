@@ -353,7 +353,7 @@ export const clampLongitude = (
   return result;
 };
 
-const coordinates: Coordinates = {
+export const fortalCoords: Coordinates = {
   latitude: -3.71839, // Fortaleza
   longitude: -38.5434,
 };
@@ -401,7 +401,7 @@ export const presavedBirthDates: Record<string, BirthChartProfile> = {
       month: 8,
       day: 31,
       time: convertDegMinToDecimal(6, 45).toString(),
-      coordinates,
+      coordinates: fortalCoords,
     },
   },
   elisa: {
@@ -421,7 +421,7 @@ export const presavedBirthDates: Record<string, BirthChartProfile> = {
       month: 3,
       day: 22,
       time: convertDegMinToDecimal(12, 39).toString(),
-      coordinates,
+      coordinates: fortalCoords,
     },
   },
   alana: {
@@ -491,7 +491,7 @@ export const presavedBirthDates: Record<string, BirthChartProfile> = {
       month: 5,
       day: 4,
       time: convertDegMinToDecimal(2, 24).toString(),
-      coordinates: coordinates,
+      coordinates: fortalCoords,
     },
   },
   zanin: {
