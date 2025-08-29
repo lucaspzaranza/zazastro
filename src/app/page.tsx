@@ -5,22 +5,25 @@ import { ArabicPartsContextProvider } from "@/contexts/ArabicPartsContext";
 import BirthChart from "./components/charts/BirthChart";
 import ReturnChart from "./components/charts/ReturnChart";
 import { AspectsContextProvider } from "@/contexts/AspectsContext";
+import { ChartMenuContextProvider } from "@/contexts/ChartMenuContext";
 
 export default function Home() {
   return (
-    <div className="min-h-[100vh] flex flex-col items-center justify-start sm:p-20 font-[family-name:var(--font-geist-mono)]">
-      <section className="flex flex-row items-start gap-2">
+    <div className="min-h-[70vh] flex flex-col items-center justify-between font-[family-name:var(--font-geist-mono)]">
+      <div className=" flex flex-row items-center gap-2 pt-4">
         <h1 className="text-3xl font-bold">Zazastro</h1>
         <img src="pisces.png" width={30} />
-      </section>
+      </div>
 
-      <BirthChartContextProvider>
-        <ArabicPartsContextProvider>
-          <AspectsContextProvider>
-            <BirthChart />
-          </AspectsContextProvider>
-        </ArabicPartsContextProvider>
-      </BirthChartContextProvider>
+      <ChartMenuContextProvider>
+        <BirthChartContextProvider>
+          <ArabicPartsContextProvider>
+            <AspectsContextProvider>
+              <BirthChart />
+            </AspectsContextProvider>
+          </ArabicPartsContextProvider>
+        </BirthChartContextProvider>
+      </ChartMenuContextProvider>
     </div>
   );
 }

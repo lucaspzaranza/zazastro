@@ -74,8 +74,8 @@ export default function BirthArchArabicParts({
   if (archArabicParts === undefined) return;
 
   return (
-    <div className="w-full flex flex-col gap-2 mt-4">
-      <h2 className="text-xl font-bold">
+    <div className="w-full flex flex-col gap-2">
+      <h2 className="text-xl font-bold mt-[-5px]">
         Partes Árabes Por Arco&nbsp;
         {returnChart?.returnType === "solar" ? "Solar" : "Lunar"}
       </h2>

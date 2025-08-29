@@ -314,9 +314,9 @@ function ElementFilterModalFn(
       title="Filtrar por Elemento"
       onCancel={cancelAndResetState}
       onConfirm={confirmWithAspectesChecked}
-      className={`w-[450px] ${className}`}
+      className={`w-[630px] ${className}`}
     >
-      <div>
+      {/* <div>
         <h2 className="text-sm">Opções</h2>
         <div className="w-full px-2 pt-1 pb-0 flex flex-row justify-between">
           <div className="w-1/2 flex flex-col">
@@ -467,10 +467,10 @@ function ElementFilterModalFn(
             )}
           </div>
         </div>
-      </div>
+      </div> */}
 
       {checkboxesChecked && (
-        <div className="w-full grid grid-cols-6 gap-2 p-2">
+        <div className="w-full grid grid-cols-7 gap-2 p-2">
           {elementNodes.map((node, index) => (
             <div
               key={index}

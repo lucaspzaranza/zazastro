@@ -46,8 +46,8 @@ export const ChartDate = (
   if (date === undefined) return;
 
   return (
-    <div className="text-center">
-      <h2 className="font-bold text-lg mb-2">Dados do mapa:</h2>
+    <div className="text-center font-bold">
+      {/* <h2 className="font-bold text-lg mb-2">Dados do mapa:</h2> */}
       <p>
         {date?.day.toString().padStart(2, "0")}/
         {date?.month.toString().padStart(2, "0")}/{date?.year} - {date?.time} (

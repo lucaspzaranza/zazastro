@@ -28,6 +28,7 @@ import {
   PlanetAspectData,
 } from "@/interfaces/AstroChartInterfaces";
 import { useAspectsData } from "@/contexts/AspectsContext";
+import AstroChartMenu from "../menus/AstroChartMenu";
 
 const ASPECTS: Aspect[] = [
   { type: "conjunction", angle: 0 },
@@ -1909,132 +1910,33 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     setShowArabicPartsAntiscia((prev) => !prev);
   };
 
-  const containerClasses = showOuterchart ? "mb-20 mt-8" : "mb-6";
+  const containerClasses = showOuterchart ? "mb-16 mt-10" : "mb-2";
 
   return (
-    <div className="w-min flex flex-col justify-center items-center mx-10 gap-8">
+    <div className="w-[40vw] flex flex-col justify-center items-center mx-10 gap-8">
       {/* <input
         type="number"
         className="border-1 mb-8"
         onChange={(e) => setRotation(Number.parseFloat(e.target.value))}
       /> */}
 
-      <div className="w-fit flex flex-col items-center gap-2">
-        <div className="flex flex-row items-center">
-          {combineWithBirthChart !== undefined && (
-            <div className="w-[180px] flex flex-row gap-2">
-              <input
-                type="checkbox"
-                id="combine-with-chart"
-                onChange={() => combineWithBirthChart()}
-              />
-              <label htmlFor="combine-with-chart" className="w-3/4 text-sm">
-                Combinar com Mapa Natal
-              </label>
-            </div>
-          )}
+      <AstroChartMenu
+        toggleCombineWithBirthChart={
+          combineWithBirthChart !== undefined
+            ? combineWithBirthChart
+            : undefined
+        }
+        toggleCombineWithReturnChart={
+          combineWithReturnChart !== undefined
+            ? combineWithReturnChart
+            : undefined
+        }
+        togglePlanetsAntiscia={toggleAntiscia}
+        toggleArabicParts={toggleArabicParts}
+        toggleArabicPartsAntiscia={toggleArabicPartsAntiscia}
+      />
 
-          {combineWithReturnChart !== undefined && (
-            <div className="flex flex-row gap-2">
-              <input
-                type="checkbox"
-                id="combine-with-solar-return"
-                onChange={() => combineWithReturnChart()}
-              />
-              <label
-                htmlFor="combine-with-solar-return"
-                className="w-3/4 text-sm"
-              >
-                Combinar com Retorno Solar
-              </label>
-            </div>
-          )}
-
-          <div className="flex flex-row gap-2">
-            <input
-              type="checkbox"
-              id="toggle-antiscia"
-              onChange={() => toggleAntiscia()}
-            />
-            <label htmlFor="toggle-antiscia" className="w-3/4 text-sm">
-              Antiscion Planetas
-            </label>
-          </div>
-        </div>
-
-        <div className="flex flex-row items-center">
-          <div className="w-[180px] flex flex-row gap-2">
-            <input
-              type="checkbox"
-              id="toggle-lots"
-              onChange={() => toggleArabicParts()}
-            />
-            <label htmlFor="toggle-lots" className="text-sm">
-              Partes Árabes
-            </label>
-          </div>
-
-          <div className="flex flex-row gap-2">
-            <input
-              type="checkbox"
-              id="toggle-lots-antiscia"
-              onChange={() => toggleArabicPartsAntiscia()}
-            />
-            <label htmlFor="toggle-lots-antiscia" className="w-full text-sm">
-              Partes Árabes Antiscion
-            </label>
-          </div>
-        </div>
-      </div>
-
-      <div className="w-full h-full">
-        <svg className={containerClasses} ref={ref}></svg>
-      </div>
-
-      {/* <div className="flex flex-col gap-2">
-        {combineWithBirthChart !== undefined && (
-          <button
-            className="bg-blue-600 h-8 px-3 text-white rounded hover:bg-blue-700"
-            onClick={() => {
-              combineWithBirthChart();
-            }}
-          >
-            Combinar com Mapa Natal
-          </button>
-        )}
-
-        {combineWithReturnChart !== undefined && (
-          <button
-            className="bg-blue-600 h-8 px-3 text-white rounded hover:bg-blue-700"
-            onClick={() => {
-              combineWithReturnChart();
-            }}
-          >
-            Combinar com Mapa Do Retorno Solar
-          </button>
-        )}
-
-        <button
-          className="bg-blue-600 h-8 px-3 text-white rounded hover:bg-blue-700"
-          onClick={toggleAntiscia}
-        >
-          Antiscion Planetas
-        </button>
-
-        <button
-          className="bg-blue-600 h-8 px-3 text-white rounded hover:bg-blue-700"
-          onClick={toggleArabicParts}
-        >
-          Partes Árabes
-        </button>
-
-        <button
-          className="bg-blue-600 h-8 px-3 text-white rounded hover:bg-blue-700"
-          onClick={toggleArabicPartsAntiscia}
-        >
-          Antiscion Partes Árabes
-        </button>
-      </div> */}
+      <svg className={containerClasses} ref={ref}></svg>
     </div>
   );
 };

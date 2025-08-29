@@ -21,6 +21,8 @@ import HousesAndPlanetsData from ".././ChartAndData";
 import ChartAndData from ".././ChartAndData";
 import moment from "moment-timezone";
 import ReturnChart from "./ReturnChart";
+import ChartSelectorArrows from "../ChartSelectorArrows";
+import { useChartMenu } from "@/contexts/ChartMenuContext";
 
 type MenuButtonChoice =
   | "home"
@@ -33,7 +35,7 @@ type MenuButtonChoice =
 
 export default function BirthChart() {
   const [loading, setLoading] = useState(false);
-  const { birthChart, updateBirthChart } = useBirthChart();
+  const { birthChart, returnChart, updateBirthChart } = useBirthChart();
   const { arabicParts } = useArabicParts();
   const [solarYear, setSolarYear] = useState(0);
   const [lunarDay, setLunarDay] = useState(0);
@@ -43,7 +45,15 @@ export default function BirthChart() {
     presavedBirthDates.lucasz.birthDate
   );
 
+  const { chartMenu, addChartMenu, updateChartMenuDirectly } = useChartMenu();
+
   const [menu, setMenu] = useState<MenuButtonChoice>("home");
+
+  useEffect(() => {
+    if (birthChart === undefined && returnChart === undefined) {
+      setMenu("home");
+    }
+  }, [birthChart, returnChart]);
 
   const getBirthChart = async (birthDateToOverwrite?: BirthDate) => {
     setLoading(true);
@@ -53,7 +63,7 @@ export default function BirthChart() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          birthDate,
+          birthDate: birthDateToOverwrite ?? birthDate,
         }),
       });
 
@@ -74,11 +84,7 @@ export default function BirthChart() {
   };
 
   const getPlanetReturn = async (returnType: ReturnChartType) => {
-    // // Meu
-    // const targetDate: BirthDate = {
-    //   ...birthDate,
-    //   year: returnType === "solar" ? 2024 : 2022,
-    // };
+    setLoading(true);
 
     const targetDate: BirthDate = {
       ...birthDate!,
@@ -92,7 +98,6 @@ export default function BirthChart() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         birthDate,
-        // birthTime,
         targetDate,
       }),
     });
@@ -104,8 +109,6 @@ export default function BirthChart() {
 
     const data = await response.json();
 
-    // console.log(`Revolução ${returnType}:`);
-    // console.log(data);
     updateBirthChart({
       isReturnChart: false,
       chartData: {
@@ -128,6 +131,12 @@ export default function BirthChart() {
           fixedStars: data.fixedStars,
         },
       });
+
+      setTimeout(() => {
+        addChartMenu("return");
+        updateChartMenuDirectly("return");
+        setLoading(false);
+      }, 50);
     }
   };
 
@@ -146,7 +155,7 @@ export default function BirthChart() {
       coordinates: fortalCoords,
     };
 
-    console.log(birthDate);
+    // console.log(birthDate);
 
     getBirthChart(birthDate);
   };
@@ -161,7 +170,7 @@ export default function BirthChart() {
       {birthChart === undefined && (
         <div className="w-full flex flex-col items-center justify-center">
           <h2 className="text-lg py-0 my-0 text-start">
-            Selecione o tipo de mapa que deseja.
+            Selecione o tipo de mapa que deseja
           </h2>
           <div className="w-1/4 flex flex-col gap-2">
             {menu === "home" && (
@@ -333,42 +342,29 @@ export default function BirthChart() {
               </button>
             )}
 
-            {loading && <p>Carregando...</p>}
+            {loading && <p className="w-full text-center">Carregando...</p>}
           </div>
         </div>
       )}
 
-      {birthChart && (
-        <div className="w-full flex flex-col items-center gap-2">
-          <div className="w-full text-left flex flex-col items-center gap-4">
-            <h1 className="text-2xl font-bold text-center">Mapa Astral</h1>
+      {birthChart && chartMenu === "birth" && (
+        <div className="w-full flex flex-col items-center">
+          <div className="w-full text-left flex flex-col items-center mb-4">
+            <ChartSelectorArrows className="w-[50%] mb-2">
+              <h1 className="text-2xl font-bold text-center">Mapa Astral</h1>
+            </ChartSelectorArrows>
             <ChartDate chartType="birth" />
             <ChartAndData
               birthChart={birthChart}
               arabicParts={arabicParts!}
               useArchArabicPartsForDataVisualization={false}
+              isSolarReturn={false}
             />
-
-            <ReturnChart />
           </div>
-          <button
-            className="w-1/4 bg-blue-800 text-white px-4 py-2 rounded hover:bg-blue-900"
-            onClick={() => {
-              setMenu("home");
-              updateBirthChart({
-                isReturnChart: false,
-                chartData: undefined,
-              });
-              updateBirthChart({
-                isReturnChart: true,
-                chartData: undefined,
-              });
-            }}
-          >
-            Voltar
-          </button>
         </div>
       )}
+
+      {returnChart && arabicParts && chartMenu === "return" && <ReturnChart />}
     </div>
   );
 }

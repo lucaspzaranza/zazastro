@@ -642,7 +642,7 @@ export default function AspectsTable({
     <div>
       <h2 className="font-bold text-lg mb-2">Aspectos:</h2>
 
-      <table className="w-full flex flex-col border-2 text-sm text-center">
+      <table className="w-[415px] flex flex-col border-2 text-sm text-center">
         <thead>
           <tr className="flex flex-row justify-between">
             <th className="w-3/4 text-center border-r-2">Elemento</th>

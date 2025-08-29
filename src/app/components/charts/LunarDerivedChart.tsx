@@ -175,7 +175,7 @@ const LunarDerivedChart: React.FC<Props> = ({
   }
 
   return (
-    <div className="flex flex-col items-center mt-2">
+    <div className="flex flex-col items-center">
       <h1 className="font-bold text-lg">Retorno Lunar Derivado</h1>
       <form
         className="flex flex-row gap-2"
@@ -250,6 +250,7 @@ const LunarDerivedChart: React.FC<Props> = ({
               combineWithReturnChart={toggleShowReturnCombinedchart}
               tableItemsPerPage={tableItemsPerPage}
               onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
+              isSolarReturn={false}
             />
           )}
 
@@ -264,6 +265,7 @@ const LunarDerivedChart: React.FC<Props> = ({
               combineWithBirthChart={toggleShowBirthCombinedchart}
               tableItemsPerPage={tableItemsPerPage}
               onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
+              isSolarReturn={false}
             />
           )}
 
@@ -278,6 +280,7 @@ const LunarDerivedChart: React.FC<Props> = ({
               combineWithReturnChart={toggleShowReturnCombinedchart}
               tableItemsPerPage={tableItemsPerPage}
               onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
+              isSolarReturn={false}
             />
           )}
         </div>

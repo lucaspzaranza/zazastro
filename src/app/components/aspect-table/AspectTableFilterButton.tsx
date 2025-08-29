@@ -157,7 +157,7 @@ function AspectTableFilterButtonFn(
         <ElementFilterModal
           columnType="aspectedElement"
           isVisible={modalIsOpen}
-          className="absolute top-[21px] right-0"
+          className="absolute top-[21px] left-0"
           ref={aspectedElementModalRef}
           initialState={optionsInitialState.current}
           memorizedOptions={memorizedOptions}

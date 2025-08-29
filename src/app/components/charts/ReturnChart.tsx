@@ -8,6 +8,7 @@ import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import LunarDerivedChart from "./LunarDerivedChart";
 import ChartAndData from ".././ChartAndData";
 import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT } from "../../utils/chartUtils";
+import ChartSelectorArrows from "../ChartSelectorArrows";
 
 export default function BirthArch() {
   const [input, setInput] = useState(0);
@@ -52,15 +53,17 @@ export default function BirthArch() {
   if (returnChart === undefined) return;
 
   return (
-    <div className="mt-4 flex flex-col gap-3 mb-4">
-      <h1 className="font-bold text-lg text-center">
-        Mapa do Retorno {isSolarReturn ? "Solar" : "Lunar"} para&nbsp;
-        {isSolarReturn
-          ? `${targetDate.year}/${targetDate.year ? targetDate.year + 1 : ""}`
-          : `${returnChart.targetDate?.month.toString().padStart(2, "0")}/${
-              returnChart.targetDate?.year
-            }`}
-      </h1>
+    <div className="w-full flex flex-col items-center justify-center gap-3 mb-4">
+      <ChartSelectorArrows className="w-[50%]">
+        <h1 className="text-2xl font-bold text-center">
+          Mapa do Retorno {isSolarReturn ? "Solar" : "Lunar"} para&nbsp;
+          {isSolarReturn
+            ? `${targetDate.year}/${targetDate.year ? targetDate.year + 1 : ""}`
+            : `${returnChart.targetDate?.month.toString().padStart(2, "0")}/${
+                returnChart.targetDate?.year
+              }`}
+        </h1>
+      </ChartSelectorArrows>
 
       {returnChart && (
         <div className="w-full text-left flex flex-col">
@@ -74,6 +77,7 @@ export default function BirthArch() {
               useArchArabicPartsForDataVisualization
               tableItemsPerPage={tableItemsPerPage}
               onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
+              isSolarReturn={isSolarReturn}
             />
           )}
 
@@ -87,15 +91,18 @@ export default function BirthArch() {
               combineWithBirthChart={toggleShowCombinedchart}
               tableItemsPerPage={tableItemsPerPage}
               onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
+              isSolarReturn={isSolarReturn}
             />
           )}
 
-          {isSolarReturn && birthChart && returnChart && (
-            <LunarDerivedChart
-              birthChart={birthChart}
-              solarReturnChart={returnChart}
-            />
-          )}
+          {/* {isSolarReturn && birthChart && returnChart && (
+            <div className="block pt-10 z-10">
+              <LunarDerivedChart
+                birthChart={birthChart}
+                solarReturnChart={returnChart}
+              />
+            </div>
+          )} */}
         </div>
       )}
     </div>

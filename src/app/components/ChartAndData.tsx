@@ -24,6 +24,9 @@ import {
   AstroChartProps,
   PlanetAspectData,
 } from "@/interfaces/AstroChartInterfaces";
+import { useBirthChart } from "@/contexts/BirthChartContext";
+import { useChartMenu } from "@/contexts/ChartMenuContext";
+import LunarDerivedChart from "./charts/LunarDerivedChart";
 
 interface Props {
   useArchArabicPartsForDataVisualization: boolean;
@@ -36,6 +39,7 @@ interface Props {
   combineWithReturnChart?: () => void;
   tableItemsPerPage?: number;
   onTableItemsPerPageChanged?: (newItemsPerPage: number) => void;
+  isSolarReturn: boolean;
 }
 
 export default function ChartAndData(props: Props) {
@@ -50,6 +54,7 @@ export default function ChartAndData(props: Props) {
     combineWithReturnChart,
     tableItemsPerPage,
     onTableItemsPerPageChanged,
+    isSolarReturn,
   } = {
     ...props,
   };
@@ -57,6 +62,8 @@ export default function ChartAndData(props: Props) {
   const [chart, setChart] = useState(outerChart ?? birthChart);
   const [aspectsData, setAspectsData] = useState<PlanetAspectData[]>([]);
   const itemsPerPage = tableItemsPerPage ?? ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT;
+  const { updateBirthChart, returnChart } = useBirthChart();
+  const { resetChartMenus } = useChartMenu();
 
   useEffect(() => {
     setChart(outerChart ?? birthChart);
@@ -83,10 +90,74 @@ export default function ChartAndData(props: Props) {
   }
 
   return (
-    <div className="flex flex-row items-start justify-center mt-8">
-      <div className="w-[20rem] flex flex-col justify-start gap-2">
+    <div className="w-full relative flex flex-row items-start justify-between mt-1">
+      <div className="flex flex-col gap-2 relative z-10">
+        {!useArchArabicPartsForDataVisualization && <ArabicParts />}
+        {useArchArabicPartsForDataVisualization && (
+          <BirthArchArabicParts
+            useCustomASCControls
+            customArabicParts={customPartsForDataVisualization}
+          />
+        )}
+        {arabicParts && (
+          <div className="absolute top-full">
+            <AspectsTable
+              aspects={aspectsData}
+              birthChart={birthChart}
+              outerChart={outerChart}
+              arabicParts={arabicParts}
+              outerArabicParts={outerArabicParts}
+              initialItemsPerPage={itemsPerPage}
+              onItemsPerPageChanged={handleOnItemsPerPagechanged}
+            />
+          </div>
+        )}
+      </div>
+
+      <div className="absolute w-full flex flex-col items-center justify-end">
+        <AstroChart
+          props={{
+            planets: birthChart.planets,
+            housesData: birthChart.housesData,
+            arabicParts,
+            outerPlanets: outerChart?.planets,
+            outerHouses: outerChart?.housesData,
+            outerArabicParts,
+            fixedStars: birthChart.fixedStars,
+            combineWithBirthChart,
+            combineWithReturnChart,
+            onUpdateAspectsData: handleOnUpdateAspectsData,
+          }}
+        />
+
+        {/* <div className="mb-6"></div> */}
+        {isSolarReturn && birthChart && returnChart && (
+          <div
+            className="
+            mt-6 mb-[-1rem]"
+          >
+            <LunarDerivedChart
+              birthChart={birthChart}
+              solarReturnChart={returnChart}
+            />
+          </div>
+        )}
+
+        <button
+          className="w-[25.5rem] mt-6 mb-2 bg-blue-800 text-white px-4 py-2 rounded hover:bg-blue-900"
+          onClick={() => {
+            resetChartMenus();
+            updateBirthChart({ isReturnChart: false, chartData: undefined });
+            updateBirthChart({ isReturnChart: true, chartData: undefined });
+          }}
+        >
+          Menu Principal
+        </button>
+      </div>
+
+      <div className="w-[20rem] flex flex-col justify-start gap-2 z-10">
         <div className="w-full">
-          <h2 className="font-bold text-lg mb-2">Planetas:</h2>
+          <h2 className="font-bold text-lg mb-2 mt-[-5px]">Planetas:</h2>
           <ul>
             {chart?.planets?.map((planet, index) => (
               <li key={index} className="flex flex-row items-center">
@@ -141,44 +212,6 @@ export default function ChartAndData(props: Props) {
             ))}
           </ul>
         </div>
-      </div>
-
-      <div className="z-10">
-        <AstroChart
-          props={{
-            planets: birthChart.planets,
-            housesData: birthChart.housesData,
-            arabicParts,
-            outerPlanets: outerChart?.planets,
-            outerHouses: outerChart?.housesData,
-            outerArabicParts,
-            fixedStars: birthChart.fixedStars,
-            combineWithBirthChart,
-            combineWithReturnChart,
-            onUpdateAspectsData: handleOnUpdateAspectsData,
-          }}
-        />
-      </div>
-
-      <div className="flex flex-col gap-2">
-        {!useArchArabicPartsForDataVisualization && <ArabicParts />}
-        {useArchArabicPartsForDataVisualization && (
-          <BirthArchArabicParts
-            useCustomASCControls
-            customArabicParts={customPartsForDataVisualization}
-          />
-        )}
-        {arabicParts && (
-          <AspectsTable
-            aspects={aspectsData}
-            birthChart={birthChart}
-            outerChart={outerChart}
-            arabicParts={arabicParts}
-            outerArabicParts={outerArabicParts}
-            initialItemsPerPage={itemsPerPage}
-            onItemsPerPageChanged={handleOnItemsPerPagechanged}
-          />
-        )}
       </div>
     </div>
   );
