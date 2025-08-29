@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import { useBirthChart } from "@/contexts/BirthChartContext";
+import { useChartMenu } from "@/contexts/ChartMenuContext";
+import React, { useRef, useState } from "react";
+import LunarDerivedModal from "../modals/LunarDerivedModal";
 
 interface AstroChartMenuProps {
   toggleCombineWithBirthChart?: () => void;
@@ -17,92 +20,117 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
     togglePlanetsAntiscia,
   } = props;
 
-  const [combineWithBirthChart, setCombineWithBirthChart] = useState(false);
-  const [combineWithReturnChart, setCombineWithReturnChart] = useState(false);
   const [planetsAntiscia, setPlanetsAntiscia] = useState(false);
   const [arabicParts, setArabicParts] = useState(false);
   const [arabicPartsAntiscia, setArabicPartsAntiscia] = useState(false);
+  const [lunarDerivedModal, setLunarDerivedModal] = useState(false);
 
+  const {
+    isCombinedWithBirthChart,
+    updateIsCombinedWithBirthChart,
+    isCombinedWithReturnChart,
+    updateIsCombinedWithReturnChart,
+  } = useBirthChart();
+
+  const { chartMenu } = useChartMenu();
+
+  function handleOnCloseLunarModal() {
+    setLunarDerivedModal(false);
+  }
+
+  const checkSrc = "check.png";
+  const checkSize = 13;
   const className =
-    "text-[0.75rem] font-bold p-1  hover:bg-gray-300 active:bg-gray-400";
+    "bg-blue-800 flex flex-row gap-1 items-center justify-center text-[0.75rem] w-full text-white px-0 py-2 rounded hover:bg-blue-900";
 
   return (
-    <div
-      className="w-full overflow-hidden grid grid-cols-3
-    border-2"
-    >
-      <button
-        className={
-          "border-r-2 " + className + (planetsAntiscia ? " bg-gray-400" : "")
-        }
-        onClick={() => {
-          setPlanetsAntiscia((prev) => !prev);
-          togglePlanetsAntiscia?.();
-        }}
-      >
-        Antiscion Planetas
-      </button>
+    <>
+      <div className="w-full flex flex-col gap-1">
+        <div className="w-full flex flex-row gap-1">
+          <button
+            className={className}
+            onClick={() => {
+              setPlanetsAntiscia((prev) => !prev);
+              togglePlanetsAntiscia?.();
+            }}
+          >
+            Antiscion Planetas{" "}
+            {planetsAntiscia && <img src={checkSrc} width={checkSize} />}
+          </button>
 
-      <button
-        className={
-          "border-r-2 " + className + (arabicParts ? " bg-gray-400" : "")
-        }
-        onClick={() => {
-          setArabicParts((prev) => !prev);
-          toggleArabicParts?.();
-        }}
-      >
-        Partes Árabes
-      </button>
+          <button
+            className={className}
+            onClick={() => {
+              setArabicParts((prev) => !prev);
+              toggleArabicParts?.();
+            }}
+          >
+            Partes Árabes
+            {arabicParts && <img src={checkSrc} width={checkSize} />}
+          </button>
 
-      <button
-        className={className + (arabicPartsAntiscia ? " bg-gray-400" : "")}
-        onClick={() => {
-          setArabicPartsAntiscia((prev) => !prev);
-          toggleArabicPartsAntiscia?.();
-        }}
-      >
-        Antiscion Partes Árabes
-      </button>
+          <button
+            className={className}
+            onClick={() => {
+              setArabicPartsAntiscia((prev) => !prev);
+              toggleArabicPartsAntiscia?.();
+            }}
+          >
+            Antiscion Partes Árabes
+            {arabicPartsAntiscia && <img src={checkSrc} width={checkSize} />}
+          </button>
+        </div>
 
-      {toggleCombineWithBirthChart && (
-        <button
-          className={
-            "border-r-2 border-t-2 " +
-            className +
-            (combineWithBirthChart ? " bg-gray-400" : "")
-          }
-          onClick={() => {
-            setCombineWithBirthChart((prev) => !prev);
-            toggleCombineWithBirthChart?.();
-          }}
-        >
-          Combinar com Mapa Natal
-        </button>
+        <div className="w-full flex flex-row justify-center gap-1">
+          {toggleCombineWithBirthChart && (
+            <button
+              className={className}
+              onClick={() => {
+                updateIsCombinedWithBirthChart(!isCombinedWithBirthChart);
+                toggleCombineWithBirthChart?.();
+              }}
+            >
+              Combinar com Mapa Natal
+              {isCombinedWithBirthChart && (
+                <img src={checkSrc} width={checkSize} />
+              )}
+            </button>
+          )}
+
+          {toggleCombineWithReturnChart && (
+            <button
+              className={className}
+              onClick={() => {
+                updateIsCombinedWithReturnChart(!isCombinedWithReturnChart);
+                toggleCombineWithReturnChart?.();
+              }}
+            >
+              Combinar com Retorno Solar
+              {isCombinedWithReturnChart && (
+                <img src={checkSrc} width={checkSize} />
+              )}
+            </button>
+          )}
+
+          {chartMenu === "solarReturn" && (
+            <button
+              className={className}
+              onClick={() => {
+                setLunarDerivedModal(true);
+              }}
+            >
+              Retorno Lunar Derivado
+            </button>
+          )}
+        </div>
+      </div>
+
+      {lunarDerivedModal && (
+        <div className="flex flex-row justify-center">
+          <div className="fixed w-full h-full right-0 top-0 bg-gray-600 opacity-50 z-10" />
+          <LunarDerivedModal onClose={handleOnCloseLunarModal} />
+        </div>
       )}
-
-      {!toggleCombineWithReturnChart && toggleCombineWithBirthChart && (
-        <>
-          <div className="border-r-2 border-t-2"></div>
-          <div className="border-t-2"></div>
-        </>
-      )}
-
-      {toggleCombineWithReturnChart && (
-        <button
-          className={
-            "border-r-2 border-t-2" +
-            className +
-            (combineWithReturnChart ? " bg-gray-400" : "")
-          }
-          onClick={() => {
-            setCombineWithReturnChart((prev) => !prev);
-            toggleCombineWithReturnChart?.();
-          }}
-        >
-          Combinar com Retorno Solar
-        </button>
-      )}
-    </div>
+    </>
   );
 }

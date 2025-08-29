@@ -29,6 +29,7 @@ import {
 } from "@/interfaces/AstroChartInterfaces";
 import { useAspectsData } from "@/contexts/AspectsContext";
 import AstroChartMenu from "../menus/AstroChartMenu";
+import { useBirthChart } from "@/contexts/BirthChartContext";
 
 const ASPECTS: Aspect[] = [
   { type: "conjunction", angle: 0 },
@@ -63,6 +64,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   const [fixedStarsAspects, setFixedStarAspects] = useState<PlanetAspectData[]>(
     []
   );
+  const { birthChart, returnChart } = useBirthChart();
   const { updateAspectsData } = useAspectsData();
   const symbolOffset = 16;
 
@@ -905,6 +907,8 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       }
     });
   }
+
+  // function outerChartIs
 
   useEffect(() => {
     if (!ref.current) return;

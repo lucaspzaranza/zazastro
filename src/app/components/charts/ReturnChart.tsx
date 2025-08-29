@@ -10,7 +10,7 @@ import ChartAndData from ".././ChartAndData";
 import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT } from "../../utils/chartUtils";
 import ChartSelectorArrows from "../ChartSelectorArrows";
 
-export default function BirthArch() {
+export default function ReturnChart() {
   const [input, setInput] = useState(0);
   const [day, setDay] = useState(0);
   const [month, setMonth] = useState(0);
@@ -94,15 +94,6 @@ export default function BirthArch() {
               isSolarReturn={isSolarReturn}
             />
           )}
-
-          {/* {isSolarReturn && birthChart && returnChart && (
-            <div className="block pt-10 z-10">
-              <LunarDerivedChart
-                birthChart={birthChart}
-                solarReturnChart={returnChart}
-              />
-            </div>
-          )} */}
         </div>
       )}
     </div>

@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, ReactNode } from "react";
 
-export type ChartMenuType = "birth" | "return";
+export type ChartMenuType = "birth" | "solarReturn" | "lunarReturn";
 
 interface ChartMenuContextType {
   chartMenu: ChartMenuType;
@@ -67,6 +67,7 @@ export const ChartMenuContextProvider: React.FC<{ children: ReactNode }> = ({
 
   const resetChartMenus = () => {
     setChartMenus(["birth"]);
+    setChartMenu("birth");
   };
 
   return (

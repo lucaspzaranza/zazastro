@@ -22,7 +22,8 @@ import ChartAndData from ".././ChartAndData";
 import moment from "moment-timezone";
 import ReturnChart from "./ReturnChart";
 import ChartSelectorArrows from "../ChartSelectorArrows";
-import { useChartMenu } from "@/contexts/ChartMenuContext";
+import { ChartMenuType, useChartMenu } from "@/contexts/ChartMenuContext";
+import LunarDerivedChart from "./LunarDerivedChart";
 
 type MenuButtonChoice =
   | "home"
@@ -54,6 +55,12 @@ export default function BirthChart() {
       setMenu("home");
     }
   }, [birthChart, returnChart]);
+
+  useEffect(() => {
+    if (menu === "home") {
+      setBirthDate(presavedBirthDates.lucasz.birthDate);
+    }
+  }, [menu]);
 
   const getBirthChart = async (birthDateToOverwrite?: BirthDate) => {
     setLoading(true);
@@ -133,8 +140,10 @@ export default function BirthChart() {
       });
 
       setTimeout(() => {
-        addChartMenu("return");
-        updateChartMenuDirectly("return");
+        const chartType: ChartMenuType =
+          returnType === "solar" ? "solarReturn" : "lunarReturn";
+        addChartMenu(chartType);
+        updateChartMenuDirectly(chartType);
         setLoading(false);
       }, 50);
     }
@@ -176,21 +185,21 @@ export default function BirthChart() {
             {menu === "home" && (
               <div className="flex flex-col gap-2">
                 <button
-                  className="bg-blue-600 w-full text-white px-4 py-2 rounded hover:bg-blue-700"
+                  className="bg-blue-800 w-full text-white px-4 py-2 rounded hover:bg-blue-900"
                   onClick={() => setMenu("birthChart")}
                 >
                   Mapa Natal
                 </button>
 
                 <button
-                  className="bg-blue-600 w-full text-white px-4 py-2 rounded hover:bg-blue-700"
+                  className="bg-blue-800 w-full text-white px-4 py-2 rounded hover:bg-blue-900"
                   onClick={() => setMenu("solarReturn")}
                 >
                   Revolução Solar
                 </button>
 
                 <button
-                  className="bg-blue-600 w-full text-white px-4 py-2 rounded hover:bg-blue-700"
+                  className="bg-blue-800 w-full text-white px-4 py-2 rounded hover:bg-blue-900"
                   onClick={() => setMenu("lunarReturn")}
                 >
                   Revolução Lunar
@@ -220,7 +229,7 @@ export default function BirthChart() {
               <div>
                 <button
                   onClick={() => getBirthChart()}
-                  className="bg-blue-600 w-full text-white px-4 py-2 rounded hover:bg-blue-700"
+                  className="bg-blue-800 w-full text-white px-4 py-2 rounded hover:bg-blue-900"
                 >
                   Consultar Mapa Natal
                 </button>
@@ -253,7 +262,7 @@ export default function BirthChart() {
                 <button
                   type="submit"
                   onClick={() => getPlanetReturn("solar")}
-                  className="bg-blue-600 w-full text-white px-4 py-2 rounded hover:bg-blue-700"
+                  className="bg-blue-800 w-full text-white px-4 py-2 rounded hover:bg-blue-900"
                 >
                   Revolução Solar
                 </button>
@@ -315,7 +324,7 @@ export default function BirthChart() {
                 <button
                   type="submit"
                   onClick={() => getPlanetReturn("lunar")}
-                  className="bg-blue-600 w-full text-white px-4 py-2 rounded hover:bg-blue-700"
+                  className="bg-blue-800 w-full text-white px-4 py-2 rounded hover:bg-blue-900"
                 >
                   Revolução Lunar
                 </button>
@@ -327,7 +336,7 @@ export default function BirthChart() {
             {menu === "home" && (
               <button
                 onClick={() => getMomentBirthChart()}
-                className="bg-blue-600 w-full text-white px-4 py-2 rounded hover:bg-blue-700"
+                className="bg-blue-800 w-full text-white px-4 py-2 rounded hover:bg-blue-900"
               >
                 Mapa do Momento
               </button>
@@ -335,7 +344,7 @@ export default function BirthChart() {
 
             {menu !== "home" && (
               <button
-                className="bg-blue-800 w-full text-white px-4 py-2 rounded hover:bg-blue-900"
+                className="bg-blue-600 w-full text-white px-4 py-2 rounded hover:bg-blue-700"
                 onClick={() => setMenu("home")}
               >
                 Voltar
@@ -346,6 +355,17 @@ export default function BirthChart() {
           </div>
         </div>
       )}
+
+      {/* <span className="text-center">
+        <span className="font-bold">:: Debugging ::</span>
+        <br />
+        birthChart === undefined:{" "}
+        <span className="font-bold text-blue-800">
+          {(birthChart === undefined).toString()}
+        </span>
+        <br />
+        chartMenu: <span className="font-bold">{chartMenu}</span>
+      </span> */}
 
       {birthChart && chartMenu === "birth" && (
         <div className="w-full flex flex-col items-center">
@@ -364,7 +384,19 @@ export default function BirthChart() {
         </div>
       )}
 
-      {returnChart && arabicParts && chartMenu === "return" && <ReturnChart />}
+      {returnChart &&
+        arabicParts &&
+        (chartMenu === "solarReturn" || chartMenu === "lunarReturn") && (
+          <ReturnChart />
+        )}
+      {/* {chartMenu === "solarReturn" && birthChart && returnChart && (
+          <div className="w-full bg-red-100 mt-6">
+            <LunarDerivedChart
+              birthChart={birthChart}
+              solarReturnChart={returnChart}
+            />
+          </div>
+        )} */}
     </div>
   );
 }
