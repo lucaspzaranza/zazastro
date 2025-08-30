@@ -6,18 +6,15 @@ import {
   getDegreeAndSign,
   monthsNames,
 } from "@/app/utils/chartUtils";
-import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import { useBirthChart } from "@/contexts/BirthChartContext";
-import { useArabicPartCalculations } from "@/hooks/useArabicPartCalculations";
-import { ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
+
 import {
-  BirthChart,
   BirthDate,
   Planet,
   planetTypes,
 } from "@/interfaces/BirthChartInterfaces";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 interface LunarModalProps {
   onClose?: () => void;
@@ -27,15 +24,10 @@ const getGlyphOnly = true;
 
 export default function LunarDerivedModal(props: LunarModalProps) {
   const { onClose } = props;
-  const { birthChart, returnChart, updateBirthChart } = useBirthChart();
-
-  const [lunarChart, setLunarChart] = useState<BirthChart | undefined>();
+  const { birthChart, updateLunarDerivedChart } = useBirthChart();
   const [day, setDay] = useState(0);
   const [month, setMonth] = useState(1);
   const [year, setYear] = useState(0);
-  const [renderChart, setRenderChart] = useState(false);
-  const [parts, setParts] = useState<ArabicPartsType>({});
-  const [returnTime, setReturnTime] = useState("");
 
   const makeChart = async () => {
     if (birthChart === undefined) return;
@@ -81,7 +73,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
 
     const data = await response.json();
 
-    setLunarChart({
+    updateLunarDerivedChart?.({
       ...data,
       returnTime: data.returnTime,
       birthDate,
@@ -121,11 +113,15 @@ export default function LunarDerivedModal(props: LunarModalProps) {
         ),
       },
     });
+
+    setTimeout(() => {
+      onClose?.();
+    }, 100);
   };
 
   return (
-    <div className="absolute w-[20rem] h-[10rem] border-2 rounded-md bg-white flex flex-col items-center justify-center p-2 z-10">
-      <header className="relative w-full flex flex-row items-center justify-center">
+    <div className="absolute w-[20rem] h-[10rem] border-2 rounded-md bg-white flex flex-col py-1 items-center justify-start z-10 gap-2">
+      <header className="relative w-full flex flex-row items-center justify-center border-b-2">
         <h1 className="font-bold text-lg">Retorno Lunar Derivado</h1>
         <button
           className="absolute right-0 flex flex-row items-center justify-center"
@@ -139,10 +135,9 @@ export default function LunarDerivedModal(props: LunarModalProps) {
       </header>
 
       <form
-        className="w-full flex flex-col gap-2 h-1/2 mt-2"
+        className="w-full flex flex-col gap-2 h-1/2 mt-2 p-2"
         onSubmit={(e) => {
           e.preventDefault();
-          setRenderChart(false);
           makeChart();
         }}
       >
@@ -193,7 +188,6 @@ export default function LunarDerivedModal(props: LunarModalProps) {
             type="submit"
             className="w-full bg-blue-800 text-white px-4 py-2 rounded hover:bg-blue-900"
             onClick={() => {
-              setRenderChart(false);
               makeChart();
             }}
           >

@@ -22,19 +22,13 @@ import { useArabicPartCalculations } from "@/hooks/useArabicPartCalculations";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import BirthArchArabicParts from ".././BirthArchArabicParts";
 import ChartAndData from ".././ChartAndData";
-
-interface Props {
-  birthChart: BirthChart;
-  solarReturnChart: BirthChart;
-}
+import { useBirthChart } from "@/contexts/BirthChartContext";
+import { useChartMenu } from "@/contexts/ChartMenuContext";
 
 const getGlyphOnly = true;
 
-const LunarDerivedChart: React.FC<Props> = ({
-  birthChart,
-  solarReturnChart,
-}) => {
-  const [lunarChart, setLunarChart] = useState<BirthChart | undefined>();
+export default function LunarDerivedChart() {
+  // const [lunarChart, setLunarChart] = useState<BirthChart | undefined>();
   const [returnTime, setReturnTime] = useState("");
   const [parts, setParts] = useState<ArabicPartsType>({});
   const [renderChart, setRenderChart] = useState(false);
@@ -46,6 +40,8 @@ const LunarDerivedChart: React.FC<Props> = ({
   const [tableItemsPerPage, setTableItemsPerPage] = useState(
     ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT
   );
+  const { birthChart, returnChart, lunarDerivedChart } = useBirthChart();
+  const { chartMenu, addChartMenu, updateChartMenuDirectly } = useChartMenu();
 
   const setArabicParts = () => {
     if (arabicParts === undefined) return;
@@ -53,10 +49,10 @@ const LunarDerivedChart: React.FC<Props> = ({
     arabicPartKeys.forEach((key) => {
       const part = arabicParts[key];
 
-      if (part && lunarChart) {
+      if (part && lunarDerivedChart) {
         const newArchArabicPart = calculateBirthArchArabicPart(
           part,
-          lunarChart.housesData.ascendant
+          lunarDerivedChart.housesData.ascendant
         );
         lots[key] = newArchArabicPart;
         const updatedParts: ArabicPartsType = { ...parts, ...lots };
@@ -67,11 +63,13 @@ const LunarDerivedChart: React.FC<Props> = ({
   };
 
   useEffect(() => {
-    if (lunarChart) {
+    if (lunarDerivedChart) {
       setArabicParts();
-      if (lunarChart.returnTime) setReturnTime(lunarChart.returnTime);
+      if (lunarDerivedChart.returnTime) {
+        setReturnTime(lunarDerivedChart.returnTime);
+      }
     }
-  }, [lunarChart]);
+  }, [lunarDerivedChart]);
 
   const toggleShowBirthCombinedchart = () => {
     if (combineWithReturnChart) setCombineWithReturnChart(false);
@@ -89,12 +87,12 @@ const LunarDerivedChart: React.FC<Props> = ({
 
   return (
     <div className="w-full flex flex-col items-center justify-between">
-      {lunarChart && renderChart && (
-        <div>
+      {lunarDerivedChart && renderChart && (
+        <>
           <ChartDate chartType="return" customReturnTime={returnTime} />
           {!combineWithBirthChart && !combineWithReturnChart && (
             <ChartAndData
-              birthChart={lunarChart}
+              birthChart={lunarDerivedChart}
               useArchArabicPartsForDataVisualization
               arabicParts={parts}
               customPartsForDataVisualization={parts}
@@ -109,7 +107,7 @@ const LunarDerivedChart: React.FC<Props> = ({
           {combineWithBirthChart && birthChart && (
             <ChartAndData
               birthChart={birthChart}
-              outerChart={lunarChart}
+              outerChart={lunarDerivedChart}
               useArchArabicPartsForDataVisualization
               arabicParts={arabicParts}
               customPartsForDataVisualization={parts}
@@ -121,10 +119,10 @@ const LunarDerivedChart: React.FC<Props> = ({
             />
           )}
 
-          {combineWithReturnChart && birthChart && (
+          {combineWithReturnChart && birthChart && returnChart && (
             <ChartAndData
-              birthChart={solarReturnChart}
-              outerChart={lunarChart}
+              birthChart={returnChart}
+              outerChart={lunarDerivedChart}
               arabicParts={archArabicParts}
               outerArabicParts={parts}
               useArchArabicPartsForDataVisualization
@@ -135,10 +133,8 @@ const LunarDerivedChart: React.FC<Props> = ({
               isSolarReturn={false}
             />
           )}
-        </div>
+        </>
       )}
     </div>
   );
-};
-
-export default LunarDerivedChart;
+}

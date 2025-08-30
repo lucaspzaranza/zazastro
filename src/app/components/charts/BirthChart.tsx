@@ -36,7 +36,8 @@ type MenuButtonChoice =
 
 export default function BirthChart() {
   const [loading, setLoading] = useState(false);
-  const { birthChart, returnChart, updateBirthChart } = useBirthChart();
+  const { birthChart, returnChart, lunarDerivedChart, updateBirthChart } =
+    useBirthChart();
   const { arabicParts } = useArabicParts();
   const [solarYear, setSolarYear] = useState(0);
   const [lunarDay, setLunarDay] = useState(0);
@@ -54,7 +55,12 @@ export default function BirthChart() {
     if (birthChart === undefined && returnChart === undefined) {
       setMenu("home");
     }
-  }, [birthChart, returnChart]);
+
+    if (lunarDerivedChart) {
+      addChartMenu("lunarReturn");
+      updateChartMenuDirectly("lunarReturn");
+    }
+  }, [birthChart, returnChart, lunarDerivedChart]);
 
   useEffect(() => {
     if (menu === "home") {
@@ -386,17 +392,14 @@ export default function BirthChart() {
 
       {returnChart &&
         arabicParts &&
-        (chartMenu === "solarReturn" || chartMenu === "lunarReturn") && (
-          <ReturnChart />
-        )}
-      {/* {chartMenu === "solarReturn" && birthChart && returnChart && (
-          <div className="w-full bg-red-100 mt-6">
-            <LunarDerivedChart
-              birthChart={birthChart}
-              solarReturnChart={returnChart}
-            />
-          </div>
-        )} */}
+        (chartMenu === "solarReturn" || chartMenu === "lunarReturn") &&
+        !lunarDerivedChart && <ReturnChart />}
+
+      {chartMenu === "lunarReturn" && lunarDerivedChart && (
+        <LunarDerivedChart />
+        // <div className="w-full bg-red-100 mt-6">
+        // </div>
+      )}
     </div>
   );
 }

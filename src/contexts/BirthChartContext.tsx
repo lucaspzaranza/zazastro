@@ -16,6 +16,8 @@ interface BirthChartContextType {
   birthChart?: BirthChart;
   updateBirthChart: (chartOptions: UpdateBirthChartOptions) => void;
   returnChart?: BirthChart;
+  lunarDerivedChart?: BirthChart;
+  updateLunarDerivedChart: (lunarDerivedChart: BirthChart) => void;
   isCombinedWithBirthChart: boolean;
   updateIsCombinedWithBirthChart: (val: boolean) => void;
   isCombinedWithReturnChart: boolean;
@@ -33,6 +35,7 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [birthChart, setBirthChart] = useState<BirthChart>();
   const [returnChart, setReturnChart] = useState<BirthChart>();
+  const [lunarDerivedChart, setLunarDerivedChart] = useState<BirthChart>();
   const [isCombinedWithBirthChart, setIsCombinedWithBirthChart] =
     useState(false);
   const [isCombinedWithReturnChart, setIsCombinedWithReturnChart] =
@@ -109,6 +112,10 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
     else setReturnChart(chartObject);
   };
 
+  const updateLunarDerivedChart = (lunarChart?: BirthChart) => {
+    setLunarDerivedChart(lunarChart);
+  };
+
   return (
     <BirthChartContext.Provider
       value={{
@@ -119,6 +126,8 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
         updateIsCombinedWithBirthChart,
         isCombinedWithReturnChart,
         updateIsCombinedWithReturnChart,
+        lunarDerivedChart,
+        updateLunarDerivedChart,
       }}
     >
       {children}

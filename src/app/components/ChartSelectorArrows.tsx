@@ -1,3 +1,4 @@
+import { useBirthChart } from "@/contexts/BirthChartContext";
 import { useChartMenu } from "@/contexts/ChartMenuContext";
 import React, { Children, useEffect, useState } from "react";
 
@@ -16,13 +17,28 @@ export default function ChartSelectorArrows(props: ChartSelectorProps) {
     previousChartMenu,
   } = useChartMenu();
 
+  const { updateIsCombinedWithBirthChart, updateIsCombinedWithReturnChart } =
+    useBirthChart();
+
   useEffect(() => {}, [allChartMenus]);
+
+  const previous = () => {
+    updateIsCombinedWithBirthChart(false);
+    updateIsCombinedWithReturnChart(false);
+    previousChartMenu();
+  };
+
+  const next = () => {
+    updateIsCombinedWithBirthChart(false);
+    updateIsCombinedWithReturnChart(false);
+    nextChartMenu();
+  };
 
   return (
     <div className={"flex flex-row items-center justify-between " + className}>
       <button
         disabled={isFirstChart()}
-        onClick={previousChartMenu}
+        onClick={previous}
         className="w-[2rem] h-[2rem] hover:outline-2 text-xl active:bg-gray-200 disabled:opacity-50"
       >
         ◀
@@ -30,7 +46,7 @@ export default function ChartSelectorArrows(props: ChartSelectorProps) {
       {children}
       <button
         disabled={isLastChart()}
-        onClick={nextChartMenu}
+        onClick={next}
         className="w-[2rem] h-[2rem] hover:outline-2 text-xl active:bg-gray-200 disabled:opacity-50"
       >
         ▶

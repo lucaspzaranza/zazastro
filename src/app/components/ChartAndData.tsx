@@ -130,15 +130,6 @@ export default function ChartAndData(props: Props) {
           }}
         />
 
-        {/* {isSolarReturn && birthChart && returnChart && (
-          <div className="w-full bg-red-100 mt-6 mb-[-1rem]">
-            <LunarDerivedChart
-              birthChart={birthChart}
-              solarReturnChart={returnChart}
-            />
-          </div>
-        )} */}
-
         <button
           className="w-[25.5rem] mt-6 mb-2 bg-blue-800 text-white px-4 py-2 rounded hover:bg-blue-900"
           onClick={() => {
