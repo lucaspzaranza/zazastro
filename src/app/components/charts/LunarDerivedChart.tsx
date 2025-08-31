@@ -88,12 +88,10 @@ export default function LunarDerivedChart() {
             <ChartAndData
               innerChart={lunarDerivedChart}
               useArchArabicPartsForDataVisualization
-              // customPartsForDataVisualization={parts}
               combineWithBirthChart={toggleShowBirthCombinedchart}
               combineWithReturnChart={toggleShowReturnCombinedchart}
               tableItemsPerPage={tableItemsPerPage}
               onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
-              // isSolarReturn={false}
             />
           )}
 
@@ -102,12 +100,10 @@ export default function LunarDerivedChart() {
               innerChart={birthChart}
               outerChart={lunarDerivedChart}
               useArchArabicPartsForDataVisualization
-              // customPartsForDataVisualization={parts}
               outerArabicParts={parts}
               combineWithBirthChart={toggleShowBirthCombinedchart}
               tableItemsPerPage={tableItemsPerPage}
               onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
-              // isSolarReturn={false}
             />
           )}
 
@@ -117,11 +113,9 @@ export default function LunarDerivedChart() {
               outerChart={lunarDerivedChart}
               outerArabicParts={parts}
               useArchArabicPartsForDataVisualization
-              // customPartsForDataVisualization={parts}
               combineWithReturnChart={toggleShowReturnCombinedchart}
               tableItemsPerPage={tableItemsPerPage}
               onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
-              // isSolarReturn={false}
             />
           )}
         </>

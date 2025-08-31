@@ -111,6 +111,21 @@ export function getSign(longitude: number, getGlyphOnly = false): string {
   return signs[Math.floor(longitude / 30) % 12];
 }
 
+export const planesNamesByType: Record<PlanetType, string> = {
+  moon: "Lua",
+  mercury: "Mercúrio",
+  venus: "Vênus",
+  sun: "Sol",
+  mars: "Marte",
+  jupiter: "Júpiter",
+  saturn: "Saturn",
+  uranus: "Urano",
+  neptune: "Netuno",
+  pluto: "Plutão",
+  northNode: "Nodo Norte",
+  southNode: "Nodo Sul",
+};
+
 export const fixedNames = {
   antiscionName: "antiscion",
   houseName: "house",

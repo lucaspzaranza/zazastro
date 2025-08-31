@@ -57,12 +57,17 @@ export default function ChartAndData(props: Props) {
     ...props,
   };
 
-  const { birthChart, returnChart } = useBirthChart();
+  const { birthChart, returnChart, lunarDerivedChart } = useBirthChart();
   const [chart, setChart] = useState(outerChart ?? birthChart);
   const [aspectsData, setAspectsData] = useState<PlanetAspectData[]>([]);
   const itemsPerPage = tableItemsPerPage ?? ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT;
   const lots = useArabicPartCalculations();
-  const { updateBirthChart, updateLunarDerivedChart } = useBirthChart();
+  const {
+    updateBirthChart,
+    updateLunarDerivedChart,
+    updateIsCombinedWithBirthChart,
+    updateIsCombinedWithReturnChart,
+  } = useBirthChart();
   const { resetChartMenus } = useChartMenu();
   const {
     arabicParts,
@@ -72,8 +77,19 @@ export default function ChartAndData(props: Props) {
   } = useArabicParts();
   const [partsArray, setParts] = useState<ArabicPart[]>([]);
   const { calculateBirthArchArabicPart } = useArabicPartCalculations();
+  const { chartMenu, addChartMenu, updateChartMenuDirectly } = useChartMenu();
 
   let lotsTempObj: ArabicPartsType = {};
+
+  function getChartForArchArabicParts(): BirthChart | undefined {
+    if (chartMenu === "solarReturn" || chartMenu === "lunarReturn") {
+      return returnChart;
+    } else if (chartMenu === "lunarDerivedReturn") {
+      return lunarDerivedChart;
+    }
+
+    return birthChart;
+  }
 
   useEffect(() => {
     setChart(outerChart ?? innerChart);
@@ -147,15 +163,15 @@ export default function ChartAndData(props: Props) {
         if (part && returnChart) {
           const newArchArabicPart = calculateBirthArchArabicPart(
             part,
-            returnChart.housesData.ascendant
+            getChartForArchArabicParts()?.housesData.ascendant ?? 0
           );
           lotsTempObj[key] = { ...newArchArabicPart };
 
-          // if (key === "victory") {
-          //   console.log("ac: ", returnChart?.housesData.ascendant);
-          //   console.log(newArchArabicPart);
-          //   console.log('part', part);
-          // }
+          if (key === "fortune") {
+            console.log("ac: ", returnChart?.housesData.house[0]);
+            console.log("radical", part);
+            console.log("derivada", newArchArabicPart);
+          }
           updateArchArabicParts(lotsTempObj);
         }
       });
@@ -258,6 +274,8 @@ export default function ChartAndData(props: Props) {
             updateBirthChart({ isReturnChart: false, chartData: undefined });
             updateBirthChart({ isReturnChart: true, chartData: undefined });
             updateLunarDerivedChart(undefined);
+            updateIsCombinedWithBirthChart(false);
+            updateIsCombinedWithReturnChart(false);
             resetChartMenus();
           }}
         >

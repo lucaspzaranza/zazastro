@@ -77,7 +77,6 @@ export default function ReturnChart() {
               useArchArabicPartsForDataVisualization
               tableItemsPerPage={tableItemsPerPage}
               onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
-              // isSolarReturn={isSolarReturn}
             />
           )}
 
@@ -90,7 +89,6 @@ export default function ReturnChart() {
               combineWithBirthChart={toggleShowCombinedchart}
               tableItemsPerPage={tableItemsPerPage}
               onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
-              // isSolarReturn={isSolarReturn}
             />
           )}
         </div>
