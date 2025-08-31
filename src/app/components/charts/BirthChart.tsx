@@ -57,8 +57,8 @@ export default function BirthChart() {
     }
 
     if (lunarDerivedChart) {
-      addChartMenu("lunarReturn");
-      updateChartMenuDirectly("lunarReturn");
+      addChartMenu("lunarDerivedReturn");
+      updateChartMenuDirectly("lunarDerivedReturn");
     }
   }, [birthChart, returnChart, lunarDerivedChart]);
 
@@ -121,6 +121,7 @@ export default function BirthChart() {
     }
 
     const data = await response.json();
+    // console.log(data);
 
     updateBirthChart({
       isReturnChart: false,
@@ -376,15 +377,15 @@ export default function BirthChart() {
       {birthChart && chartMenu === "birth" && (
         <div className="w-full flex flex-col items-center">
           <div className="w-full text-left flex flex-col items-center mb-4">
-            <ChartSelectorArrows className="w-[50%] mb-2">
+            <ChartSelectorArrows className="w-[60%] mb-2">
               <h1 className="text-2xl font-bold text-center">Mapa Astral</h1>
             </ChartSelectorArrows>
             <ChartDate chartType="birth" />
             <ChartAndData
-              birthChart={birthChart}
-              arabicParts={arabicParts!}
+              innerChart={birthChart}
+              // arabicParts={arabicParts!}
               useArchArabicPartsForDataVisualization={false}
-              isSolarReturn={false}
+              // isSolarReturn={false}
             />
           </div>
         </div>
@@ -392,14 +393,13 @@ export default function BirthChart() {
 
       {returnChart &&
         arabicParts &&
-        (chartMenu === "solarReturn" || chartMenu === "lunarReturn") &&
-        !lunarDerivedChart && <ReturnChart />}
+        (chartMenu === "solarReturn" || chartMenu === "lunarReturn") && (
+          <ReturnChart />
+        )}
 
-      {chartMenu === "lunarReturn" && lunarDerivedChart && (
-        <LunarDerivedChart />
-        // <div className="w-full bg-red-100 mt-6">
-        // </div>
-      )}
+      {chartMenu === "lunarDerivedReturn" &&
+        lunarDerivedChart &&
+        arabicParts && <LunarDerivedChart />}
     </div>
   );
 }

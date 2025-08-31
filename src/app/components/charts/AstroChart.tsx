@@ -908,8 +908,6 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     });
   }
 
-  // function outerChartIs
-
   useEffect(() => {
     if (!ref.current) return;
     const svg = d3.select(ref.current);

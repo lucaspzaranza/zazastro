@@ -1,6 +1,10 @@
 import React, { createContext, useState, useContext, ReactNode } from "react";
 
-export type ChartMenuType = "birth" | "solarReturn" | "lunarReturn";
+export type ChartMenuType =
+  | "birth"
+  | "solarReturn"
+  | "lunarReturn"
+  | "lunarDerivedReturn";
 
 interface ChartMenuContextType {
   chartMenu: ChartMenuType;

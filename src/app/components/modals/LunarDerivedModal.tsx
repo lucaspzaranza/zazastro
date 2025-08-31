@@ -10,6 +10,7 @@ import { useBirthChart } from "@/contexts/BirthChartContext";
 
 import {
   BirthDate,
+  FixedStar,
   Planet,
   planetTypes,
 } from "@/interfaces/BirthChartInterfaces";
@@ -112,6 +113,16 @@ export default function LunarDerivedModal(props: LunarModalProps) {
           }
         ),
       },
+      fixedStars: data.fixedStars.map((star: FixedStar) => ({
+        ...star,
+        elementType: "fixedStar",
+        isAntiscion: false,
+        isFromOuterChart: false,
+        longitudeSign: getDegreeAndSign(
+          decimalToDegreesMinutes(star.longitude),
+          getGlyphOnly
+        ),
+      })),
     });
 
     setTimeout(() => {
@@ -129,7 +140,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
             onClose?.();
           }}
         >
-          <div className="absolute w-[21px] h-[21px] hover:opacity-20 hover:bg-gray-400 active:bg-gray-900" />
+          <div className="absolute w-[19px] h-[19px] hover:opacity-20 hover:bg-gray-400 active:bg-gray-900" />
           <img src="close.png" width={25} />
         </button>
       </header>

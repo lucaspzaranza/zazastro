@@ -1,34 +1,20 @@
-import {
-  BirthChart,
-  BirthDate,
-  Planet,
-  planetTypes,
-} from "@/interfaces/BirthChartInterfaces";
 import React, { useEffect, useState } from "react";
 import {
   arabicPartKeys,
   ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT,
-  convertDegMinToDecimal,
-  decimalToDegreesMinutes,
-  getAntiscion,
-  getDegreeAndSign,
-  monthsNames,
+  getReturnDateRangeString,
 } from "../../utils/chartUtils";
-import AstroChart from "./AstroChart";
-import moment from "moment";
 import { ChartDate } from ".././ChartDate";
-import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
+import { ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import { useArabicPartCalculations } from "@/hooks/useArabicPartCalculations";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
-import BirthArchArabicParts from ".././BirthArchArabicParts";
 import ChartAndData from ".././ChartAndData";
 import { useBirthChart } from "@/contexts/BirthChartContext";
-import { useChartMenu } from "@/contexts/ChartMenuContext";
+import ChartSelectorArrows from "../ChartSelectorArrows";
 
 const getGlyphOnly = true;
 
 export default function LunarDerivedChart() {
-  // const [lunarChart, setLunarChart] = useState<BirthChart | undefined>();
   const [returnTime, setReturnTime] = useState("");
   const [parts, setParts] = useState<ArabicPartsType>({});
   const [renderChart, setRenderChart] = useState(false);
@@ -41,7 +27,6 @@ export default function LunarDerivedChart() {
     ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT
   );
   const { birthChart, returnChart, lunarDerivedChart } = useBirthChart();
-  const { chartMenu, addChartMenu, updateChartMenuDirectly } = useChartMenu();
 
   const setArabicParts = () => {
     if (arabicParts === undefined) return;
@@ -89,48 +74,54 @@ export default function LunarDerivedChart() {
     <div className="w-full flex flex-col items-center justify-between">
       {lunarDerivedChart && renderChart && (
         <>
+          <ChartSelectorArrows className="w-[60%] mb-2">
+            <h1 className="text-2xl font-bold text-center">
+              Mapa do Retorno Lunar Derivado para&nbsp;
+              {getReturnDateRangeString(
+                lunarDerivedChart.returnTime ?? "0000-00-00 00:00:00",
+                "lunar"
+              )}
+            </h1>
+          </ChartSelectorArrows>
           <ChartDate chartType="return" customReturnTime={returnTime} />
           {!combineWithBirthChart && !combineWithReturnChart && (
             <ChartAndData
-              birthChart={lunarDerivedChart}
+              innerChart={lunarDerivedChart}
               useArchArabicPartsForDataVisualization
-              arabicParts={parts}
-              customPartsForDataVisualization={parts}
+              // customPartsForDataVisualization={parts}
               combineWithBirthChart={toggleShowBirthCombinedchart}
               combineWithReturnChart={toggleShowReturnCombinedchart}
               tableItemsPerPage={tableItemsPerPage}
               onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
-              isSolarReturn={false}
+              // isSolarReturn={false}
             />
           )}
 
           {combineWithBirthChart && birthChart && (
             <ChartAndData
-              birthChart={birthChart}
+              innerChart={birthChart}
               outerChart={lunarDerivedChart}
               useArchArabicPartsForDataVisualization
-              arabicParts={arabicParts}
-              customPartsForDataVisualization={parts}
+              // customPartsForDataVisualization={parts}
               outerArabicParts={parts}
               combineWithBirthChart={toggleShowBirthCombinedchart}
               tableItemsPerPage={tableItemsPerPage}
               onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
-              isSolarReturn={false}
+              // isSolarReturn={false}
             />
           )}
 
           {combineWithReturnChart && birthChart && returnChart && (
             <ChartAndData
-              birthChart={returnChart}
+              innerChart={returnChart}
               outerChart={lunarDerivedChart}
-              arabicParts={archArabicParts}
               outerArabicParts={parts}
               useArchArabicPartsForDataVisualization
-              customPartsForDataVisualization={parts}
+              // customPartsForDataVisualization={parts}
               combineWithReturnChart={toggleShowReturnCombinedchart}
               tableItemsPerPage={tableItemsPerPage}
               onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
-              isSolarReturn={false}
+              // isSolarReturn={false}
             />
           )}
         </>

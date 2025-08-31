@@ -43,13 +43,11 @@ export default function BirthArchArabicParts({
     arabicPartKeys.forEach((key) => {
       const part = arabicParts[key];
       if (part && returnChart) {
-        // console.log(`Parte Árabe: ${key}`, part);
         const newArchArabicPart = calculateBirthArchArabicPart(
           part,
           customAscendant ?? returnChart.housesData.ascendant
         );
         lots[key] = newArchArabicPart;
-        // console.log("updatedArabicParts:", result);
         updateArchArabicParts(lots);
       }
     });
@@ -77,10 +75,10 @@ export default function BirthArchArabicParts({
     <div className="w-full flex flex-col gap-2">
       <h2 className="text-xl font-bold mt-[-5px]">
         Partes Árabes Por Arco&nbsp;
-        {returnChart?.returnType === "solar" ? "Solar" : "Lunar"}
+        {returnChart?.returnType === "solar" ? "Solar" : "Lunar"}:
       </h2>
 
-      {useCustomASCControls && (
+      {/* {useCustomASCControls && (
         <div>
           <h3 className="text-lg font-bold">Personalizar Ascendente:</h3>
           <div className="flex flex-row">
@@ -148,7 +146,7 @@ export default function BirthArchArabicParts({
             )}
           </div>
         </div>
-      )}
+      )} */}
 
       <ul>
         {parts.map((arabicPart, index) => {

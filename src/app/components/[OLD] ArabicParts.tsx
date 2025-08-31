@@ -78,7 +78,7 @@ export default function ArabicParts() {
 
   return (
     <div className="flex flex-col gap-2">
-      <h2 className="text-xl font-bold mt-[-5px]">Partes Árabes</h2>
+      <h2 className="text-xl font-bold mt-[-5px]">Partes Árabes:</h2>
 
       <ul>
         {parts.map((arabicPart, index) => {

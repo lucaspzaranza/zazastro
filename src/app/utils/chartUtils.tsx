@@ -5,15 +5,17 @@ import {
   PlanetAspectData,
 } from "@/interfaces/AstroChartInterfaces";
 import {
+  BirthChart,
   BirthChartProfile,
   BirthDate,
   Coordinates,
   PlanetOverlap,
   PlanetType,
   planetTypes,
+  ReturnChartType,
 } from "@/interfaces/BirthChartInterfaces";
 
-export const ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT = 5;
+export const ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT = 10;
 
 export const allSigns = [
   "Áries ♈︎",
@@ -352,6 +354,62 @@ export const clampLongitude = (
 
   return result;
 };
+
+export function getReturnDateRangeString(
+  returnTime: string,
+  returnType: ReturnChartType
+): string {
+  const [datePart, timePart] = returnTime.split(" ");
+  const [targetYear, targetMonth, targetDay] = datePart.split("-").map(Number);
+
+  if (returnType === "solar") {
+    return `${targetYear}/${targetYear + 1}`;
+  } else {
+    let year = targetYear;
+    let month = `${targetMonth.toString().padStart(2, "0")}`;
+
+    let nextMonth: string = (targetMonth + 1).toString().padStart(2, "0");
+    let nextMonthYear = year.toString();
+
+    if (nextMonth === "13") {
+      nextMonth = "01";
+      nextMonthYear = (year + 1).toString();
+    }
+
+    return `${month}/${year} - ${nextMonth}/${nextMonthYear}`;
+  }
+}
+
+export function chartIsEqualsTo(
+  chart: BirthChart,
+  chartToCompare: BirthChart
+): boolean {
+  let result = true;
+
+  for (let index = 0; index < chart.planets.length; index++) {
+    const planet = chart.planets[index];
+    const planetToCompare = chartToCompare.planets[index];
+
+    const longitudesAreEqual =
+      planet.longitudeRaw === planetToCompare.longitudeRaw;
+    result = result && longitudesAreEqual;
+
+    if (!result) return false;
+  }
+
+  for (let index = 0; index < chart.housesData.house.length; index++) {
+    const houseLongitude = chart.housesData.house[index];
+    const houseToCompareLongitude = chartToCompare.housesData.house[index];
+
+    const longitudesAreEqual = houseLongitude === houseToCompareLongitude;
+
+    result = result && longitudesAreEqual;
+
+    if (!result) return false;
+  }
+
+  return true;
+}
 
 export const fortalCoords: Coordinates = {
   latitude: -3.71839, // Fortaleza

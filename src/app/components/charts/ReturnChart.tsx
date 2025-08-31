@@ -3,11 +3,13 @@ import { BirthDate } from "@/interfaces/BirthChartInterfaces";
 import { useEffect, useState } from "react";
 import { ChartDate } from ".././ChartDate";
 import AstroChart from "./AstroChart";
-import BirthArchArabicParts from ".././BirthArchArabicParts";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import LunarDerivedChart from "./LunarDerivedChart";
 import ChartAndData from ".././ChartAndData";
-import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT } from "../../utils/chartUtils";
+import {
+  ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT,
+  getReturnDateRangeString,
+} from "../../utils/chartUtils";
 import ChartSelectorArrows from "../ChartSelectorArrows";
 
 export default function ReturnChart() {
@@ -54,14 +56,13 @@ export default function ReturnChart() {
 
   return (
     <div className="w-full flex flex-col items-center justify-center gap-3 mb-4">
-      <ChartSelectorArrows className="w-[50%]">
+      <ChartSelectorArrows className="w-[60%]">
         <h1 className="text-2xl font-bold text-center">
           Mapa do Retorno {isSolarReturn ? "Solar" : "Lunar"} para&nbsp;
-          {isSolarReturn
-            ? `${targetDate.year}/${targetDate.year ? targetDate.year + 1 : ""}`
-            : `${returnChart.targetDate?.month.toString().padStart(2, "0")}/${
-                returnChart.targetDate?.year
-              }`}
+          {getReturnDateRangeString(
+            returnChart.returnTime ?? "0000-00-00 00:00:00",
+            isSolarReturn ? "solar" : "lunar"
+          )}
         </h1>
       </ChartSelectorArrows>
 
@@ -71,27 +72,25 @@ export default function ReturnChart() {
 
           {!combineWithBirthChart && returnChart && (
             <ChartAndData
-              birthChart={returnChart}
-              arabicParts={archArabicParts!}
+              innerChart={returnChart}
               combineWithBirthChart={toggleShowCombinedchart}
               useArchArabicPartsForDataVisualization
               tableItemsPerPage={tableItemsPerPage}
               onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
-              isSolarReturn={isSolarReturn}
+              // isSolarReturn={isSolarReturn}
             />
           )}
 
           {combineWithBirthChart && birthChart && (
             <ChartAndData
-              birthChart={birthChart}
+              innerChart={birthChart}
               outerChart={returnChart}
-              arabicParts={arabicParts!}
               outerArabicParts={archArabicParts}
               useArchArabicPartsForDataVisualization
               combineWithBirthChart={toggleShowCombinedchart}
               tableItemsPerPage={tableItemsPerPage}
               onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
-              isSolarReturn={isSolarReturn}
+              // isSolarReturn={isSolarReturn}
             />
           )}
         </div>
