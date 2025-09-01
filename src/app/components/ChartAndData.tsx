@@ -216,23 +216,8 @@ export default function ChartAndData(props: Props) {
   return (
     <div className="w-full relative flex flex-row items-start justify-between mt-1">
       <div className="flex flex-col gap-2 relative z-10">
-        {/* {!useArchArabicPartsForDataVisualization && <ArabicParts />}
-        {useArchArabicPartsForDataVisualization && (
-          <BirthArchArabicParts
-            useCustomASCControls
-            customArabicParts={customPartsForDataVisualization}
-          />
-        )} */}
+        <ArabicPartsLayout parts={partsArray} showMenuButtons={true} />
 
-        {/* {partsArray.length} */}
-        <ArabicPartsLayout parts={partsArray} />
-
-        {/* {useArchArabicPartsForDataVisualization && (
-          <BirthArchArabicParts
-            useCustomASCControls
-            customArabicParts={customPartsForDataVisualization}
-          />
-        )} */}
         {arabicParts && innerChart && (
           <div className="absolute top-full">
             <AspectsTable
@@ -348,9 +333,7 @@ export default function ChartAndData(props: Props) {
                       <span className="w-1/2 pl-4 flex flex-row pr-4">
                         Antiscion:&nbsp;
                         <span className="w-full text-end">
-                          {getHouseAntiscion(
-                            birthChart?.housesData.house[index]
-                          )}
+                          {getHouseAntiscion(chart.housesData.house[index])}
                         </span>
                       </span>
                     )}

@@ -118,7 +118,7 @@ export const planesNamesByType: Record<PlanetType, string> = {
   sun: "Sol",
   mars: "Marte",
   jupiter: "Júpiter",
-  saturn: "Saturn",
+  saturn: "Saturno",
   uranus: "Urano",
   neptune: "Netuno",
   pluto: "Plutão",
@@ -575,6 +575,16 @@ export const presavedBirthDates: Record<string, BirthChartProfile> = {
       day: 10,
       time: convertDegMinToDecimal(12, 5).toString(),
       coordinates: pindaCoords,
+    },
+  },
+  horariaReatamosEmSetembro: {
+    name: "(Horária) Nos falamos em Setembro?",
+    birthDate: {
+      year: 2025,
+      month: 8,
+      day: 31,
+      time: convertDegMinToDecimal(18, 52).toString(),
+      coordinates: fortalCoords,
     },
   },
 };

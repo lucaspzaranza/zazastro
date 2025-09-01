@@ -131,11 +131,11 @@ export default function LunarDerivedModal(props: LunarModalProps) {
   };
 
   return (
-    <div className="absolute w-[20rem] h-[10rem] border-2 rounded-md bg-white flex flex-col py-1 items-center justify-start z-10 gap-2">
+    <div className="absolute w-[20rem] h-[8.5rem] border-2 rounded-md bg-white flex flex-col py-1 items-center justify-start z-10 gap-2">
       <header className="relative w-full flex flex-row items-center justify-center border-b-2">
         <h1 className="font-bold text-lg">Retorno Lunar Derivado</h1>
         <button
-          className="absolute right-0 flex flex-row items-center justify-center"
+          className="absolute right-1 flex flex-row items-center justify-center"
           onClick={() => {
             onClose?.();
           }}
@@ -146,7 +146,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
       </header>
 
       <form
-        className="w-full flex flex-col gap-2 h-1/2 mt-2 p-2"
+        className="w-full flex flex-col gap-2 h-1/2 mt-0 px-2"
         onSubmit={(e) => {
           e.preventDefault();
           makeChart();

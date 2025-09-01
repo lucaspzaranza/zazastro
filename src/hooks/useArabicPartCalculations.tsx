@@ -65,7 +65,7 @@ export function useArabicPartCalculations() {
       name: "Fortuna",
       planet: "moon",
       partKey: "fortune",
-      formulaDescription: "ASC + Lua - Sol",
+      formulaDescription: "AC + Lua - Sol",
       longitudeRaw,
       ...getArabicPartData(longitudeRaw, asc),
     };
@@ -84,7 +84,7 @@ export function useArabicPartCalculations() {
       name: "Espírito",
       planet: "sun",
       partKey: "spirit",
-      formulaDescription: "ASC + Sol - Lua",
+      formulaDescription: "AC + Sol - Lua",
       longitudeRaw,
       ...getArabicPartData(longitudeRaw, asc),
     };
@@ -103,7 +103,7 @@ export function useArabicPartCalculations() {
       name: "Necessidade",
       planet: "mercury",
       partKey: "necessity",
-      formulaDescription: "ASC + Parte da Fortuna - Parte do Espírito",
+      formulaDescription: "AC + Parte da Fortuna - Parte do Espírito",
       longitudeRaw,
       ...getArabicPartData(longitudeRaw, asc),
     };
@@ -122,7 +122,7 @@ export function useArabicPartCalculations() {
       name: "Amor",
       planet: "venus",
       partKey: "love",
-      formulaDescription: "ASC + Parte do Espírito - Parte da Fortuna",
+      formulaDescription: "AC + Parte do Espírito - Parte da Fortuna",
       longitudeRaw,
       ...getArabicPartData(longitudeRaw, asc),
     };
@@ -141,7 +141,7 @@ export function useArabicPartCalculations() {
       name: "Valor",
       planet: "mars",
       partKey: "valor",
-      formulaDescription: "ASC + Parte da Fortuna - Marte",
+      formulaDescription: "AC + Parte da Fortuna - Marte",
       longitudeRaw,
       ...getArabicPartData(longitudeRaw, asc),
     };
@@ -160,7 +160,7 @@ export function useArabicPartCalculations() {
       name: "Vitória",
       planet: "jupiter",
       partKey: "victory",
-      formulaDescription: "ASC + Júpiter - Parte do Espírito",
+      formulaDescription: "AC + Júpiter - Parte do Espírito",
       longitudeRaw,
       ...getArabicPartData(longitudeRaw, asc),
     };
@@ -179,7 +179,7 @@ export function useArabicPartCalculations() {
       name: "Cativeiro",
       planet: "saturn",
       partKey: "captivity",
-      formulaDescription: "ASC + Parte da Fortuna - Saturno",
+      formulaDescription: "AC + Parte da Fortuna - Saturno",
       longitudeRaw,
       ...getArabicPartData(longitudeRaw, asc),
     };
@@ -197,7 +197,7 @@ export function useArabicPartCalculations() {
     return {
       name: "Casamento",
       partKey: "marriage",
-      formulaDescription: "ASC + DSC - Vênus",
+      formulaDescription: "AC + DC - Vênus",
       longitudeRaw,
       zodiacRuler,
       ...getArabicPartData(longitudeRaw, asc),
