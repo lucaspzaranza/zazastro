@@ -58,6 +58,7 @@ function ElementFilterModalFn(
     onConfirm,
     applyFilterIsActiveClasses,
     getElementImage,
+    clearSignal,
   } = props;
 
   const getUseOuterChartElements = () =>
@@ -91,10 +92,6 @@ function ElementFilterModalFn(
   const [useOuterHouses, setUseOuterHouses] = useState(true);
 
   function getElements(): AspectedElement[] {
-    // console.log(
-    //   `getElements with ${useInnerChartElements} and ${useOuterChartElements}`
-    // );
-
     let result: AspectedElement[] = [];
 
     if (useInnerChartElements) {
@@ -174,9 +171,42 @@ function ElementFilterModalFn(
 
   const [allCheckboxesChecked, setAllCheckboxesChecked] = useState(true);
   const [elementNodes, setElementNodes] = useState<React.ReactNode[]>([]);
+  const [signalCleared, setSignalCleared] = useState(false);
+
+  function elementAndNodeAreEquivalent(
+    element: AspectedElement,
+    node: ElementFilterNode
+  ): boolean {
+    return (
+      element.elementType === node.elementType &&
+      element.isAntiscion === node.isAntiscion &&
+      element.isFromOuterChart === node.isFromOuterChart &&
+      element.name === node.name
+    );
+  }
 
   const getOption = () =>
     columnType === "element" ? "elementsFilter" : "aspectedElementsFilter";
+
+  useEffect(() => {
+    if (typeof props.clearSignal === "number") {
+      setSignalCleared(true);
+    }
+  }, [clearSignal]);
+
+  useEffect(() => {
+    if (signalCleared) {
+      initialSnapshotRef.current = defaultCheckboxes.map((c) => ({ ...c }));
+
+      resetAllCheckboxes();
+      setAllCheckboxesChecked(true);
+      setCheckboxesChecked((prev) =>
+        prev.map((c) => ({ ...c, isChecked: true }))
+      );
+
+      setSignalCleared(false);
+    }
+  }, [signalCleared]);
 
   useEffect(() => {
     const source =
@@ -196,6 +226,14 @@ function ElementFilterModalFn(
   useEffect(() => {
     const elementsToSet = getElements();
 
+    setCheckboxesChecked(
+      checkboxesChecked.filter((checkbox) =>
+        elementsToSet.some((elToSet) =>
+          elementAndNodeAreEquivalent(elToSet, checkbox.element)
+        )
+      )
+    );
+
     setElements(elementsToSet);
     setElementNodes(elementsToSet.map((element) => getElementImage?.(element)));
   }, [
@@ -212,10 +250,6 @@ function ElementFilterModalFn(
     useOuterArabicPartsAntiscion,
     useOuterHouses,
   ]);
-
-  useEffect(() => {
-    console.log(checkboxesChecked.filter((check) => check.isChecked));
-  }, [isVisible]);
 
   function resetAllCheckboxes() {
     setUseInnerChartElements(true);
@@ -238,19 +272,6 @@ function ElementFilterModalFn(
   useImperativeHandle(
     ref,
     () => ({
-      clearFilterModalFields() {
-        console.log("3. clearFilterModalFields on modal");
-        // console.log(checkboxesChecked.filter((check) => check.isChecked));
-
-        initialSnapshotRef.current = defaultCheckboxes.map((c) => ({ ...c }));
-
-        resetAllCheckboxes();
-        setAllCheckboxesChecked(true);
-        setCheckboxesChecked((prev) =>
-          prev.map((c) => ({ ...c, isChecked: true }))
-        );
-      },
-
       getOptions() {
         const propName = getOption();
         const options: TableFilterOptions = {
@@ -297,7 +318,7 @@ function ElementFilterModalFn(
     return !allCheckboxesChecked;
   }
 
-  function confirmWithAspectesChecked() {
+  function confirmWithAspectsChecked() {
     const propName = getOption();
     const options: TableFilterOptions = {
       elementsFilter:
@@ -337,162 +358,9 @@ function ElementFilterModalFn(
       isVisible={isVisible}
       title="Filtrar por Elemento"
       onCancel={cancelAndResetState}
-      onConfirm={confirmWithAspectesChecked}
+      onConfirm={confirmWithAspectsChecked}
       className={`w-[630px] ${className}`}
     >
-      {/* <div>
-        <h2 className="text-sm">Opções</h2>
-        <div className="w-full px-2 pt-1 pb-0 flex flex-row justify-between">
-          <div className="w-1/2 flex flex-col">
-            <div className="flex flex-row items-center gap- mb-2">
-              <input
-                type="checkbox"
-                id="useInnerElements"
-                checked={useInnerChartElements}
-                onChange={() => setUseInnerChartElements((prev) => !prev)}
-              />
-              <label htmlFor="useInnerElements">Elementos Internos</label>
-            </div>
-
-            {useInnerChartElements && (
-              <div className="w-full flex flex-col gap-1">
-                <div className="w-full flex flex-row gap-1 items-center">
-                  <input
-                    type="checkbox"
-                    id="setUseInnerPlanets"
-                    checked={useInnerPlanets}
-                    onChange={() => setUseInnerPlanets((prev) => !prev)}
-                  />
-                  <label htmlFor="setUseInnerPlanets">Planetas</label>
-                </div>
-
-                <div className="w-full flex flex-row gap-1 items-center">
-                  <input
-                    type="checkbox"
-                    id="setUseInnerArabicParts"
-                    checked={useInnerArabicParts}
-                    onChange={() => setUseInnerArabicParts((prev) => !prev)}
-                  />
-                  <label htmlFor="setUseInnerArabicParts">Partes Árabes</label>
-                </div>
-
-                <div className="w-full flex flex-row gap-1 items-center">
-                  <input
-                    type="checkbox"
-                    id="setUseInnerPlanetsAntiscion"
-                    checked={useInnerPlanetsAntiscion}
-                    onChange={() =>
-                      setUseInnerPlanetsAntiscion((prev) => !prev)
-                    }
-                  />
-                  <label htmlFor="setUseInnerPlanetsAntiscion">
-                    Planetas (Antiscion)
-                  </label>
-                </div>
-
-                <div className="w-full flex flex-row gap-1 items-center">
-                  <input
-                    type="checkbox"
-                    id="setUseInnerArabicPartsAntiscion"
-                    checked={useInnerArabicPartsAntiscion}
-                    onChange={() =>
-                      setUseInnerArabicPartsAntiscion((prev) => !prev)
-                    }
-                  />
-                  <label htmlFor="setUseInnerArabicPartsAntiscion">
-                    Pts Árabes (Antiscion)
-                  </label>
-                </div>
-
-                <div className="w-full flex flex-row gap-1 items-center">
-                  <input
-                    type="checkbox"
-                    id="setUseInnerHouses"
-                    checked={useInnerHouses}
-                    onChange={() => setUseInnerHouses((prev) => !prev)}
-                  />
-                  <label htmlFor="setUseInnerHouses">Casas</label>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="w-1/2 flex flex-col">
-            <div className="flex flex-row gap-1 mb-2">
-              <input
-                type="checkbox"
-                id="useOuterElements"
-                checked={useOuterChartElements}
-                onChange={() => setUseOuterChartElements((prev) => !prev)}
-              />
-              <label htmlFor="useOuterElements">Elementos Externos (E)</label>
-            </div>
-
-            {useOuterChartElements && (
-              <div className="w-full flex flex-col gap-1">
-                <div className="w-full flex flex-row gap-1 items-center">
-                  <input
-                    type="checkbox"
-                    id="useOuterPlanets"
-                    checked={useOuterPlanets}
-                    onChange={() => setUseOuterPlanets((prev) => !prev)}
-                  />
-                  <label htmlFor="useOuterPlanets">Planetas</label>
-                </div>
-
-                <div className="w-full flex flex-row gap-1 items-center">
-                  <input
-                    type="checkbox"
-                    id="useOuterArabicParts"
-                    checked={useOuterArabicParts}
-                    onChange={() => setUseOuterArabicParts((prev) => !prev)}
-                  />
-                  <label htmlFor="useOuterArabicParts">Partes Árabes</label>
-                </div>
-
-                <div className="w-full flex flex-row gap-1 items-center">
-                  <input
-                    type="checkbox"
-                    id="useOuterPlanetsAntiscion"
-                    checked={useOuterPlanetsAntiscion}
-                    onChange={() =>
-                      setUseOuterPlanetsAntiscion((prev) => !prev)
-                    }
-                  />
-                  <label htmlFor="useOuterPlanetsAntiscion">
-                    Planetas (Antiscion)
-                  </label>
-                </div>
-
-                <div className="w-full flex flex-row gap-1 items-center">
-                  <input
-                    type="checkbox"
-                    id="useOuterArabicPartsAntiscion"
-                    checked={useOuterArabicPartsAntiscion}
-                    onChange={() =>
-                      setUseOuterArabicPartsAntiscion((prev) => !prev)
-                    }
-                  />
-                  <label htmlFor="useOuterArabicPartsAntiscion">
-                    Pts Árabes (Antiscion)
-                  </label>
-                </div>
-
-                <div className="w-full flex flex-row gap-1 items-center">
-                  <input
-                    type="checkbox"
-                    id="useOuterHouses"
-                    checked={useOuterHouses}
-                    onChange={() => setUseOuterHouses((prev) => !prev)}
-                  />
-                  <label htmlFor="useOuterHouses">Casas</label>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div> */}
-
       {checkboxesChecked && (
         <div className="w-full grid grid-cols-7 gap-2 p-2">
           {elementNodes.map((node, index) => (

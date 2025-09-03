@@ -29,6 +29,7 @@ function DistanceTypeFilterModalFn(
     onCancel,
     onConfirm,
     applyFilterIsActiveClasses,
+    clearSignal,
   } = props;
 
   const defaultCheckboxes = useMemo<DistanceTypeFilterModalCheckboxState[]>(
@@ -48,6 +49,26 @@ function DistanceTypeFilterModalFn(
   >(initialSnapshotRef.current.map((c) => ({ ...c })));
 
   const [allCheckboxesChecked, setAllCheckboxesChecked] = useState(true);
+  const [signalCleared, setSignalCleared] = useState(false);
+
+  useEffect(() => {
+    if (typeof props.clearSignal === "number") {
+      setSignalCleared(true);
+    }
+  }, [clearSignal]);
+
+  useEffect(() => {
+    if (signalCleared) {
+      initialSnapshotRef.current = defaultCheckboxes.map((c) => ({ ...c }));
+
+      setAllCheckboxesChecked(true);
+      setCheckboxesChecked((prev) =>
+        prev.map((c) => ({ ...c, isChecked: true }))
+      );
+
+      setSignalCleared(false);
+    }
+  }, [signalCleared]);
 
   useEffect(() => {
     const source =
@@ -65,13 +86,6 @@ function DistanceTypeFilterModalFn(
   useImperativeHandle(
     ref,
     () => ({
-      clearFilterModalFields() {
-        setCheckboxesChecked((prev) =>
-          prev.map((c) => ({ ...c, isChecked: true }))
-        );
-        setAllCheckboxesChecked(true);
-      },
-
       getOptions() {
         return {
           distanceTypesFilter: {

@@ -37,6 +37,7 @@ function DistanceFilterModalFn(
     onCancel,
     onConfirm,
     applyFilterIsActiveClasses,
+    clearSignal,
   } = props;
 
   const defaultState = useMemo<DistanceFilterModalState>(
@@ -59,6 +60,31 @@ function DistanceFilterModalFn(
     ...initialSnapshotRef.current,
   });
 
+  const [signalCleared, setSignalCleared] = useState(false);
+
+  useEffect(() => {
+    if (typeof props.clearSignal === "number") {
+      setSignalCleared(true);
+    }
+  }, [clearSignal]);
+
+  useEffect(() => {
+    if (signalCleared) {
+      setCurrentState({
+        useLowerLimit: true,
+        lowerLimitValue: 0,
+        lowerLimitFilterFunc: undefined,
+        useUpperLimit: false,
+        upperLimitValue: 0,
+        upperLimitFilterFunc: undefined,
+      });
+
+      initialSnapshotRef.current = { ...defaultState };
+
+      setSignalCleared(false);
+    }
+  }, [signalCleared]);
+
   useEffect(() => {
     const source =
       memorizedOptions?.distanceFilter?.distanceOptions ??
@@ -74,19 +100,6 @@ function DistanceFilterModalFn(
   useImperativeHandle(
     ref,
     () => ({
-      clearFilterModalFields() {
-        setCurrentState({
-          useLowerLimit: true,
-          lowerLimitValue: 0,
-          lowerLimitFilterFunc: undefined,
-          useUpperLimit: false,
-          upperLimitValue: 0,
-          upperLimitFilterFunc: undefined,
-        });
-
-        initialSnapshotRef.current = { ...defaultState };
-      },
-
       getOptions() {
         return {
           distanceFilter: { distanceOptions: { ...currentState } },

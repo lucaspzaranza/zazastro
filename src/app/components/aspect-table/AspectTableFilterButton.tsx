@@ -73,46 +73,18 @@ function AspectTableFilterButtonFn(
   const optionsInitialState = useRef<any>(undefined);
   const [filterIsActive, setFilterIsActive] = useState(false);
   const [shouldClear, setShouldClear] = useState(false);
+  const [clearSignal, setClearSignal] = useState(0);
 
   useEffect(() => {
     setModalIsOpen(openModal);
   }, [openModal]);
 
-  useEffect(() => {
-    if (shouldClear) {
-      console.log("2. clearFilter on col button");
-      // console.log(elementModalRef.current);
-
-      if (elementModalRef.current) {
-        elementModalRef.current.clearFilterModalFields();
-      }
-
-      if (aspectModalRef.current) {
-        aspectModalRef.current?.clearFilterModalFields();
-      }
-
-      if (aspectedElementModalRef.current) {
-        aspectedElementModalRef.current?.clearFilterModalFields();
-      }
-
-      if (distanceModalRef.current) {
-        distanceModalRef.current?.clearFilterModalFields();
-      }
-
-      if (distanceTypeModalRef.current) {
-        distanceTypeModalRef.current?.clearFilterModalFields();
-      }
+  useImperativeHandle(ref, () => ({
+    clearFilter() {
+      setClearSignal((s) => s + 1);
 
       setFilterIsActive(false);
       setMemorizedOptions(undefined);
-
-      setShouldClear(false);
-    }
-  }, [shouldClear]);
-
-  useImperativeHandle(ref, () => ({
-    clearFilter() {
-      setShouldClear(true);
     },
   }));
 
@@ -164,6 +136,7 @@ function AspectTableFilterButtonFn(
           onCancel={handleOnCancel}
           applyFilterIsActiveClasses={handleOnApplyFilterIsActiveClasses}
           getElementImage={getElementImage}
+          clearSignal={clearSignal}
         />
       )}
 
@@ -177,6 +150,7 @@ function AspectTableFilterButtonFn(
           onConfirm={handleOnConfirm}
           onCancel={handleOnCancel}
           applyFilterIsActiveClasses={handleOnApplyFilterIsActiveClasses}
+          clearSignal={clearSignal}
         />
       )}
 
@@ -192,6 +166,7 @@ function AspectTableFilterButtonFn(
           onCancel={handleOnCancel}
           applyFilterIsActiveClasses={handleOnApplyFilterIsActiveClasses}
           getElementImage={getElementImage}
+          clearSignal={clearSignal}
         />
       )}
 
@@ -205,6 +180,7 @@ function AspectTableFilterButtonFn(
           onConfirm={handleOnConfirm}
           onCancel={handleOnCancel}
           applyFilterIsActiveClasses={handleOnApplyFilterIsActiveClasses}
+          clearSignal={clearSignal}
         />
       )}
 
@@ -218,6 +194,7 @@ function AspectTableFilterButtonFn(
           onConfirm={handleOnConfirm}
           onCancel={handleOnCancel}
           applyFilterIsActiveClasses={handleOnApplyFilterIsActiveClasses}
+          clearSignal={clearSignal}
         />
       )}
     </div>

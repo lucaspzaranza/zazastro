@@ -39,6 +39,7 @@ function AspectFilterModalFn(
     onCancel,
     onConfirm,
     applyFilterIsActiveClasses,
+    clearSignal,
   } = props;
 
   // default (imutável) — sempre criar fora do estado
@@ -64,6 +65,26 @@ function AspectFilterModalFn(
 
   const [allCheckboxesChecked, setAllCheckboxesChecked] = useState(true);
   const [aspectsNodes, setAspectsNodes] = useState<React.ReactNode[]>([]);
+  const [signalCleared, setSignalCleared] = useState(false);
+
+  useEffect(() => {
+    if (typeof props.clearSignal === "number") {
+      setSignalCleared(true);
+    }
+  }, [clearSignal]);
+
+  useEffect(() => {
+    if (signalCleared) {
+      initialSnapshotRef.current = defaultCheckboxes.map((c) => ({ ...c }));
+
+      setAllCheckboxesChecked(true);
+      setCheckboxesChecked((prev) =>
+        prev.map((c) => ({ ...c, isChecked: true }))
+      );
+
+      setSignalCleared(false);
+    }
+  }, [signalCleared]);
 
   // quando o modal abre / quando memorizedOptions (ou initialState) mudar,
   // definimos o snapshot inicial (cópia!) e atualizamos o estado local.
@@ -86,13 +107,6 @@ function AspectFilterModalFn(
   useImperativeHandle(
     ref,
     () => ({
-      clearFilterModalFields() {
-        setCheckboxesChecked((prev) =>
-          prev.map((c) => ({ ...c, isChecked: true }))
-        );
-        setAllCheckboxesChecked(true);
-      },
-
       getOptions() {
         return {
           aspectsFilter: {

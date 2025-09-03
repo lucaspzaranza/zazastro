@@ -565,12 +565,11 @@ export default function AspectsTable({
         .filter((el) => el.isChecked)
         .map((el) => el.element);
 
-      // console.log(array, elements);
-
       array = array.filter((aspect) =>
         elementNodeArrayContainsAspectElement(elements, aspect.aspectedElement)
       );
 
+      // console.log(array, elements);
       setCumulatedOptions((prev) => ({
         ...prev,
         aspectedElementsFilter: optionsToCheck.aspectedElementsFilter,
@@ -628,8 +627,6 @@ export default function AspectsTable({
   }
 
   function clearFilters() {
-    console.log("1. pressed button on table");
-
     elementButtonRef.current?.clearFilter();
     aspectButtonRef.current?.clearFilter();
     aspectedElementButtonRef.current?.clearFilter();

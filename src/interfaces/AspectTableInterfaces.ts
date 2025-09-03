@@ -16,7 +16,7 @@ export type AspectTableColumn =
   | "aspectDistanceType";
 
 export type FilterModalImperativeHandle = {
-  clearFilterModalFields: () => void;
+  // clearFilterModalFields: () => void;
   getOptions: () => TableFilterOptions;
 };
 
@@ -86,6 +86,7 @@ export interface FilterModalProps {
   onCancel?: (options?: TableFilterOptions) => void;
   onConfirm?: (options?: TableFilterOptions) => void;
   applyFilterIsActiveClasses?: (isActive: boolean) => void;
+  clearSignal?: number;
 }
 
 export interface DistanceFilterModalState {
