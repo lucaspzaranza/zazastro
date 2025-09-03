@@ -4,9 +4,9 @@ import React, { createContext, useState, useContext, ReactNode } from "react";
 
 interface ArabicPartsContextType {
   arabicParts: ArabicPartsType | undefined;
-  updateArabicParts: (arabicPartsData: ArabicPartsType) => void;
+  updateArabicParts: (arabicPartsData?: ArabicPartsType) => void;
   archArabicParts: ArabicPartsType | undefined;
-  updateArchArabicParts: (archArabicPartsData: ArabicPartsType) => void;
+  updateArchArabicParts: (archArabicPartsData?: ArabicPartsType) => void;
 }
 
 const ArabicPartsContext = createContext<ArabicPartsContextType | undefined>(
@@ -16,18 +16,22 @@ const ArabicPartsContext = createContext<ArabicPartsContextType | undefined>(
 export const ArabicPartsContextProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [arabicParts, setArabicParts] = useState<ArabicPartsType>();
-  const [archArabicParts, setArchArabicParts] = useState<ArabicPartsType>();
+  const [arabicParts, setArabicParts] = useState<ArabicPartsType | undefined>();
+  const [archArabicParts, setArchArabicParts] = useState<
+    ArabicPartsType | undefined
+  >();
 
-  const updateArabicParts = (arabicPartsData: ArabicPartsType) => {
+  const updateArabicParts = (arabicPartsData?: ArabicPartsType) => {
     setArabicParts((previous) => {
-      return { ...previous, ...arabicPartsData };
+      return arabicPartsData ? { ...previous, ...arabicPartsData } : undefined;
     });
   };
 
-  const updateArchArabicParts = (archArabicPartsData: ArabicPartsType) => {
+  const updateArchArabicParts = (archArabicPartsData?: ArabicPartsType) => {
     setArchArabicParts((previous) => {
-      return { ...previous, ...archArabicPartsData };
+      return archArabicPartsData
+        ? { ...previous, ...archArabicPartsData }
+        : undefined;
     });
   };
 

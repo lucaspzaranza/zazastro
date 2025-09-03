@@ -72,20 +72,47 @@ function AspectTableFilterButtonFn(
   const [memorizedOptions, setMemorizedOptions] = useState<any>(undefined);
   const optionsInitialState = useRef<any>(undefined);
   const [filterIsActive, setFilterIsActive] = useState(false);
+  const [shouldClear, setShouldClear] = useState(false);
 
   useEffect(() => {
     setModalIsOpen(openModal);
   }, [openModal]);
 
+  useEffect(() => {
+    if (shouldClear) {
+      console.log("2. clearFilter on col button");
+      // console.log(elementModalRef.current);
+
+      if (elementModalRef.current) {
+        elementModalRef.current.clearFilterModalFields();
+      }
+
+      if (aspectModalRef.current) {
+        aspectModalRef.current?.clearFilterModalFields();
+      }
+
+      if (aspectedElementModalRef.current) {
+        aspectedElementModalRef.current?.clearFilterModalFields();
+      }
+
+      if (distanceModalRef.current) {
+        distanceModalRef.current?.clearFilterModalFields();
+      }
+
+      if (distanceTypeModalRef.current) {
+        distanceTypeModalRef.current?.clearFilterModalFields();
+      }
+
+      setFilterIsActive(false);
+      setMemorizedOptions(undefined);
+
+      setShouldClear(false);
+    }
+  }, [shouldClear]);
+
   useImperativeHandle(ref, () => ({
     clearFilter() {
-      setFilterIsActive(false);
-
-      elementModalRef.current?.clearFilterModalFields();
-      aspectModalRef.current?.clearFilterModalFields();
-      aspectedElementModalRef.current?.clearFilterModalFields();
-      distanceModalRef.current?.clearFilterModalFields();
-      distanceTypeModalRef.current?.clearFilterModalFields();
+      setShouldClear(true);
     },
   }));
 

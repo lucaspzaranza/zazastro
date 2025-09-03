@@ -36,6 +36,8 @@ import {
   planets,
   planetsAntiscion,
 } from "@/app/utils/aspectTableUtils";
+import { useBirthChart } from "@/contexts/BirthChartContext";
+import { useChartMenu } from "@/contexts/ChartMenuContext";
 
 interface ExtendedFilterModalProps extends FilterModalProps {
   columnType: "element" | "aspectedElement";
@@ -58,8 +60,19 @@ function ElementFilterModalFn(
     getElementImage,
   } = props;
 
+  const getUseOuterChartElements = () =>
+    chartMenu !== "birth" &&
+    returnChart !== undefined &&
+    (isCombinedWithBirthChart || isCombinedWithReturnChart);
+
+  const { returnChart, isCombinedWithBirthChart, isCombinedWithReturnChart } =
+    useBirthChart();
+  const { chartMenu } = useChartMenu();
+
   const [useInnerChartElements, setUseInnerChartElements] = useState(true);
-  const [useOuterChartElements, setUseOuterChartElements] = useState(true);
+  const [useOuterChartElements, setUseOuterChartElements] = useState(
+    getUseOuterChartElements()
+  );
 
   const [useInnerPlanets, setUseInnerPlanets] = useState(true);
   const [useInnerPlanetsAntiscion, setUseInnerPlanetsAntiscion] =
@@ -200,6 +213,10 @@ function ElementFilterModalFn(
     useOuterHouses,
   ]);
 
+  useEffect(() => {
+    console.log(checkboxesChecked.filter((check) => check.isChecked));
+  }, [isVisible]);
+
   function resetAllCheckboxes() {
     setUseInnerChartElements(true);
     setUseInnerPlanets(true);
@@ -208,23 +225,30 @@ function ElementFilterModalFn(
     setUseInnerArabicPartsAntiscion(true);
     setUseInnerHouses(true);
 
-    setUseOuterChartElements(true);
-    setUseOuterPlanets(true);
-    setUseOuterPlanetsAntiscion(true);
-    setUseOuterArabicParts(true);
-    setUseOuterArabicPartsAntiscion(true);
-    setUseOuterHouses(true);
+    if (getUseOuterChartElements()) {
+      setUseOuterChartElements(true);
+      setUseOuterPlanets(true);
+      setUseOuterPlanetsAntiscion(true);
+      setUseOuterArabicParts(true);
+      setUseOuterArabicPartsAntiscion(true);
+      setUseOuterHouses(true);
+    }
   }
 
   useImperativeHandle(
     ref,
     () => ({
       clearFilterModalFields() {
+        console.log("3. clearFilterModalFields on modal");
+        // console.log(checkboxesChecked.filter((check) => check.isChecked));
+
+        initialSnapshotRef.current = defaultCheckboxes.map((c) => ({ ...c }));
+
+        resetAllCheckboxes();
+        setAllCheckboxesChecked(true);
         setCheckboxesChecked((prev) =>
           prev.map((c) => ({ ...c, isChecked: true }))
         );
-        setAllCheckboxesChecked(true);
-        resetAllCheckboxes();
       },
 
       getOptions() {

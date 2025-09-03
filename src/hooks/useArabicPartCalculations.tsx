@@ -8,6 +8,7 @@ import {
   getAntiscion,
   getDegreeAndSign,
   getZodiacRuler,
+  mod360,
 } from "@/utils/chartUtils";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 
@@ -255,7 +256,7 @@ export function useArabicPartCalculations() {
   ): ArabicPart {
     // const asc = chart.housesData.ascendant;
     const asc = ascendant;
-    const longitudeRaw = asc + arabicPart.rawDistanceFromASC;
+    const longitudeRaw = mod360(asc + arabicPart.rawDistanceFromASC);
     const arabicPartData = getArabicPartData(
       longitudeRaw,
       // chart.housesData.ascendant

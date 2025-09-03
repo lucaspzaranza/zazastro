@@ -217,6 +217,8 @@ export const formatSignColor = (stringWithSign: string): React.ReactNode => {
   );
 };
 
+export const mod360 = (n: number) => ((n % 360) + 360) % 360; // garante 0..359.999
+
 /**
  * Gets degrees and minutes inside a sign.
  * @param longitude The longitude value.
@@ -395,7 +397,7 @@ export function getReturnDateRangeString(
   }
 }
 
-export function chartIsEqualsTo(
+export function chartsAreEqual(
   chart: BirthChart,
   chartToCompare: BirthChart
 ): boolean {

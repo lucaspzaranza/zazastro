@@ -220,6 +220,7 @@ export default function AspectsTable({
       const key = getArabicPartKeyFromElement(element)!;
       if (lots) {
         const originalArabicPart = lots[key];
+
         if (originalArabicPart) {
           backupValue.current = element.isAntiscion
             ? originalArabicPart.antiscionRaw
@@ -535,8 +536,6 @@ export default function AspectsTable({
         .filter((el) => el.isChecked)
         .map((el) => el.element);
 
-      console.log(elements);
-
       array = array.filter((aspect) =>
         elementNodeArrayContainsAspectElement(elements, aspect.element)
       );
@@ -629,11 +628,14 @@ export default function AspectsTable({
   }
 
   function clearFilters() {
+    console.log("1. pressed button on table");
+
     elementButtonRef.current?.clearFilter();
     aspectButtonRef.current?.clearFilter();
     aspectedElementButtonRef.current?.clearFilter();
     distanceButtonRef?.current?.clearFilter();
     distanceTypeButtonRef.current?.clearFilter();
+
     setFilteredAspects([...aspects]);
     setCumulatedOptions(undefined);
   }

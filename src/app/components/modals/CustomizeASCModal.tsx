@@ -3,12 +3,15 @@ import {
   arabicPartKeys,
   clampLongitude,
   convertDegMinNumberToDecimal,
+  decimalToDegreesMinutes,
+  getDegreesInsideASign,
 } from "@/app/utils/chartUtils";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ArabicPartsLayout from "../ArabicPartsLayout";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import { ArabicPart } from "@/interfaces/ArabicPartInterfaces";
 import { useArabicPartCalculations } from "@/hooks/useArabicPartCalculations";
+import { useBirthChart } from "@/contexts/BirthChartContext";
 
 interface ASCModalProps {
   baseParts?: ArabicPart[];
@@ -17,6 +20,7 @@ interface ASCModalProps {
 
 export default function CustomizeASCModal(props: ASCModalProps) {
   const { baseParts, onClose } = props;
+  const { birthChart } = useBirthChart();
 
   const [calculatedParts, setCalculatedParts] = useState<
     ArabicPart[] | undefined
@@ -26,17 +30,36 @@ export default function CustomizeASCModal(props: ASCModalProps) {
   );
   const [signIndex, setSignIndex] = useState(0);
   const [customACMode, setCustomACMode] = useState(0);
-  const [customAscendant, setCustomAscendant] = useState<number>(0);
+  const [customAscendant, setCustomAscendant] = useState<number | undefined>(
+    undefined
+  );
 
+  const firstModeInputRef = useRef<HTMLInputElement>(null);
   const { calculateBirthArchArabicPart } = useArabicPartCalculations();
 
   useEffect(() => {
+    if (!customAscendant && birthChart) {
+      setCustomAscendant(birthChart.housesData.ascendant);
+      if (firstModeInputRef.current !== null) {
+        firstModeInputRef.current.value = decimalToDegreesMinutes(
+          getDegreesInsideASign(birthChart.housesData.house[0])
+        ).toString();
+
+        const newSignIndex = Math.floor(birthChart.housesData.ascendant / 30);
+        setSignIndex(newSignIndex);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!birthChart) return;
+
     setPartsToUse([]);
 
     baseParts?.forEach((part) => {
       const newArchArabicPart = calculateBirthArchArabicPart(
         part,
-        customAscendant
+        customAscendant ?? birthChart.housesData.ascendant
       );
       newArchArabicPart;
       setPartsToUse((prev) => [...prev!, newArchArabicPart]);
@@ -63,7 +86,7 @@ export default function CustomizeASCModal(props: ASCModalProps) {
           <h3 className="text-xl font-bold mb-[-5px]">
             Personalizar Ascendente:
           </h3>
-          <span className="w-full h-full flex flex-row items-center justify-center text-sm text-center p-1">
+          <span className="w-full h-full flex flex-row items-center justify-start text-sm pb-2 pt-1">
             Baseado no Ascendente do Mapa Natal
           </span>
           <div className="flex flex-row">
@@ -81,9 +104,18 @@ export default function CustomizeASCModal(props: ASCModalProps) {
             {customACMode === 0 && (
               <div className="flex flex-row gap-2 text-sm">
                 <select
+                  value={signIndex}
                   className="border-2 rounded-sm"
                   onChange={(e) => {
-                    setSignIndex(Number.parseInt(e.target.value));
+                    const newSignIndex = Number.parseInt(e.target.value);
+                    setSignIndex(newSignIndex);
+                    const long = convertDegMinNumberToDecimal(
+                      Number.parseFloat(
+                        firstModeInputRef.current?.value ?? "0.0"
+                      )
+                    );
+                    const value = newSignIndex * 30 + long;
+                    setCustomAscendant(value > 0 ? value : 0);
                   }}
                 >
                   {allSigns.map((sign, index) => {
@@ -95,6 +127,7 @@ export default function CustomizeASCModal(props: ASCModalProps) {
                   })}
                 </select>
                 <input
+                  ref={firstModeInputRef}
                   type="number"
                   className="border-2 rounded-sm w-[120px] p-1 text-sm"
                   placeholder="ex: 29.37"

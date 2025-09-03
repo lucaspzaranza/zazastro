@@ -8,7 +8,7 @@ import {
   angularLabels,
   arabicPartKeys,
   ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT,
-  chartIsEqualsTo,
+  chartsAreEqual,
   formatSignColor,
   getAntiscion,
   getDegreeAndSign,
@@ -16,6 +16,7 @@ import {
   getSign,
   getSignColor,
   getSignGlyphUnicode,
+  mod360,
 } from "../utils/chartUtils";
 import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import AspectsTable from "./aspect-table/AspectsTable";
@@ -167,11 +168,6 @@ export default function ChartAndData(props: Props) {
           );
           lotsTempObj[key] = { ...newArchArabicPart };
 
-          if (key === "fortune") {
-            console.log("ac: ", returnChart?.housesData.house[0]);
-            console.log("radical", part);
-            console.log("derivada", newArchArabicPart);
-          }
           updateArchArabicParts(lotsTempObj);
         }
       });
@@ -218,13 +214,17 @@ export default function ChartAndData(props: Props) {
       <div className="flex flex-col gap-2 relative z-10">
         <ArabicPartsLayout parts={partsArray} showMenuButtons={true} />
 
-        {arabicParts && innerChart && (
+        {arabicParts && birthChart && innerChart && (
           <div className="absolute top-full">
             <AspectsTable
               aspects={aspectsData}
               birthChart={innerChart}
               outerChart={outerChart}
-              arabicParts={arabicParts}
+              arabicParts={
+                chartsAreEqual(innerChart, birthChart)
+                  ? arabicParts
+                  : archArabicParts!
+              }
               outerArabicParts={outerArabicParts}
               initialItemsPerPage={itemsPerPage}
               onItemsPerPageChanged={handleOnItemsPerPagechanged}
@@ -239,7 +239,7 @@ export default function ChartAndData(props: Props) {
             props={{
               planets: innerChart.planets,
               housesData: innerChart.housesData,
-              arabicParts: chartIsEqualsTo(innerChart, birthChart)
+              arabicParts: chartsAreEqual(innerChart, birthChart)
                 ? arabicParts
                 : archArabicParts,
               outerPlanets: outerChart?.planets,
@@ -258,6 +258,8 @@ export default function ChartAndData(props: Props) {
           onClick={() => {
             updateBirthChart({ isReturnChart: false, chartData: undefined });
             updateBirthChart({ isReturnChart: true, chartData: undefined });
+            updateArabicParts(undefined);
+            updateArabicParts(undefined);
             updateLunarDerivedChart(undefined);
             updateIsCombinedWithBirthChart(false);
             updateIsCombinedWithReturnChart(false);

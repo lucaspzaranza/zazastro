@@ -9,6 +9,7 @@ import {
   fixedNames,
   getDegreesInsideASign,
   getSign,
+  mod360,
   signsGlpyphs,
 } from "../../utils/chartUtils";
 import {
@@ -81,8 +82,6 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   const outerChartBorderRadius = outerZodiacRadius + 60;
   const baseGroupRef =
     useRef<d3.Selection<SVGGElement, unknown, null, undefined>>(undefined);
-
-  const mod360 = (n: number) => ((n % 360) + 360) % 360; // garante 0..359.999
 
   const getHouseDataAscendant = () => housesData?.ascendant ?? 0;
 
