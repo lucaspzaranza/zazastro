@@ -37,12 +37,12 @@ export interface BirthDate {
   month: number;
   year: number;
   time: string;
-  // coordinates: Coordinates;
   coordinates: SelectedCity;
 }
 
 export interface BirthChartProfile {
   name?: string;
+  id?: string;
   birthDate?: BirthDate;
 }
 

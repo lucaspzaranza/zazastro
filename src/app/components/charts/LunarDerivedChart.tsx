@@ -20,7 +20,7 @@ export default function LunarDerivedChart() {
   const [renderChart, setRenderChart] = useState(false);
   const [combineWithBirthChart, setCombineWithBirthChart] = useState(false);
   const [combineWithReturnChart, setCombineWithReturnChart] = useState(false);
-  const { arabicParts, archArabicParts } = useArabicParts();
+  const { arabicParts } = useArabicParts();
   const { calculateBirthArchArabicPart } = useArabicPartCalculations();
   const lots: ArabicPartsType = {};
   const [tableItemsPerPage, setTableItemsPerPage] = useState(

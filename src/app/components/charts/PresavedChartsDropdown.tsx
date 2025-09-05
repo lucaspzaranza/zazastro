@@ -1,4 +1,5 @@
 import { presavedBirthDates } from "@/app/utils/chartUtils";
+import { useProfiles } from "@/contexts/ProfilesContext";
 import {
   BirthChartProfile,
   BirthDate,
@@ -12,6 +13,7 @@ interface DropdownProps {
 
 export default function PresavedChartsDropdown(props: DropdownProps) {
   const { disabled, onChange } = props;
+  const { profiles } = useProfiles();
 
   return (
     <select
@@ -22,9 +24,15 @@ export default function PresavedChartsDropdown(props: DropdownProps) {
         onChange?.(presavedBirthDates[key]);
       }}
     >
-      {Object.entries(presavedBirthDates).map(([name, date], index) => (
+      {/* {Object.entries(presavedBirthDates).map(([name, date], index) => (
         <option key={index} value={name}>
           {date.name}
+        </option>
+      ))} */}
+
+      {profiles.map((profile, index) => (
+        <option key={index} value={profile.name}>
+          {profile.name}
         </option>
       ))}
     </select>

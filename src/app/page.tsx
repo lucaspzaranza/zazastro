@@ -6,6 +6,7 @@ import BirthChart from "./components/charts/BirthChart";
 import ReturnChart from "./components/charts/ReturnChart";
 import { AspectsContextProvider } from "@/contexts/AspectsContext";
 import { ChartMenuContextProvider } from "@/contexts/ChartMenuContext";
+import { ProfilesContextProvider } from "@/contexts/ProfilesContext";
 
 export default function Home() {
   return (
@@ -15,15 +16,17 @@ export default function Home() {
         <img src="pisces.png" width={30} />
       </div>
 
-      <ChartMenuContextProvider>
-        <BirthChartContextProvider>
-          <ArabicPartsContextProvider>
-            <AspectsContextProvider>
-              <BirthChart />
-            </AspectsContextProvider>
-          </ArabicPartsContextProvider>
-        </BirthChartContextProvider>
-      </ChartMenuContextProvider>
+      <ProfilesContextProvider>
+        <ChartMenuContextProvider>
+          <BirthChartContextProvider>
+            <ArabicPartsContextProvider>
+              <AspectsContextProvider>
+                <BirthChart />
+              </AspectsContextProvider>
+            </ArabicPartsContextProvider>
+          </BirthChartContextProvider>
+        </ChartMenuContextProvider>
+      </ProfilesContextProvider>
     </div>
   );
 }

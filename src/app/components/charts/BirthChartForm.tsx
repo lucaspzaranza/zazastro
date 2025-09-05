@@ -12,6 +12,7 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import PresavedChartsDropdown from "./PresavedChartsDropdown";
 import CitySearch from "../CitySearch";
+import { useProfiles } from "@/contexts/ProfilesContext";
 
 interface BirthChartFormProps {
   currentBirthDate?: BirthDate;
@@ -21,6 +22,7 @@ interface BirthChartFormProps {
 export default function BirthChartForm(props: BirthChartFormProps) {
   const { onSubmit } = props;
 
+  const { profiles, createProfile } = useProfiles();
   const [name, setName] = useState("");
   const [day, setDay] = useState(1);
   const [month, setMonth] = useState(1);
@@ -36,6 +38,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
   );
   const [menu, setMenu] = useState(0);
   const form = useRef<HTMLFormElement>(null);
+  const [editProfile, setEditProfile] = useState(false);
 
   const selectCity = (selectedCity: SelectedCity) => {
     // console.log("Cidade Selecionada:");
@@ -64,14 +67,22 @@ export default function BirthChartForm(props: BirthChartFormProps) {
     }
   }, [day, month, year, hour, minutes, coordinates]);
 
+  useEffect(() => {
+    if (profiles.length === 0) {
+      setMenu(1);
+    }
+  }, [profiles]);
+
   return (
     <form
       ref={form}
       className="w-full flex flex-col justify-between gap-2"
       onSubmit={(e) => {
         e.preventDefault();
-        if (form.current && form.current.checkValidity()) {
+        if (menu === 0) {
           onSubmit?.(profile);
+        } else if (profile && form.current && form.current.checkValidity()) {
+          if (createProfile(profile)) onSubmit?.(profile);
         } else {
           form.current?.reportValidity();
         }
@@ -84,7 +95,8 @@ export default function BirthChartForm(props: BirthChartFormProps) {
             id="load"
             name="group"
             value={0}
-            defaultChecked
+            defaultChecked={profiles.length > 0}
+            disabled={profiles.length === 0}
             onChange={(e) => setMenu(0)}
           />
           Carregar mapa
@@ -99,19 +111,20 @@ export default function BirthChartForm(props: BirthChartFormProps) {
             id="create"
             name="group"
             value={1}
+            defaultChecked={profiles.length === 0}
             onChange={(e) => setMenu(1)}
           />{" "}
           Gerar novo mapa
         </label>
       </div>
 
-      {menu === 0 && (
+      {menu === 0 && !editProfile && (
         <PresavedChartsDropdown
           onChange={(newBirthDate) => setProfile(newBirthDate)}
         />
       )}
 
-      {menu === 1 && (
+      {((menu === 1 && !editProfile) || (menu === 0 && editProfile)) && (
         <>
           <input
             required
@@ -202,11 +215,38 @@ export default function BirthChartForm(props: BirthChartFormProps) {
         </>
       )}
 
+      {menu === 0 && !editProfile && (
+        <div className="flex flex-row gap-2">
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+            }}
+            className="bg-green-700 w-1/2 text-white px-4 py-2 rounded hover:bg-green-800 flex flex-row items-center justify-center gap-2"
+          >
+            Editar
+            <img src="edit.png" width={16} />
+          </button>
+
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+            }}
+            className="bg-red-700 w-1/2 text-white px-4 py-2 rounded hover:bg-red-800 flex flex-row items-center justify-center gap-2"
+          >
+            Deletar
+            <img src="trash-white.png" width={17} />
+          </button>
+        </div>
+      )}
+
       <button
         onClick={(e) => {
           e.preventDefault();
-          if (form.current && form.current.checkValidity()) {
+          if (menu === 0) {
             onSubmit?.(profile);
+          } else if (profile && form.current && form.current.checkValidity()) {
+            if (createProfile(profile)) onSubmit?.(profile);
+            else alert("Não foi possível gerar o mapa.");
           } else {
             form.current?.reportValidity();
           }

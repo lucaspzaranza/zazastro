@@ -393,8 +393,6 @@ export default function BirthChart() {
               </>
             )}
 
-            {/* <CitySearch onSelect={selectCity} /> */}
-
             {menu === "home" && (
               <button
                 onClick={() => getMomentBirthChart()}

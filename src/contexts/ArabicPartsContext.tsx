@@ -7,6 +7,13 @@ interface ArabicPartsContextType {
   updateArabicParts: (arabicPartsData?: ArabicPartsType) => void;
   archArabicParts: ArabicPartsType | undefined;
   updateArchArabicParts: (archArabicPartsData?: ArabicPartsType) => void;
+
+  /**
+   * Used only at lunar derived chart combined with solar return chart case.
+   * Use archArabicParts for other cases.
+   */
+  solarReturnParts?: ArabicPartsType;
+  updateSolarReturnParts?: (archArabicPartsData?: ArabicPartsType) => void;
 }
 
 const ArabicPartsContext = createContext<ArabicPartsContextType | undefined>(
@@ -18,6 +25,9 @@ export const ArabicPartsContextProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [arabicParts, setArabicParts] = useState<ArabicPartsType | undefined>();
   const [archArabicParts, setArchArabicParts] = useState<
+    ArabicPartsType | undefined
+  >();
+  const [solarReturnParts, setSolarReturnParts] = useState<
     ArabicPartsType | undefined
   >();
 
@@ -35,6 +45,12 @@ export const ArabicPartsContextProvider: React.FC<{ children: ReactNode }> = ({
     });
   };
 
+  const updateSolarReturnParts = (arabicPartsData?: ArabicPartsType) => {
+    setSolarReturnParts((previous) => {
+      return arabicPartsData ? { ...previous, ...arabicPartsData } : undefined;
+    });
+  };
+
   return (
     <ArabicPartsContext.Provider
       value={{
@@ -42,6 +58,8 @@ export const ArabicPartsContextProvider: React.FC<{ children: ReactNode }> = ({
         updateArabicParts,
         archArabicParts,
         updateArchArabicParts,
+        solarReturnParts,
+        updateSolarReturnParts,
       }}
     >
       {children}

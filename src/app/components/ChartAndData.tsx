@@ -41,7 +41,6 @@ interface Props {
   combineWithReturnChart?: () => void;
   tableItemsPerPage?: number;
   onTableItemsPerPageChanged?: (newItemsPerPage: number) => void;
-  // isSolarReturn: boolean;
 }
 
 export default function ChartAndData(props: Props) {
@@ -68,17 +67,19 @@ export default function ChartAndData(props: Props) {
     updateLunarDerivedChart,
     updateIsCombinedWithBirthChart,
     updateIsCombinedWithReturnChart,
+    isCombinedWithReturnChart,
   } = useBirthChart();
   const { resetChartMenus } = useChartMenu();
   const {
     arabicParts,
     archArabicParts,
+    solarReturnParts,
     updateArabicParts,
     updateArchArabicParts,
   } = useArabicParts();
   const [partsArray, setParts] = useState<ArabicPart[]>([]);
   const { calculateBirthArchArabicPart } = useArabicPartCalculations();
-  const { chartMenu, addChartMenu, updateChartMenuDirectly } = useChartMenu();
+  const { chartMenu } = useChartMenu();
 
   let lotsTempObj: ArabicPartsType = {};
 
@@ -189,6 +190,21 @@ export default function ChartAndData(props: Props) {
     }
   }, [archArabicParts]);
 
+  function getInnerArabicParts(): ArabicPartsType | undefined {
+    if (!birthChart) return undefined;
+
+    if (chartsAreEqual(innerChart, birthChart)) return arabicParts;
+
+    if (
+      chartMenu === "lunarDerivedReturn" &&
+      isCombinedWithReturnChart &&
+      solarReturnParts
+    )
+      return solarReturnParts;
+
+    return archArabicParts;
+  }
+
   const getHouseAntiscion = (houseLong: number): React.ReactNode => {
     const antiscion = getAntiscion(houseLong, false);
     const antiscionString = getDegreeAndSign(antiscion, true);
@@ -220,11 +236,12 @@ export default function ChartAndData(props: Props) {
               aspects={aspectsData}
               birthChart={innerChart}
               outerChart={outerChart}
-              arabicParts={
-                chartsAreEqual(innerChart, birthChart)
-                  ? arabicParts
-                  : archArabicParts!
-              }
+              // arabicParts={
+              //   chartsAreEqual(innerChart, birthChart)
+              //     ? arabicParts
+              //     : archArabicParts!
+              // }
+              arabicParts={getInnerArabicParts()!}
               outerArabicParts={outerArabicParts}
               initialItemsPerPage={itemsPerPage}
               onItemsPerPageChanged={handleOnItemsPerPagechanged}
@@ -239,9 +256,10 @@ export default function ChartAndData(props: Props) {
             props={{
               planets: innerChart.planets,
               housesData: innerChart.housesData,
-              arabicParts: chartsAreEqual(innerChart, birthChart)
-                ? arabicParts
-                : archArabicParts,
+              // arabicParts: chartsAreEqual(innerChart, birthChart)
+              //   ? arabicParts
+              //   : archArabicParts,
+              arabicParts: getInnerArabicParts()!,
               outerPlanets: outerChart?.planets,
               outerHouses: outerChart?.housesData,
               outerArabicParts,
