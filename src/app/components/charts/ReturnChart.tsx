@@ -13,6 +13,7 @@ import {
 import ChartSelectorArrows from "../ChartSelectorArrows";
 
 export default function ReturnChart() {
+  const { profileName } = useBirthChart();
   const [input, setInput] = useState(0);
   const [day, setDay] = useState(0);
   const [month, setMonth] = useState(0);
@@ -57,13 +58,16 @@ export default function ReturnChart() {
   return (
     <div className="w-full flex flex-col items-center justify-center gap-3 mb-4">
       <ChartSelectorArrows className="w-[60%]">
-        <h1 className="text-2xl font-bold text-center">
-          Mapa do Retorno {isSolarReturn ? "Solar" : "Lunar"} para&nbsp;
-          {getReturnDateRangeString(
-            returnChart.returnTime ?? "0000-00-00 00:00:00",
-            isSolarReturn ? "solar" : "lunar"
-          )}
-        </h1>
+        {profileName && (
+          <h1 className="text-2xl font-bold text-center">
+            Retorno {isSolarReturn ? "Solar" : "Lunar"} para&nbsp;
+            {getReturnDateRangeString(
+              returnChart.returnTime ?? "0000-00-00 00:00:00",
+              isSolarReturn ? "solar" : "lunar"
+            )}{" "}
+            - {profileName}
+          </h1>
+        )}
       </ChartSelectorArrows>
 
       {returnChart && (

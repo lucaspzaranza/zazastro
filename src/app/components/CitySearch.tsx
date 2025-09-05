@@ -77,40 +77,45 @@ export default function CitySearch({
   }, [query]);
 
   return (
-    <div ref={wrapperRef} className="flex flex-col gap-1">
+    <div ref={wrapperRef} className="flex flex-col gap-1 mb-5">
       <input
-        className="border p-2 rounded"
+        required
+        className="border-2 p-1 rounded"
         type="text"
         placeholder="Digite a cidade"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
 
-      {isLoading && <p>Buscando...</p>}
-      {queryError && <p>Sem resultados.</p>}
+      <div className="relative">
+        <div className="absolute">
+          {isLoading && <p>Buscando...</p>}
+          {queryError && <p>Sem resultados.</p>}
+        </div>
 
-      {results.length > 0 && !isLoading && (
-        <ul className="bg-white border rounded shadow p-2">
-          {results.map((city, index) => (
-            <li
-              key={index}
-              className="cursor-pointer hover:bg-gray-100 p-1"
-              onClick={() => {
-                onSelect({
-                  name: city.display_name,
-                  latitude: parseFloat(city.lat),
-                  longitude: parseFloat(city.lon),
-                });
-                setQuery(city.display_name); // opcional: coloca o nome no input
-                setResults([]);
-                setSelectedCity(true);
-              }}
-            >
-              {city.display_name}
-            </li>
-          ))}
-        </ul>
-      )}
+        {results.length > 0 && !isLoading && (
+          <ul className="absolute bg-white border rounded shadow p-2">
+            {results.map((city, index) => (
+              <li
+                key={index}
+                className="cursor-pointer hover:bg-gray-100 p-1"
+                onClick={() => {
+                  onSelect({
+                    name: city.display_name,
+                    latitude: parseFloat(city.lat),
+                    longitude: parseFloat(city.lon),
+                  });
+                  setQuery(city.display_name); // opcional: coloca o nome no input
+                  setResults([]);
+                  setSelectedCity(true);
+                }}
+              >
+                {city.display_name}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }

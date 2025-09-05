@@ -9,6 +9,7 @@ import React, { createContext, useState, useContext, ReactNode } from "react";
 
 interface UpdateBirthChartOptions {
   chartData?: BirthChart;
+  profileName?: string;
   isReturnChart: boolean;
 }
 
@@ -22,6 +23,7 @@ interface BirthChartContextType {
   updateIsCombinedWithBirthChart: (val: boolean) => void;
   isCombinedWithReturnChart: boolean;
   updateIsCombinedWithReturnChart: (val: boolean) => void;
+  profileName?: string;
 }
 
 const BirthChartContext = createContext<BirthChartContextType | undefined>(
@@ -33,6 +35,7 @@ const getGlyphOnly = true;
 export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
+  const [profileName, setProfileName] = useState("");
   const [birthChart, setBirthChart] = useState<BirthChart>();
   const [returnChart, setReturnChart] = useState<BirthChart>();
   const [lunarDerivedChart, setLunarDerivedChart] = useState<
@@ -110,6 +113,9 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
 
     // console.log(chartObject);
 
+    if (chartOptions.profileName) {
+      setProfileName(chartOptions.profileName);
+    }
     if (!isReturnChart) setBirthChart(chartObject);
     else setReturnChart(chartObject);
   };
@@ -121,6 +127,7 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
   return (
     <BirthChartContext.Provider
       value={{
+        profileName,
         birthChart,
         updateBirthChart,
         returnChart,

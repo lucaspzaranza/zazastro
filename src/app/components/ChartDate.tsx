@@ -1,5 +1,9 @@
 import { useBirthChart } from "@/contexts/BirthChartContext";
-import { BirthDate, ChartType } from "@/interfaces/BirthChartInterfaces";
+import {
+  BirthChartProfile,
+  BirthDate,
+  ChartType,
+} from "@/interfaces/BirthChartInterfaces";
 import moment from "moment-timezone";
 import { useEffect, useState } from "react";
 import { getHourAndMinute } from "../utils/chartUtils";
@@ -43,15 +47,23 @@ export const ChartDate = (
     }
   }, [birthChart]);
 
+  const formatTime = (time: string): string => {
+    let [hours, minutes] = time.split(":");
+    hours = hours.padStart(2, "0");
+    minutes = minutes.padStart(2, "0");
+    return `${hours}:${minutes}`;
+  };
+
   if (date === undefined) return;
 
   return (
     <div className="text-center font-bold">
-      {/* <h2 className="font-bold text-lg mb-2">Dados do mapa:</h2> */}
       <p>
         {date?.day.toString().padStart(2, "0")}/
-        {date?.month.toString().padStart(2, "0")}/{date?.year} - {date?.time} (
-        {date?.coordinates.latitude},{date?.coordinates.longitude})
+        {date?.month.toString().padStart(2, "0")}/{date?.year} -{" "}
+        {formatTime(date.time ?? "00:00")}
+        &nbsp;-&nbsp;
+        {date?.coordinates.name}
       </p>
     </div>
   );

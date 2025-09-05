@@ -37,12 +37,13 @@ export interface BirthDate {
   month: number;
   year: number;
   time: string;
-  coordinates: Coordinates;
+  // coordinates: Coordinates;
+  coordinates: SelectedCity;
 }
 
 export interface BirthChartProfile {
-  name: string;
-  birthDate: BirthDate;
+  name?: string;
+  birthDate?: BirthDate;
 }
 
 export interface PlanetWithSign {
@@ -95,7 +96,7 @@ export interface Coordinates {
 }
 
 export interface SelectedCity {
-  name: string;
+  name?: string;
   latitude: number;
   longitude: number;
 }

@@ -13,6 +13,7 @@ import {
   PlanetType,
   planetTypes,
   ReturnChartType,
+  SelectedCity,
 } from "@/interfaces/BirthChartInterfaces";
 
 export const ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT = 10;
@@ -428,44 +429,52 @@ export function chartsAreEqual(
   return true;
 }
 
-export const fortalCoords: Coordinates = {
+export const fortalCoords: SelectedCity = {
   latitude: -3.71839, // Fortaleza
   longitude: -38.5434,
+  name: "Fortaleza/CE",
 };
 
-const quixabaCoordinates: Coordinates = {
+const quixabaCoordinates: SelectedCity = {
   latitude: -4.5461,
   longitude: -37.6923,
+  name: "Quixaba/CE",
 };
 
-const aracatiCoordinates: Coordinates = {
+const aracatiCoordinates: SelectedCity = {
   latitude: -4.56273,
   longitude: -37.7691,
+  name: "Aracati/CE",
 };
 
-const SPCoordinates: Coordinates = {
+const SPCoordinates: SelectedCity = {
   latitude: -23.5489,
   longitude: -46.6388,
+  name: "São Paulo/SP",
 };
 
-const MontesClarosCoordinates: Coordinates = {
+const MontesClarosCoordinates: SelectedCity = {
   latitude: -16.737,
   longitude: -43.8647,
+  name: "Montes Claros/MG",
 };
 
-const icoordinates: Coordinates = {
+const icoordinates: SelectedCity = {
   latitude: -6.4011,
   longitude: -38.8622,
+  name: "Icó/CE",
 };
 
-const barbacenaCoordinates: Coordinates = {
+const barbacenaCoordinates: SelectedCity = {
   latitude: -21.2264,
   longitude: -43.7742,
+  name: "Barbacena/MG",
 };
 
-const pindaCoords: Coordinates = {
+const pindaCoords: SelectedCity = {
   latitude: -22.9236,
   longitude: -45.4598,
+  name: "Pindamonhangaba/SP",
 };
 
 export const presavedBirthDates: Record<string, BirthChartProfile> = {

@@ -279,8 +279,10 @@ export default function ChartAndData(props: Props) {
                 {chart.planetsWithSigns !== undefined && (
                   <div className="w-full flex flex-row">
                     <span className="w-[14rem] flex flex-row items-center">
-                      <span className="w-full">{planet.name}</span>
-                      {getPlanetImage(planet.type)}:&nbsp;
+                      <span className="w-full flex flex-row items-center justify-between mr-[-20px]">
+                        <span className="w-full">{planet.name}</span>
+                        {getPlanetImage(planet.type)}:&nbsp;
+                      </span>
                       <span className="w-9/12 text-end pr-4">
                         {formatSignColor(
                           chart.planetsWithSigns[index].position

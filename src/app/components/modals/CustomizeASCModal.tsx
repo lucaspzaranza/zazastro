@@ -169,7 +169,7 @@ export default function CustomizeASCModal(props: ASCModalProps) {
           <ArabicPartsLayout
             className="text-sm"
             partColWidth="w-min"
-            antisciaColWidth="w-min"
+            antisciaColWidth="w-full"
             parts={partsToUse}
             showMenuButtons={false}
           />
