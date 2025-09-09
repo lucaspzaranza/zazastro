@@ -69,7 +69,7 @@ export default function ChartAndData(props: Props) {
     updateIsCombinedWithReturnChart,
     isCombinedWithReturnChart,
   } = useBirthChart();
-  const { resetChartMenus } = useChartMenu();
+  const { chartMenu, resetChartMenus } = useChartMenu();
   const {
     arabicParts,
     archArabicParts,
@@ -79,7 +79,6 @@ export default function ChartAndData(props: Props) {
   } = useArabicParts();
   const [partsArray, setParts] = useState<ArabicPart[]>([]);
   const { calculateBirthArchArabicPart } = useArabicPartCalculations();
-  const { chartMenu } = useChartMenu();
 
   let lotsTempObj: ArabicPartsType = {};
 
@@ -299,7 +298,10 @@ export default function ChartAndData(props: Props) {
                     <span className="w-[14rem] flex flex-row items-center">
                       <span className="w-full flex flex-row items-center justify-between mr-[-20px]">
                         <span className="w-full">{planet.name}</span>
-                        {getPlanetImage(planet.type)}:&nbsp;
+                        {getPlanetImage(planet.type, {
+                          isRetrograde: planet.isRetrograde,
+                        })}
+                        :&nbsp;
                       </span>
                       <span className="w-9/12 text-end pr-4">
                         {formatSignColor(

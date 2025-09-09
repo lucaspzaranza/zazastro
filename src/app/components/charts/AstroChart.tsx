@@ -635,6 +635,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
                     elementType: element.elementType,
                     isFromOuterChart: element.isFromOuterChart!,
                     isAntiscion: element.isAntiscion,
+                    isRetrograde: element.isRetrograde,
                   },
                   aspectedElement: {
                     name: elWithAsp.planetType ?? elWithAsp.name,
@@ -642,6 +643,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
                     elementType: elWithAsp.elementType,
                     isFromOuterChart: elWithAsp.isFromOuterChart!,
                     isAntiscion: elWithAsp.isAntiscion,
+                    isRetrograde: elWithAsp.isRetrograde,
                   },
                   key: generateAspectKey(element, elWithAsp, aspect),
                 });
@@ -703,6 +705,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
                 elementType: element.elementType,
                 isFromOuterChart: element.isFromOuterChart!,
                 isAntiscion: element.isAntiscion,
+                isRetrograde: element.isRetrograde,
               },
               aspectedElement: {
                 name: star.name,
@@ -710,6 +713,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
                 elementType: "fixedStar",
                 isFromOuterChart: false,
                 isAntiscion: false,
+                isRetrograde: false,
               },
               key: generateAspectKey(element, star, conjunction),
             });
@@ -1244,6 +1248,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         elementType: "planet",
         planetType: planet.type,
         isFromOuterChart: false,
+        isRetrograde: planet.isRetrograde,
       });
 
       if (showPlanetsAntiscia) {
@@ -1308,6 +1313,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
           elementType: "planet",
           planetType: planet.type,
           isFromOuterChart: false,
+          isRetrograde: planet.isRetrograde,
         });
       }
     });
@@ -1373,6 +1379,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             name: lot.partKey,
             elementType: "arabicPart",
             isFromOuterChart: false,
+            isRetrograde: false,
           });
         }
       });
@@ -1435,6 +1442,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             name: `${lot.partKey}-${fixedNames.antiscionName}`,
             elementType: "arabicPart",
             isFromOuterChart: false,
+            isRetrograde: false,
           });
         }
       });
@@ -1505,6 +1513,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         name: `${fixedNames.houseName}-${i}`,
         elementType: "house",
         isFromOuterChart: false,
+        isRetrograde: false,
       });
     }
 
@@ -1569,6 +1578,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
           elementType: "planet",
           planetType: planet.type,
           isFromOuterChart: true,
+          isRetrograde: planet.isRetrograde,
         });
 
         if (showPlanetsAntiscia) {
@@ -1631,6 +1641,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             elementType: "planet",
             planetType: planet.type,
             isFromOuterChart: true,
+            isRetrograde: planet.isRetrograde,
           });
         }
       });
@@ -1697,6 +1708,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             name: `${fixedNames.outerKeyPrefix}-${lot.partKey}`,
             elementType: "arabicPart",
             isFromOuterChart: true,
+            isRetrograde: false,
           });
         }
       });
@@ -1763,6 +1775,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             name: `${fixedNames.outerKeyPrefix}-${lot.partKey}-${fixedNames.antiscionName}`,
             elementType: "arabicPart",
             isFromOuterChart: true,
+            isRetrograde: false,
           });
         }
       });
@@ -1837,6 +1850,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
           name: `${fixedNames.outerKeyPrefix}-${fixedNames.houseName}-${j}`,
           elementType: "house",
           isFromOuterChart: true,
+          isRetrograde: false,
         });
       }
     }

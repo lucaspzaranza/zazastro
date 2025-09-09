@@ -8,16 +8,20 @@ interface CityResult {
 }
 
 export default function CitySearch({
+  initialCoordinates,
   onSelect,
 }: {
+  initialCoordinates?: SelectedCity;
   onSelect: (city: SelectedCity) => void;
 }) {
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(initialCoordinates?.name ?? "");
   const [results, setResults] = useState<CityResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedCity, setSelectedCity] = useState(false);
   const [queryError, setQueryError] = useState(false);
+
+  const canQuery = useRef(false);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -25,7 +29,6 @@ export default function CitySearch({
         wrapperRef.current &&
         !wrapperRef.current.contains(event.target as Node)
       ) {
-        // console.log("Clicou fora do componente!");
         setResults([]);
         setQueryError(false);
       }
@@ -33,11 +36,16 @@ export default function CitySearch({
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
+      canQuery.current = false;
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   useEffect(() => {
+    if (!canQuery.current) {
+      return;
+    }
+
     if (query.length <= 1) setSelectedCity(false);
 
     if (query.length < 3 || selectedCity) return;
@@ -84,7 +92,12 @@ export default function CitySearch({
         type="text"
         placeholder="Digite a cidade"
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={(e) => {
+          if (!canQuery.current) {
+            canQuery.current = true;
+          }
+          setQuery(e.target.value);
+        }}
       />
 
       <div className="relative">

@@ -27,6 +27,7 @@ import { ChartMenuType, useChartMenu } from "@/contexts/ChartMenuContext";
 import LunarDerivedChart from "./LunarDerivedChart";
 import BirthChartForm from "./BirthChartForm";
 import PresavedChartsDropdown from "./PresavedChartsDropdown";
+import { useProfiles } from "@/contexts/ProfilesContext";
 
 type MenuButtonChoice =
   | "home"
@@ -39,8 +40,14 @@ type MenuButtonChoice =
 
 export default function BirthChart() {
   const [loading, setLoading] = useState(false);
-  const { birthChart, returnChart, lunarDerivedChart, updateBirthChart } =
-    useBirthChart();
+  const {
+    profileName,
+    birthChart,
+    returnChart,
+    lunarDerivedChart,
+    updateBirthChart,
+  } = useBirthChart();
+  const { profiles } = useProfiles();
   const { arabicParts } = useArabicParts();
   const [solarYear, setSolarYear] = useState(0);
   const [lunarDay, setLunarDay] = useState(1);
@@ -48,7 +55,9 @@ export default function BirthChart() {
   const [lunarYear, setLunarYear] = useState(0);
   const [chartProfile, setChartProfile] = useState<
     BirthChartProfile | undefined
-  >(presavedBirthDates.lucasz);
+  >(profiles[0]);
+
+  const firstProfileSetAtBeggining = useRef(false);
 
   const { chartMenu, addChartMenu, updateChartMenuDirectly } = useChartMenu();
 
@@ -70,12 +79,27 @@ export default function BirthChart() {
 
   useEffect(() => {
     if (menu === "home") {
-      setChartProfile(presavedBirthDates.lucasz);
+      firstProfileSetAtBeggining.current = false;
+      setChartProfile(profiles[0]);
     }
-  }, [menu]);
+  }, [menu, chartProfile]);
+
+  useEffect(() => {
+    if (profiles.length > 0 && !firstProfileSetAtBeggining.current) {
+      setChartProfile(profiles[0]);
+      firstProfileSetAtBeggining.current = true;
+    }
+  }, [profiles]);
 
   const getBirthChart = async (chartProfileToOverwrite?: BirthChartProfile) => {
     setLoading(true);
+    if (chartProfileToOverwrite) {
+      setChartProfile(chartProfileToOverwrite);
+    }
+
+    console.log("making a chart with profile", chartProfileToOverwrite);
+
+    // return;
 
     try {
       const response = await fetch("http://localhost:3001/birth-chart", {
@@ -98,10 +122,6 @@ export default function BirthChart() {
         },
         isReturnChart: false,
       });
-
-      if (chartProfileToOverwrite) {
-        setChartProfile(chartProfileToOverwrite);
-      }
     } catch (error) {
       console.error("Erro ao consultar mapa astral:", error);
     } finally {
@@ -136,8 +156,6 @@ export default function BirthChart() {
 
     const data = await response.json();
     // console.log(data);
-
-    console.log(chartProfile?.name);
 
     updateBirthChart({
       isReturnChart: false,
@@ -432,7 +450,7 @@ export default function BirthChart() {
           <div className="w-full text-left flex flex-col items-center mb-4">
             <ChartSelectorArrows className="w-[60%] mb-2">
               <h1 className="text-2xl font-bold text-center">
-                Mapa Natal - {chartProfile?.name}
+                Mapa Natal - {profileName}
               </h1>
             </ChartSelectorArrows>
             <ChartDate chartType="birth" />

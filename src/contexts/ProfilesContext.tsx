@@ -30,7 +30,7 @@ export const ProfilesContextProvider: React.FC<{ children: ReactNode }> = ({
   const [profiles, setProfiles] = useState<BirthChartProfile[]>([]);
 
   useEffect(() => {
-    const array: BirthChartProfile[] = [];
+    let array: BirthChartProfile[] = [];
     // localStorage.clear();
     // console.log(localStorage);
 
@@ -40,12 +40,14 @@ export const ProfilesContextProvider: React.FC<{ children: ReactNode }> = ({
 
       const rawProfile = localStorage.getItem(key);
       if (rawProfile !== null) {
-        console.log(rawProfile);
+        // console.log(rawProfile);
 
         const parsed = JSON.parse(rawProfile);
         array.push(parsed);
       }
     }
+
+    array = array.sort((a, b) => (a.name! > b.name! ? 1 : -1));
 
     if (array.length > 0) {
       setProfiles([...array]);
@@ -62,8 +64,10 @@ export const ProfilesContextProvider: React.FC<{ children: ReactNode }> = ({
       };
 
       localStorage.setItem(profileID, JSON.stringify(profileWithId));
+      let array = [...profiles, profileWithId];
+      array = array.sort((a, b) => (a.name! > b.name! ? 1 : -1));
 
-      setProfiles((prev) => [...prev, profileWithId]);
+      setProfiles(array.map((a) => ({ ...a })));
       return true;
     } catch {
       return false;

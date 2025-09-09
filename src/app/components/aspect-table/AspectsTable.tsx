@@ -163,6 +163,7 @@ export default function AspectsTable({
         <div className="w-full flex flex-row items-center justify-center">
           {getPlanetImage(element.name as PlanetType, {
             isAntiscion: element.isAntiscion,
+            isRetrograde: element.isRetrograde,
           })}
           {element.isFromOuterChart ? "(E)" : ""}
         </div>

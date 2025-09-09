@@ -21,7 +21,11 @@ export default function PresavedChartsDropdown(props: DropdownProps) {
       className="p-1 border-2 rounded-sm w-full disabled:opacity-50"
       onChange={(e) => {
         const key = e.target.value;
-        onChange?.(presavedBirthDates[key]);
+        const profile = profiles.find((p) => p.name === key)!;
+        // onChange?.(presavedBirthDates[key]);
+        // console.log("key: ", key);
+
+        onChange?.(profile);
       }}
     >
       {/* {Object.entries(presavedBirthDates).map(([name, date], index) => (

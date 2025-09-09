@@ -31,6 +31,7 @@ export interface ChartElement {
   elementType: ElementType;
   planetType?: PlanetType;
   isFromOuterChart: boolean;
+  isRetrograde: boolean;
 }
 
 export type ElementType = "planet" | "arabicPart" | "house" | "fixedStar";
@@ -58,6 +59,7 @@ export interface AspectedElement {
   elementType: ElementType;
   isFromOuterChart: boolean;
   isAntiscion: boolean;
+  isRetrograde: boolean;
 }
 
 export interface PlanetAspectData {

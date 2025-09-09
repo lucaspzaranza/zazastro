@@ -165,19 +165,22 @@ export const getSignColor = (signGlyph: string): string => {
 
 interface ImgOptions {
   size?: number;
-  isAntiscion: boolean;
+  isAntiscion?: boolean;
+  isRetrograde?: boolean;
 }
 
 export function getPlanetImage(
   planet: PlanetType,
   options: ImgOptions = {
     isAntiscion: false,
+    isRetrograde: false,
   }
 ): React.ReactNode {
   const folder = "planets";
-  const path = `${folder}${
-    options.isAntiscion ? "/antiscion" : ""
-  }/${planet}.png`;
+  const { isAntiscion, isRetrograde } = options;
+  const path = `${folder}${isAntiscion ? "/antiscion" : ""}/${planet}${
+    isRetrograde ? "-rx" : ""
+  }.png`;
   return <img src={path} width={options.size ?? 15} />;
 }
 
