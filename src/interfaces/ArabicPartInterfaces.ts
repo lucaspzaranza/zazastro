@@ -1,4 +1,5 @@
 import { PlanetType } from "./BirthChartInterfaces";
+import { ElementType } from "./AstroChartInterfaces";
 
 export interface ArabicPart {
   name: string;
@@ -27,4 +28,10 @@ export interface ArabicPartsType {
   marriage?: ArabicPart;
   resignation?: ArabicPart;
   children?: ArabicPart;
+}
+
+export interface ArabicPartCalculatorDropdownItem {
+  name: string;
+  key: string;
+  type: ElementType;
 }

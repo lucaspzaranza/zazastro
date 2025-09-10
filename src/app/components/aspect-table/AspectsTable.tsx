@@ -11,6 +11,7 @@ import {
   caldaicOrder,
   convertDegMinToDecimal,
   decimalToDegreesMinutes,
+  extractHouseNumber,
   fixedNames,
   getArabicPartImage,
   getAspectImage,
@@ -118,11 +119,6 @@ export default function AspectsTable({
       updateTablePaginationAndPageCount();
     }
   }, [filteredAspects]);
-
-  function extractHouseNumber(input: string): number | null {
-    const match = input.match(/-(1[0-2]|[1-9])$/);
-    return match ? parseInt(match[1], 10) : null;
-  }
 
   function getHouseName(element: AspectedElement): string {
     if (element.elementType !== "house") return "-";
@@ -789,9 +785,9 @@ export default function AspectsTable({
               </select>
             </td>
 
-            <td className="flex flex-row items-center ml-1">
+            <td className="flex flex-row items-center">
               <button
-                className="hover:outline-2 outline-offset-[-1px] p-1 active:bg-gray-200"
+                className="hover:outline-2 outline-offset-[-2px] p-1 active:bg-gray-200"
                 onClick={() => clearFilters()}
                 title="Limpar Filtros"
               >

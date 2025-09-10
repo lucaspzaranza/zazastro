@@ -105,7 +105,7 @@ export default function ArabicPartsModal(props: ArabicPartsModalProps) {
                   </div>
 
                   <div className="w-full flex flex-row items-center justify-start">
-                    Distância pro Ascendente:{" "}
+                    Distância pro Ascendente Natal:{" "}
                     {formatNumberToDegMin(arabicPart.distanceFromASC)}
                   </div>
                 </li>

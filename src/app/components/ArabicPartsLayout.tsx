@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { formatSignColor, getArabicPartImage } from "../utils/chartUtils";
 import ArabicPartsModal from "./modals/ArabicPartsModal";
 import CustomizeASCModal from "./modals/CustomizeASCModal";
+import ArabicPartCalculatorModal from "./modals/ArabicPartCalculatorModal";
 
 interface ArabicPartsLayoutProps {
   title?: string;
@@ -24,6 +25,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
   } = props;
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [customASCModal, setCustomASCModal] = useState(false);
+  const [lotCalculator, setLotCalculator] = useState(false);
 
   return (
     <div className="flex flex-col gap-2">
@@ -31,6 +33,16 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
         {title ?? "Partes Árabes"}:
         {showMenuButtons && (
           <div className="h-full flex flex-row items-center justify-between gap-3">
+            <button
+              title="Calcular Parte Árabe"
+              className="hover:outline-2 outline-offset-4"
+              onClick={() => {
+                setLotCalculator(true);
+              }}
+            >
+              <img src="dropdown.png" width={20} />
+            </button>
+
             <button
               title="Personalizar Ascendente"
               className="hover:outline-2 outline-offset-4"
@@ -87,6 +99,12 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
 
       {showMenuButtons && (
         <>
+          {lotCalculator && (
+            <ArabicPartCalculatorModal
+              onClose={() => setLotCalculator(false)}
+            />
+          )}
+
           {customASCModal && (
             <CustomizeASCModal
               baseParts={parts}

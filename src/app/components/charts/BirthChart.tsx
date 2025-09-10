@@ -97,9 +97,7 @@ export default function BirthChart() {
       setChartProfile(chartProfileToOverwrite);
     }
 
-    console.log("making a chart with profile", chartProfileToOverwrite);
-
-    // return;
+    // console.log("making a chart with profile", chartProfileToOverwrite);
 
     try {
       const response = await fetch("http://localhost:3001/birth-chart", {
@@ -112,7 +110,7 @@ export default function BirthChart() {
       });
 
       const data = await response.json();
-      // console.log(data.fixedStars);
+      // console.log(data);
       updateBirthChart({
         profileName: chartProfileToOverwrite?.name ?? chartProfile?.name,
         chartData: {

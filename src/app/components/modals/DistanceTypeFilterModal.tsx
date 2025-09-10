@@ -151,7 +151,7 @@ function DistanceTypeFilterModalFn(
   return (
     <AspectTableFilterModalLayout
       isVisible={isVisible}
-      title="Filtrar por Tipo de Distância"
+      title="Filtrar por Tipo de Aspecto"
       onCancel={cancelAndResetState}
       onConfirm={confirm}
       className={`w-[160px] ${className}`}
