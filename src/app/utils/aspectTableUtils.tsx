@@ -7,6 +7,7 @@ export const planets: AspectedElement[] = caldaicOrder.map((planet) => ({
   isAntiscion: false,
   isFromOuterChart: false,
   longitude: 0,
+  isRetrograde: false,
 }));
 
 export const planetsAntiscion = planets.map((planet) => ({
@@ -34,6 +35,7 @@ export const arabicParts: AspectedElement[] = arabicPartKeys
     isAntiscion: false,
     isFromOuterChart: false,
     longitude: 0,
+    isRetrograde: false,
   }));
 
 export const arabicPartsAntiscion = arabicParts.map((part) => ({
@@ -74,6 +76,7 @@ export const houses: AspectedElement[] = housesNames.map((name) => ({
   isAntiscion: false,
   isFromOuterChart: false,
   longitude: 0,
+  isRetrograde: false,
 }));
 
 export const outerHouses: AspectedElement[] = [
@@ -86,6 +89,7 @@ export const fixedStar: AspectedElement = {
   isFromOuterChart: false,
   longitude: 0,
   name: "Estrelas Fixas",
+  isRetrograde: false,
 };
 
 export const allElements: AspectedElement[] = [

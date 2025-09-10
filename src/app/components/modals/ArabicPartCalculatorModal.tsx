@@ -1,13 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ArabicPartCalculatorDropdown from "./ArabicPartCalculatorDropdown";
 import {
   ArabicPartCalculatorDropdownItem,
   ArabicPartsType,
 } from "@/interfaces/ArabicPartInterfaces";
-import { ChartElement } from "@/interfaces/AstroChartInterfaces";
+import {
+  ChartElement,
+  ChartElementForArabicPartCalculation,
+} from "@/interfaces/AstroChartInterfaces";
 import { useBirthChart } from "@/contexts/BirthChartContext";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
-import { extractHouseNumber } from "@/app/utils/chartUtils";
+import {
+  convertDecimalIntoDegMinString,
+  decimalToDegreesMinutes,
+  extractHouseNumber,
+  formatSignColor,
+  getDegreeAndSign,
+  mod360,
+} from "@/app/utils/chartUtils";
 
 interface ArabicPartCalculatorProps {
   onClose?: () => void;
@@ -21,40 +31,55 @@ export default function ArabicPartCalculatorModal(
   const { birthChart } = useBirthChart();
   const { arabicParts } = useArabicParts();
 
-  const [projectionPoint, setProjectionPoint] = useState<ChartElement>();
-  const [significator, setSignificator] = useState<ChartElement>();
-  const [trigger, setTrigger] = useState<ChartElement>();
+  const [projectionPoint, setProjectionPoint] =
+    useState<ChartElementForArabicPartCalculation>();
+  const [significator, setSignificator] =
+    useState<ChartElementForArabicPartCalculation>();
+  const [trigger, setTrigger] =
+    useState<ChartElementForArabicPartCalculation>();
+
+  const [showLotCalculation, setShowLotCalculation] = useState(false);
+  const [lotCalculationHTML, setLotCalculationHTML] =
+    useState<React.ReactNode>();
+
+  useEffect(() => {
+    console.log("start");
+    if (!birthChart) return;
+
+    const acElement: ChartElementForArabicPartCalculation = {
+      name: "AC",
+      elementType: "house",
+      longitude: birthChart?.housesData.house[0],
+    };
+
+    setProjectionPoint(acElement);
+    setSignificator(acElement);
+    setTrigger(acElement);
+  }, [birthChart]);
 
   function getElementFromChart(
     element: ArabicPartCalculatorDropdownItem
-  ): ChartElement | undefined {
-    let chartElement: ChartElement | undefined;
+  ): ChartElementForArabicPartCalculation | undefined {
+    let chartElement: ChartElementForArabicPartCalculation | undefined;
 
     if (element.type === "planet") {
       const planet = birthChart?.planets.find((p) => p.type === element.key);
       if (planet) {
         chartElement = {
-          elementType: "planet",
-          longitude: planet.longitude,
-          id: planet.id,
-          isAntiscion: false,
-          isFromOuterChart: false,
-          isRetrograde: false,
           name: planet.name,
-          planetType: planet.type,
+          elementType: "planet",
+          longitude: planet.longitudeRaw,
         };
       }
     } else if (element.type === "house") {
       const houseNumber = extractHouseNumber(element.key);
       if (houseNumber !== null) {
         const house = birthChart?.housesData.house[houseNumber];
+        if (!house) return undefined;
+
         chartElement = {
           elementType: "house",
-          id: 0,
-          longitude: house ?? 0,
-          isAntiscion: false,
-          isFromOuterChart: false,
-          isRetrograde: false,
+          longitude: house,
           name: element.name,
         };
       }
@@ -67,16 +92,10 @@ export default function ArabicPartCalculatorModal(
 
       chartElement = {
         elementType: "arabicPart",
-        id: 0,
-        isAntiscion: false,
-        isFromOuterChart: false,
-        isRetrograde: false,
-        longitude: lot.longitude,
+        longitude: lot.longitudeRaw,
         name: element.name,
       };
     }
-
-    console.log("chartElement is", chartElement);
 
     return chartElement;
   }
@@ -85,13 +104,93 @@ export default function ArabicPartCalculatorModal(
     element: ArabicPartCalculatorDropdownItem,
     elementTypeIndex: number
   ) {
-    console.log(element);
+    const foundElement = getElementFromChart(element);
 
     if (elementTypeIndex === 0) {
-      const foundElement = getElementFromChart(element);
+      setProjectionPoint(foundElement);
     } else if (elementTypeIndex === 1) {
+      setSignificator(foundElement);
     } else {
+      setTrigger(foundElement);
     }
+  }
+
+  function calculateLot(): void {
+    if (!projectionPoint || !significator || !trigger) {
+      setLotCalculationHTML(
+        <>
+          Algum dos campos está vazio, por favor selecione os elementos para o
+          cálculo.
+        </>
+      );
+      return;
+    }
+
+    const distance = mod360(
+      Math.abs(significator?.longitude - trigger?.longitude)
+    );
+
+    const distanceString = convertDecimalIntoDegMinString(
+      decimalToDegreesMinutes(distance)
+    );
+
+    const projectedLongitude = mod360(
+      decimalToDegreesMinutes(projectionPoint.longitude + distance)
+    );
+    const projectedLongitudeString = convertDecimalIntoDegMinString(
+      decimalToDegreesMinutes(projectedLongitude)
+    );
+
+    setLotCalculationHTML(
+      <div className="w-full text-center mt-2">
+        <strong>
+          Parte Árabe está em{" "}
+          {formatSignColor(getDegreeAndSign(projectedLongitude, true))}.
+        </strong>
+        <div className="w-full flex flex-col mt-2">
+          <strong>Detalhes do cálculo:</strong>
+          <div className="flex flex-col text-start text-sm">
+            <span>
+              Significador <strong>(B)</strong>:{" "}
+              <strong>{significator.name}</strong>
+              {" em "}
+              {formatSignColor(
+                getDegreeAndSign(
+                  decimalToDegreesMinutes(significator.longitude),
+                  true
+                )
+              )}
+              .
+            </span>
+
+            <span>
+              Gatilho <strong>(C)</strong>: <strong>{trigger.name}</strong>
+              {" em "}
+              {formatSignColor(
+                getDegreeAndSign(
+                  decimalToDegreesMinutes(trigger.longitude),
+                  true
+                )
+              )}
+              .
+            </span>
+
+            <span>
+              Distância <strong>(B - C)</strong>: {distanceString}.
+            </span>
+            <span>
+              Projetado em{" "}
+              <strong>(A) {projectionPoint.name}: A + B - C =</strong>
+              <br />
+              {projectedLongitudeString}
+              {" = "}
+              {formatSignColor(getDegreeAndSign(projectedLongitude, true))}.
+            </span>
+            <span>Distância pro Ascendente: {distanceString}.</span>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -114,29 +213,40 @@ export default function ArabicPartCalculatorModal(
           <h2 className="w-full text-[0.9rem] text-center mb-1">
             Escolha os pontos para o cálculo da parte.
           </h2>
+          <h3 className="w-full text-[0.8rem] text-center mb-1">
+            (Valores captados do mapa natal)
+          </h3>
 
-          <div className="flex flex-col items-center justify-center gap-2">
+          <div className="flex flex-col items-center justify-center gap-4">
             <div className="w-full flex flex-row gap-2">
               <ArabicPartCalculatorDropdown
-                label="Origem"
+                label="(A) Origem:"
                 onSelect={(el) => selectItem(el, 0)}
               />
               +
               <ArabicPartCalculatorDropdown
-                label="Até"
+                label="(B) Até:"
                 onSelect={(el) => selectItem(el, 1)}
               />
               -
               <ArabicPartCalculatorDropdown
-                label="De"
+                label="(C) De:"
                 onSelect={(el) => selectItem(el, 2)}
               />
             </div>
 
-            <button className="bg-blue-800 w-1/2 text-white px-4 py-1 rounded hover:bg-blue-900">
+            <button
+              className="bg-blue-800 w-1/2 text-white px-4 py-1 rounded hover:bg-blue-900"
+              onClick={() => {
+                calculateLot();
+                setShowLotCalculation(true);
+              }}
+            >
               Calcular
             </button>
           </div>
+
+          {showLotCalculation && <div>{lotCalculationHTML}</div>}
         </div>
       </div>
     </div>

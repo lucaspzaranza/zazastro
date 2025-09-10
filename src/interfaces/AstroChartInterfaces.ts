@@ -34,6 +34,12 @@ export interface ChartElement {
   isRetrograde: boolean;
 }
 
+export interface ChartElementForArabicPartCalculation {
+  name: string;
+  elementType: ElementType;
+  longitude: number;
+}
+
 export type ElementType = "planet" | "arabicPart" | "house" | "fixedStar";
 
 export type AspectType =

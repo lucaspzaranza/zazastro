@@ -488,6 +488,14 @@ export function chartsAreEqual(
   return true;
 }
 
+export function convertDecimalIntoDegMinString(decimal: number): string {
+  let [deg, min] = decimal.toString().split(".");
+  deg = deg?.padStart(2, "0") ?? "";
+  min = min?.padStart(2, "0") ?? "";
+
+  return `${deg}°${min}'`;
+}
+
 export const fortalCoords: SelectedCity = {
   latitude: -3.71839, // Fortaleza
   longitude: -38.5434,

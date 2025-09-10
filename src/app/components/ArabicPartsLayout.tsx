@@ -40,7 +40,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
                 setLotCalculator(true);
               }}
             >
-              <img src="dropdown.png" width={20} />
+              <img src="dropdown-menu.png" width={20} />
             </button>
 
             <button
