@@ -18,6 +18,7 @@ import {
   getDegreeAndSign,
   mod360,
 } from "@/app/utils/chartUtils";
+import { useChartMenu } from "@/contexts/ChartMenuContext";
 
 interface ArabicPartCalculatorProps {
   onClose?: () => void;
@@ -28,7 +29,8 @@ export default function ArabicPartCalculatorModal(
 ) {
   const { onClose } = props;
 
-  const { birthChart } = useBirthChart();
+  const { chartMenu } = useChartMenu();
+  const { birthChart, returnChart, lunarDerivedChart } = useBirthChart();
   const { arabicParts } = useArabicParts();
 
   const [projectionPoint, setProjectionPoint] =
@@ -115,24 +117,37 @@ export default function ArabicPartCalculatorModal(
     }
   }
 
+  function getBirthArchAscendant(): number {
+    if (chartMenu === "lunarDerivedReturn" && lunarDerivedChart)
+      return lunarDerivedChart?.housesData.house[0];
+    else if (returnChart) return returnChart.housesData.house[0];
+
+    return 0;
+  }
+
   function calculateLot(): void {
     if (!projectionPoint || !significator || !trigger) {
       setLotCalculationHTML(
-        <>
+        <div className="w-full text-sm text-center mt-2">
           Algum dos campos está vazio, por favor selecione os elementos para o
           cálculo.
-        </>
+        </div>
       );
       return;
     }
 
-    const distance = mod360(
-      Math.abs(significator?.longitude - trigger?.longitude)
-    );
-
+    const distance = mod360(significator?.longitude - trigger?.longitude);
     const distanceString = convertDecimalIntoDegMinString(
       decimalToDegreesMinutes(distance)
     );
+
+    const rawProjectedLongitude = decimalToDegreesMinutes(
+      projectionPoint.longitude + distance
+    );
+    const rawProjectedLongitudeString = convertDecimalIntoDegMinString(
+      rawProjectedLongitude
+    );
+    const showModTransformation = rawProjectedLongitude > 360;
 
     const projectedLongitude = mod360(
       decimalToDegreesMinutes(projectionPoint.longitude + distance)
@@ -141,12 +156,22 @@ export default function ArabicPartCalculatorModal(
       decimalToDegreesMinutes(projectedLongitude)
     );
 
+    const archACRaw = getBirthArchAscendant();
+    const archACString = convertDecimalIntoDegMinString(
+      decimalToDegreesMinutes(archACRaw)
+    );
+    const archLotLongitudeRaw = decimalToDegreesMinutes(archACRaw + distance);
+    const archLotLongitudeString = convertDecimalIntoDegMinString(
+      Number.parseFloat(mod360(archLotLongitudeRaw).toFixed(2))
+    );
+    const showArchLotLongMod360Transformation = archLotLongitudeRaw > 360;
+
     setLotCalculationHTML(
       <div className="w-full text-center mt-2">
-        <strong>
-          Parte Árabe está em{" "}
-          {formatSignColor(getDegreeAndSign(projectedLongitude, true))}.
-        </strong>
+        {/* <strong> */}
+        Parte Árabe está em{" "}
+        {formatSignColor(getDegreeAndSign(projectedLongitude, true))}.
+        {/* </strong> */}
         <div className="w-full flex flex-col mt-2">
           <strong>Detalhes do cálculo:</strong>
           <div className="flex flex-col text-start text-sm">
@@ -180,13 +205,70 @@ export default function ArabicPartCalculatorModal(
             </span>
             <span>
               Projetado em{" "}
-              <strong>(A) {projectionPoint.name}: A + B - C =</strong>
+              <strong>
+                (A) {projectionPoint.name}: A + B - C{" = "}
+              </strong>
               <br />
-              {projectedLongitudeString}
+              {convertDecimalIntoDegMinString(
+                decimalToDegreesMinutes(projectionPoint.longitude)
+              )}{" "}
+              (
+              {formatSignColor(
+                getDegreeAndSign(
+                  decimalToDegreesMinutes(projectionPoint.longitude),
+                  true
+                )
+              )}
+              ) + {distanceString} ={" "}
+              {showModTransformation && (
+                <>
+                  <br />
+                  {rawProjectedLongitudeString} - 360° ={" "}
+                </>
+              )}
+              {convertDecimalIntoDegMinString(
+                Number.parseFloat(projectedLongitude.toFixed(2))
+              )}
+              {/* {convertDecimalIntoDegMinString(333.05)} */}
               {" = "}
               {formatSignColor(getDegreeAndSign(projectedLongitude, true))}.
             </span>
             <span>Distância pro Ascendente: {distanceString}.</span>
+
+            {chartMenu !== "birth" && (
+              <div className="w-full mt-1 flex flex-col">
+                <h3 className="text-center text-[1rem]">
+                  <strong>Parte Árabe projetada no Arco Natal:</strong>
+                </h3>
+                <span>
+                  Ascendente: {archACString}
+                  {" = "}
+                  {formatSignColor(
+                    getDegreeAndSign(decimalToDegreesMinutes(archACRaw), true)
+                  )}
+                  .
+                </span>
+                <span>
+                  Parte projetada no Arco do Ascendente (AC do Arco + Distância
+                  pro AC Natal) ={" "}
+                  {showArchLotLongMod360Transformation && (
+                    <>
+                      {convertDecimalIntoDegMinString(archLotLongitudeRaw)} -
+                      360° =&nbsp;
+                    </>
+                  )}
+                  {archLotLongitudeString} ={" "}
+                  {formatSignColor(getDegreeAndSign(archLotLongitudeRaw, true))}
+                  .
+                </span>
+
+                <span className="w-full text-center text-[1rem] mt-1">
+                  Parte Árabe do arco está em{" "}
+                  {formatSignColor(getDegreeAndSign(archLotLongitudeRaw, true))}
+                  .
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -194,8 +276,12 @@ export default function ArabicPartCalculatorModal(
   }
 
   return (
-    <div className="absolute w-[27rem] h-[80vh] flex flex-row top-[-22%] items-center justify-start z-10">
-      <div className="w-[41rem] h-[25rem] bg-white outline-2">
+    <div className="absolute w-[30rem] h-[80vh] flex flex-row top-[-22%] items-center justify-start z-10">
+      <div
+        className={`w-[41rem] ${
+          chartMenu !== "birth" ? "h-[33rem]" : "h-[26rem]"
+        } bg-white outline-2`}
+      >
         <header className="relative w-full h-[3rem] bg-white flex flex-row items-center justify-center outline-1">
           <h1 className="font-bold text-xl">Calcular Parte Árabe</h1>
           <button
@@ -218,7 +304,7 @@ export default function ArabicPartCalculatorModal(
           </h3>
 
           <div className="flex flex-col items-center justify-center gap-4">
-            <div className="w-full flex flex-row gap-2">
+            <div className="w-full flex flex-row items-center justify-center gap-2">
               <ArabicPartCalculatorDropdown
                 label="(A) Origem:"
                 onSelect={(el) => selectItem(el, 0)}

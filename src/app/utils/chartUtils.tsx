@@ -490,8 +490,11 @@ export function chartsAreEqual(
 
 export function convertDecimalIntoDegMinString(decimal: number): string {
   let [deg, min] = decimal.toString().split(".");
-  deg = deg?.padStart(2, "0") ?? "";
-  min = min?.padStart(2, "0") ?? "";
+
+  // if (deg?.length === 1) deg = deg?.padStart(2, "0") ?? "";
+
+  if (!min) min = "00";
+  else if (min.length === 1) min = min.padEnd(2, "0") ?? "";
 
   return `${deg}°${min}'`;
 }
