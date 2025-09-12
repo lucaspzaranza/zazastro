@@ -300,6 +300,11 @@ export default function ChartAndData(props: Props) {
                         <span className="w-full">{planet.name}</span>
                         {getPlanetImage(planet.type, {
                           isRetrograde: planet.isRetrograde,
+                          size:
+                            planet.type === "northNode" ||
+                            planet.type === "southNode"
+                              ? 19
+                              : 15,
                         })}
                         :&nbsp;
                       </span>
