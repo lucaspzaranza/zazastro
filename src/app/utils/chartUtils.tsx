@@ -6,6 +6,7 @@ import {
 import {
   AspectedElement,
   AspectType,
+  ChartElement,
   PlanetAspectData,
 } from "@/interfaces/AstroChartInterfaces";
 import {
@@ -242,7 +243,7 @@ export function getArabicPartImage(
   }
 ): React.ReactNode {
   const folder = "planets";
-  const part = lot.planet ? lot.partKey : "fortune";
+  const part = lot.planet ? lot.partKey : "custom-lot";
   const path = `${folder}${
     options.isAntiscion ? "/antiscion" : ""
   }/${part}.png`;
@@ -272,7 +273,7 @@ export const formatSignColor = (stringWithSign: string): React.ReactNode => {
   );
 };
 
-export const mod360 = (n: number) => ((n % 360) + 360) % 360; // garante 0..359.999
+export const mod360 = (n: number) => ((n % 360) + 360) % 360; // garante [0 - 359.99]
 
 /**
  * Gets degrees and minutes inside a sign.

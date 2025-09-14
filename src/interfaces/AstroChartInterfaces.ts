@@ -74,3 +74,8 @@ export interface PlanetAspectData {
   element: AspectedElement;
   aspectedElement: AspectedElement;
 }
+
+export interface ElementOverlapLongitudeAndOffset {
+  longitude: number;
+  offset: number;
+}
