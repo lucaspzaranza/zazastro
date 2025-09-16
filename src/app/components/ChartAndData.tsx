@@ -226,7 +226,7 @@ export default function ChartAndData(props: Props) {
 
   return (
     <div className="w-full relative flex flex-row items-start justify-between mt-1">
-      <div className="flex flex-col gap-2 relative z-10">
+      <div className="opacity-0 flex flex-col gap-2 relative z-10">
         <ArabicPartsLayout parts={partsArray} showMenuButtons={true} />
 
         {arabicParts && birthChart && innerChart && (

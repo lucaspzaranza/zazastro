@@ -25,7 +25,9 @@ import {
   AspectType,
   AstroChartProps,
   ChartElement,
+  ChartElementOverlap,
   ElementOverlapLongitudeAndOffset,
+  ElementOverlapPosition,
   OrbCalculationOrientation,
   PlanetAspectData,
 } from "@/interfaces/AstroChartInterfaces";
@@ -84,14 +86,15 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   /**
    * Range for limit detection at overlap functions.
    */
-  const range = 4; // degrees.
+  const overlapRadius = 4; // degrees.
 
   /**
    * Maximum distance to consider an element step inward to center
    * and be above other chart element.
    */
-  const inwardMaxDistance = 2.5;
+  const inwardZoneRadius = 2.5;
   const chartElementsForAspect = useRef<ChartElement[]>([]);
+  const overlapElements = useRef<ChartElementOverlap[]>([]);
 
   const size = 400;
   const scaleFactor = showOuterchart ? 1.25 : 1.5;
@@ -110,6 +113,233 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
 
   const svgRef = useRef<SVGSVGElement | null>(null);
   const groupRef = useRef<SVGGElement | null>(null);
+
+  function getOverlapElement(
+    chartElement: ChartElement
+  ): ChartElementOverlap | undefined {
+    return overlapElements.current.find(
+      (overlap) => overlap.element.id === chartElement.id
+    );
+  }
+
+  function getOverlappedElementsForChartElement(
+    chartElement: ChartElement
+  ): ChartElement[] {
+    return chartElementsForAspect.current.filter((e) => {
+      let upperLimit = chartElement.longitude + overlapRadius;
+      let lowerLimit = chartElement.longitude - overlapRadius;
+
+      let chartElementLong = chartElement.longitude;
+      let elementLong = e.longitude;
+
+      if (
+        e.planetType === "uranus" &&
+        chartElement.planetType === "mars" &&
+        chartElement.isAntiscion
+      ) {
+        console.log(
+          `lower: ${lowerLimit}, uranus: ${elementLong}, mars: ${chartElementLong}`
+        );
+      }
+
+      if (upperLimit > 360 && elementLong < 30) {
+        elementLong = elementLong + 360;
+      } else if (lowerLimit < 0 && elementLong >= 330) {
+        chartElementLong = chartElementLong + 360;
+        lowerLimit = lowerLimit + 360;
+      }
+
+      if (elementLong < chartElementLong) {
+        return elementLong >= lowerLimit;
+      } else if (elementLong > chartElementLong) {
+        return elementLong <= upperLimit;
+      } else if (elementLong === chartElementLong) {
+        return true;
+      }
+    });
+  }
+
+  function getNearestElement(
+    chartElement: ChartElement,
+    overlappedElements: ChartElement[]
+  ) {
+    return overlappedElements.reduce((prev, curr) => {
+      const prevDiff = Math.abs(prev.longitude - chartElement.longitude);
+      const currDiff = Math.abs(curr.longitude - chartElement.longitude);
+      return currDiff < prevDiff ? curr : prev;
+    });
+  }
+
+  function updateOverlapElementsArray(
+    newElement: ChartElementOverlap,
+    belowElement?: ChartElementOverlap
+  ) {
+    let belowIndex = -1;
+
+    if (belowElement) {
+      belowIndex = overlapElements.current.indexOf(belowElement);
+    }
+
+    const filteredArray = overlapElements.current.map((el, index) => {
+      if (index === belowIndex) return belowElement;
+      else return el;
+    });
+
+    filteredArray.push(newElement);
+
+    overlapElements.current = filteredArray.map((el) => ({ ...el! }));
+  }
+
+  function getAboveOverlapElementOffset(
+    belowElement: ChartElementOverlap | undefined
+  ): number {
+    if (!belowElement) return symbolOffset;
+
+    let offsetMultiplicator = belowElement.inwardIndex + 1;
+    let offset = symbolOffset * offsetMultiplicator;
+    return offset;
+  }
+
+  function nearestElementIsBelowCurrentElement(
+    currentElement: ChartElement,
+    nearestElementOverlapData: ChartElementOverlap
+  ): boolean {
+    const distance = Math.abs(
+      nearestElementOverlapData.element.longitude - currentElement.longitude
+    );
+    return (
+      nearestElementOverlapData.position === "origin" &&
+      distance < inwardZoneRadius
+    );
+  }
+
+  function getElementOverlapLongitudeAndOffset(
+    chartElement: ChartElement
+  ): ElementOverlapLongitudeAndOffset {
+    const longitudeOffset = 2.5;
+
+    let longitude = chartElement.longitude;
+    let offset = symbolOffset;
+    let position: ElementOverlapPosition = "origin";
+    let belowElement: ChartElementOverlap | undefined;
+    let inwardIndex = 1;
+    let loopCount = 0;
+
+    let overlappedElements = getOverlappedElementsForChartElement(chartElement);
+
+    if (chartElement.isAntiscion && chartElement.planetType === "mars") {
+      // console.log(chartElementsForAspect.current);
+      console.log(overlappedElements);
+    }
+
+    while (overlappedElements.length > 0) {
+      // if (overlappedElements.length > 0) {
+      const elementsFurtherBack = overlappedElements.filter(
+        (o) => o.longitude <= chartElement.longitude
+      );
+
+      const elementsFurtherAhead = overlappedElements.filter(
+        (o) => o.longitude > chartElement.longitude
+      );
+
+      const nearestElement = getNearestElement(
+        chartElement,
+        overlappedElements
+      );
+      const nearestOverlapData = getOverlapElement(nearestElement)!;
+      const nearestElIsBelowCurrentEl = nearestElementIsBelowCurrentElement(
+        chartElement,
+        nearestOverlapData
+      );
+
+      belowElement = nearestElIsBelowCurrentEl ? nearestOverlapData : undefined;
+      if (loopCount === 0) {
+        offset = getAboveOverlapElementOffset(belowElement);
+      } else {
+        offset = symbolOffset * nearestOverlapData.inwardIndex;
+      }
+
+      const distance = Math.abs(
+        nearestElement.longitude - chartElement.longitude
+      );
+
+      if (elementsFurtherBack.length > 0 && elementsFurtherAhead.length > 0) {
+        // has elements on both sides
+        offset = offset + symbolOffset; // advance one step
+        position = "inward";
+        inwardIndex = belowElement ? belowElement.inwardIndex + 1 : 1;
+      } else {
+        // has elements at only one side
+
+        let chartElementLong = chartElement.longitude;
+        let nearestElementLong = nearestElement.longitude;
+
+        let upperLimit = chartElementLong + overlapRadius;
+        let lowerLimit = chartElementLong - overlapRadius;
+
+        if (upperLimit > 360 && nearestElementLong < 30) {
+          nearestElementLong = nearestElementLong + 360;
+        } else if (lowerLimit < 0 && nearestElementLong >= 330) {
+          chartElementLong = chartElementLong + 360;
+        }
+
+        if (nearestElIsBelowCurrentEl) {
+          position = "inward";
+          inwardIndex = belowElement ? belowElement.inwardIndex + 1 : 1;
+        } else if (
+          nearestOverlapData.position !== "inward" &&
+          position !== "inward"
+        ) {
+          if (distance > inwardZoneRadius) {
+            if (nearestElementLong <= chartElementLong) {
+              position = "forward";
+              longitude += longitudeOffset;
+            } else if (nearestElementLong > chartElementLong) {
+              position = "backward";
+              longitude -= longitudeOffset;
+            }
+          } else {
+            position = "inward";
+            inwardIndex = belowElement ? belowElement.inwardIndex + 1 : 1;
+          }
+        } else if (position === "inward") {
+          if (nearestElementLong <= chartElementLong) {
+            longitude += longitudeOffset;
+          } else if (nearestElementLong > chartElementLong) {
+            longitude -= longitudeOffset;
+          }
+        }
+      }
+
+      overlappedElements = overlappedElements.filter((el) => {
+        const overlapElData = getOverlapElement(el)!;
+        return (
+          el.id !== nearestElement.id && overlapElData.position === position
+        );
+      });
+      loopCount++;
+    }
+
+    const newOverlapElement: ChartElementOverlap = {
+      element: chartElement,
+      inwardIndex,
+      position,
+    };
+
+    if (position === "inward" && belowElement) {
+      belowElement = {
+        ...belowElement,
+        aboveElement: newOverlapElement,
+      };
+    }
+
+    updateOverlapElementsArray(newOverlapElement, belowElement);
+
+    return {
+      longitude,
+      offset,
+    };
+  }
 
   function resolveOverlapsRowsThenDiagonal(
     svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
@@ -928,125 +1158,6 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     });
   }
 
-  function getOverlappedElementsForChartElement(
-    chartElement: ChartElement
-  ): ChartElement[] {
-    let upperLimit = chartElement.longitude + range;
-    let lowerLimit = chartElement.longitude - range;
-
-    return chartElementsForAspect.current.filter((e) => {
-      let chartElementLong = chartElement.longitude;
-      let elementLong = e.longitude;
-
-      if (upperLimit > 360 && elementLong < 30) {
-        elementLong = elementLong + 360;
-      } else if (lowerLimit < 0 && elementLong >= 330) {
-        chartElementLong = chartElementLong + 360;
-        lowerLimit = lowerLimit + 360;
-      }
-
-      if (elementLong < chartElementLong) {
-        return elementLong >= lowerLimit;
-      } else if (elementLong > chartElementLong) {
-        return elementLong <= upperLimit;
-      } else if (elementLong === chartElementLong) {
-        return true;
-      }
-    });
-  }
-
-  function getNearestElement(
-    chartElement: ChartElement,
-    overlappedElements: ChartElement[]
-  ) {
-    return overlappedElements.reduce((prev, curr) => {
-      const prevDiff = Math.abs(prev.longitude - chartElement.longitude);
-      const currDiff = Math.abs(curr.longitude - chartElement.longitude);
-      return currDiff < prevDiff ? curr : prev;
-    });
-  }
-
-  function nearestElementIsAlreadyInward(
-    nearestElement: ChartElement
-  ): boolean {
-    return false;
-  }
-
-  function getElementOverlapLongitudeAndOffset(
-    chartElement: ChartElement
-  ): ElementOverlapLongitudeAndOffset {
-    const longitudeOffset = testValue;
-
-    let longitude = chartElement.longitude;
-    let offset = symbolOffset;
-
-    const overlappedElements =
-      getOverlappedElementsForChartElement(chartElement);
-
-    if (overlappedElements.length > 0) {
-      const nearestElement = getNearestElement(
-        chartElement,
-        overlappedElements
-      );
-
-      const distance = Math.abs(
-        nearestElement.longitude - chartElement.longitude
-      );
-
-      if (distance > inwardMaxDistance) {
-        let chartElementLong = chartElement.longitude;
-        let nearestElementLong = nearestElement.longitude;
-
-        let upperLimit = chartElementLong + range;
-        let lowerLimit = chartElementLong - range;
-
-        if (upperLimit > 360 && nearestElementLong < 30) {
-          nearestElementLong = nearestElementLong + 360;
-        } else if (lowerLimit < 0 && nearestElementLong >= 330) {
-          chartElementLong = chartElementLong + 360;
-        }
-
-        if (nearestElementLong <= chartElementLong) {
-          longitude += longitudeOffset;
-        } else if (nearestElementLong > chartElementLong) {
-          longitude -= longitudeOffset;
-        }
-      } else {
-        const nearestElementIsInward =
-          nearestElementIsAlreadyInward(nearestElement);
-        let offsetMultiplicator = nearestElementIsInward ? 1 : 2;
-        // let nearestElOverlappedElements: ChartElement[] =
-        //   getOverlappedElementsForChartElement(nearestElement);
-
-        // while (nearestElOverlappedElements.length > 0) {
-        //   const newNearest = getNearestElement(
-        //     nearestElement,
-        //     nearestElOverlappedElements
-        //   );
-
-        //   if (newNearest.id !== nearestElement.id) {
-        //     const newDistance = Math.abs(
-        //       nearestElement.longitude - newNearest.longitude
-        //     );
-
-        //     if (newDistance < minDistance) {
-        //       offsetMultiplicator = offsetMultiplicator + 1;
-        //       nearestElOverlappedElements =
-        //         getOverlappedElementsForChartElement(newNearest);
-        //     }
-        //   } else break;
-        // }
-
-        offset = symbolOffset * offsetMultiplicator;
-      }
-    }
-
-    return {
-      longitude,
-      offset,
-    };
-  }
-
   useEffect(() => {
     if (!ref.current) return;
     const svg = d3.select(ref.current);
@@ -1336,10 +1447,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         isRetrograde: planet.isRetrograde,
       };
 
-      const overlapData = getElementOverlapLongitudeAndOffset(chartElement);
-      // if (planet.type === "neptune") {
-      //   console.log(overlapData);
-      // }
+      let overlapData = getElementOverlapLongitudeAndOffset(chartElement);
 
       // 1) ângulo zodiacal original (graus → rad)
       const rawDegOriginal = 180 - (planet.longitude % 360) - 90;
@@ -1396,26 +1504,44 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       chartElementsForAspect.current.push(chartElement);
 
       if (showPlanetsAntiscia) {
+        const antiscionElement: ChartElement = {
+          id: chartElementsForAspect.current.length,
+          isAntiscion: true,
+          longitude: planet.antiscion,
+          name: `${planet.name}-${fixedNames.antiscionName}`,
+          elementType: "planet",
+          planetType: planet.type,
+          isFromOuterChart: false,
+          isRetrograde: planet.isRetrograde,
+        };
+
+        overlapData = getElementOverlapLongitudeAndOffset(antiscionElement);
+
         // 1) ângulo zodiacal original (graus → rad)
-        const rawAntDeg = 180 - (planet.antiscion % 360) - 90;
-        const rawAntRad = (rawAntDeg * Math.PI) / 180;
+        const rawAntDegOriginal = 180 - (planet.antiscion % 360) - 90;
+        const rawAntDegOverlapped = 180 - (overlapData.longitude % 360) - 90;
+        const rawRadOriginal = (rawAntDegOriginal * Math.PI) / 180;
+        const rawRadOverlapped = (rawAntDegOverlapped * Math.PI) / 180;
 
         // 2) compensa a rotação do zodíaco (transforma em ângulo final)
         const rotAntRad = (zodiacRotation * Math.PI) / 180;
-        const angleAntRad = rawAntRad - rotAntRad;
+        const angleRadOriginal = rawRadOriginal - rotAntRad;
+        const angleRadOverlapped = rawRadOverlapped - rotAntRad;
 
         // 3) offsets de sobreposição
-        const rAntSymbol = radius - symbolOffset;
+        // const rAntSymbol = radius - symbolOffset;
+        const rAntSymbol = radius - overlapData.offset;
         const rAntLineStart = radius - lineStartOffset;
         const AntLineEnd = radius;
 
         // 4) cálculos das coordenadas
-        const xAnts = rAntSymbol * Math.cos(angleAntRad);
-        const yAnts = rAntSymbol * Math.sin(angleAntRad);
-        const xAnt1 = rAntLineStart * Math.cos(angleAntRad);
-        const yAnt1 = rAntLineStart * Math.sin(angleAntRad);
-        const xAnt2 = AntLineEnd * Math.cos(angleAntRad);
-        const yAnt2 = AntLineEnd * Math.sin(angleAntRad);
+        const xAnts = rAntSymbol * Math.cos(angleRadOverlapped);
+        const yAnts = rAntSymbol * Math.sin(angleRadOverlapped);
+
+        const xAnt1 = rAntLineStart * Math.cos(angleRadOriginal);
+        const yAnt1 = rAntLineStart * Math.sin(angleRadOriginal);
+        const xAnt2 = AntLineEnd * Math.cos(angleRadOriginal);
+        const yAnt2 = AntLineEnd * Math.sin(angleRadOriginal);
 
         // 5) desenha a linha
         baseGroup
@@ -1442,16 +1568,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
           .attr("x", xAnts - iconAntSize / 2)
           .attr("y", yAnts - iconAntSize / 2);
 
-        chartElementsForAspect.current.push({
-          id: chartElementsForAspect.current.length,
-          isAntiscion: true,
-          longitude: planet.antiscion,
-          name: `${planet.name}-${fixedNames.antiscionName}`,
-          elementType: "planet",
-          planetType: planet.type,
-          isFromOuterChart: false,
-          isRetrograde: planet.isRetrograde,
-        });
+        chartElementsForAspect.current.push(antiscionElement);
       }
     });
 
@@ -2041,7 +2158,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   const containerClasses = showOuterchart ? "mb-16 mt-10" : "mb-2";
 
   return (
-    <div className="w-[40vw] flex flex-col justify-center items-center mx-10 gap-8">
+    <div className="w-[40vw] bg-white z-50 flex flex-col justify-center items-center mx-10 gap-8">
       <AstroChartMenu
         toggleCombineWithBirthChart={
           combineWithBirthChart !== undefined

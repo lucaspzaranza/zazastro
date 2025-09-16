@@ -79,3 +79,16 @@ export interface ElementOverlapLongitudeAndOffset {
   longitude: number;
   offset: number;
 }
+
+export type ElementOverlapPosition =
+  | "origin"
+  | "backward"
+  | "forward"
+  | "inward";
+
+export interface ChartElementOverlap {
+  element: ChartElement;
+  aboveElement?: ChartElementOverlap;
+  inwardIndex: number;
+  position: ElementOverlapPosition;
+}
