@@ -303,7 +303,6 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         // It advances the offset only if the inward hasn't already been made previously at
         // getAboveOverlapElementOffset function, i.e: the sum will be different the initialOffset.
         // If it's equals, it means the offset was already been altered once.
-
         if (initialOffset + symbolOffset !== offset) {
           if (nearestOverlapData.inwardIndex === 1) {
             offset = offset + symbolOffset; // advance one step
@@ -315,16 +314,14 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
           }
         }
 
-        if (
-          chartElement.planetType === "southNode" &&
-          !chartElement.isAntiscion &&
-          loopCount === 1
-        ) {
-          console.log(offset);
+        if (position === "inward" && distance < inwardZoneRadius) {
+          offset = offset + symbolOffset;
         }
 
         position = "inward";
-        inwardIndex = belowElement ? belowElement.inwardIndex + 1 : 1;
+        inwardIndex = belowElement
+          ? belowElement.inwardIndex + 1
+          : inwardIndex + 1;
       } else {
         // has elements at only one side
 
@@ -343,11 +340,14 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
 
         if (nearestElIsBelowCurrentEl) {
           position = "inward";
-          inwardIndex = belowElement ? belowElement.inwardIndex + 1 : 1;
+
           if (loopCount > 0) {
-            longitude = originalChartElement.longitude;
+            if (nearestOverlapData.inwardIndex === inwardIndex) {
+              longitude = originalChartElement.longitude;
+            }
             offset += symbolOffset;
           }
+          inwardIndex = belowElement ? belowElement.inwardIndex + 1 : 1;
         } else if (
           nearestOverlapData?.position !== "inward" &&
           position !== "inward"
@@ -371,7 +371,12 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
           } else if (nearestElementLong > chartElementLong) {
             longitude = mod360(longitude - longitudeOffset);
           }
-        } else if (inwardIndex !== nearestOverlapData?.inwardIndex) {
+        } else if (
+          deepEqual(
+            nearestOverlapData.aboveElement?.element,
+            originalChartElement
+          )
+        ) {
           position = "inward";
           inwardIndex = nearestOverlapData
             ? nearestOverlapData.inwardIndex + 1
