@@ -15,6 +15,7 @@ import PresavedChartsDropdown from "./PresavedChartsDropdown";
 import CitySearch from "../CitySearch";
 import { useProfiles } from "@/contexts/ProfilesContext";
 import { useChartMenu } from "@/contexts/ChartMenuContext";
+import { useBirthChart } from "@/contexts/BirthChartContext";
 
 interface BirthChartFormProps {
   currentBirthDate?: BirthDate;
@@ -42,14 +43,18 @@ export default function BirthChartForm(props: BirthChartFormProps) {
   const form = useRef<HTMLFormElement>(null);
   const [editProfile, setEditProfile] = useState(false);
   const [showDeleteProfileMenu, setShowDeleteProfileMenu] = useState(false);
+  const { updateCurrentCity } = useBirthChart();
 
   const selectCity = (selectedCity: SelectedCity) => {
     const cityName = selectedCity.name?.split(",")[0];
 
-    setCoordinates({
+    const cityObj: SelectedCity = {
       ...selectedCity,
       name: cityName,
-    });
+    };
+
+    setCoordinates(cityObj);
+    updateCurrentCity(cityObj);
   };
 
   useEffect(() => {

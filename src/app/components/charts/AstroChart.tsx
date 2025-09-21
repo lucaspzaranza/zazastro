@@ -60,14 +60,6 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
 
   const ref = useRef<SVGSVGElement>(null);
   const [testValue, setTestValue] = useState(2.5);
-  // const [gap, setGap] = useState(10);
-  // const [rowSize, setRowSize] = useState(3);
-  // const [maxRowsBeforeDiagonal, setMaxRowsBeforeDiagonal] = useState(2);
-  // const [rowInwardStep, setRowInwardStep] = useState(5);
-  // const [perpSpacing, setPerpSpacing] = useState(10);
-  // const [diagonalPerpStep, setDiagonalPerpStep] = useState(-1);
-  // const [diagonalInwardStep, setDiagonalInwardStep] = useState(2);
-
   const [showArabicParts, setShowArabicParts] = useState(false);
   const [showPlanetsAntiscia, setShowPlanetsAntiscia] = useState(false);
   const [showArabicPartsAntiscia, setShowArabicPartsAntiscia] = useState(false);
@@ -77,11 +69,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   const [fixedStarsAspects, setFixedStarAspects] = useState<PlanetAspectData[]>(
     []
   );
-  const { birthChart, returnChart } = useBirthChart();
-  const { updateAspectsData } = useAspectsData();
   const symbolOffset = 16;
-
-  // let chartElementsForAspect: ChartElement[] = [];
 
   /**
    * Range for limit detection at overlap functions.
@@ -94,11 +82,23 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
    */
   const inwardZoneRadius = 2.5;
   const chartElementsForAspect = useRef<ChartElement[]>([]);
-  // const overlapElements = useRef<ChartElementOverlap[]>([]);
   let overlapElements: ChartElementOverlap[] = [];
 
-  const size = 400;
-  const scaleFactor = showOuterchart ? 1.25 : 1.5;
+  const [screenDimensions, setScreenDimensions] = useState({
+    width: typeof window !== "undefined" ? window.innerWidth : 0,
+    height: typeof window !== "undefined" ? window.innerHeight : 0,
+  });
+
+  // const size = 200; // default: 400
+  const size = screenDimensions.width > 600 ? 400 : 370;
+  const scaleFactor =
+    screenDimensions.width > 600
+      ? showOuterchart
+        ? 1.25
+        : 1.5
+      : showOuterchart
+      ? 0.85
+      : 1;
   const scaledSize = size * scaleFactor;
   const center = size / 2;
   const radius = size / 2 - 40;
@@ -213,7 +213,6 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     );
     return (
       nearestElementOverlapData.position !== "inward" &&
-      // nearestElementOverlapData.inwardIndex < currentInwardIndex &&
       distance < inwardZoneRadius
     );
   }
@@ -261,10 +260,6 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
 
     let overlappedElements = getOverlappedElementsForChartElement(chartElement);
     let previousLoopElements = [...overlappedElements];
-
-    // if (chartElement.planetType === "southNode" && !chartElement.isAntiscion) {
-    //   console.log(overlappedElements);
-    // }
 
     while (overlappedElements.length > 0) {
       const elementsFurtherBack = overlappedElements.filter(
@@ -993,6 +988,22 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       }
     });
   }
+
+  useEffect(() => {
+    function handleResize() {
+      setScreenDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    }
+
+    window.addEventListener("resize", handleResize);
+
+    // dispara logo na montagem
+    handleResize();
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     if (!ref.current) return;
@@ -2076,7 +2087,9 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   const containerClasses = showOuterchart ? "mb-16 mt-10" : "mb-2";
 
   return (
-    <div className="w-[40vw] flex flex-col justify-center items-center mx-10 gap-8">
+    <div
+      className={`w-full md:w-[40vw] flex flex-col justify-center items-center md:mx-10 gap-8`}
+    >
       <AstroChartMenu
         toggleCombineWithBirthChart={
           combineWithBirthChart !== undefined

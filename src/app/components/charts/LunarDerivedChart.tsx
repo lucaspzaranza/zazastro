@@ -74,8 +74,8 @@ export default function LunarDerivedChart() {
     <div className="w-full flex flex-col items-center justify-between">
       {lunarDerivedChart && renderChart && (
         <>
-          <ChartSelectorArrows className="w-[60%] mb-2">
-            <h1 className="text-2xl font-bold text-center">
+          <ChartSelectorArrows className="w-full md:w-[60%] mb-2">
+            <h1 className="text-lg md:text-2xl font-bold text-center">
               Mapa do Retorno Lunar Derivado para&nbsp;
               {getReturnDateRangeString(
                 lunarDerivedChart.returnTime ?? "0000-00-00 00:00:00",

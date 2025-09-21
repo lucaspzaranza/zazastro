@@ -359,7 +359,7 @@ function ElementFilterModalFn(
       title="Filtrar por Elemento"
       onCancel={cancelAndResetState}
       onConfirm={confirmWithAspectsChecked}
-      className={`w-[630px] ${className}`}
+      className={`w-[90vw] md:w-[630px] ${className}`}
     >
       {checkboxesChecked && (
         <div className="w-full grid grid-cols-7 gap-2 p-2">

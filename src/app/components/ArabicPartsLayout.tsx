@@ -12,6 +12,7 @@ interface ArabicPartsLayoutProps {
   showMenuButtons: boolean;
   partColWidth?: string;
   antisciaColWidth?: string;
+  isInsideModal: boolean;
 }
 
 export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
@@ -22,13 +23,14 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
     showMenuButtons,
     partColWidth,
     antisciaColWidth,
+    isInsideModal,
   } = props;
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [customASCModal, setCustomASCModal] = useState(false);
   const [lotCalculator, setLotCalculator] = useState(false);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="text-sm md:text-[1rem] flex flex-col gap-2">
       <h2 className="text-xl flex flex-row items-center justify-between font-bold mt-[-5px]">
         {title ?? "Partes Árabes"}:
         {showMenuButtons && (
@@ -73,16 +75,25 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
                   className={`w-[14rem] flex flex-row items-center justify-between 
                     ${partColWidth}`}
                 >
-                  <span className="w-[9rem] flex flex-row items-center justify-between">
+                  <span
+                    className={`${
+                      isInsideModal ? "w-[8rem]" : "w-[9rem]"
+                    } flex flex-row items-center justify-between`}
+                  >
                     <span>{arabicPart?.name}</span>
                     <span className="w-full flex flex-row items-center justify-end pr-1">
                       {getArabicPartImage(arabicPart)}:
                     </span>
                   </span>
-                  <span className="w-[5rem] text-end pr-3">
+                  <span
+                    className={`${
+                      isInsideModal ? "w-[4rem]" : "w-[5rem]"
+                    } text-end pr-3`}
+                  >
                     {formatSignColor(arabicPart.longitudeSign)}
                   </span>
                 </span>
+
                 <span
                   className={`w-[12rem] flex flex-row items-center pl-2 ${antisciaColWidth}`}
                 >

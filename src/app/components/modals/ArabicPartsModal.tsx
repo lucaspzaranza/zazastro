@@ -45,22 +45,22 @@ export default function ArabicPartsModal(props: ArabicPartsModalProps) {
   }
 
   return (
-    <div className="absolute w-[98vw] h-[80vh] flex flex-row items-center justify-center">
-      <div className="w-[41rem] h-[31rem] bg-gray-300">
-        <div className="w-full h-full border-2 rounded-sm z-10 overflow-auto p-3">
-          <header className="relative w-full h-[3rem] bg-white flex flex-row items-center justify-center outline-1">
-            <h1 className="font-bold text-xl">Partes Árabes</h1>
-            <button
-              className="absolute right-1 flex flex-row items-center justify-center"
-              onClick={() => {
-                onClose?.();
-              }}
-            >
-              <div className="absolute w-[25px] h-[25px] hover:opacity-20 hover:bg-gray-400 active:bg-gray-900" />
-              <img src="close.png" width={30} />
-            </button>
-          </header>
+    <div className="absolute w-full md:w-[98vw] h-full md:h-[80vh] flex flex-row items-center justify-center z-20 md:z-auto">
+      <div className="w-[41rem] h-[31rem] bg-gray-300 border-2">
+        <header className="relative w-full h-[3rem] bg-white flex flex-row items-center justify-center border-b-2">
+          <h1 className="font-bold text-xl">Partes Árabes</h1>
+          <button
+            className="absolute right-1 flex flex-row items-center justify-center"
+            onClick={() => {
+              onClose?.();
+            }}
+          >
+            <div className="w-[25px] h-[25px] hover:opacity-20 hover:bg-gray-400 active:bg-gray-900" />
+            <img src="close.png" width={30} />
+          </button>
+        </header>
 
+        <div className="relative w-full h-[27.2rem] rounded-sm rounded-t-0 z-20 p-3 overflow-auto">
           <ul className="w-full pt-4 flex flex-col items-center justify-center gap-3">
             {parts?.map((arabicPart, index) => {
               return (
@@ -76,7 +76,7 @@ export default function ArabicPartsModal(props: ArabicPartsModalProps) {
                     })}
                   </span>
                   <div className="w-full flex flex-row">
-                    <span className="w-[12rem] flex flex-row items-center justify-start">
+                    <span className="w-[10rem] md:w-[12rem] flex flex-row items-center justify-start">
                       Longitude:&nbsp;
                       {formatSignColor(arabicPart.longitudeSign)}
                     </span>

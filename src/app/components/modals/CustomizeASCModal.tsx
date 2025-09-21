@@ -67,10 +67,12 @@ export default function CustomizeASCModal(props: ASCModalProps) {
   }, [customAscendant]);
 
   return (
-    <div className="absolute w-[25.8rem] h-[80vh] flex flex-row top-[-22%] items-center justify-start z-10">
-      <div className="w-[41rem] h-[25rem] bg-white outline-2">
+    <div className="absolute w-full md:w-[25.8rem] h-[80vh] flex flex-row top-[-22%] items-center justify-start z-10">
+      <div className="w-full md:w-[41rem] h-[25rem] bg-white outline-2">
         <header className="relative w-full h-[3rem] bg-white flex flex-row items-center justify-center outline-1">
-          <h1 className="font-bold text-xl">Partes Árabes por Arco Natal</h1>
+          <h1 className="font-bold text-lg md:text-xl">
+            Partes Árabes por Arco Natal
+          </h1>
           <button
             className="absolute right-1 flex flex-row items-center justify-center"
             onClick={() => {
@@ -129,7 +131,7 @@ export default function CustomizeASCModal(props: ASCModalProps) {
                 <input
                   ref={firstModeInputRef}
                   type="number"
-                  className="border-2 rounded-sm w-[120px] p-1 text-sm"
+                  className="border-2 rounded-sm w-full md:w-[120px] p-1 text-sm"
                   placeholder="ex: 29.37"
                   onChange={(e) => {
                     const convertedString = clampLongitude(e.target.value, 29);
@@ -168,6 +170,7 @@ export default function CustomizeASCModal(props: ASCModalProps) {
         <div className="w-full flex flex-col items-start mt-2 px-3">
           <ArabicPartsLayout
             className="text-sm"
+            isInsideModal
             partColWidth="w-min"
             antisciaColWidth="w-full"
             parts={partsToUse}

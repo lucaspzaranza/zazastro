@@ -7,6 +7,7 @@ import {
   BirthChart,
   BirthChartProfile,
   planetTypes,
+  SelectedCity,
 } from "@/interfaces/BirthChartInterfaces";
 
 import React, { createContext, useState, useContext, ReactNode } from "react";
@@ -28,6 +29,8 @@ interface BirthChartContextType {
   isCombinedWithReturnChart: boolean;
   updateIsCombinedWithReturnChart: (val: boolean) => void;
   profileName?: string;
+  currentCity?: SelectedCity;
+  updateCurrentCity: (val?: SelectedCity) => void;
 }
 
 const BirthChartContext = createContext<BirthChartContextType | undefined>(
@@ -49,6 +52,8 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
     useState(false);
   const [isCombinedWithReturnChart, setIsCombinedWithReturnChart] =
     useState(false);
+
+  const [currentCity, setCurrentCity] = useState<SelectedCity | undefined>();
 
   const updateIsCombinedWithBirthChart = (val: boolean) => {
     setIsCombinedWithBirthChart(val);
@@ -128,6 +133,10 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
     setLunarDerivedChart(lunarChart);
   };
 
+  const updateCurrentCity = (newCity?: SelectedCity) => {
+    setCurrentCity(newCity);
+  };
+
   return (
     <BirthChartContext.Provider
       value={{
@@ -141,6 +150,8 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
         updateIsCombinedWithReturnChart,
         lunarDerivedChart,
         updateLunarDerivedChart,
+        currentCity,
+        updateCurrentCity,
       }}
     >
       {children}

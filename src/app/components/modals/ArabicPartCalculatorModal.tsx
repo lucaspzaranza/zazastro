@@ -45,7 +45,6 @@ export default function ArabicPartCalculatorModal(
     useState<React.ReactNode>();
 
   useEffect(() => {
-    console.log("start");
     if (!birthChart) return;
 
     const acElement: ChartElementForArabicPartCalculation = {
@@ -276,10 +275,10 @@ export default function ArabicPartCalculatorModal(
   }
 
   return (
-    <div className="absolute w-[30rem] h-[80vh] flex flex-row top-[-22%] items-center justify-start z-10">
+    <div className="absolute w-full md:w-[30rem] h-[80vh] flex flex-row top-[-22%] items-center justify-start z-10">
       <div
-        className={`w-[41rem] ${
-          chartMenu !== "birth" ? "h-[33rem]" : "h-[26rem]"
+        className={`w-full md:w-[41rem] ${
+          chartMenu !== "birth" ? "h-[34.5rem] md:h-[33rem]" : "h-[26rem]"
         } bg-white outline-2`}
       >
         <header className="relative w-full h-[3rem] bg-white flex flex-row items-center justify-center outline-1">

@@ -1,3 +1,6 @@
+"use client";
+
+import { useBirthChart } from "@/contexts/BirthChartContext";
 import { SelectedCity } from "@/interfaces/BirthChartInterfaces";
 import { useState, useEffect, useRef } from "react";
 
@@ -42,47 +45,62 @@ export default function CitySearch({
   }, []);
 
   useEffect(() => {
-    if (!canQuery.current) {
-      return;
-    }
-
+    if (!canQuery.current) return;
     if (query.length <= 1) setSelectedCity(false);
-
     if (query.length < 3 || selectedCity) return;
+
+    const controller = new AbortController();
+    const signal = controller.signal;
 
     const timeout = setTimeout(() => {
       setIsLoading(true);
-      if (queryError) {
-        setQueryError(false);
-      }
-      fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-          query
-        )}&format=json&limit=5&addressdetails=1`,
-        {
-          headers: {
-            "User-Agent": "Zazastro/1.0 (lucaszaranza@gmail.com)",
-          },
-        }
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          // console.log("resultados encontrados:", data);
-          if (data.length === 0) {
+      if (queryError) setQueryError(false);
+
+      (async () => {
+        try {
+          const res = await fetch(
+            `/api/nominatim?q=${encodeURIComponent(query)}`,
+            { signal }
+          );
+          if (!res.ok) {
+            // 4xx/5xx do proxy ou do Nominatim repassado pelo proxy
+            console.error(
+              "Nominatim proxy respondeu:",
+              res.status,
+              await res.text()
+            );
             setQueryError(true);
+            setResults([]);
+            return;
+          }
+
+          const data = await res.json();
+          if (!Array.isArray(data) || data.length === 0) {
+            setQueryError(true);
+            setResults([]);
           } else {
-            if (queryError) {
-              setQueryError(false);
-            }
+            if (queryError) setQueryError(false);
             setResults(data);
           }
-        })
-        .catch((err) => console.error("Erro na busca de cidades:", err))
-        .finally(() => setIsLoading(false));
-    }, 500); // debounce de 500ms
+        } catch (err: any) {
+          if (err.name === "AbortError") {
+            // fetch abortado — sem erro
+            return;
+          }
+          console.error("Erro na busca de cidades (proxy):", err);
+          setQueryError(true);
+          setResults([]);
+        } finally {
+          setIsLoading(false);
+        }
+      })();
+    }, 500); // debounce
 
-    return () => clearTimeout(timeout);
-  }, [query]);
+    return () => {
+      clearTimeout(timeout);
+      controller.abort(); // cancela fetch pendente ao mudar query/unmount
+    };
+  }, [query, selectedCity]); // adicione outras deps relevantes
 
   return (
     <div ref={wrapperRef} className="flex flex-col gap-1 mb-5">

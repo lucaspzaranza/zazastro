@@ -46,6 +46,8 @@ export default function BirthChart() {
     returnChart,
     lunarDerivedChart,
     updateBirthChart,
+    currentCity,
+    updateCurrentCity,
   } = useBirthChart();
   const { profiles } = useProfiles();
   const { arabicParts } = useArabicParts();
@@ -97,17 +99,23 @@ export default function BirthChart() {
       setChartProfile(chartProfileToOverwrite);
     }
 
+    updateCurrentCity(chartProfileToOverwrite?.birthDate?.coordinates);
+
     // console.log("making a chart with profile", chartProfileToOverwrite);
 
     try {
-      const response = await fetch("http://localhost:3001/birth-chart", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          birthDate:
-            chartProfileToOverwrite?.birthDate ?? chartProfile?.birthDate,
-        }),
-      });
+      // const response = await fetch("http://localhost:3001/birth-chart", {
+      const response = await fetch(
+        "https://zazastro-api.onrender.com/birth-chart",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            birthDate:
+              chartProfileToOverwrite?.birthDate ?? chartProfile?.birthDate,
+          }),
+        }
+      );
 
       const data = await response.json();
       // console.log(data);
@@ -138,14 +146,20 @@ export default function BirthChart() {
       year: returnType === "solar" ? solarYear : lunarYear,
     };
 
-    const response = await fetch("http://localhost:3001/return/" + returnType, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        birthDate: chartProfile?.birthDate,
-        targetDate,
-      }),
-    });
+    updateCurrentCity(chartProfile?.birthDate?.coordinates);
+
+    // const response = await fetch("http://localhost:3001/return/" + returnType, {
+    const response = await fetch(
+      "https://zazastro-api.onrender.com/return/" + returnType,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          birthDate: chartProfile?.birthDate,
+          targetDate,
+        }),
+      }
+    );
 
     if (!response.ok) {
       console.log(response);
@@ -201,7 +215,7 @@ export default function BirthChart() {
       month: now.getMonth() + 1,
       year: now.getFullYear(),
       time: hourString,
-      coordinates: fortalCoords,
+      coordinates: currentCity ?? fortalCoords,
     };
 
     // console.log(birthDate);
@@ -226,11 +240,11 @@ export default function BirthChart() {
     <div className="w-[98vw] min-h-[50vh] mt-4 flex flex-col items-center justify-center gap-2">
       {birthChart === undefined && (
         <div className="w-full flex flex-col items-center justify-center">
-          <h2 className="text-lg py-0 my-0 text-start mb-1">
+          <h2 className="text-[1rem] sm:text-lg py-0 my-0 text-center sm:text-start mb-1">
             {getTitleMenuTitle()}
           </h2>
 
-          <div className="w-1/4 flex flex-col gap-2">
+          <div className="w-full p-4 sm:w-1/4 sm:p-0 flex flex-col gap-2">
             {menu === "home" && (
               <div className="flex flex-col gap-2">
                 <button
@@ -446,8 +460,8 @@ export default function BirthChart() {
       {birthChart && chartMenu === "birth" && (
         <div className="w-full flex flex-col items-center">
           <div className="w-full text-left flex flex-col items-center mb-4">
-            <ChartSelectorArrows className="w-[60%] mb-2">
-              <h1 className="text-2xl font-bold text-center">
+            <ChartSelectorArrows className="w-full md:w-[60%] mb-2">
+              <h1 className="text-lg md:text-2xl font-bold text-center">
                 Mapa Natal - {profileName}
               </h1>
             </ChartSelectorArrows>

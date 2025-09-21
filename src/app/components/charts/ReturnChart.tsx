@@ -57,9 +57,9 @@ export default function ReturnChart() {
 
   return (
     <div className="w-full flex flex-col items-center justify-center gap-3 mb-4">
-      <ChartSelectorArrows className="w-[60%]">
+      <ChartSelectorArrows className="w-full md:w-[60%]">
         {profileName && (
-          <h1 className="text-2xl font-bold text-center">
+          <h1 className="text-lg md:text-2xl font-bold text-center">
             Retorno {isSolarReturn ? "Solar" : "Lunar"} para&nbsp;
             {getReturnDateRangeString(
               returnChart.returnTime ?? "0000-00-00 00:00:00",
@@ -71,7 +71,7 @@ export default function ReturnChart() {
       </ChartSelectorArrows>
 
       {returnChart && (
-        <div className="w-full text-left flex flex-col">
+        <div className="w-full text-left flex flex-col items-center">
           <ChartDate chartType="return" />
 
           {!combineWithBirthChart && returnChart && (

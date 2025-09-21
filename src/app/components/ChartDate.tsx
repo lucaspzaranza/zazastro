@@ -57,7 +57,7 @@ export const ChartDate = (
   if (date === undefined) return;
 
   return (
-    <div className="text-center font-bold">
+    <div className="text-[0.9rem] text-center md:text-[1rem] font-bold">
       <p>
         {date?.day.toString().padStart(2, "0")}/
         {date?.month.toString().padStart(2, "0")}/{date?.year} -{" "}
