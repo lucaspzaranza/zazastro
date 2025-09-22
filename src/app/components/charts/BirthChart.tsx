@@ -22,6 +22,7 @@ import LunarDerivedChart from "./LunarDerivedChart";
 import BirthChartForm from "./BirthChartForm";
 import PresavedChartsDropdown from "./PresavedChartsDropdown";
 import { useProfiles } from "@/contexts/ProfilesContext";
+import { apiFetch } from "@/app/utils/api";
 
 type MenuButtonChoice =
   | "home"
@@ -95,24 +96,16 @@ export default function BirthChart() {
 
     updateCurrentCity(chartProfileToOverwrite?.birthDate?.coordinates);
 
-    // console.log("making a chart with profile", chartProfileToOverwrite);
-
     try {
-      // const response = await fetch("http://localhost:3001/birth-chart", {
-      const response = await fetch(
-        "https://zazastro-api.onrender.com/birth-chart",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            birthDate:
-              chartProfileToOverwrite?.birthDate ?? chartProfile?.birthDate,
-          }),
-        }
-      );
+      const data = await apiFetch("birth-chart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          birthDate:
+            chartProfileToOverwrite?.birthDate ?? chartProfile?.birthDate,
+        }),
+      });
 
-      const data = await response.json();
-      // console.log(data);
       updateBirthChart({
         profileName: chartProfileToOverwrite?.name ?? chartProfile?.name,
         chartData: {
@@ -142,26 +135,14 @@ export default function BirthChart() {
 
     updateCurrentCity(chartProfile!.birthDate!.coordinates);
 
-    // const response = await fetch("http://localhost:3001/return/" + returnType, {
-    const response = await fetch(
-      "https://zazastro-api.onrender.com/return/" + returnType,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          birthDate: chartProfile?.birthDate,
-          targetDate,
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      console.log(response);
-      throw new Error(`Erro ao buscar a Revolução ${returnType}.`);
-    }
-
-    const data = await response.json();
-    // console.log(data);
+    const data = await apiFetch("return/" + returnType, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        birthDate: chartProfile?.birthDate,
+        targetDate,
+      }),
+    });
 
     updateBirthChart({
       isReturnChart: false,

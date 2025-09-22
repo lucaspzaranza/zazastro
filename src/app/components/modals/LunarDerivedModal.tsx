@@ -1,3 +1,4 @@
+import { apiFetch } from "@/app/utils/api";
 import {
   convertDegMinToDecimal,
   decimalToDegreesMinutes,
@@ -62,7 +63,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
       coordinates: birthChart.birthDate.coordinates,
     };
 
-    const response = await fetch("http://localhost:3001/return/lunar", {
+    const data = await apiFetch("return/lunar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -70,13 +71,6 @@ export default function LunarDerivedModal(props: LunarModalProps) {
         targetDate,
       }),
     });
-
-    if (!response.ok) {
-      console.log(response);
-      throw new Error(`Erro ao buscar a Revolução Lunar Derivada.`);
-    }
-
-    const data = await response.json();
 
     updateLunarDerivedChart?.({
       ...data,
