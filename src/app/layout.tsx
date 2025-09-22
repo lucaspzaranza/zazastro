@@ -14,9 +14,25 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Zazastro",
-  description: "Zaza's personal astrology site.",
+  description: "Astrologia Tradicional | Lucas Z",
   icons: {
     icon: "pisces.png",
+  },
+  openGraph: {
+    title: "Zazastro",
+    description: "Astrologia Tradicional | Lucas Z",
+    url: "https://zazastro.vercel.app/",
+    siteName: "Zazastro",
+    images: [
+      {
+        url: "https://zazastro.vercel.app/preview.png", // coloque esse arquivo em /public
+        width: 1200,
+        height: 630,
+        alt: "Preview do Meu Projeto",
+      },
+    ],
+    locale: "pt_BR",
+    type: "website",
   },
 };
 
