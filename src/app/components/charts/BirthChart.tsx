@@ -5,22 +5,16 @@ import { useEffect, useRef, useState } from "react";
 import {
   convertDegMinToDecimal,
   fortalCoords,
-  getHourAndMinute,
   monthsNames,
-  presavedBirthDates,
 } from "../../utils/chartUtils";
 import {
   BirthChartProfile,
   BirthDate,
-  Coordinates,
   ReturnChartType,
-  SelectedCity,
 } from "@/interfaces/BirthChartInterfaces";
 import { ChartDate } from ".././ChartDate";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
-import HousesAndPlanetsData from ".././ChartAndData";
 import ChartAndData from ".././ChartAndData";
-import moment from "moment-timezone";
 import ReturnChart from "./ReturnChart";
 import ChartSelectorArrows from "../ChartSelectorArrows";
 import { ChartMenuType, useChartMenu } from "@/contexts/ChartMenuContext";
@@ -139,14 +133,14 @@ export default function BirthChart() {
     setLoading(true);
 
     const targetDate: BirthDate = {
-      ...chartProfile?.birthDate!,
-      day: returnType === "solar" ? chartProfile?.birthDate?.day! : lunarDay,
+      ...chartProfile!.birthDate!,
+      day: returnType === "solar" ? chartProfile!.birthDate!.day : lunarDay,
       month:
-        returnType === "solar" ? chartProfile?.birthDate?.month! : lunarMonth,
+        returnType === "solar" ? chartProfile!.birthDate!.month : lunarMonth,
       year: returnType === "solar" ? solarYear : lunarYear,
     };
 
-    updateCurrentCity(chartProfile?.birthDate?.coordinates);
+    updateCurrentCity(chartProfile!.birthDate!.coordinates);
 
     // const response = await fetch("http://localhost:3001/return/" + returnType, {
     const response = await fetch(
@@ -205,7 +199,7 @@ export default function BirthChart() {
 
   const getMomentBirthChart = async () => {
     const now = new Date();
-    let hourString = convertDegMinToDecimal(
+    const hourString = convertDegMinToDecimal(
       now.getHours(),
       now.getMinutes()
     ).toString();

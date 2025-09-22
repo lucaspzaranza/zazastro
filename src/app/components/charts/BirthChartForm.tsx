@@ -2,19 +2,16 @@ import {
   convertDegMinToDecimal,
   getHourAndMinute,
   monthsNames,
-  presavedBirthDates,
 } from "@/app/utils/chartUtils";
 import {
   BirthChartProfile,
   BirthDate,
-  Coordinates,
   SelectedCity,
 } from "@/interfaces/BirthChartInterfaces";
 import React, { useEffect, useRef, useState } from "react";
 import PresavedChartsDropdown from "./PresavedChartsDropdown";
 import CitySearch from "../CitySearch";
 import { useProfiles } from "@/contexts/ProfilesContext";
-import { useChartMenu } from "@/contexts/ChartMenuContext";
 import { useBirthChart } from "@/contexts/BirthChartContext";
 
 interface BirthChartFormProps {
@@ -37,7 +34,6 @@ export default function BirthChartForm(props: BirthChartFormProps) {
     latitude: 0,
     longitude: 0,
   });
-  const { chartMenu } = useChartMenu();
   const [profile, setProfile] = useState<BirthChartProfile | undefined>();
   const [menu, setMenu] = useState(0);
   const form = useRef<HTMLFormElement>(null);
@@ -145,7 +141,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
               value={0}
               defaultChecked={profiles.length > 0}
               disabled={profiles.length === 0}
-              onChange={(e) => setMenu(0)}
+              onChange={() => setMenu(0)}
             />
             Carregar mapa
           </label>
@@ -160,7 +156,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
               name="group"
               value={1}
               defaultChecked={profiles.length === 0}
-              onChange={(e) => setMenu(1)}
+              onChange={() => setMenu(1)}
             />
             Gerar novo mapa
           </label>

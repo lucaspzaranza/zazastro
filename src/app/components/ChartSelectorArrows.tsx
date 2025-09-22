@@ -1,6 +1,6 @@
 import { useBirthChart } from "@/contexts/BirthChartContext";
 import { useChartMenu } from "@/contexts/ChartMenuContext";
-import React, { Children, useEffect, useState } from "react";
+import React, { useEffect } from "react";
 
 interface ChartSelectorProps {
   children: React.ReactNode;

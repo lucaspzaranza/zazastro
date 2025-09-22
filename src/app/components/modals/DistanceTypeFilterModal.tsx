@@ -1,11 +1,9 @@
 "use client";
 
 import {
-  AspectDistanceType,
   DistanceTypeFilterModalCheckboxState,
   FilterModalImperativeHandle,
   FilterModalProps,
-  TableFilterOptions,
 } from "@/interfaces/AspectTableInterfaces";
 import React, {
   forwardRef,

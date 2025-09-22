@@ -1,4 +1,3 @@
-import { PlanetAspectData } from "@/interfaces/AstroChartInterfaces";
 import { BirthChartProfile } from "@/interfaces/BirthChartInterfaces";
 
 import React, {

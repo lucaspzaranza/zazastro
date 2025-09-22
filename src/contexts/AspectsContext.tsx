@@ -1,4 +1,3 @@
-import { ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import { PlanetAspectData } from "@/interfaces/AstroChartInterfaces";
 
 import React, { createContext, useState, useContext, ReactNode } from "react";

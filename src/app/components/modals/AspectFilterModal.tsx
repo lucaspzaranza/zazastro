@@ -11,9 +11,7 @@ import React, {
 } from "react";
 import { getAspectImage } from "../../utils/chartUtils";
 import {
-  AspectFilterOptions,
   AspectFilterModalCheckboxState,
-  TableFilterOptions,
   FilterModalProps,
   FilterModalImperativeHandle,
 } from "@/interfaces/AspectTableInterfaces";

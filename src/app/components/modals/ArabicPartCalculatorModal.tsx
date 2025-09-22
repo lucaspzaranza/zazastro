@@ -4,10 +4,7 @@ import {
   ArabicPartCalculatorDropdownItem,
   ArabicPartsType,
 } from "@/interfaces/ArabicPartInterfaces";
-import {
-  ChartElement,
-  ChartElementForArabicPartCalculation,
-} from "@/interfaces/AstroChartInterfaces";
+import { ChartElementForArabicPartCalculation } from "@/interfaces/AstroChartInterfaces";
 import { useBirthChart } from "@/contexts/BirthChartContext";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import {
@@ -151,9 +148,9 @@ export default function ArabicPartCalculatorModal(
     const projectedLongitude = mod360(
       decimalToDegreesMinutes(projectionPoint.longitude + distance)
     );
-    const projectedLongitudeString = convertDecimalIntoDegMinString(
-      decimalToDegreesMinutes(projectedLongitude)
-    );
+    // const projectedLongitudeString = convertDecimalIntoDegMinString(
+    //   decimalToDegreesMinutes(projectedLongitude)
+    // );
 
     const archACRaw = getBirthArchAscendant();
     const archACString = convertDecimalIntoDegMinString(

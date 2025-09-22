@@ -17,7 +17,7 @@ export default function ArabicPartsModal(props: ArabicPartsModalProps) {
   const { parts, onClose } = props;
 
   function formatNumberToDegMin(long: number): string {
-    let longString = long.toFixed(2).replace(".", "°") + "'";
+    const longString = long.toFixed(2).replace(".", "°") + "'";
     return longString;
   }
 

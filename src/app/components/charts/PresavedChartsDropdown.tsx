@@ -1,9 +1,5 @@
-import { presavedBirthDates } from "@/app/utils/chartUtils";
 import { useProfiles } from "@/contexts/ProfilesContext";
-import {
-  BirthChartProfile,
-  BirthDate,
-} from "@/interfaces/BirthChartInterfaces";
+import { BirthChartProfile } from "@/interfaces/BirthChartInterfaces";
 import React from "react";
 
 interface DropdownProps {

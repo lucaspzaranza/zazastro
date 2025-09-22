@@ -1,18 +1,13 @@
 "use client";
 
 import {
-  AspectTableColumn,
   ElementFilterModalCheckboxState,
   ElementFilterNode,
   FilterModalImperativeHandle,
   FilterModalProps,
   TableFilterOptions,
 } from "@/interfaces/AspectTableInterfaces";
-import {
-  AspectedElement,
-  ChartElement,
-  PlanetAspectData,
-} from "@/interfaces/AstroChartInterfaces";
+import { AspectedElement } from "@/interfaces/AstroChartInterfaces";
 import React, {
   forwardRef,
   useEffect,

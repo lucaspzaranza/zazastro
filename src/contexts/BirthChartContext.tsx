@@ -5,7 +5,6 @@ import {
 } from "@/app/utils/chartUtils";
 import {
   BirthChart,
-  BirthChartProfile,
   planetTypes,
   SelectedCity,
 } from "@/interfaces/BirthChartInterfaces";

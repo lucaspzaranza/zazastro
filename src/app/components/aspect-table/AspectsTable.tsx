@@ -1,15 +1,11 @@
-import { useAspectsData } from "@/contexts/AspectsContext";
 import {
   AspectedElement,
-  ChartElement,
   PlanetAspectData,
 } from "@/interfaces/AstroChartInterfaces";
 import React, { useEffect, useRef, useState } from "react";
 import {
   angularLabels,
-  arabicPartKeys,
   caldaicOrder,
-  convertDegMinToDecimal,
   decimalToDegreesMinutes,
   extractHouseNumber,
   fixedNames,
@@ -17,27 +13,21 @@ import {
   getAspectImage,
   getDegreesInsideASign,
   getPlanetImage,
-  monthsNames,
 } from "../../utils/chartUtils";
 import {
   BirthChart,
   Planet,
   PlanetType,
 } from "@/interfaces/BirthChartInterfaces";
-import { useArabicParts } from "@/contexts/ArabicPartsContext";
-import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
-import { useBirthChart } from "@/contexts/BirthChartContext";
+import { ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import AspectTableFilterButton, {
   AspectFilterButtonImperativeHandle,
 } from "./AspectTableFilterButton";
 import {
   AspectDistance,
-  AspectTableColumn,
   AspectDistanceTypeInterface,
   ElementLongitudeParameterType,
   TableFilterOptions,
-  AspectFilterOptions,
-  AspectDistanceType,
   ElementFilterNode,
 } from "@/interfaces/AspectTableInterfaces";
 
@@ -109,15 +99,17 @@ export default function AspectsTable({
   useEffect(() => {
     clearFilters();
 
-    setFilteredAspects((prev) =>
-      aspects.map((asp) => ({ ...asp } as PlanetAspectData))
-    );
+    setFilteredAspects(aspects.map((asp) => ({ ...asp } as PlanetAspectData)));
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [aspects]);
 
   useEffect(() => {
     if (filteredAspects.length > 0) {
       updateTablePaginationAndPageCount();
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filteredAspects]);
 
   function getHouseName(element: AspectedElement): string {
@@ -207,7 +199,7 @@ export default function AspectsTable({
           : originalElement.longitudeRaw;
       }
     } else if (element.elementType === "house") {
-      let houseIndex = extractHouseNumber(element.name)! + 1;
+      const houseIndex = extractHouseNumber(element.name)! + 1;
 
       if (chart) {
         const index = houseIndex - 1;
@@ -377,7 +369,7 @@ export default function AspectsTable({
     let newPageCount = Math.floor(filteredAspects.length / itemsPerPage);
     newPageCount += filteredAspects.length % itemsPerPage > 0 ? 1 : 0;
 
-    let newCurrentPage =
+    const newCurrentPage =
       newPageCount > tablePageCount ? tablePageCount : newPageCount;
     setTablePageCount(newPageCount);
     setTableCurrentPage(newCurrentPage);

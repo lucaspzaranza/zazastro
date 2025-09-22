@@ -1,9 +1,5 @@
 import { useBirthChart } from "@/contexts/BirthChartContext";
-import {
-  BirthChartProfile,
-  BirthDate,
-  ChartType,
-} from "@/interfaces/BirthChartInterfaces";
+import { BirthDate, ChartType } from "@/interfaces/BirthChartInterfaces";
 import moment from "moment-timezone";
 import { useEffect, useState } from "react";
 import { getHourAndMinute } from "../utils/chartUtils";

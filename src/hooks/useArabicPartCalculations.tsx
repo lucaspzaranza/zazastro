@@ -93,8 +93,8 @@ export function useArabicPartCalculations() {
 
   function calculateLotOfNecessity(chartData: BirthChart): ArabicPart {
     const asc = chartData.housesData.ascendant;
-    const lotOfFortune = arabicParts?.fortune!;
-    const lotOfSpirit = arabicParts?.spirit!;
+    const lotOfFortune = arabicParts!.fortune!;
+    const lotOfSpirit = arabicParts!.spirit!;
 
     const longitudeRaw = wrapZodiacLongitude(
       asc + lotOfFortune.longitudeRaw - lotOfSpirit.longitudeRaw
@@ -112,8 +112,8 @@ export function useArabicPartCalculations() {
 
   function calculateLotOfLove(chartData: BirthChart): ArabicPart {
     const asc = chartData.housesData.ascendant;
-    const lotOfFortune = arabicParts?.fortune!;
-    const lotOfSpirit = arabicParts?.spirit!;
+    const lotOfFortune = arabicParts!.fortune!;
+    const lotOfSpirit = arabicParts!.spirit!;
 
     const longitudeRaw = wrapZodiacLongitude(
       asc + lotOfSpirit.longitudeRaw - lotOfFortune.longitudeRaw
@@ -131,7 +131,7 @@ export function useArabicPartCalculations() {
 
   function calculateLotOfValor(chartData: BirthChart): ArabicPart {
     const asc = chartData.housesData.ascendant;
-    const lotOfFortune = arabicParts?.fortune!;
+    const lotOfFortune = arabicParts!.fortune!;
     const mars = chartData.planets.find((p) => p.type === "mars")!;
 
     const longitudeRaw = wrapZodiacLongitude(
@@ -150,7 +150,7 @@ export function useArabicPartCalculations() {
 
   function calculateLotOfVictory(chartData: BirthChart): ArabicPart {
     const asc = chartData.housesData.ascendant;
-    const lotOfSpirit = arabicParts?.spirit!;
+    const lotOfSpirit = arabicParts!.spirit!;
     const jupiter = chartData.planets.find((p) => p.type === "jupiter")!;
 
     const longitudeRaw = wrapZodiacLongitude(
@@ -169,7 +169,7 @@ export function useArabicPartCalculations() {
 
   function calculateLotOfCaptivity(chartData: BirthChart): ArabicPart {
     const asc = chartData.housesData.ascendant;
-    const lotOfFortune = arabicParts?.fortune!;
+    const lotOfFortune = arabicParts!.fortune!;
     const saturn = chartData.planets.find((p) => p.type === "saturn")!;
 
     const longitudeRaw = wrapZodiacLongitude(

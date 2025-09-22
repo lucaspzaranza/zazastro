@@ -3,20 +3,11 @@ import {
   ArabicPartCalculatorDropdownItem,
   ArabicPartsType,
 } from "@/interfaces/ArabicPartInterfaces";
-import {
-  AspectedElement,
-  AspectType,
-  ChartElement,
-  PlanetAspectData,
-} from "@/interfaces/AstroChartInterfaces";
+import { AspectType } from "@/interfaces/AstroChartInterfaces";
 import {
   BirthChart,
   BirthChartProfile,
-  BirthDate,
-  Coordinates,
-  PlanetOverlap,
   PlanetType,
-  planetTypes,
   ReturnChartType,
   SelectedCity,
 } from "@/interfaces/BirthChartInterfaces";
@@ -356,7 +347,7 @@ export function wrapZodiacLongitude(longitude: number) {
 }
 
 export function getZodiacRuler(longitude: number) {
-  let long = wrapZodiacLongitude(longitude);
+  const long = wrapZodiacLongitude(longitude);
 
   const zodiacRulers: PlanetType[] = [
     "mars", // Aries 0 - 29
@@ -437,14 +428,14 @@ export function getReturnDateRangeString(
   returnTime: string,
   returnType: ReturnChartType
 ): string {
-  const [datePart, timePart] = returnTime.split(" ");
-  const [targetYear, targetMonth, targetDay] = datePart.split("-").map(Number);
+  const [datePart] = returnTime.split(" ");
+  const [targetYear, targetMonth] = datePart.split("-").map(Number);
 
   if (returnType === "solar") {
     return `${targetYear}/${targetYear + 1}`;
   } else {
-    let year = targetYear;
-    let month = `${targetMonth.toString().padStart(2, "0")}`;
+    const year = targetYear;
+    const month = `${targetMonth.toString().padStart(2, "0")}`;
 
     let nextMonth: string = (targetMonth + 1).toString().padStart(2, "0");
     let nextMonthYear = year.toString();
@@ -490,7 +481,9 @@ export function chartsAreEqual(
 }
 
 export function convertDecimalIntoDegMinString(decimal: number): string {
-  let [deg, min] = decimal.toString().split(".");
+  const array = decimal.toString().split(".");
+  const deg = array[0];
+  let min = array[1];
 
   // if (deg?.length === 1) deg = deg?.padStart(2, "0") ?? "";
 
@@ -506,11 +499,11 @@ export const fortalCoords: SelectedCity = {
   name: "Fortaleza/CE",
 };
 
-const quixabaCoordinates: SelectedCity = {
-  latitude: -4.5461,
-  longitude: -37.6923,
-  name: "Quixaba/CE",
-};
+// const quixabaCoordinates: SelectedCity = {
+//   latitude: -4.5461,
+//   longitude: -37.6923,
+//   name: "Quixaba/CE",
+// };
 
 const aracatiCoordinates: SelectedCity = {
   latitude: -4.56273,

@@ -1,5 +1,4 @@
 import {
-  arabicPartKeys,
   convertDegMinToDecimal,
   decimalToDegreesMinutes,
   getAntiscion,
@@ -8,7 +7,6 @@ import {
 } from "@/app/utils/chartUtils";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import { useBirthChart } from "@/contexts/BirthChartContext";
-import { useChartMenu } from "@/contexts/ChartMenuContext";
 
 import {
   BirthDate,
@@ -32,7 +30,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
   const [day, setDay] = useState(0);
   const [month, setMonth] = useState(1);
   const [year, setYear] = useState(0);
-  const { chartMenu, addChartMenu, updateChartMenuDirectly } = useChartMenu();
+  // const { chartMenu, addChartMenu, updateChartMenuDirectly } = useChartMenu();
 
   const makeChart = async () => {
     if (birthChart === undefined) return;

@@ -1,9 +1,4 @@
-import {
-  AspectedElement,
-  AspectType,
-  ChartElement,
-  ElementType,
-} from "./AstroChartInterfaces";
+import { AspectType, ElementType } from "./AstroChartInterfaces";
 
 export type ElementLongitudeParameterType = "smallest" | "biggest";
 export type AspectDistanceType = "applicative" | "separative";

@@ -7,11 +7,7 @@ import {
   AspectDistanceTypeInterface,
   FilterModalImperativeHandle,
 } from "@/interfaces/AspectTableInterfaces";
-import {
-  AspectedElement,
-  AspectType,
-  PlanetAspectData,
-} from "@/interfaces/AstroChartInterfaces";
+import { AspectedElement } from "@/interfaces/AstroChartInterfaces";
 import React, {
   forwardRef,
   useEffect,
@@ -49,8 +45,6 @@ function AspectTableFilterButtonFn(
   const {
     type,
     elements,
-    distanceValues,
-    distanceTypes,
     modalIndex,
     openModal,
     disableFilterBtn,
@@ -72,7 +66,7 @@ function AspectTableFilterButtonFn(
   const [memorizedOptions, setMemorizedOptions] = useState<any>(undefined);
   const optionsInitialState = useRef<any>(undefined);
   const [filterIsActive, setFilterIsActive] = useState(false);
-  const [shouldClear, setShouldClear] = useState(false);
+  // const [shouldClear, setShouldClear] = useState(false);
   const [clearSignal, setClearSignal] = useState(0);
 
   useEffect(() => {

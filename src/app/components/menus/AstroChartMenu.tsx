@@ -1,6 +1,6 @@
 import { useBirthChart } from "@/contexts/BirthChartContext";
 import { useChartMenu } from "@/contexts/ChartMenuContext";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import LunarDerivedModal from "../modals/LunarDerivedModal";
 
 interface AstroChartMenuProps {

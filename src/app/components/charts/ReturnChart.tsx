@@ -2,9 +2,7 @@ import { useBirthChart } from "@/contexts/BirthChartContext";
 import { BirthDate } from "@/interfaces/BirthChartInterfaces";
 import { useEffect, useState } from "react";
 import { ChartDate } from ".././ChartDate";
-import AstroChart from "./AstroChart";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
-import LunarDerivedChart from "./LunarDerivedChart";
 import ChartAndData from ".././ChartAndData";
 import {
   ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT,
@@ -14,14 +12,14 @@ import ChartSelectorArrows from "../ChartSelectorArrows";
 
 export default function ReturnChart() {
   const { profileName } = useBirthChart();
-  const [input, setInput] = useState(0);
-  const [day, setDay] = useState(0);
-  const [month, setMonth] = useState(0);
+  // const [input, setInput] = useState(0);
+  // const [day, setDay] = useState(0);
+  // const [month, setMonth] = useState(0);
   const { birthChart, returnChart } = useBirthChart();
-  const { arabicParts, archArabicParts } = useArabicParts();
+  const { archArabicParts } = useArabicParts();
   const [isSolarReturn, setIsSolarReturn] = useState(true);
   const [combineWithBirthChart, setCombineWithBirthChart] = useState(false);
-  const [targetDate, setTargetDate] = useState<BirthDate>({
+  const [, setTargetDate] = useState<BirthDate>({
     day: 0,
     month: 0,
     year: 0,

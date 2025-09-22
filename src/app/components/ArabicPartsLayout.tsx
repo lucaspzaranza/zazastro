@@ -1,5 +1,5 @@
-import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
-import React, { useEffect, useState } from "react";
+import { ArabicPart } from "@/interfaces/ArabicPartInterfaces";
+import React, { useState } from "react";
 import { formatSignColor, getArabicPartImage } from "../utils/chartUtils";
 import ArabicPartsModal from "./modals/ArabicPartsModal";
 import CustomizeASCModal from "./modals/CustomizeASCModal";
@@ -42,7 +42,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
                 setLotCalculator(true);
               }}
             >
-              <img src="dropdown-menu.png" width={20} />
+              <img src="dropdown-menu.png" width={20} height={20} />
             </button>
 
             <button
@@ -52,7 +52,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
                 setCustomASCModal(true);
               }}
             >
-              <img src="customize.png" width={20} />
+              <img src="customize.png" width={20} height={20} />
             </button>
             <button
               title="Ver mais"
@@ -61,7 +61,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
                 setModalIsOpen(true);
               }}
             >
-              <img src="see-more.png" width={20} />
+              <img src="see-more.png" width={20} height={20} />
             </button>
           </div>
         )}

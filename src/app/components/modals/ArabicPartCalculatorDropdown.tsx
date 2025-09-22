@@ -1,7 +1,6 @@
 import { arabicPartCalculatorItems } from "@/app/utils/chartUtils";
 import { ArabicPartCalculatorDropdownItem } from "@/interfaces/ArabicPartInterfaces";
-import { ChartElement } from "@/interfaces/AstroChartInterfaces";
-import React, { useState } from "react";
+import React from "react";
 
 interface ArabicPartCalculatorDropdownProps {
   label: string;

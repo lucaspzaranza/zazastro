@@ -1,8 +1,4 @@
-import {
-  BirthChart,
-  HousesData,
-  Planet,
-} from "@/interfaces/BirthChartInterfaces";
+import { BirthChart } from "@/interfaces/BirthChartInterfaces";
 import React, { JSX, useCallback, useEffect, useState } from "react";
 import {
   angularLabels,
@@ -13,21 +9,13 @@ import {
   getAntiscion,
   getDegreeAndSign,
   getPlanetImage,
-  getSign,
-  getSignColor,
-  getSignGlyphUnicode,
-  mod360,
 } from "../utils/chartUtils";
 import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import AspectsTable from "./aspect-table/AspectsTable";
 import AstroChart from "./charts/AstroChart";
-import {
-  AstroChartProps,
-  PlanetAspectData,
-} from "@/interfaces/AstroChartInterfaces";
+import { PlanetAspectData } from "@/interfaces/AstroChartInterfaces";
 import { useBirthChart } from "@/contexts/BirthChartContext";
 import { useChartMenu } from "@/contexts/ChartMenuContext";
-import LunarDerivedChart from "./charts/LunarDerivedChart";
 import ArabicPartsLayout from "./ArabicPartsLayout";
 import { useArabicPartCalculations } from "@/hooks/useArabicPartCalculations";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
@@ -85,7 +73,7 @@ export default function ChartAndData(props: Props) {
   const [partsArray, setParts] = useState<ArabicPart[]>([]);
   const { calculateBirthArchArabicPart } = useArabicPartCalculations();
 
-  let lotsTempObj: ArabicPartsType = {};
+  const lotsTempObj: ArabicPartsType = {};
 
   function getChartForArchArabicParts(): BirthChart | undefined {
     if (chartMenu === "solarReturn" || chartMenu === "lunarReturn") {

@@ -12,17 +12,10 @@ import {
   mod360,
   signsGlpyphs,
 } from "../../utils/chartUtils";
-import {
-  FixedStar,
-  HousesData,
-  Planet,
-} from "@/interfaces/BirthChartInterfaces";
-import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
+import { FixedStar } from "@/interfaces/BirthChartInterfaces";
 import {
   Aspect,
-  AspectDataItem,
   AspectedElement,
-  AspectType,
   AstroChartProps,
   ChartElement,
   ChartElementOverlap,
@@ -31,10 +24,7 @@ import {
   OrbCalculationOrientation,
   PlanetAspectData,
 } from "@/interfaces/AstroChartInterfaces";
-import { useAspectsData } from "@/contexts/AspectsContext";
 import AstroChartMenu from "../menus/AstroChartMenu";
-import { useBirthChart } from "@/contexts/BirthChartContext";
-import AstroChartOverlapDebugFields from "./AstroChartOverlapDebugFields";
 
 const ASPECTS: Aspect[] = [
   { type: "conjunction", angle: 0 },
@@ -59,11 +49,11 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   } = { ...props };
 
   const ref = useRef<SVGSVGElement>(null);
-  const [testValue, setTestValue] = useState(2.5);
+  const [testValue] = useState(2.5);
   const [showArabicParts, setShowArabicParts] = useState(false);
   const [showPlanetsAntiscia, setShowPlanetsAntiscia] = useState(false);
   const [showArabicPartsAntiscia, setShowArabicPartsAntiscia] = useState(false);
-  const [showOuterchart, setShowOuterChart] = useState(
+  const [showOuterchart] = useState(
     outerPlanets !== undefined && outerHouses !== undefined
   );
   const [fixedStarsAspects, setFixedStarAspects] = useState<PlanetAspectData[]>(
@@ -112,8 +102,8 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
 
   const zodiacRotation = 270 - getHouseDataAscendant();
 
-  const svgRef = useRef<SVGSVGElement | null>(null);
-  const groupRef = useRef<SVGGElement | null>(null);
+  // const svgRef = useRef<SVGSVGElement | null>(null);
+  // const groupRef = useRef<SVGGElement | null>(null);
 
   function getOverlapElement(chartElement: ChartElement): ChartElementOverlap {
     return overlapElements.find(
@@ -137,7 +127,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       if (chartElement.isFromOuterChart && !e.isFromOuterChart) return false;
       if (!chartElement.isFromOuterChart && e.isFromOuterChart) return false;
 
-      let upperLimit = chartElement.longitude + overlapRange;
+      const upperLimit = chartElement.longitude + overlapRange;
       let lowerLimit = chartElement.longitude - overlapRange;
 
       let chartElementLong = chartElement.longitude;
@@ -196,8 +186,8 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   ): number {
     if (!belowElement) return symbolOffset;
 
-    let offsetMultiplicator = belowElement.inwardIndex + 1;
-    let offset = symbolOffset * offsetMultiplicator;
+    const offsetMultiplicator = belowElement.inwardIndex + 1;
+    const offset = symbolOffset * offsetMultiplicator;
     return offset;
   }
 
@@ -252,7 +242,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
 
     let longitude = chartElement.longitude;
     let offset = symbolOffset;
-    let initialOffset = offset;
+    const initialOffset = offset;
     let position: ElementOverlapPosition = "origin";
     let belowElement: ChartElementOverlap | undefined;
     let inwardIndex = 1;
@@ -324,8 +314,8 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         // let nearestElementLong = nearestElement.longitude;
         let nearestElementLong = nearestOverlapData.element.longitude;
 
-        let upperLimit = chartElementLong + overlapRange;
-        let lowerLimit = chartElementLong - overlapRange;
+        const upperLimit = chartElementLong + overlapRange;
+        const lowerLimit = chartElementLong - overlapRange;
 
         if (upperLimit > 360 && nearestElementLong < 30) {
           nearestElementLong = nearestElementLong + 360;
@@ -673,7 +663,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     const aspectsData: PlanetAspectData[] = [];
     const aspectableElements = elements.filter((el) => isAspectableElement(el));
 
-    aspectableElements.forEach((element, index) => {
+    aspectableElements.forEach((element) => {
       ASPECTS.forEach((aspect) => {
         if (aspectCanBeUsed(element, aspect)) {
           const elementsWithAspect = aspectableElements.filter((elToCheck) => {
@@ -756,7 +746,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
 
     const conjunction: Aspect = { type: "conjunction", angle: 0 };
 
-    aspectableElements.forEach((element, index) => {
+    aspectableElements.forEach((element) => {
       const starsWithAspects = fixedStars.filter((star) => {
         if (aspectElementsAreInProperSigns(element, star, conjunction)) {
           const orb = getAspectOrb(element, star, conjunction);
@@ -827,13 +817,13 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     const angleRad = rawRad - rotRad;
 
     // 3) offsets de sobreposição
-    const rSymbol = options.radius - symbolOffset;
+    // const rSymbol = options.radius - symbolOffset;
     const rLineStart = options.radius - options.lineStartOffset;
     const rLineEnd = options.radius;
 
-    // 4) cálculos das coordenadas FINAIS
-    const xs = rSymbol * Math.cos(angleRad);
-    const ys = rSymbol * Math.sin(angleRad);
+    // 4) cálculos das coordenadas
+    // const xs = rSymbol * Math.cos(angleRad);
+    // const ys = rSymbol * Math.sin(angleRad);
 
     const x1 = rLineStart * Math.cos(angleRad);
     const y1 = rLineStart * Math.sin(angleRad);
@@ -926,8 +916,8 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     const y2 = rLineEnd * Math.sin(endAngleRad);
 
     // ângulo da linha (opcional, útil se for rotacionar um grupo)
-    const angleLineRad = Math.atan2(y2 - y1, x2 - x1);
-    const angleLineDeg = (angleLineRad * 180) / Math.PI;
+    // const angleLineRad = Math.atan2(y2 - y1, x2 - x1);
+    // const angleLineDeg = (angleLineRad * 180) / Math.PI;
 
     // 5) desenha a linha
     baseGroup
@@ -1443,7 +1433,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             isRetrograde: false,
           };
 
-          let overlapData =
+          const overlapData =
             getElementOverlapLongitudeAndOffset(lotChartElement);
 
           // 1) ângulo zodiacal original (graus → rad)
@@ -1518,7 +1508,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             isRetrograde: false,
           };
 
-          let overlapData = getElementOverlapLongitudeAndOffset(
+          const overlapData = getElementOverlapLongitudeAndOffset(
             lotAntiscionChartElement
           );
 
@@ -1808,7 +1798,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             isRetrograde: false,
           };
 
-          let overlapData =
+          const overlapData =
             getElementOverlapLongitudeAndOffset(outerLotChartElement);
 
           // 1) ângulo zodiacal original (graus → rad)
@@ -1883,7 +1873,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             isRetrograde: false,
           };
 
-          let overlapData = getElementOverlapLongitudeAndOffset(
+          const overlapData = getElementOverlapLongitudeAndOffset(
             outerLotChartElementAntiscion
           );
 

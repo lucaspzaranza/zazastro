@@ -1,6 +1,5 @@
 import {
   allSigns,
-  arabicPartKeys,
   clampLongitude,
   convertDegMinNumberToDecimal,
   decimalToDegreesMinutes,
@@ -8,7 +7,6 @@ import {
 } from "@/app/utils/chartUtils";
 import React, { useEffect, useRef, useState } from "react";
 import ArabicPartsLayout from "../ArabicPartsLayout";
-import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import { ArabicPart } from "@/interfaces/ArabicPartInterfaces";
 import { useArabicPartCalculations } from "@/hooks/useArabicPartCalculations";
 import { useBirthChart } from "@/contexts/BirthChartContext";
@@ -22,9 +20,7 @@ export default function CustomizeASCModal(props: ASCModalProps) {
   const { baseParts, onClose } = props;
   const { birthChart } = useBirthChart();
 
-  const [calculatedParts, setCalculatedParts] = useState<
-    ArabicPart[] | undefined
-  >(undefined);
+  const [calculatedParts] = useState<ArabicPart[] | undefined>(undefined);
   const [partsToUse, setPartsToUse] = useState<ArabicPart[] | undefined>(
     calculatedParts ?? baseParts
   );
@@ -51,20 +47,30 @@ export default function CustomizeASCModal(props: ASCModalProps) {
     }
   }, []);
 
+  // useEffect(() => {
+  //   if (!birthChart) return;
+
+  //   setPartsToUse([]);
+
+  //   baseParts?.forEach((part) => {
+  //     const newArchArabicPart = calculateBirthArchArabicPart(
+  //       part,
+  //       customAscendant ?? birthChart.housesData.ascendant
+  //     );
+  //     setPartsToUse((prev) => [...prev!, newArchArabicPart]);
+  //   });
+  // }, [customAscendant, baseParts, calculateBirthArchArabicPart]); Comentei, vai que o GPT recomendou errado. Tô com preguiça de testar.
+
   useEffect(() => {
     if (!birthChart) return;
 
-    setPartsToUse([]);
+    const asc = customAscendant ?? birthChart.housesData.ascendant;
+    const newParts = (baseParts ?? []).map((part) =>
+      calculateBirthArchArabicPart(part, asc)
+    );
 
-    baseParts?.forEach((part) => {
-      const newArchArabicPart = calculateBirthArchArabicPart(
-        part,
-        customAscendant ?? birthChart.housesData.ascendant
-      );
-      newArchArabicPart;
-      setPartsToUse((prev) => [...prev!, newArchArabicPart]);
-    });
-  }, [customAscendant]);
+    setPartsToUse(newParts);
+  }, [customAscendant, birthChart, baseParts, calculateBirthArchArabicPart]);
 
   return (
     <div className="absolute w-full md:w-[25.8rem] h-[80vh] flex flex-row top-[-22%] items-center justify-start z-10">

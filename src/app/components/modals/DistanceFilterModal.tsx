@@ -232,7 +232,7 @@ function DistanceFilterModalFn(
                   return;
                 }
 
-                let lowerLimitValue = Number.parseFloat(
+                const lowerLimitValue = Number.parseFloat(
                   clampLongitude(raw, 5).toFixed(2)
                 );
                 // e.target.value = lowerLimitValue.toString();
@@ -289,7 +289,7 @@ function DistanceFilterModalFn(
                   return;
                 }
 
-                let upperLimitValue = Number.parseFloat(
+                const upperLimitValue = Number.parseFloat(
                   clampLongitude(raw, 5).toFixed(2)
                 );
                 // e.target.value = upperLimitValue.toString();

@@ -1,6 +1,5 @@
 "use client";
 
-import { useBirthChart } from "@/contexts/BirthChartContext";
 import { SelectedCity } from "@/interfaces/BirthChartInterfaces";
 import { useState, useEffect, useRef } from "react";
 
