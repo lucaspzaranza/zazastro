@@ -25,6 +25,7 @@ import {
   PlanetAspectData,
 } from "@/interfaces/AstroChartInterfaces";
 import AstroChartMenu from "../menus/AstroChartMenu";
+import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 
 const ASPECTS: Aspect[] = [
   { type: "conjunction", angle: 0 },
@@ -49,6 +50,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   } = { ...props };
 
   const ref = useRef<SVGSVGElement>(null);
+  const { isMobileBreakPoint } = useScreenDimensions();
   const [testValue] = useState(2.5);
   const [showArabicParts, setShowArabicParts] = useState(false);
   const [showPlanetsAntiscia, setShowPlanetsAntiscia] = useState(false);
@@ -74,21 +76,15 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   const chartElementsForAspect = useRef<ChartElement[]>([]);
   let overlapElements: ChartElementOverlap[] = [];
 
-  const [screenDimensions, setScreenDimensions] = useState({
-    width: typeof window !== "undefined" ? window.innerWidth : 0,
-    height: typeof window !== "undefined" ? window.innerHeight : 0,
-  });
-
   // const size = 200; // default: 400
-  const size = screenDimensions.width > 600 ? 400 : 370;
-  const scaleFactor =
-    screenDimensions.width > 600
-      ? showOuterchart
-        ? 1.25
-        : 1.5
-      : showOuterchart
-      ? 0.85
-      : 1;
+  const size = !isMobileBreakPoint() ? 400 : 370;
+  const scaleFactor = !isMobileBreakPoint()
+    ? showOuterchart
+      ? 1.25
+      : 1.5
+    : showOuterchart
+    ? 0.75
+    : 0.85;
   const scaledSize = size * scaleFactor;
   const center = size / 2;
   const radius = size / 2 - 40;
@@ -978,22 +974,6 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       }
     });
   }
-
-  useEffect(() => {
-    function handleResize() {
-      setScreenDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    }
-
-    window.addEventListener("resize", handleResize);
-
-    // dispara logo na montagem
-    handleResize();
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   useEffect(() => {
     if (!ref.current) return;

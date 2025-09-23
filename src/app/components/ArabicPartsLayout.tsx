@@ -4,6 +4,7 @@ import { formatSignColor, getArabicPartImage } from "../utils/chartUtils";
 import ArabicPartsModal from "./modals/ArabicPartsModal";
 import CustomizeASCModal from "./modals/CustomizeASCModal";
 import ArabicPartCalculatorModal from "./modals/ArabicPartCalculatorModal";
+import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 
 interface ArabicPartsLayoutProps {
   title?: string;
@@ -29,9 +30,11 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
   const [customASCModal, setCustomASCModal] = useState(false);
   const [lotCalculator, setLotCalculator] = useState(false);
 
+  const { isMobileBreakPoint } = useScreenDimensions();
+
   return (
-    <div className="text-sm md:text-[1rem] flex flex-col gap-2">
-      <h2 className="text-xl flex flex-row items-center justify-between font-bold mt-[-5px]">
+    <div className="w-full text-sm md:text-[1rem] flex flex-col gap-2">
+      <h2 className="text-lg flex flex-row items-center justify-between font-bold mt-[-5px]">
         {title ?? "Partes Árabes"}:
         {showMenuButtons && (
           <div className="h-full flex flex-row items-center justify-between gap-3">
@@ -70,9 +73,9 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
         {parts?.map((arabicPart, index) => {
           return (
             <li key={index} className="flex flex-row items-center">
-              <div className="w-full flex flex-row">
+              <div className="w-full flex flex-row justify-between">
                 <span
-                  className={`w-[14rem] flex flex-row items-center justify-between 
+                  className={`w-[14rem] flex flex-row items-center justify-between
                     ${partColWidth}`}
                 >
                   <span
@@ -81,24 +84,31 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
                     } flex flex-row items-center justify-between`}
                   >
                     <span>{arabicPart?.name}</span>
-                    <span className="w-full flex flex-row items-center justify-end pr-1">
-                      {getArabicPartImage(arabicPart)}:
+
+                    <span className="w-full flex flex-row items-center justify-end md:pr-1">
+                      {getArabicPartImage(arabicPart, {
+                        size: isMobileBreakPoint() ? 12 : 15,
+                      })}
+                      :
                     </span>
                   </span>
                   <span
                     className={`${
                       isInsideModal ? "w-[4rem]" : "w-[5rem]"
-                    } text-end pr-3`}
+                    } text-end md:pr-3`}
                   >
                     {formatSignColor(arabicPart.longitudeSign)}
                   </span>
                 </span>
 
                 <span
-                  className={`w-[12rem] flex flex-row items-center pl-2 ${antisciaColWidth}`}
+                  className={`w-full md:w-[12rem] flex flex-row items-center md:pl-2 ${antisciaColWidth}`}
                 >
-                  Antiscion:&nbsp;
-                  <span className="w-full text-end">
+                  {isMobileBreakPoint() && isInsideModal
+                    ? "Ant:"
+                    : "Antiscion:"}
+                  &nbsp;
+                  <span className="w-full md:text-end">
                     {formatSignColor(arabicPart.antiscionSign)}
                   </span>
                 </span>

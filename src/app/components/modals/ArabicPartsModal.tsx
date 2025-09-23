@@ -5,6 +5,7 @@ import {
   getZodiacRuler,
   planesNamesByType,
 } from "@/app/utils/chartUtils";
+import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 import { ArabicPart } from "@/interfaces/ArabicPartInterfaces";
 import React from "react";
 
@@ -15,6 +16,8 @@ interface ArabicPartsModalProps {
 
 export default function ArabicPartsModal(props: ArabicPartsModalProps) {
   const { parts, onClose } = props;
+
+  const { isMobileBreakPoint } = useScreenDimensions();
 
   function formatNumberToDegMin(long: number): string {
     const longString = long.toFixed(2).replace(".", "°") + "'";
@@ -81,7 +84,7 @@ export default function ArabicPartsModal(props: ArabicPartsModalProps) {
                       {formatSignColor(arabicPart.longitudeSign)}
                     </span>
                     <span className="w-[8rem] flex flex-row items-center pl-2">
-                      Antiscion:&nbsp;
+                      {isMobileBreakPoint() ? "Ant:" : "Antiscion:"}
                       <span className="w-full text-end">
                         {formatSignColor(arabicPart.antiscionSign)}
                       </span>

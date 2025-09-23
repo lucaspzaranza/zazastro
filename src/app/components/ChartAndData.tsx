@@ -19,6 +19,7 @@ import { useChartMenu } from "@/contexts/ChartMenuContext";
 import ArabicPartsLayout from "./ArabicPartsLayout";
 import { useArabicPartCalculations } from "@/hooks/useArabicPartCalculations";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
+import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 
 interface Props {
   useArchArabicPartsForDataVisualization: boolean;
@@ -45,11 +46,7 @@ export default function ChartAndData(props: Props) {
     ...props,
   };
 
-  const [screenDimensions, setScreenDimensions] = useState({
-    width: typeof window !== "undefined" ? window.innerWidth : 0,
-    height: typeof window !== "undefined" ? window.innerHeight : 0,
-  });
-
+  const { isMobileBreakPoint } = useScreenDimensions();
   const { birthChart, returnChart, lunarDerivedChart } = useBirthChart();
   const [chart, setChart] = useState(outerChart ?? birthChart);
   const [aspectsData, setAspectsData] = useState<PlanetAspectData[]>([]);
@@ -84,22 +81,6 @@ export default function ChartAndData(props: Props) {
 
     return birthChart;
   }
-
-  useEffect(() => {
-    function handleResize() {
-      setScreenDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    }
-
-    window.addEventListener("resize", handleResize);
-
-    // dispara logo na montagem
-    handleResize();
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   useEffect(() => {
     setChart(outerChart ?? innerChart);
@@ -269,7 +250,7 @@ export default function ChartAndData(props: Props) {
 
         <button
           type="button"
-          className="w-[25.5rem] mt-6 mb-2 bg-blue-800 text-white px-4 py-2 rounded hover:bg-blue-900"
+          className="w-full md:w-[25.5rem] mt-6 mb-2 bg-blue-800 text-white px-4 py-2 rounded hover:bg-blue-900"
           onClick={handleReset}
         >
           Menu Principal
@@ -281,11 +262,24 @@ export default function ChartAndData(props: Props) {
   function renderArabicPartAndAspectsTable(): JSX.Element {
     return (
       <div className="flex flex-col gap-2 relative z-10">
-        <ArabicPartsLayout
-          parts={partsArray}
-          showMenuButtons={true}
-          isInsideModal={false}
-        />
+        {!isMobileBreakPoint() && (
+          <ArabicPartsLayout
+            parts={partsArray}
+            showMenuButtons={true}
+            isInsideModal={false}
+          />
+        )}
+
+        {isMobileBreakPoint() && (
+          <ArabicPartsLayout
+            className="w-full text-[0.85rem] md:text-[1rem]"
+            parts={partsArray}
+            partColWidth="w-[52.5%]! mr-2"
+            antisciaColWidth="w-1/2!"
+            showMenuButtons={true}
+            isInsideModal={false}
+          />
+        )}
 
         {arabicParts && birthChart && innerChart && (
           <div className="md:absolute md:top-full mb-4 md:mb-0">
@@ -311,34 +305,47 @@ export default function ChartAndData(props: Props) {
 
   function renderPlanetsAndHouses(): JSX.Element {
     return (
-      <div className="w-[26rem] flex flex-col justify-start gap-2 md:z-20">
+      <div className="w-full md:w-[26rem] flex flex-col justify-start gap-2 md:z-20">
         <div className="w-full">
           <h2 className="font-bold text-lg mb-2 mt-[-5px]">Planetas:</h2>
-          <ul className="text-sm md:text-[1rem]">
+          <ul className="text-[0.85rem] md:text-[1rem]">
             {chart?.planets?.map((planet, index) => (
               <li key={index} className="flex flex-row items-center">
                 {chart.planetsWithSigns !== undefined && (
                   <div className="w-full flex flex-row">
-                    <span className="w-[14rem] flex flex-row items-center">
-                      <span className="w-full flex flex-row items-center justify-between mr-[-20px]">
-                        <span className="w-full">{planet.name}</span>
+                    <span className="w-[55%] md:w-[14rem] flex flex-row items-center">
+                      <span className="w-full flex flex-row items-center justify-start md:justify-between mr-[-20px]">
+                        {planet.type === "northNode" && (
+                          <span className="w-8/12 md:w-full text-[0.75rem]">
+                            {planet.name}
+                          </span>
+                        )}
+                        {planet.type !== "northNode" && (
+                          <span className="w-8/12 md:w-full">
+                            {planet.name}
+                          </span>
+                        )}
                         {getPlanetImage(planet.type, {
                           isRetrograde: planet.isRetrograde,
-                          size:
-                            planet.type === "northNode" ||
-                            planet.type === "southNode"
+                          size: !isMobileBreakPoint()
+                            ? planet.type === "northNode" ||
+                              planet.type === "southNode"
                               ? 19
-                              : 15,
+                              : 15
+                            : planet.type === "northNode" ||
+                              planet.type === "southNode"
+                            ? 15
+                            : 13,
                         })}
                         :&nbsp;
                       </span>
-                      <span className="w-9/12 text-end pr-4">
+                      <span className="w-7/12 md:w-9/12 text-end pr-2 md:pr-4">
                         {formatSignColor(
                           chart.planetsWithSigns[index].position
                         )}
                       </span>
                     </span>
-                    <span className="w-[10rem] md:w-[11rem] flex flex-row items-center">
+                    <span className="w-[10rem] pl-1 md:pl-0 md:w-[11rem] flex flex-row items-center">
                       Antiscion:&nbsp;
                       <span className="w-full text-end">
                         {formatSignColor(
@@ -353,10 +360,10 @@ export default function ChartAndData(props: Props) {
           </ul>
         </div>
 
-        <div className="w-[26rem]">
+        <div className="w-full md:w-[26rem]">
           <h2 className="font-bold text-lg mb-2">Casas:</h2>
           {chart && (
-            <ul className="w-full mb-4 text-sm md:text-[1rem]">
+            <ul className="w-full mb-4 text-[0.85rem] md:text-[1rem]">
               {chart.housesData.housesWithSigns?.map((house, index) => (
                 <li key={house} className="w-full flex flex-row items-center">
                   <div className="w-full flex flex-row justify-between">
@@ -368,9 +375,14 @@ export default function ChartAndData(props: Props) {
                       >
                         <span
                           className={
-                            "w-full flex flex-row " + (index % 3 === 0)
-                              ? "text-[0.975rem]"
-                              : ""
+                            "w-full flex flex-row" +
+                            (!isMobileBreakPoint()
+                              ? index % 3 === 0
+                                ? "text-[0.975rem]"
+                                : ""
+                              : index % 3 === 0
+                              ? "text-nowrap tracking-tighter"
+                              : "")
                           }
                         >
                           Casa {index + 1}
@@ -383,7 +395,7 @@ export default function ChartAndData(props: Props) {
                       </span>
                     </span>
                     {birthChart && (
-                      <span className="w-1/2 pl-4 flex flex-row pr-8 md:pr-4">
+                      <span className="w-1/2 pl-4 flex flex-row pr-4">
                         Antiscion:&nbsp;
                         <span className="w-full text-end">
                           {getHouseAntiscion(chart.housesData.house[index])}
@@ -402,7 +414,7 @@ export default function ChartAndData(props: Props) {
 
   return (
     <div className="w-[95%] md:w-full relative flex flex-col md:flex-row md:items-start md:justify-between mt-1">
-      {screenDimensions.width <= 600 && (
+      {isMobileBreakPoint() && (
         <>
           {renderChart()}
           {renderPlanetsAndHouses()}
@@ -410,7 +422,7 @@ export default function ChartAndData(props: Props) {
         </>
       )}
 
-      {screenDimensions.width > 600 && (
+      {!isMobileBreakPoint() && (
         <>
           {renderArabicPartAndAspectsTable()}
           {renderChart()}

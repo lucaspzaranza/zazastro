@@ -6,6 +6,7 @@ import BirthChart from "./components/charts/BirthChart";
 import { AspectsContextProvider } from "@/contexts/AspectsContext";
 import { ChartMenuContextProvider } from "@/contexts/ChartMenuContext";
 import { ProfilesContextProvider } from "@/contexts/ProfilesContext";
+import { ScreenDimensionsContextProvider } from "@/contexts/ScreenDimensionsContext";
 
 export default function Home() {
   return (
@@ -20,7 +21,9 @@ export default function Home() {
           <BirthChartContextProvider>
             <ArabicPartsContextProvider>
               <AspectsContextProvider>
-                <BirthChart />
+                <ScreenDimensionsContextProvider>
+                  <BirthChart />
+                </ScreenDimensionsContextProvider>
               </AspectsContextProvider>
             </ArabicPartsContextProvider>
           </BirthChartContextProvider>

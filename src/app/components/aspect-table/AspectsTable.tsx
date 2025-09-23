@@ -30,6 +30,7 @@ import {
   TableFilterOptions,
   ElementFilterNode,
 } from "@/interfaces/AspectTableInterfaces";
+import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 
 export default function AspectsTable({
   aspects,
@@ -83,6 +84,8 @@ export default function AspectsTable({
   ]);
   const [cumulatedOptions, setCumulatedOptions] =
     useState<TableFilterOptions>();
+
+  const { isMobileBreakPoint } = useScreenDimensions();
 
   const distanceValues: AspectDistance[] = [];
   const distanceTypes: AspectDistanceTypeInterface[] = [];
@@ -730,7 +733,7 @@ export default function AspectsTable({
                       <td className={tdClasses}>
                         <div
                           className={
-                            "w-full pl-1 flex flex-row items-center gap-1 text-[0.7rem] font-bold break-words"
+                            "w-full pl-1 flex flex-row items-center gap-1 text-[0.65rem] md:text-[0.7rem] font-bold break-all md:break-words"
                           }
                         >
                           <img src="star.png" width={10} />
@@ -762,8 +765,10 @@ export default function AspectsTable({
         )}
         <tfoot className="h-7 flex flex-row items-center justify-around p-2 font-bold">
           <tr className="w-full flex flex-row justify-between">
-            <td>
-              <span>Ítens por página&nbsp;</span>
+            <td className="w-1/2 md:w-[90%] text-start md:text-center">
+              {isMobileBreakPoint() && <span>Ítens</span>}
+              {!isMobileBreakPoint() && <span>Ítens por página</span>}
+              &nbsp;
               <select
                 value={itemsPerPage}
                 className="border-2"
@@ -777,45 +782,47 @@ export default function AspectsTable({
               </select>
             </td>
 
-            <td className="flex flex-row items-center">
-              <button
-                className="hover:outline-2 outline-offset-[-2px] p-1 active:bg-gray-200"
-                onClick={() => clearFilters()}
-                title="Limpar Filtros"
-              >
-                <img src="trash.png" width={15} height={15} />
-              </button>
-            </td>
+            <td className="w-full flex flex-row items-center justify-end gap-2">
+              <div className="flex flex-row items-center">
+                <button
+                  className="hover:outline-2 outline-offset-[-2px] p-1 active:bg-gray-200"
+                  onClick={() => clearFilters()}
+                  title="Limpar Filtros"
+                >
+                  <img src="trash.png" width={15} height={15} />
+                </button>
 
-            <td className="flex flex-row items-center justify-center">
-              {tableCurrentPage}/{tablePageCount}
-            </td>
+                <div>
+                  {tableCurrentPage}/{tablePageCount}
+                </div>
+              </div>
 
-            <td className="flex flex-row gap-2">
-              <button
-                className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
-                onClick={() => updateTableCurrentPage(-999)}
-              >
-                |◀
-              </button>
-              <button
-                className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
-                onClick={() => updateTableCurrentPage(-1)}
-              >
-                ◀
-              </button>
-              <button
-                className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
-                onClick={() => updateTableCurrentPage(1)}
-              >
-                ▶
-              </button>
-              <button
-                className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
-                onClick={() => updateTableCurrentPage(999)}
-              >
-                ▶|
-              </button>
+              <div className="w-fit flex flex-row items-center justify-between gap-2">
+                <button
+                  className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
+                  onClick={() => updateTableCurrentPage(-999)}
+                >
+                  |◀
+                </button>
+                <button
+                  className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
+                  onClick={() => updateTableCurrentPage(-1)}
+                >
+                  ◀
+                </button>
+                <button
+                  className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
+                  onClick={() => updateTableCurrentPage(1)}
+                >
+                  ▶
+                </button>
+                <button
+                  className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
+                  onClick={() => updateTableCurrentPage(999)}
+                >
+                  ▶|
+                </button>
+              </div>
             </td>
           </tr>
         </tfoot>

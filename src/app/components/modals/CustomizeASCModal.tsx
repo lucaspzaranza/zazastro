@@ -47,20 +47,6 @@ export default function CustomizeASCModal(props: ASCModalProps) {
     }
   }, []);
 
-  // useEffect(() => {
-  //   if (!birthChart) return;
-
-  //   setPartsToUse([]);
-
-  //   baseParts?.forEach((part) => {
-  //     const newArchArabicPart = calculateBirthArchArabicPart(
-  //       part,
-  //       customAscendant ?? birthChart.housesData.ascendant
-  //     );
-  //     setPartsToUse((prev) => [...prev!, newArchArabicPart]);
-  //   });
-  // }, [customAscendant, baseParts, calculateBirthArchArabicPart]); Comentei, vai que o GPT recomendou errado. Tô com preguiça de testar.
-
   useEffect(() => {
     if (!birthChart) return;
 
@@ -70,13 +56,13 @@ export default function CustomizeASCModal(props: ASCModalProps) {
     );
 
     setPartsToUse(newParts);
-  }, [customAscendant, birthChart, baseParts, calculateBirthArchArabicPart]);
+  }, [customAscendant, birthChart, baseParts]);
 
   return (
-    <div className="absolute w-full md:w-[25.8rem] h-[80vh] flex flex-row top-[-22%] items-center justify-start z-10">
+    <div className="absolute w-full md:w-[23rem] h-[80vh] flex flex-row top-[-22%] items-center justify-start z-10">
       <div className="w-full md:w-[41rem] h-[25rem] bg-white outline-2">
         <header className="relative w-full h-[3rem] bg-white flex flex-row items-center justify-center outline-1">
-          <h1 className="font-bold text-lg md:text-xl">
+          <h1 className="w-[90%] font-bold text-[1rem] md:text-xl">
             Partes Árabes por Arco Natal
           </h1>
           <button
@@ -178,7 +164,7 @@ export default function CustomizeASCModal(props: ASCModalProps) {
             className="text-sm"
             isInsideModal
             partColWidth="w-min"
-            antisciaColWidth="w-full"
+            antisciaColWidth="w-full ml-3 md:pr-16 md:ml-0"
             parts={partsToUse}
             showMenuButtons={false}
           />

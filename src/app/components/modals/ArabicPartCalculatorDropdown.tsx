@@ -21,7 +21,7 @@ export default function ArabicPartCalculatorDropdown(
 
   return (
     <div className="flex flex-col text-sm gap-1">
-      <label>{label}</label>
+      <label className="text-nowrap">{label}</label>
       <select
         className="w-full md:w-[7.5rem] border-2 rounded-sm"
         defaultValue={items["Ângulos"][0].key}

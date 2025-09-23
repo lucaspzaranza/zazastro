@@ -16,6 +16,7 @@ import {
   mod360,
 } from "@/app/utils/chartUtils";
 import { useChartMenu } from "@/contexts/ChartMenuContext";
+import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 
 interface ArabicPartCalculatorProps {
   onClose?: () => void;
@@ -26,6 +27,7 @@ export default function ArabicPartCalculatorModal(
 ) {
   const { onClose } = props;
 
+  const { isMobileBreakPoint } = useScreenDimensions();
   const { chartMenu } = useChartMenu();
   const { birthChart, returnChart, lunarDerivedChart } = useBirthChart();
   const { arabicParts } = useArabicParts();
@@ -272,12 +274,8 @@ export default function ArabicPartCalculatorModal(
   }
 
   return (
-    <div className="absolute w-full md:w-[30rem] h-[80vh] flex flex-row top-[-22%] items-center justify-start z-10">
-      <div
-        className={`w-full md:w-[41rem] ${
-          chartMenu !== "birth" ? "h-[34.5rem] md:h-[33rem]" : "h-[26rem]"
-        } bg-white outline-2`}
-      >
+    <div className="absolute w-full md:w-[30rem] h-[80vh] flex flex-row top-[-22%] items-center justify-start z-10 text-sm md:text-[1rem]">
+      <div className={`w-full md:w-[41rem] min-h-[26rem] bg-white outline-2`}>
         <header className="relative w-full h-[3rem] bg-white flex flex-row items-center justify-center outline-1">
           <h1 className="font-bold text-xl">Calcular Parte Árabe</h1>
           <button

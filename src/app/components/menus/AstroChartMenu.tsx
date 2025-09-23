@@ -54,7 +54,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
               togglePlanetsAntiscia?.();
             }}
           >
-            Antiscion Planetas{" "}
+            <span className="w-min">Antiscion Planetas</span>
             {planetsAntiscia && <img src={checkSrc} width={checkSize} />}
           </button>
 
@@ -65,7 +65,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
               toggleArabicParts?.();
             }}
           >
-            Partes Árabes
+            <span className="w-min">Partes Árabes</span>
             {arabicParts && <img src={checkSrc} width={checkSize} />}
           </button>
 
@@ -76,7 +76,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
               toggleArabicPartsAntiscia?.();
             }}
           >
-            Antiscion Partes Árabes
+            <span className="w-min">Antiscion Partes Árabes</span>
             {arabicPartsAntiscia && <img src={checkSrc} width={checkSize} />}
           </button>
         </div>
