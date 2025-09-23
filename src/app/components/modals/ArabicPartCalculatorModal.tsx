@@ -16,7 +16,6 @@ import {
   mod360,
 } from "@/app/utils/chartUtils";
 import { useChartMenu } from "@/contexts/ChartMenuContext";
-import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 
 interface ArabicPartCalculatorProps {
   onClose?: () => void;
@@ -27,7 +26,6 @@ export default function ArabicPartCalculatorModal(
 ) {
   const { onClose } = props;
 
-  const { isMobileBreakPoint } = useScreenDimensions();
   const { chartMenu } = useChartMenu();
   const { birthChart, returnChart, lunarDerivedChart } = useBirthChart();
   const { arabicParts } = useArabicParts();
