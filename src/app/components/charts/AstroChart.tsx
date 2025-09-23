@@ -83,7 +83,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       ? 1.25
       : 1.5
     : showOuterchart
-    ? 0.75
+    ? 0.7
     : 0.85;
   const scaledSize = size * scaleFactor;
   const center = size / 2;
