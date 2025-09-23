@@ -316,7 +316,7 @@ export default function ChartAndData(props: Props) {
                     <span className="w-[55%] md:w-[14rem] flex flex-row items-center">
                       <span className="w-full flex flex-row items-center justify-start md:justify-between mr-[-20px]">
                         {planet.type === "northNode" && (
-                          <span className="w-8/12 md:w-full text-[0.75rem]">
+                          <span className="w-8/12 md:w-full text-[0.75rem] md:text-[1rem]">
                             {planet.name}
                           </span>
                         )}
