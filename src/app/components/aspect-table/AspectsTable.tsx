@@ -182,7 +182,7 @@ export default function AspectsTable({
     }
 
     if (element.elementType === "fixedStar") {
-      return <img src="stars.png" width={40} />;
+      return <Image alt="stars" src="/stars.png" width={40} height={40} />;
     }
 
     return <span className="text-sm">{element.name}</span>;
@@ -737,7 +737,12 @@ export default function AspectsTable({
                             "w-full pl-1 flex flex-row items-center gap-1 text-[0.65rem] md:text-[0.7rem] font-bold break-all md:break-words"
                           }
                         >
-                          <img src="star.png" width={10} />
+                          <Image
+                            alt="star"
+                            src="/star.png"
+                            width={10}
+                            height={10}
+                          />
                           {aspect.aspectedElement.name}
                         </div>
                       </td>

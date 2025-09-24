@@ -16,6 +16,7 @@ import {
   planetTypes,
 } from "@/interfaces/BirthChartInterfaces";
 import moment from "moment";
+import Image from "next/image";
 import React, { useState } from "react";
 
 interface LunarModalProps {
@@ -145,7 +146,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
           }}
         >
           <div className="absolute w-[19px] h-[19px] hover:opacity-20 hover:bg-gray-400 active:bg-gray-900" />
-          <img src="close.png" width={25} />
+          <Image alt="close" src="/close.png" width={25} height={25} />
         </button>
       </header>
 

@@ -19,6 +19,7 @@ import AspectFilterModal from "../modals/AspectFilterModal";
 import DistanceTypeFilterModal from "../modals/DistanceTypeFilterModal";
 import DistanceFilterModal from "../modals/DistanceFilterModal";
 import ElementFilterModal from "../modals/ElementFilterModal";
+import Image from "next/image";
 
 export type AspectFilterButtonImperativeHandle = {
   clearFilter: () => void;
@@ -102,7 +103,7 @@ function AspectTableFilterButtonFn(
   }
 
   const imgClasses = `${disableFilterBtn ? "opacity-40" : ""}`;
-  const imgSrc = `${filterIsActive ? "filter-on.png" : "filter.png"}`;
+  const imgSrc = `${filterIsActive ? "/filter-on.png" : "/filter.png"}`;
 
   return (
     <div className="w-full relative">
@@ -115,7 +116,13 @@ function AspectTableFilterButtonFn(
         }
         title="Filtro de Pesquisa"
       >
-        <img className={imgClasses} src={imgSrc} width={14} />
+        <Image
+          alt="filter"
+          className={imgClasses}
+          src={imgSrc}
+          width={14}
+          height={14}
+        />
       </button>
 
       {elements && elements?.length > 0 && type === "element" && (

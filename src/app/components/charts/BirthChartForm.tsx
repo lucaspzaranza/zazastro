@@ -13,6 +13,7 @@ import PresavedChartsDropdown from "./PresavedChartsDropdown";
 import CitySearch from "../CitySearch";
 import { useProfiles } from "@/contexts/ProfilesContext";
 import { useBirthChart } from "@/contexts/BirthChartContext";
+import Image from "next/image";
 
 interface BirthChartFormProps {
   currentBirthDate?: BirthDate;
@@ -307,7 +308,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
             className="w-full bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 flex flex-row items-center justify-center gap-2"
           >
             Editar
-            <img src="edit.png" width={16} />
+            <Image alt="edit" src="/edit.png" width={16} height={16} />
           </button>
 
           <button
@@ -321,7 +322,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
             className="w-full bg-red-700 text-white px-4 py-2 rounded hover:bg-red-800 flex flex-row items-center justify-center gap-2"
           >
             Deletar
-            <img src="trash-white.png" width={17} />
+            <Image alt="delete" src="/trash-white.png" width={17} height={17} />
           </button>
         </div>
       )}

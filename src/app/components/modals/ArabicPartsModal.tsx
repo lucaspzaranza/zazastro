@@ -7,6 +7,7 @@ import {
 } from "@/app/utils/chartUtils";
 import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 import { ArabicPart } from "@/interfaces/ArabicPartInterfaces";
+import Image from "next/image";
 import React from "react";
 
 interface ArabicPartsModalProps {
@@ -59,7 +60,7 @@ export default function ArabicPartsModal(props: ArabicPartsModalProps) {
             }}
           >
             <div className="w-[25px] h-[25px] hover:opacity-20 hover:bg-gray-400 active:bg-gray-900" />
-            <img src="close.png" width={30} />
+            <Image alt="close" src="/close.png" width={30} height={30} />
           </button>
         </header>
 

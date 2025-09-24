@@ -11,6 +11,7 @@ import {
   ReturnChartType,
   SelectedCity,
 } from "@/interfaces/BirthChartInterfaces";
+import Image from "next/image";
 
 export const ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT = 10;
 
@@ -221,10 +222,17 @@ export function getPlanetImage(
 ): React.ReactNode {
   const folder = "planets";
   const { isAntiscion, isRetrograde } = options;
-  const path = `${folder}${isAntiscion ? "/antiscion" : ""}/${planet}${
+  const path = `/${folder}${isAntiscion ? "/antiscion" : ""}/${planet}${
     isRetrograde ? "-rx" : ""
   }.png`;
-  return <img src={path} width={options.size ?? 15} />;
+  return (
+    <Image
+      alt="planet"
+      src={path}
+      width={options.size ?? 15}
+      height={options.size ?? 15}
+    />
+  );
 }
 
 export function getArabicPartImage(
@@ -235,10 +243,17 @@ export function getArabicPartImage(
 ): React.ReactNode {
   const folder = "planets";
   const part = lot.planet ? lot.partKey : "custom-lot";
-  const path = `${folder}${
+  const path = `/${folder}${
     options.isAntiscion ? "/antiscion" : ""
   }/${part}.png`;
-  return <img src={path} width={options.size ?? 15} />;
+  return (
+    <Image
+      alt="arabicPart"
+      src={path}
+      width={options.size ?? 15}
+      height={options.size ?? 15}
+    />
+  );
 }
 
 export function getAspectImage(
@@ -247,9 +262,9 @@ export function getAspectImage(
 ): React.ReactNode {
   const folder = "aspects";
   // const aspectType = aspect.aspectType;
-  const path = `${folder}/${aspectType}.png`;
+  const path = `/${folder}/${aspectType}.png`;
 
-  return <img src={path} width={size} />;
+  return <Image alt="aspect" src={path} width={size} height={size} />;
 }
 
 export const formatSignColor = (stringWithSign: string): React.ReactNode => {

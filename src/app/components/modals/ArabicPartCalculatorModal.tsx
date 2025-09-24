@@ -16,6 +16,7 @@ import {
   mod360,
 } from "@/app/utils/chartUtils";
 import { useChartMenu } from "@/contexts/ChartMenuContext";
+import Image from "next/image";
 
 interface ArabicPartCalculatorProps {
   onClose?: () => void;
@@ -283,7 +284,7 @@ export default function ArabicPartCalculatorModal(
             }}
           >
             <div className="absolute w-[25px] h-[25px] hover:opacity-20 hover:bg-gray-400 active:bg-gray-900" />
-            <img src="close.png" width={30} />
+            <Image alt="close" src="/close.png" width={30} height={30} />
           </button>
         </header>
 

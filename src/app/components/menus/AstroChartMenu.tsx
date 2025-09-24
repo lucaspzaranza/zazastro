@@ -2,6 +2,7 @@ import { useBirthChart } from "@/contexts/BirthChartContext";
 import { useChartMenu } from "@/contexts/ChartMenuContext";
 import React, { useState } from "react";
 import LunarDerivedModal from "../modals/LunarDerivedModal";
+import Image from "next/image";
 
 interface AstroChartMenuProps {
   toggleCombineWithBirthChart?: () => void;
@@ -38,7 +39,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
     setLunarDerivedModal(false);
   }
 
-  const checkSrc = "check.png";
+  const checkSrc = "/check.png";
   const checkSize = 13;
   const className =
     "bg-blue-800 flex flex-row gap-1 items-center justify-center text-[0.65rem] md:text-[0.75rem] w-full text-white px-0 py-2 rounded hover:bg-blue-900";
@@ -55,7 +56,14 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
             }}
           >
             <span className="w-min md:w-auto">Antiscion Planetas</span>
-            {planetsAntiscia && <img src={checkSrc} width={checkSize} />}
+            {planetsAntiscia && (
+              <Image
+                alt="check"
+                src={checkSrc}
+                width={checkSize}
+                height={checkSize}
+              />
+            )}
           </button>
 
           <button
@@ -66,7 +74,14 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
             }}
           >
             <span className="w-min md:w-auto">Partes Árabes</span>
-            {arabicParts && <img src={checkSrc} width={checkSize} />}
+            {arabicParts && (
+              <Image
+                alt="check"
+                src={checkSrc}
+                width={checkSize}
+                height={checkSize}
+              />
+            )}
           </button>
 
           <button
@@ -77,7 +92,14 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
             }}
           >
             <span className="w-min md:w-auto">Antiscion Partes Árabes</span>
-            {arabicPartsAntiscia && <img src={checkSrc} width={checkSize} />}
+            {arabicPartsAntiscia && (
+              <Image
+                alt="check"
+                src={checkSrc}
+                width={checkSize}
+                height={checkSize}
+              />
+            )}
           </button>
         </div>
 
@@ -92,7 +114,12 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
             >
               Combinar com Mapa Natal
               {isCombinedWithBirthChart && (
-                <img src={checkSrc} width={checkSize} />
+                <Image
+                  alt="check"
+                  src={checkSrc}
+                  width={checkSize}
+                  height={checkSize}
+                />
               )}
             </button>
           )}
@@ -107,7 +134,12 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
             >
               Combinar com Retorno Solar
               {isCombinedWithReturnChart && (
-                <img src={checkSrc} width={checkSize} />
+                <Image
+                  alt="check"
+                  src={checkSrc}
+                  width={checkSize}
+                  height={checkSize}
+                />
               )}
             </button>
           )}

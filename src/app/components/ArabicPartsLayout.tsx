@@ -5,6 +5,7 @@ import ArabicPartsModal from "./modals/ArabicPartsModal";
 import CustomizeASCModal from "./modals/CustomizeASCModal";
 import ArabicPartCalculatorModal from "./modals/ArabicPartCalculatorModal";
 import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
+import Image from "next/image";
 
 interface ArabicPartsLayoutProps {
   title?: string;
@@ -45,7 +46,12 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
                 setLotCalculator(true);
               }}
             >
-              <img src="dropdown-menu.png" width={20} height={20} />
+              <Image
+                alt="dropdown"
+                src="/dropdown-menu.png"
+                width={20}
+                height={20}
+              />
             </button>
 
             <button
@@ -55,7 +61,12 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
                 setCustomASCModal(true);
               }}
             >
-              <img src="customize.png" width={20} height={20} />
+              <Image
+                alt="customize"
+                src="/customize.png"
+                width={20}
+                height={20}
+              />
             </button>
             <button
               title="Ver mais"
@@ -64,7 +75,12 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
                 setModalIsOpen(true);
               }}
             >
-              <img src="see-more.png" width={20} height={20} />
+              <Image
+                alt="more info"
+                src="/see-more.png"
+                width={20}
+                height={20}
+              />
             </button>
           </div>
         )}

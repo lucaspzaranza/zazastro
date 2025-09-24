@@ -10,6 +10,7 @@ import ArabicPartsLayout from "../ArabicPartsLayout";
 import { ArabicPart } from "@/interfaces/ArabicPartInterfaces";
 import { useArabicPartCalculations } from "@/hooks/useArabicPartCalculations";
 import { useBirthChart } from "@/contexts/BirthChartContext";
+import Image from "next/image";
 
 interface ASCModalProps {
   baseParts?: ArabicPart[];
@@ -72,7 +73,7 @@ export default function CustomizeASCModal(props: ASCModalProps) {
             }}
           >
             <div className="absolute w-[25px] h-[25px] hover:opacity-20 hover:bg-gray-400 active:bg-gray-900" />
-            <img src="close.png" width={30} />
+            <Image alt="close" src="/close.png" width={30} />
           </button>
         </header>
 
