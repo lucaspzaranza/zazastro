@@ -31,6 +31,7 @@ import {
   ElementFilterNode,
 } from "@/interfaces/AspectTableInterfaces";
 import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
+import Image from "next/image";
 
 export default function AspectsTable({
   aspects,
@@ -765,13 +766,15 @@ export default function AspectsTable({
         )}
         <tfoot className="h-7 flex flex-row items-center justify-around p-2 font-bold">
           <tr className="w-full flex flex-row justify-between">
-            <td className="w-1/2 md:w-[90%] text-start md:text-center">
+            <td className="w-1/2 text-start md:text-center flex flex-row items-center tracking-tight">
               {isMobileBreakPoint() && <span>Ítens</span>}
-              {!isMobileBreakPoint() && <span>Ítens por página</span>}
-              &nbsp;
+              {!isMobileBreakPoint() && (
+                <span className="w-full text-nowrap">Ítens por página</span>
+              )}
+
               <select
                 value={itemsPerPage}
-                className="border-2"
+                className="border-2 ml-1"
                 onChange={(e) => {
                   updateTableItemsPerPage(Number.parseInt(e.target.value));
                 }}
@@ -782,17 +785,22 @@ export default function AspectsTable({
               </select>
             </td>
 
-            <td className="w-full flex flex-row items-center justify-end gap-2">
-              <div className="flex flex-row items-center">
+            <td className="w-full flex flex-row items-center justify-end gap-1">
+              <div className="w-full flex flex-row items-center">
                 <button
                   className="hover:outline-2 outline-offset-[-2px] p-1 active:bg-gray-200"
                   onClick={() => clearFilters()}
                   title="Limpar Filtros"
                 >
-                  <img src="trash.png" width={15} height={15} />
+                  <Image
+                    alt="trash-can"
+                    src="/trash.png"
+                    width={15}
+                    height={15}
+                  />
                 </button>
 
-                <div>
+                <div className="w-min pl-1 tracking-tight">
                   {tableCurrentPage}/{tablePageCount}
                 </div>
               </div>

@@ -31,7 +31,9 @@ export default function LunarDerivedModal(props: LunarModalProps) {
   const [day, setDay] = useState(0);
   const [month, setMonth] = useState(1);
   const [year, setYear] = useState(0);
-  // const { chartMenu, addChartMenu, updateChartMenuDirectly } = useChartMenu();
+
+  const { isCombinedWithBirthChart, updateIsCombinedWithBirthChart } =
+    useBirthChart();
 
   const makeChart = async () => {
     if (birthChart === undefined) return;
@@ -124,6 +126,10 @@ export default function LunarDerivedModal(props: LunarModalProps) {
     });
 
     setTimeout(() => {
+      if (isCombinedWithBirthChart) {
+        updateIsCombinedWithBirthChart(false);
+      }
+
       onClose?.();
     }, 100);
   };

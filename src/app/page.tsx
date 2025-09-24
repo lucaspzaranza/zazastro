@@ -7,13 +7,14 @@ import { AspectsContextProvider } from "@/contexts/AspectsContext";
 import { ChartMenuContextProvider } from "@/contexts/ChartMenuContext";
 import { ProfilesContextProvider } from "@/contexts/ProfilesContext";
 import { ScreenDimensionsContextProvider } from "@/contexts/ScreenDimensionsContext";
+import Image from "next/image";
 
 export default function Home() {
   return (
     <div className="min-h-[70vh] flex flex-col items-center justify-between font-[family-name:var(--font-geist-mono)]">
       <div className=" flex flex-row items-center gap-2 pt-4">
         <h1 className="text-3xl font-bold">Zazastro</h1>
-        <img src="pisces.png" width={30} />
+        <Image alt="logo" src="/pisces.png" width={30} height={30} />
       </div>
 
       <ProfilesContextProvider>

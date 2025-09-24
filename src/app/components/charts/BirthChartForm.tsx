@@ -25,11 +25,11 @@ export default function BirthChartForm(props: BirthChartFormProps) {
   const { profiles, createProfile, updateProfile, deleteProfile } =
     useProfiles();
   const [name, setName] = useState("");
-  const [day, setDay] = useState(0);
+  const [day, setDay] = useState<number | null>(null);
   const [month, setMonth] = useState(1);
-  const [year, setYear] = useState(0);
-  const [hour, setHour] = useState(0);
-  const [minutes, setMinutes] = useState(0);
+  const [year, setYear] = useState<number | null>(null);
+  const [hour, setHour] = useState<number | null>(null);
+  const [minutes, setMinutes] = useState<number | null>(null);
   const [coordinates, setCoordinates] = useState<SelectedCity>({
     latitude: 0,
     longitude: 0,
@@ -54,7 +54,14 @@ export default function BirthChartForm(props: BirthChartFormProps) {
   };
 
   useEffect(() => {
-    if (day > 0 && month > 0 && year > 0 && name.length > 0) {
+    if (
+      day &&
+      month &&
+      year &&
+      name.length > 0 &&
+      hour !== null &&
+      minutes !== null
+    ) {
       setProfile({
         id: editProfile ? profile?.id : undefined,
         name,
@@ -193,11 +200,11 @@ export default function BirthChartForm(props: BirthChartFormProps) {
               className="border-2 rounded-sm w-1/3 px-1"
               placeholder="Dia"
               type="number"
-              value={day}
+              value={day ?? ""}
               onChange={(e) => {
                 const parsed = Number.parseInt(e.target.value);
                 if (Number.isNaN(parsed)) {
-                  setDay(0);
+                  setDay(null);
                   return;
                 }
 
@@ -223,13 +230,12 @@ export default function BirthChartForm(props: BirthChartFormProps) {
               required
               type="number"
               className="border-2 w-20 p-1 rounded-sm"
+              value={year ?? ""}
               placeholder="Ano"
-              value={year}
               onChange={(e) => {
                 const parsed = Number.parseInt(e.target.value);
-
                 if (Number.isNaN(parsed)) {
-                  setYear(0);
+                  setYear(null);
                   return;
                 }
 
@@ -246,11 +252,11 @@ export default function BirthChartForm(props: BirthChartFormProps) {
               type="number"
               className="border-2 w-16 p-1 rounded-sm"
               placeholder="16"
-              value={hour}
+              value={hour ?? ""}
               onChange={(e) => {
                 const parsed = Number.parseInt(e.target.value);
                 if (Number.isNaN(parsed)) {
-                  setHour(0);
+                  setHour(null);
                   return;
                 }
 
@@ -266,11 +272,11 @@ export default function BirthChartForm(props: BirthChartFormProps) {
               type="number"
               className="border-2 w-16 p-1 rounded-sm"
               placeholder="30"
-              value={minutes}
+              value={minutes ?? ""}
               onChange={(e) => {
                 const parsed = Number.parseInt(e.target.value);
                 if (Number.isNaN(parsed)) {
-                  setMinutes(0);
+                  setMinutes(null);
                   return;
                 }
 
