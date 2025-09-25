@@ -23,6 +23,7 @@ import BirthChartForm from "./BirthChartForm";
 import PresavedChartsDropdown from "./PresavedChartsDropdown";
 import { useProfiles } from "@/contexts/ProfilesContext";
 import { apiFetch } from "@/app/utils/api";
+import SinastryChart from "./SinastryChart";
 
 type MenuButtonChoice =
   | "home"
@@ -43,6 +44,7 @@ export default function BirthChart() {
     updateBirthChart,
     currentCity,
     updateCurrentCity,
+    sinastryChart,
   } = useBirthChart();
   const { profiles } = useProfiles();
   const { arabicParts } = useArabicParts();
@@ -53,6 +55,9 @@ export default function BirthChart() {
   const [chartProfile, setChartProfile] = useState<
     BirthChartProfile | undefined
   >(profiles[0]);
+  const [sinastryProfile, setSinastryProfile] = useState<
+    BirthChartProfile | undefined
+  >();
 
   const firstProfileSetAtBeggining = useRef(false);
 
@@ -85,6 +90,7 @@ export default function BirthChart() {
     if (profiles.length > 0 && !firstProfileSetAtBeggining.current) {
       setChartProfile(profiles[0]);
       firstProfileSetAtBeggining.current = true;
+      setSinastryProfile(profiles[0]);
     }
   }, [profiles]);
 
@@ -125,15 +131,17 @@ export default function BirthChart() {
   const getPlanetReturn = async (returnType: ReturnChartType) => {
     setLoading(true);
 
+    if (!chartProfile) return;
+
     const targetDate: BirthDate = {
-      ...chartProfile!.birthDate!,
-      day: returnType === "solar" ? chartProfile!.birthDate!.day : lunarDay,
+      ...chartProfile.birthDate!,
+      day: returnType === "solar" ? chartProfile.birthDate!.day : lunarDay,
       month:
-        returnType === "solar" ? chartProfile!.birthDate!.month : lunarMonth,
+        returnType === "solar" ? chartProfile.birthDate!.month : lunarMonth,
       year: returnType === "solar" ? solarYear : lunarYear,
     };
 
-    updateCurrentCity(chartProfile!.birthDate!.coordinates);
+    updateCurrentCity(chartProfile.birthDate!.coordinates);
 
     const data = await apiFetch("return/" + returnType, {
       method: "POST",
@@ -201,14 +209,76 @@ export default function BirthChart() {
     });
   };
 
+  const makeSinastryCharts = async () => {
+    setLoading(true);
+
+    console.log(chartProfile);
+    console.log(sinastryProfile);
+
+    if (!chartProfile) return;
+    if (!sinastryProfile) return;
+
+    updateCurrentCity(chartProfile.birthDate?.coordinates);
+
+    try {
+      const data = await apiFetch("birth-chart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          birthDate: chartProfile?.birthDate,
+        }),
+      });
+
+      const sinastryData = await apiFetch("birth-chart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          birthDate: sinastryProfile?.birthDate,
+        }),
+      });
+
+      updateBirthChart({
+        profileName: chartProfile?.name,
+        chartData: {
+          ...data,
+          birthDate: chartProfile?.birthDate,
+        },
+        isReturnChart: false,
+      });
+
+      updateBirthChart({
+        profileName: sinastryProfile?.name,
+        chartData: {
+          ...sinastryData,
+          birthDate: sinastryProfile?.birthDate,
+        },
+        isReturnChart: false,
+        isSinastryChart: true,
+      });
+
+      setTimeout(() => {
+        const chartType: ChartMenuType = "sinastry";
+        addChartMenu(chartType);
+        updateChartMenuDirectly(chartType);
+        setLoading(false);
+      }, 50);
+    } catch (error) {
+      console.error("Erro ao consultar mapa astral:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   function getTitleMenuTitle(): string {
     if (menu === "home") return "Selecione o tipo de mapa que deseja";
     else if (menu === "birthChart")
       return "Escolha ou crie um novo mapa astral";
     else if (menu === "solarReturn" || menu === "lunarReturn")
       return "Escolha um mapa e digite o ano da revolução ";
+    else if (menu === "sinastry")
+      return "Escolha os mapas a serem combinados em sinastria.";
 
-    return "Ronaldo";
+    return "";
   }
 
   return (
@@ -241,6 +311,13 @@ export default function BirthChart() {
                   onClick={() => setMenu("lunarReturn")}
                 >
                   Revolução Lunar
+                </button>
+
+                <button
+                  className="bg-blue-800 w-full text-white px-4 py-2 rounded hover:bg-blue-900"
+                  onClick={() => setMenu("sinastry")}
+                >
+                  Combinar mapas (Sinastria)
                 </button>
               </div>
             )}
@@ -398,6 +475,27 @@ export default function BirthChart() {
               </>
             )}
 
+            {menu === "sinastry" && (
+              <>
+                <span>Primeiro mapa:</span>
+                <PresavedChartsDropdown
+                  onChange={(profile) => setChartProfile(profile)}
+                />
+
+                <span>Segundo mapa:</span>
+                <PresavedChartsDropdown
+                  onChange={(profile) => setSinastryProfile(profile)}
+                />
+
+                <button
+                  onClick={() => makeSinastryCharts()}
+                  className="bg-blue-800 w-full text-white px-4 py-2 rounded hover:bg-blue-900"
+                >
+                  Gerar sinastria
+                </button>
+              </>
+            )}
+
             {menu === "home" && (
               <button
                 onClick={() => getMomentBirthChart()}
@@ -430,6 +528,24 @@ export default function BirthChart() {
         </span>
         <br />
         chartMenu: <span className="font-bold">{chartMenu}</span>
+        <br />
+        sinastryChart === undefined:{" "}
+        <span className="font-bold text-blue-800">
+          {(sinastryChart === undefined).toString()}
+        </span>
+        <span className="font-bold">{sinastryChart === undefined}</span>
+        <br />
+        arabicParts === undefined:{" "}
+        <span className="font-bold text-blue-800">
+          {(arabicParts === undefined).toString()}
+        </span>
+        <span className="font-bold">{arabicParts === undefined}</span>
+        <br />
+        sinastryParts === undefined:{" "}
+        <span className="font-bold text-blue-800">
+          {(sinastryParts === undefined).toString()}
+        </span>
+        <span className="font-bold">{sinastryParts === undefined}</span>
       </span> */}
 
       {birthChart && chartMenu === "birth" && (
@@ -458,6 +574,13 @@ export default function BirthChart() {
       {chartMenu === "lunarDerivedReturn" &&
         lunarDerivedChart &&
         arabicParts && <LunarDerivedChart />}
+
+      {chartMenu === "sinastry" && sinastryChart && arabicParts && (
+        <SinastryChart
+          sinastryChart={sinastryChart}
+          sinastryProfileName={sinastryProfile?.name}
+        />
+      )}
     </div>
   );
 }

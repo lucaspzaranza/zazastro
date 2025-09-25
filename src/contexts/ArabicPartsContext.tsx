@@ -14,6 +14,9 @@ interface ArabicPartsContextType {
    */
   solarReturnParts?: ArabicPartsType;
   updateSolarReturnParts?: (archArabicPartsData?: ArabicPartsType) => void;
+
+  sinastryParts?: ArabicPartsType;
+  updateSinastryArabicParts: (sinastryArabicParts?: ArabicPartsType) => void;
 }
 
 const ArabicPartsContext = createContext<ArabicPartsContextType | undefined>(
@@ -28,6 +31,10 @@ export const ArabicPartsContextProvider: React.FC<{ children: ReactNode }> = ({
     ArabicPartsType | undefined
   >();
   const [solarReturnParts, setSolarReturnParts] = useState<
+    ArabicPartsType | undefined
+  >();
+
+  const [sinastryParts, setSinastryParts] = useState<
     ArabicPartsType | undefined
   >();
 
@@ -51,6 +58,12 @@ export const ArabicPartsContextProvider: React.FC<{ children: ReactNode }> = ({
     });
   };
 
+  const updateSinastryArabicParts = (arabicPartsData?: ArabicPartsType) => {
+    setSinastryParts((previous) => {
+      return arabicPartsData ? { ...previous, ...arabicPartsData } : undefined;
+    });
+  };
+
   return (
     <ArabicPartsContext.Provider
       value={{
@@ -60,6 +73,8 @@ export const ArabicPartsContextProvider: React.FC<{ children: ReactNode }> = ({
         updateArchArabicParts,
         solarReturnParts,
         updateSolarReturnParts,
+        sinastryParts,
+        updateSinastryArabicParts,
       }}
     >
       {children}

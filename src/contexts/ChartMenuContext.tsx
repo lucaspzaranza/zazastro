@@ -4,7 +4,8 @@ export type ChartMenuType =
   | "birth"
   | "solarReturn"
   | "lunarReturn"
-  | "lunarDerivedReturn";
+  | "lunarDerivedReturn"
+  | "sinastry";
 
 interface ChartMenuContextType {
   chartMenu: ChartMenuType;

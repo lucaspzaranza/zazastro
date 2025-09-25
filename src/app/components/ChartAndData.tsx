@@ -233,9 +233,6 @@ export default function ChartAndData(props: Props) {
             props={{
               planets: innerChart.planets,
               housesData: innerChart.housesData,
-              // arabicParts: chartsAreEqual(innerChart, birthChart)
-              //   ? arabicParts
-              //   : archArabicParts,
               arabicParts: getInnerArabicParts()!,
               outerPlanets: outerChart?.planets,
               outerHouses: outerChart?.housesData,
@@ -287,11 +284,6 @@ export default function ChartAndData(props: Props) {
               aspects={aspectsData}
               birthChart={innerChart}
               outerChart={outerChart}
-              // arabicParts={
-              //   chartsAreEqual(innerChart, birthChart)
-              //     ? arabicParts
-              //     : archArabicParts!
-              // }
               arabicParts={getInnerArabicParts()!}
               outerArabicParts={outerArabicParts}
               initialItemsPerPage={itemsPerPage}

@@ -7,14 +7,11 @@ import ChartAndData from ".././ChartAndData";
 import {
   ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT,
   getReturnDateRangeString,
-} from "../../utils/chartUtils";
+} from "@/utils/chartUtils";
 import ChartSelectorArrows from "../ChartSelectorArrows";
 
 export default function ReturnChart() {
   const { profileName } = useBirthChart();
-  // const [input, setInput] = useState(0);
-  // const [day, setDay] = useState(0);
-  // const [month, setMonth] = useState(0);
   const { birthChart, returnChart } = useBirthChart();
   const { archArabicParts } = useArabicParts();
   const [isSolarReturn, setIsSolarReturn] = useState(true);
