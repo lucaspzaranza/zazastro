@@ -32,6 +32,7 @@ import {
 } from "@/interfaces/AspectTableInterfaces";
 import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 import Image from "next/image";
+import InfoPopup from "./InfoPopup";
 
 export default function AspectsTable({
   aspects,
@@ -70,6 +71,7 @@ export default function AspectsTable({
 
   const backupValue = useRef(0);
 
+  const [openInfoPopup, setOpenInfoPopup] = useState(false);
   const [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage ?? 5);
   const [tableCurrentPage, setTableCurrentPage] = useState(1);
   const [tablePageCount, setTablePageCount] = useState(1);
@@ -632,7 +634,19 @@ export default function AspectsTable({
 
   return (
     <div>
-      <h2 className="font-bold text-lg mb-2">Aspectos:</h2>
+      <div className="w-full flex flex-row items-center justify-between">
+        <h2 className="font-bold text-lg mb-2">Aspectos:</h2>
+        <Image
+          alt="info"
+          src="/info.png"
+          width={20}
+          height={20}
+          className="hover:scale-110"
+          onClick={() => setOpenInfoPopup((prev) => !prev)}
+        />
+      </div>
+
+      {openInfoPopup && <InfoPopup />}
 
       <table className="w-full md:w-[415px] flex flex-col border-2 text-[0.75rem] md:text-sm text-center">
         <thead>
