@@ -437,7 +437,7 @@ export default function AspectsTable({
 
     for (let index = 0; index < emptyRowsCount; index++) {
       const trClasses = `flex flex-row border-t-2 ${
-        index > 0 ? "border-white" : ""
+        index > 0 ? "border-[#fdfdfd]" : ""
       }`;
       rows.push(
         <tr key={index} className={trClasses}>

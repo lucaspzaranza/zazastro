@@ -62,7 +62,7 @@ export default function BirthChart() {
   const firstProfileSetAtBeggining = useRef(false);
 
   const { chartMenu, addChartMenu, updateChartMenuDirectly } = useChartMenu();
-  const { sinastryParts, updateSinastryArabicParts } = useArabicParts();
+  // const { sinastryParts, updateSinastryArabicParts } = useArabicParts();
 
   const [menu, setMenu] = useState<MenuButtonChoice>("home");
 
