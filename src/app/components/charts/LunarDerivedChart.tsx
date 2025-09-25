@@ -81,7 +81,11 @@ export default function LunarDerivedChart() {
               )}
             </h1>
           </ChartSelectorArrows>
-          <ChartDate chartType="return" customReturnTime={returnTime} />
+          <ChartDate
+            chartType="return"
+            customReturnTime={returnTime}
+            birthChart={lunarDerivedChart}
+          />
           {!combineWithBirthChart && !combineWithReturnChart && (
             <ChartAndData
               innerChart={lunarDerivedChart}

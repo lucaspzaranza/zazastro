@@ -62,7 +62,7 @@ export default function BirthChart() {
   const firstProfileSetAtBeggining = useRef(false);
 
   const { chartMenu, addChartMenu, updateChartMenuDirectly } = useChartMenu();
-  // const { sinastryParts, updateSinastryArabicParts } = useArabicParts();
+  const { sinastryParts, updateSinastryArabicParts } = useArabicParts();
 
   const [menu, setMenu] = useState<MenuButtonChoice>("home");
 
@@ -174,16 +174,15 @@ export default function BirthChart() {
           targetDate,
           returnTime: data.returnTime,
           fixedStars: data.fixedStars,
+          timezone: data.timezone,
         },
       });
 
-      setTimeout(() => {
-        const chartType: ChartMenuType =
-          returnType === "solar" ? "solarReturn" : "lunarReturn";
-        addChartMenu(chartType);
-        updateChartMenuDirectly(chartType);
-        setLoading(false);
-      }, 50);
+      const chartType: ChartMenuType =
+        returnType === "solar" ? "solarReturn" : "lunarReturn";
+      addChartMenu(chartType);
+      updateChartMenuDirectly(chartType);
+      setLoading(false);
     }
   };
 
@@ -216,11 +215,6 @@ export default function BirthChart() {
     if (!chartProfile) {
       setLoading(false);
       return;
-    }
-
-    if (!sinastryProfile && profiles.length > 0) {
-      console.log("forcing first profile to sinastry", profiles[0]);
-      setSinastryProfile(profiles[0]);
     }
 
     updateCurrentCity(chartProfile.birthDate?.coordinates);
@@ -261,12 +255,10 @@ export default function BirthChart() {
         isSinastryChart: true,
       });
 
-      setTimeout(() => {
-        const chartType: ChartMenuType = "sinastry";
-        addChartMenu(chartType);
-        updateChartMenuDirectly(chartType);
-        setLoading(false);
-      }, 50);
+      const chartType: ChartMenuType = "sinastry";
+      addChartMenu(chartType);
+      updateChartMenuDirectly(chartType);
+      setLoading(false);
     } catch (error) {
       console.error("Erro ao consultar mapa astral:", error);
     } finally {
@@ -571,7 +563,7 @@ export default function BirthChart() {
       )}
 
       {returnChart &&
-        arabicParts &&
+        // arabicParts &&
         (chartMenu === "solarReturn" || chartMenu === "lunarReturn") && (
           <ReturnChart />
         )}
@@ -580,7 +572,7 @@ export default function BirthChart() {
         lunarDerivedChart &&
         arabicParts && <LunarDerivedChart />}
 
-      {chartMenu === "sinastry" && sinastryChart && arabicParts && (
+      {chartMenu === "sinastry" && (
         <SinastryChart
           sinastryChart={sinastryChart}
           sinastryProfileName={sinastryProfile?.name}

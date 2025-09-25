@@ -25,8 +25,6 @@ export default function SinastryChart(props: SinastryProps) {
     ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT
   );
 
-  const [renderChart, setRenderChart] = useState(false);
-
   useEffect(() => {
     if (sinastryChart === undefined) return;
 
@@ -71,8 +69,6 @@ export default function SinastryChart(props: SinastryProps) {
       resignation: lots.calculateLotOfResignation(sinastryChart),
       children: lots.calculateLotOfChildren(sinastryChart),
     });
-
-    setRenderChart(true);
   }, [sinastryParts?.fortune]);
 
   useEffect(() => {
@@ -103,7 +99,7 @@ export default function SinastryChart(props: SinastryProps) {
         )}
       </ChartSelectorArrows>
 
-      {birthChart && sinastryChart && sinastryParts && renderChart && (
+      {birthChart && sinastryChart && sinastryParts && (
         <div className="w-full text-left flex flex-col items-center">
           <div className=" flex flex-row font-bold">
             {profileName}:&nbsp;

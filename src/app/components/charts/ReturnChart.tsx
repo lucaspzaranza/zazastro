@@ -65,9 +65,9 @@ export default function ReturnChart() {
         )}
       </ChartSelectorArrows>
 
-      {returnChart && (
+      {returnChart && returnChart.timezone && (
         <div className="w-full text-left flex flex-col items-center">
-          <ChartDate chartType="return" />
+          <ChartDate chartType="return" birthChart={returnChart} />
 
           {!combineWithBirthChart && returnChart && (
             <ChartAndData
