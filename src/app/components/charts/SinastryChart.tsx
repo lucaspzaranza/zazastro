@@ -18,12 +18,14 @@ export default function SinastryChart(props: SinastryProps) {
 
   const { profileName } = useBirthChart();
   const { birthChart } = useBirthChart();
-  const lots = useArabicPartCalculations();
   // const [partsArray, setParts] = useState<ArabicPart[]>([]);
   const { sinastryParts, updateSinastryArabicParts } = useArabicParts();
+  const lots = useArabicPartCalculations();
   const [tableItemsPerPage, setTableItemsPerPage] = useState(
     ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT
   );
+
+  const [renderChart, setRenderChart] = useState(false);
 
   useEffect(() => {
     if (sinastryChart === undefined) return;
@@ -42,23 +44,23 @@ export default function SinastryChart(props: SinastryProps) {
     if (sinastryParts?.fortune && sinastryParts.spirit) {
       obj = {
         ...obj,
-        necessity: lots.calculateLotOfNecessity(sinastryChart),
-        love: lots.calculateLotOfLove(sinastryChart),
+        necessity: lots.calculateLotOfNecessity(sinastryChart, sinastryParts),
+        love: lots.calculateLotOfLove(sinastryChart, sinastryParts),
       };
     }
 
     if (sinastryParts?.fortune) {
       obj = {
         ...obj,
-        valor: lots.calculateLotOfValor(sinastryChart),
-        captivity: lots.calculateLotOfCaptivity(sinastryChart),
+        valor: lots.calculateLotOfValor(sinastryChart, sinastryParts),
+        captivity: lots.calculateLotOfCaptivity(sinastryChart, sinastryParts),
       };
     }
 
     if (sinastryParts?.spirit) {
       obj = {
         ...obj,
-        victory: lots.calculateLotOfVictory(sinastryChart),
+        victory: lots.calculateLotOfVictory(sinastryChart, sinastryParts),
       };
     }
 
@@ -69,6 +71,8 @@ export default function SinastryChart(props: SinastryProps) {
       resignation: lots.calculateLotOfResignation(sinastryChart),
       children: lots.calculateLotOfChildren(sinastryChart),
     });
+
+    setRenderChart(true);
   }, [sinastryParts?.fortune]);
 
   useEffect(() => {
@@ -99,20 +103,25 @@ export default function SinastryChart(props: SinastryProps) {
         )}
       </ChartSelectorArrows>
 
-      {birthChart && sinastryChart && (
+      {birthChart && sinastryChart && sinastryParts && renderChart && (
         <div className="w-full text-left flex flex-col items-center">
-          <ChartDate chartType="return" />
+          <div className=" flex flex-row font-bold">
+            {profileName}:&nbsp;
+            <ChartDate chartType="birth" birthChart={birthChart} />
+          </div>
+          <div className=" flex flex-row font-bold">
+            {sinastryProfileName}:&nbsp;
+            <ChartDate chartType="birth" birthChart={sinastryChart} />
+          </div>
 
-          {sinastryChart && (
-            <ChartAndData
-              innerChart={birthChart}
-              outerChart={sinastryChart}
-              outerArabicParts={sinastryParts}
-              useArchArabicPartsForDataVisualization={false}
-              tableItemsPerPage={tableItemsPerPage}
-              onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
-            />
-          )}
+          <ChartAndData
+            innerChart={birthChart}
+            outerChart={sinastryChart}
+            outerArabicParts={sinastryParts}
+            useArchArabicPartsForDataVisualization={false}
+            tableItemsPerPage={tableItemsPerPage}
+            onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
+          />
         </div>
       )}
     </div>

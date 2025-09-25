@@ -18,7 +18,7 @@ export default function InfoPopup() {
               width={aspectImgSize}
               height={aspectImgSize}
             />
-            <span className="pl-1">Sextil</span>
+            <span className="pl-2">Sextil</span>
           </div>
 
           <div className="flex flex-row items-center justify-start">
@@ -28,7 +28,7 @@ export default function InfoPopup() {
               width={aspectImgSize}
               height={aspectImgSize}
             />
-            <span className="pl-1">Quadratura</span>
+            <span className="pl-2">Quadratura</span>
           </div>
 
           <div className="flex flex-row items-center justify-end md:justify-start">
@@ -38,7 +38,7 @@ export default function InfoPopup() {
               width={aspectImgSize}
               height={aspectImgSize}
             />
-            <span className="pl-1">Trígono</span>
+            <span className="pl-2">Trígono</span>
           </div>
 
           <div className="flex flex-row items-center justify-start">
@@ -48,7 +48,7 @@ export default function InfoPopup() {
               width={aspectImgSize}
               height={aspectImgSize}
             />
-            <span className="pl-1">Oposição</span>
+            <span className="pl-2">Oposição</span>
           </div>
 
           <div className="flex flex-row items-center justify-start">
@@ -58,7 +58,7 @@ export default function InfoPopup() {
               width={aspectImgSize}
               height={aspectImgSize}
             />
-            <span className="pl-1">Conjunção</span>
+            <span className="pl-2">Conjunção</span>
           </div>
         </div>
         <h2 className="text-sm md:text-[1rem] font-bold">Elementos:</h2>

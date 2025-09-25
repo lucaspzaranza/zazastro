@@ -1,5 +1,8 @@
-import { useBirthChart } from "@/contexts/BirthChartContext";
-import { BirthDate, ChartType } from "@/interfaces/BirthChartInterfaces";
+import {
+  BirthChart,
+  BirthDate,
+  ChartType,
+} from "@/interfaces/BirthChartInterfaces";
 import moment from "moment-timezone";
 import { useEffect, useState } from "react";
 import { getHourAndMinute } from "../utils/chartUtils";
@@ -8,11 +11,11 @@ export const ChartDate = (
   props: Readonly<{
     chartType: ChartType;
     customReturnTime?: string;
+    birthChart?: BirthChart;
   }>
 ) => {
-  const { chartType } = props;
+  const { chartType, birthChart } = props;
   const [date, setDate] = useState<BirthDate | undefined>();
-  const { birthChart } = useBirthChart();
 
   useEffect(() => {
     if (birthChart === undefined) return;

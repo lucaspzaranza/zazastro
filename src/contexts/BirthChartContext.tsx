@@ -34,7 +34,7 @@ interface BirthChartContextType {
   updateCurrentCity: (val?: SelectedCity) => void;
 
   sinastryChart?: BirthChart;
-  updateSinastryChart?: (sinastryChart: BirthChart) => void;
+  updateSinastryChart: (sinastryChart?: BirthChart) => void;
 }
 
 const BirthChartContext = createContext<BirthChartContextType | undefined>(

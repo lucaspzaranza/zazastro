@@ -58,6 +58,7 @@ export default function ChartAndData(props: Props) {
     updateIsCombinedWithBirthChart,
     updateIsCombinedWithReturnChart,
     isCombinedWithReturnChart,
+    updateSinastryChart,
   } = useBirthChart();
   const { chartMenu, resetChartMenus } = useChartMenu();
   const {
@@ -66,6 +67,7 @@ export default function ChartAndData(props: Props) {
     solarReturnParts,
     updateArabicParts,
     updateArchArabicParts,
+    updateSinastryArabicParts,
   } = useArabicParts();
   const [partsArray, setParts] = useState<ArabicPart[]>([]);
   const { calculateBirthArchArabicPart } = useArabicPartCalculations();
@@ -182,8 +184,9 @@ export default function ChartAndData(props: Props) {
   const handleReset = useCallback(() => {
     updateBirthChart({ isReturnChart: false, chartData: undefined });
     updateBirthChart({ isReturnChart: true, chartData: undefined });
+    updateSinastryChart(undefined);
     updateArabicParts(undefined);
-    // updateArabicParts(undefined);
+    updateSinastryArabicParts(undefined);
     updateLunarDerivedChart(undefined);
     updateIsCombinedWithBirthChart(false);
     updateIsCombinedWithReturnChart(false);

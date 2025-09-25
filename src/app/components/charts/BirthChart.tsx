@@ -62,6 +62,7 @@ export default function BirthChart() {
   const firstProfileSetAtBeggining = useRef(false);
 
   const { chartMenu, addChartMenu, updateChartMenuDirectly } = useChartMenu();
+  // const { sinastryParts, updateSinastryArabicParts } = useArabicParts();
 
   const [menu, setMenu] = useState<MenuButtonChoice>("home");
 
@@ -83,6 +84,7 @@ export default function BirthChart() {
     if (menu === "home") {
       firstProfileSetAtBeggining.current = false;
       setChartProfile(profiles[0]);
+      setSinastryProfile(profiles[0]);
     }
   }, [menu, chartProfile]);
 
@@ -90,7 +92,6 @@ export default function BirthChart() {
     if (profiles.length > 0 && !firstProfileSetAtBeggining.current) {
       setChartProfile(profiles[0]);
       firstProfileSetAtBeggining.current = true;
-      setSinastryProfile(profiles[0]);
     }
   }, [profiles]);
 
@@ -212,11 +213,15 @@ export default function BirthChart() {
   const makeSinastryCharts = async () => {
     setLoading(true);
 
-    console.log(chartProfile);
-    console.log(sinastryProfile);
+    if (!chartProfile) {
+      setLoading(false);
+      return;
+    }
 
-    if (!chartProfile) return;
-    if (!sinastryProfile) return;
+    if (!sinastryProfile && profiles.length > 0) {
+      console.log("forcing first profile to sinastry", profiles[0]);
+      setSinastryProfile(profiles[0]);
+    }
 
     updateCurrentCity(chartProfile.birthDate?.coordinates);
 
@@ -556,7 +561,7 @@ export default function BirthChart() {
                 Mapa Natal - {profileName}
               </h1>
             </ChartSelectorArrows>
-            <ChartDate chartType="birth" />
+            <ChartDate chartType="birth" birthChart={birthChart} />
             <ChartAndData
               innerChart={birthChart}
               useArchArabicPartsForDataVisualization={false}

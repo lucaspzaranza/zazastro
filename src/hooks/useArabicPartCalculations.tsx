@@ -1,6 +1,6 @@
 "use client";
 
-import { ArabicPart } from "@/interfaces/ArabicPartInterfaces";
+import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import { BirthChart } from "@/interfaces/BirthChartInterfaces";
 import {
   wrapZodiacLongitude,
@@ -91,10 +91,14 @@ export function useArabicPartCalculations() {
     };
   }
 
-  function calculateLotOfNecessity(chartData: BirthChart): ArabicPart {
+  function calculateLotOfNecessity(
+    chartData: BirthChart,
+    customParts?: ArabicPartsType
+  ): ArabicPart {
     const asc = chartData.housesData.ascendant;
-    const lotOfFortune = arabicParts!.fortune!;
-    const lotOfSpirit = arabicParts!.spirit!;
+
+    const lotOfFortune = customParts?.fortune ?? arabicParts!.fortune!;
+    const lotOfSpirit = customParts?.spirit ?? arabicParts!.spirit!;
 
     const longitudeRaw = wrapZodiacLongitude(
       asc + lotOfFortune.longitudeRaw - lotOfSpirit.longitudeRaw
@@ -110,10 +114,13 @@ export function useArabicPartCalculations() {
     };
   }
 
-  function calculateLotOfLove(chartData: BirthChart): ArabicPart {
+  function calculateLotOfLove(
+    chartData: BirthChart,
+    customParts?: ArabicPartsType
+  ): ArabicPart {
     const asc = chartData.housesData.ascendant;
-    const lotOfFortune = arabicParts!.fortune!;
-    const lotOfSpirit = arabicParts!.spirit!;
+    const lotOfFortune = customParts?.fortune ?? arabicParts!.fortune!;
+    const lotOfSpirit = customParts?.spirit ?? arabicParts!.spirit!;
 
     const longitudeRaw = wrapZodiacLongitude(
       asc + lotOfSpirit.longitudeRaw - lotOfFortune.longitudeRaw
@@ -129,9 +136,12 @@ export function useArabicPartCalculations() {
     };
   }
 
-  function calculateLotOfValor(chartData: BirthChart): ArabicPart {
+  function calculateLotOfValor(
+    chartData: BirthChart,
+    customParts?: ArabicPartsType
+  ): ArabicPart {
     const asc = chartData.housesData.ascendant;
-    const lotOfFortune = arabicParts!.fortune!;
+    const lotOfFortune = customParts?.fortune ?? arabicParts!.fortune!;
     const mars = chartData.planets.find((p) => p.type === "mars")!;
 
     const longitudeRaw = wrapZodiacLongitude(
@@ -148,9 +158,12 @@ export function useArabicPartCalculations() {
     };
   }
 
-  function calculateLotOfVictory(chartData: BirthChart): ArabicPart {
+  function calculateLotOfVictory(
+    chartData: BirthChart,
+    customParts?: ArabicPartsType
+  ): ArabicPart {
     const asc = chartData.housesData.ascendant;
-    const lotOfSpirit = arabicParts!.spirit!;
+    const lotOfSpirit = customParts?.spirit ?? arabicParts!.spirit!;
     const jupiter = chartData.planets.find((p) => p.type === "jupiter")!;
 
     const longitudeRaw = wrapZodiacLongitude(
@@ -167,9 +180,12 @@ export function useArabicPartCalculations() {
     };
   }
 
-  function calculateLotOfCaptivity(chartData: BirthChart): ArabicPart {
+  function calculateLotOfCaptivity(
+    chartData: BirthChart,
+    customParts?: ArabicPartsType
+  ): ArabicPart {
     const asc = chartData.housesData.ascendant;
-    const lotOfFortune = arabicParts!.fortune!;
+    const lotOfFortune = customParts?.fortune ?? arabicParts!.fortune!;
     const saturn = chartData.planets.find((p) => p.type === "saturn")!;
 
     const longitudeRaw = wrapZodiacLongitude(

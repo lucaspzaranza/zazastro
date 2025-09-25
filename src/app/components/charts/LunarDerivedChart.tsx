@@ -12,8 +12,6 @@ import ChartAndData from ".././ChartAndData";
 import { useBirthChart } from "@/contexts/BirthChartContext";
 import ChartSelectorArrows from "../ChartSelectorArrows";
 
-// const getGlyphOnly = true;
-
 export default function LunarDerivedChart() {
   const [returnTime, setReturnTime] = useState("");
   const [parts, setParts] = useState<ArabicPartsType>({});
