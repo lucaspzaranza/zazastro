@@ -1,12 +1,11 @@
 import { useBirthChart } from "@/contexts/BirthChartContext";
 import { BirthChart } from "@/interfaces/BirthChartInterfaces";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ChartDate } from "../ChartDate";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import ChartAndData from "../ChartAndData";
 import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT } from "@/utils/chartUtils";
 import ChartSelectorArrows from "../ChartSelectorArrows";
-import { useArabicPartCalculations } from "@/hooks/useArabicPartCalculations";
 
 interface SinastryProps {
   sinastryChart?: BirthChart;
@@ -18,72 +17,10 @@ export default function SinastryChart(props: SinastryProps) {
 
   const { profileName } = useBirthChart();
   const { birthChart } = useBirthChart();
-  // const [partsArray, setParts] = useState<ArabicPart[]>([]);
-  const { sinastryParts, updateSinastryArabicParts } = useArabicParts();
-  const lots = useArabicPartCalculations();
+  const { arabicParts, sinastryParts } = useArabicParts();
   const [tableItemsPerPage, setTableItemsPerPage] = useState(
     ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT
   );
-
-  useEffect(() => {
-    if (sinastryChart === undefined) return;
-
-    updateSinastryArabicParts({
-      fortune: lots.calculateLotOfFortune(sinastryChart),
-      spirit: lots.calculateLotOfSpirit(sinastryChart),
-    });
-  }, [sinastryChart]);
-
-  useEffect(() => {
-    let obj = { ...sinastryParts };
-
-    if (sinastryChart === undefined) return;
-
-    if (sinastryParts?.fortune && sinastryParts.spirit) {
-      obj = {
-        ...obj,
-        necessity: lots.calculateLotOfNecessity(sinastryChart, sinastryParts),
-        love: lots.calculateLotOfLove(sinastryChart, sinastryParts),
-      };
-    }
-
-    if (sinastryParts?.fortune) {
-      obj = {
-        ...obj,
-        valor: lots.calculateLotOfValor(sinastryChart, sinastryParts),
-        captivity: lots.calculateLotOfCaptivity(sinastryChart, sinastryParts),
-      };
-    }
-
-    if (sinastryParts?.spirit) {
-      obj = {
-        ...obj,
-        victory: lots.calculateLotOfVictory(sinastryChart, sinastryParts),
-      };
-    }
-
-    // Custom Arabic Parts
-    updateSinastryArabicParts({
-      ...obj,
-      marriage: lots.calculateLotOfMarriage(sinastryChart),
-      resignation: lots.calculateLotOfResignation(sinastryChart),
-      children: lots.calculateLotOfChildren(sinastryChart),
-    });
-  }, [sinastryParts?.fortune]);
-
-  useEffect(() => {
-    if (sinastryParts === undefined) return;
-
-    // setParts([]);
-
-    // arabicPartKeys.forEach((key) => {
-    //   const part = arabicParts[key];
-
-    //   if (part) {
-    //     setParts((prev) => [...prev, part]);
-    //   }
-    // });
-  }, [sinastryParts]);
 
   function handleOnItemsPerPagechanged(newItemsPerPage: number) {
     setTableItemsPerPage(newItemsPerPage);
@@ -113,6 +50,7 @@ export default function SinastryChart(props: SinastryProps) {
           <ChartAndData
             innerChart={birthChart}
             outerChart={sinastryChart}
+            arabicParts={arabicParts}
             outerArabicParts={sinastryParts}
             useArchArabicPartsForDataVisualization={false}
             tableItemsPerPage={tableItemsPerPage}

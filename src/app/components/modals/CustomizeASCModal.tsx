@@ -8,9 +8,9 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import ArabicPartsLayout from "../ArabicPartsLayout";
 import { ArabicPart } from "@/interfaces/ArabicPartInterfaces";
-import { useArabicPartCalculations } from "@/hooks/useArabicPartCalculations";
 import { useBirthChart } from "@/contexts/BirthChartContext";
 import Image from "next/image";
+import { calculateBirthArchArabicPart } from "@/app/utils/arabicPartsUtils";
 
 interface ASCModalProps {
   baseParts?: ArabicPart[];
@@ -32,7 +32,6 @@ export default function CustomizeASCModal(props: ASCModalProps) {
   );
 
   const firstModeInputRef = useRef<HTMLInputElement>(null);
-  const { calculateBirthArchArabicPart } = useArabicPartCalculations();
 
   useEffect(() => {
     if (!customAscendant && birthChart) {

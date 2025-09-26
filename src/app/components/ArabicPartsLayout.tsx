@@ -6,6 +6,8 @@ import CustomizeASCModal from "./modals/CustomizeASCModal";
 import ArabicPartCalculatorModal from "./modals/ArabicPartCalculatorModal";
 import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 import Image from "next/image";
+import { useChartMenu } from "@/contexts/ChartMenuContext";
+import { useBirthChart } from "@/contexts/BirthChartContext";
 
 interface ArabicPartsLayoutProps {
   title?: string;
@@ -15,6 +17,7 @@ interface ArabicPartsLayoutProps {
   partColWidth?: string;
   antisciaColWidth?: string;
   isInsideModal: boolean;
+  onToggleInnerPartsVisualization?: (showOuterParts: boolean) => void;
 }
 
 export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
@@ -26,17 +29,51 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
     partColWidth,
     antisciaColWidth,
     isInsideModal,
+    onToggleInnerPartsVisualization,
   } = props;
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [customASCModal, setCustomASCModal] = useState(false);
   const [lotCalculator, setLotCalculator] = useState(false);
+  const [showInnerParts, setShowInnerParts] = useState(true);
+
+  const { isCombinedWithBirthChart, isCombinedWithReturnChart } =
+    useBirthChart();
 
   const { isMobileBreakPoint } = useScreenDimensions();
+  const { chartMenu } = useChartMenu();
+
+  function toggleInnerPartsVisualization() {
+    setShowInnerParts((prev) => !prev);
+    onToggleInnerPartsVisualization?.(!showInnerParts);
+  }
 
   return (
-    <div className="w-full text-sm md:text-[1rem] flex flex-col gap-2">
+    <div className="text-sm md:text-[1rem] flex flex-col gap-2">
       <h2 className="text-lg flex flex-row items-center justify-between font-bold mt-[-5px]">
-        {title ?? "Partes Árabes"}:
+        <span className="w-fit flex flex-row items-center justify-start gap-1">
+          {title ?? "Partes Árabes"}:{" "}
+          {!isInsideModal &&
+            (isCombinedWithBirthChart || isCombinedWithReturnChart) &&
+            chartMenu !== "birth" && (
+              <>
+                <button
+                  title="Alterar entre partes internas e externas"
+                  className="hover:outline-2 outline-offset-4 hover:cursor-pointer"
+                  onClick={() => {
+                    toggleInnerPartsVisualization();
+                  }}
+                >
+                  <Image
+                    alt="change"
+                    src="/change.png"
+                    width={18}
+                    height={18}
+                  />
+                </button>
+                {!showInnerParts && "(E)"}
+              </>
+            )}
+        </span>
         {showMenuButtons && (
           <div className="h-full flex flex-row items-center justify-between gap-3">
             <button

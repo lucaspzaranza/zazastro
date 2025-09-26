@@ -2,9 +2,7 @@ import { BirthChart } from "@/interfaces/BirthChartInterfaces";
 import React, { JSX, useCallback, useEffect, useState } from "react";
 import {
   angularLabels,
-  arabicPartKeys,
   ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT,
-  chartsAreEqual,
   formatSignColor,
   getAntiscion,
   getDegreeAndSign,
@@ -17,7 +15,6 @@ import { PlanetAspectData } from "@/interfaces/AstroChartInterfaces";
 import { useBirthChart } from "@/contexts/BirthChartContext";
 import { useChartMenu } from "@/contexts/ChartMenuContext";
 import ArabicPartsLayout from "./ArabicPartsLayout";
-import { useArabicPartCalculations } from "@/hooks/useArabicPartCalculations";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 
@@ -25,6 +22,7 @@ interface Props {
   useArchArabicPartsForDataVisualization: boolean;
   innerChart: BirthChart;
   outerChart?: BirthChart;
+  arabicParts?: ArabicPartsType;
   outerArabicParts?: ArabicPartsType;
   combineWithBirthChart?: () => void;
   combineWithReturnChart?: () => void;
@@ -36,8 +34,8 @@ export default function ChartAndData(props: Props) {
   const {
     innerChart,
     outerChart,
+    arabicParts,
     outerArabicParts,
-    useArchArabicPartsForDataVisualization,
     combineWithBirthChart,
     combineWithReturnChart,
     tableItemsPerPage,
@@ -47,41 +45,31 @@ export default function ChartAndData(props: Props) {
   };
 
   const { isMobileBreakPoint } = useScreenDimensions();
-  const { birthChart, returnChart, lunarDerivedChart } = useBirthChart();
+  const { birthChart } = useBirthChart();
   const [chart, setChart] = useState(outerChart ?? birthChart);
   const [aspectsData, setAspectsData] = useState<PlanetAspectData[]>([]);
   const itemsPerPage = tableItemsPerPage ?? ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT;
-  const lots = useArabicPartCalculations();
   const {
     updateBirthChart,
     updateLunarDerivedChart,
     updateIsCombinedWithBirthChart,
     updateIsCombinedWithReturnChart,
-    isCombinedWithReturnChart,
     updateSinastryChart,
   } = useBirthChart();
-  const { chartMenu, resetChartMenus } = useChartMenu();
-  const {
-    arabicParts,
-    archArabicParts,
-    solarReturnParts,
-    updateArabicParts,
-    updateArchArabicParts,
-    updateSinastryArabicParts,
-  } = useArabicParts();
-  const [partsArray, setParts] = useState<ArabicPart[]>([]);
-  const { calculateBirthArchArabicPart } = useArabicPartCalculations();
+  const { resetChartMenus } = useChartMenu();
+  const { updateArabicParts, updateSinastryArabicParts, getPartsArray } =
+    useArabicParts();
+  const [partsArray, setPartsArray] = useState<ArabicPart[]>([]);
+  // const [useInnerPlanets, setUseInnerPlanets] = useState(true);
+  // const [useInnerHouses, setUseInnerHouses] = useState(true);
+  const [useInnerParts, setUseInnerParts] = useState(true);
 
-  const lotsTempObj: ArabicPartsType = {};
-
-  function getChartForArchArabicParts(): BirthChart | undefined {
-    if (chartMenu === "solarReturn" || chartMenu === "lunarReturn") {
-      return returnChart;
-    } else if (chartMenu === "lunarDerivedReturn") {
-      return lunarDerivedChart;
+  function updateParts() {
+    if (useInnerParts && arabicParts) {
+      setPartsArray(getPartsArray(arabicParts));
+    } else if (outerArabicParts) {
+      setPartsArray(getPartsArray(outerArabicParts));
     }
-
-    return birthChart;
   }
 
   useEffect(() => {
@@ -89,97 +77,12 @@ export default function ChartAndData(props: Props) {
   }, [innerChart, outerChart]);
 
   useEffect(() => {
-    if (birthChart === undefined) return;
-    if (arabicParts !== undefined) return;
+    updateParts();
+  }, [useInnerParts, arabicParts, outerArabicParts]);
 
-    updateArabicParts({
-      fortune: lots.calculateLotOfFortune(birthChart),
-      spirit: lots.calculateLotOfSpirit(birthChart),
-    });
-  }, [birthChart]);
-
-  useEffect(() => {
-    let obj = { ...arabicParts };
-
-    if (birthChart === undefined) return;
-
-    if (arabicParts?.fortune && arabicParts.spirit) {
-      obj = {
-        ...obj,
-        necessity: lots.calculateLotOfNecessity(birthChart),
-        love: lots.calculateLotOfLove(birthChart),
-      };
-    }
-
-    if (arabicParts?.fortune) {
-      obj = {
-        ...obj,
-        valor: lots.calculateLotOfValor(birthChart),
-        captivity: lots.calculateLotOfCaptivity(birthChart),
-      };
-    }
-
-    if (arabicParts?.spirit) {
-      obj = {
-        ...obj,
-        victory: lots.calculateLotOfVictory(birthChart),
-      };
-    }
-
-    // Custom Arabic Parts
-    updateArabicParts({
-      ...obj,
-      marriage: lots.calculateLotOfMarriage(birthChart),
-      resignation: lots.calculateLotOfResignation(birthChart),
-      children: lots.calculateLotOfChildren(birthChart),
-    });
-  }, [arabicParts?.fortune]);
-
-  useEffect(() => {
-    if (arabicParts === undefined) return;
-
-    setParts([]);
-
-    arabicPartKeys.forEach((key) => {
-      const part = arabicParts[key];
-
-      if (part) {
-        setParts((prev) => [...prev, part]);
-      }
-    });
-
-    if (useArchArabicPartsForDataVisualization) {
-      updateArchArabicParts({});
-
-      arabicPartKeys.forEach((key) => {
-        const part = arabicParts[key];
-        if (part && returnChart) {
-          const newArchArabicPart = calculateBirthArchArabicPart(
-            part,
-            getChartForArchArabicParts()?.housesData.ascendant ?? 0
-          );
-          lotsTempObj[key] = { ...newArchArabicPart };
-
-          updateArchArabicParts(lotsTempObj);
-        }
-      });
-    }
-  }, [arabicParts]);
-
-  useEffect(() => {
-    if (useArchArabicPartsForDataVisualization) {
-      if (archArabicParts === undefined) return;
-      setParts([]);
-
-      arabicPartKeys.forEach((key) => {
-        const part = archArabicParts[key];
-
-        if (part) {
-          setParts((prev) => [...prev, part]);
-        }
-      });
-    }
-  }, [archArabicParts]);
+  function handleOnToggleInnerPartsVisualization(showInnerParts: boolean) {
+    setUseInnerParts(showInnerParts);
+  }
 
   const handleReset = useCallback(() => {
     updateBirthChart({ isReturnChart: false, chartData: undefined });
@@ -192,21 +95,6 @@ export default function ChartAndData(props: Props) {
     updateIsCombinedWithReturnChart(false);
     resetChartMenus();
   }, []);
-
-  function getInnerArabicParts(): ArabicPartsType | undefined {
-    if (!birthChart) return undefined;
-
-    if (chartsAreEqual(innerChart, birthChart)) return arabicParts;
-
-    if (
-      chartMenu === "lunarDerivedReturn" &&
-      isCombinedWithReturnChart &&
-      solarReturnParts
-    )
-      return solarReturnParts;
-
-    return archArabicParts;
-  }
 
   const getHouseAntiscion = (houseLong: number): React.ReactNode => {
     const antiscion = getAntiscion(houseLong, false);
@@ -236,7 +124,8 @@ export default function ChartAndData(props: Props) {
             props={{
               planets: innerChart.planets,
               housesData: innerChart.housesData,
-              arabicParts: getInnerArabicParts()!,
+              // arabicParts: getInnerArabicParts()!,
+              arabicParts: arabicParts,
               outerPlanets: outerChart?.planets,
               outerHouses: outerChart?.housesData,
               outerArabicParts,
@@ -259,14 +148,17 @@ export default function ChartAndData(props: Props) {
     );
   }
 
-  function renderArabicPartAndAspectsTable(): JSX.Element {
+  function renderArabicPartsAndAspectsTable(): JSX.Element {
     return (
-      <div className="flex flex-col gap-2 relative z-10">
+      <div className="w-full flex flex-col gap-2 relative z-10">
         {!isMobileBreakPoint() && (
           <ArabicPartsLayout
             parts={partsArray}
             showMenuButtons={true}
             isInsideModal={false}
+            onToggleInnerPartsVisualization={
+              handleOnToggleInnerPartsVisualization
+            }
           />
         )}
 
@@ -278,6 +170,9 @@ export default function ChartAndData(props: Props) {
             antisciaColWidth="w-1/2!"
             showMenuButtons={true}
             isInsideModal={false}
+            onToggleInnerPartsVisualization={
+              handleOnToggleInnerPartsVisualization
+            }
           />
         )}
 
@@ -287,7 +182,7 @@ export default function ChartAndData(props: Props) {
               aspects={aspectsData}
               birthChart={innerChart}
               outerChart={outerChart}
-              arabicParts={getInnerArabicParts()!}
+              arabicParts={arabicParts}
               outerArabicParts={outerArabicParts}
               initialItemsPerPage={itemsPerPage}
               onItemsPerPageChanged={handleOnItemsPerPagechanged}
@@ -413,13 +308,13 @@ export default function ChartAndData(props: Props) {
         <>
           {renderChart()}
           {renderPlanetsAndHouses()}
-          {renderArabicPartAndAspectsTable()}
+          {renderArabicPartsAndAspectsTable()}
         </>
       )}
 
       {!isMobileBreakPoint() && (
         <>
-          {renderArabicPartAndAspectsTable()}
+          <div className="w-[415px]">{renderArabicPartsAndAspectsTable()}</div>
           {renderChart()}
           {renderPlanetsAndHouses()}
         </>

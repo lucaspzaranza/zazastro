@@ -16,6 +16,7 @@ export type PlanetType =
 
 export type ReturnChartType = "solar" | "lunar";
 export type ChartType = "birth" | "return";
+export type ArabicPartType = "birth" | "arch" | "solarReturn" | "sinastry";
 
 export const planetTypes: PlanetType[] = [
   "sun",

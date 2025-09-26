@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from "react";
 import {
-  arabicPartKeys,
   ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT,
   getReturnDateRangeString,
-} from "../../utils/chartUtils";
+} from "@/utils/chartUtils";
 import { ChartDate } from ".././ChartDate";
-import { ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
-import { useArabicPartCalculations } from "@/hooks/useArabicPartCalculations";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import ChartAndData from ".././ChartAndData";
 import { useBirthChart } from "@/contexts/BirthChartContext";
@@ -14,42 +11,20 @@ import ChartSelectorArrows from "../ChartSelectorArrows";
 
 export default function LunarDerivedChart() {
   const [returnTime, setReturnTime] = useState("");
-  const [parts, setParts] = useState<ArabicPartsType>({});
   const [renderChart, setRenderChart] = useState(false);
   const [combineWithBirthChart, setCombineWithBirthChart] = useState(false);
   const [combineWithReturnChart, setCombineWithReturnChart] = useState(false);
-  const { arabicParts } = useArabicParts();
-  const { calculateBirthArchArabicPart } = useArabicPartCalculations();
-  const lots: ArabicPartsType = {};
+  const { arabicParts, archArabicParts, solarReturnParts } = useArabicParts();
   const [tableItemsPerPage, setTableItemsPerPage] = useState(
     ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT
   );
   const { birthChart, returnChart, lunarDerivedChart } = useBirthChart();
 
-  const setArabicParts = () => {
-    if (arabicParts === undefined) return;
-
-    arabicPartKeys.forEach((key) => {
-      const part = arabicParts[key];
-
-      if (part && lunarDerivedChart) {
-        const newArchArabicPart = calculateBirthArchArabicPart(
-          part,
-          lunarDerivedChart.housesData.ascendant
-        );
-        lots[key] = newArchArabicPart;
-        const updatedParts: ArabicPartsType = { ...parts, ...lots };
-        setParts(updatedParts);
-      }
-    });
-    setRenderChart(true);
-  };
-
   useEffect(() => {
     if (lunarDerivedChart) {
-      setArabicParts();
       if (lunarDerivedChart.returnTime) {
         setReturnTime(lunarDerivedChart.returnTime);
+        setRenderChart(true);
       }
     }
   }, [lunarDerivedChart]);
@@ -89,6 +64,7 @@ export default function LunarDerivedChart() {
           {!combineWithBirthChart && !combineWithReturnChart && (
             <ChartAndData
               innerChart={lunarDerivedChart}
+              arabicParts={archArabicParts}
               useArchArabicPartsForDataVisualization
               combineWithBirthChart={toggleShowBirthCombinedchart}
               combineWithReturnChart={toggleShowReturnCombinedchart}
@@ -102,7 +78,8 @@ export default function LunarDerivedChart() {
               innerChart={birthChart}
               outerChart={lunarDerivedChart}
               useArchArabicPartsForDataVisualization
-              outerArabicParts={parts}
+              arabicParts={arabicParts}
+              outerArabicParts={archArabicParts}
               combineWithBirthChart={toggleShowBirthCombinedchart}
               tableItemsPerPage={tableItemsPerPage}
               onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
@@ -113,7 +90,8 @@ export default function LunarDerivedChart() {
             <ChartAndData
               innerChart={returnChart}
               outerChart={lunarDerivedChart}
-              outerArabicParts={parts}
+              arabicParts={solarReturnParts}
+              outerArabicParts={archArabicParts}
               useArchArabicPartsForDataVisualization
               combineWithReturnChart={toggleShowReturnCombinedchart}
               tableItemsPerPage={tableItemsPerPage}

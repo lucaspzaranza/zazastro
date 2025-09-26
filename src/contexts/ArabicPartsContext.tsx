@@ -1,4 +1,19 @@
-import { ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
+import {
+  calculateBirthArchArabicPart,
+  calculateLotOfCaptivity,
+  calculateLotOfChildren,
+  calculateLotOfFortune,
+  calculateLotOfLove,
+  calculateLotOfMarriage,
+  calculateLotOfNecessity,
+  calculateLotOfResignation,
+  calculateLotOfSpirit,
+  calculateLotOfValor,
+  calculateLotOfVictory,
+} from "@/app/utils/arabicPartsUtils";
+import { arabicPartKeys } from "@/app/utils/chartUtils";
+import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
+import { ArabicPartType, BirthChart } from "@/interfaces/BirthChartInterfaces";
 
 import React, { createContext, useState, useContext, ReactNode } from "react";
 
@@ -8,12 +23,19 @@ interface ArabicPartsContextType {
   archArabicParts: ArabicPartsType | undefined;
   updateArchArabicParts: (archArabicPartsData?: ArabicPartsType) => void;
 
+  calculateArabicParts: (
+    birthChart: BirthChart,
+    partType: ArabicPartType
+  ) => void;
+  calculateBirthArchArabicParts: (ascendant: number) => void;
+  getPartsArray: (parts: ArabicPartsType) => ArabicPart[];
+
   /**
    * Used only at lunar derived chart combined with solar return chart case.
    * Use archArabicParts for other cases.
    */
   solarReturnParts?: ArabicPartsType;
-  updateSolarReturnParts?: (archArabicPartsData?: ArabicPartsType) => void;
+  updateSolarReturnParts: (archArabicPartsData?: ArabicPartsType) => void;
 
   sinastryParts?: ArabicPartsType;
   updateSinastryArabicParts: (sinastryArabicParts?: ArabicPartsType) => void;
@@ -37,6 +59,68 @@ export const ArabicPartsContextProvider: React.FC<{ children: ReactNode }> = ({
   const [sinastryParts, setSinastryParts] = useState<
     ArabicPartsType | undefined
   >();
+
+  function calculateArabicParts(
+    birthChart: BirthChart,
+    partType: ArabicPartType
+  ) {
+    const fortune = calculateLotOfFortune(birthChart);
+    const spirit = calculateLotOfSpirit(birthChart);
+
+    let parts: ArabicPartsType = {
+      fortune,
+      spirit,
+    };
+
+    parts = {
+      ...parts,
+      necessity: calculateLotOfNecessity(birthChart, parts),
+      love: calculateLotOfLove(birthChart, parts),
+      valor: calculateLotOfValor(birthChart, parts),
+      victory: calculateLotOfVictory(birthChart, parts),
+      captivity: calculateLotOfCaptivity(birthChart, parts),
+      marriage: calculateLotOfMarriage(birthChart),
+      resignation: calculateLotOfResignation(birthChart),
+      children: calculateLotOfChildren(birthChart),
+    };
+
+    if (partType === "birth") {
+      setArabicParts(parts);
+    } else if (partType === "solarReturn") {
+      setSolarReturnParts(parts);
+    } else if (partType === "sinastry") {
+      setSinastryParts(parts);
+    }
+  }
+
+  function calculateBirthArchArabicParts(ascendant: number) {
+    if (!arabicParts) return;
+    const archLotsObj: ArabicPartsType = {};
+
+    arabicPartKeys.forEach((key) => {
+      const part = arabicParts[key];
+      if (part) {
+        const newArchArabicPart = calculateBirthArchArabicPart(part, ascendant);
+        archLotsObj[key] = { ...newArchArabicPart };
+      }
+    });
+
+    // console.log("arch parts:", archLotsObj);
+    setArchArabicParts(archLotsObj);
+  }
+
+  function getPartsArray(parts: ArabicPartsType): ArabicPart[] {
+    const partsArray: ArabicPart[] = [];
+
+    Object.entries(parts).forEach(([, value]) => {
+      if (value) {
+        const lot = value as ArabicPart;
+        partsArray.push(lot);
+      }
+    });
+
+    return partsArray;
+  }
 
   const updateArabicParts = (arabicPartsData?: ArabicPartsType) => {
     setArabicParts((previous) => {
@@ -75,6 +159,9 @@ export const ArabicPartsContextProvider: React.FC<{ children: ReactNode }> = ({
         updateSolarReturnParts,
         sinastryParts,
         updateSinastryArabicParts,
+        calculateArabicParts,
+        calculateBirthArchArabicParts,
+        getPartsArray,
       }}
     >
       {children}

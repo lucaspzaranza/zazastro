@@ -39,7 +39,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
   const makeChart = async () => {
     if (birthChart === undefined) return;
 
-    updateSolarReturnParts?.(archArabicParts);
+    updateSolarReturnParts(archArabicParts);
 
     const returnDate = moment.tz(birthChart.returnTime, birthChart.timezone!);
     const timeArrayString = returnDate.format("HH:mm").split(":");

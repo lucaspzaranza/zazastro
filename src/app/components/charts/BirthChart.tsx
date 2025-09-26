@@ -47,7 +47,7 @@ export default function BirthChart() {
     sinastryChart,
   } = useBirthChart();
   const { profiles } = useProfiles();
-  const { arabicParts } = useArabicParts();
+  const { arabicParts, archArabicParts } = useArabicParts();
   const [solarYear, setSolarYear] = useState(0);
   const [lunarDay, setLunarDay] = useState(1);
   const [lunarMonth, setLunarMonth] = useState(1);
@@ -62,7 +62,8 @@ export default function BirthChart() {
   const firstProfileSetAtBeggining = useRef(false);
 
   const { chartMenu, addChartMenu, updateChartMenuDirectly } = useChartMenu();
-  // const { sinastryParts, updateSinastryArabicParts } = useArabicParts();
+  const { calculateArabicParts, calculateBirthArchArabicParts } =
+    useArabicParts();
 
   const [menu, setMenu] = useState<MenuButtonChoice>("home");
 
@@ -79,6 +80,31 @@ export default function BirthChart() {
       updateChartMenuDirectly("lunarDerivedReturn");
     }
   }, [birthChart, returnChart, lunarDerivedChart]);
+
+  useEffect(() => {
+    if (birthChart) {
+      calculateArabicParts(birthChart, "birth");
+    }
+  }, [birthChart]);
+
+  useEffect(() => {
+    if (returnChart) {
+      calculateBirthArchArabicParts(returnChart.housesData.ascendant);
+    }
+  }, [returnChart, arabicParts]);
+
+  useEffect(() => {
+    if (lunarDerivedChart) {
+      calculateBirthArchArabicParts(lunarDerivedChart.housesData.ascendant);
+      // console.log("lunar derived chart parts: ", archArabicParts);
+    }
+  }, [lunarDerivedChart]);
+
+  useEffect(() => {
+    if (sinastryChart) {
+      calculateArabicParts(sinastryChart, "sinastry");
+    }
+  }, [sinastryChart]);
 
   useEffect(() => {
     if (menu === "home") {
@@ -516,34 +542,39 @@ export default function BirthChart() {
         </div>
       )}
 
-      {/* <span className="text-center">
-        <span className="font-bold">:: Debugging ::</span>
-        <br />
-        birthChart === undefined:{" "}
-        <span className="font-bold text-blue-800">
-          {(birthChart === undefined).toString()}
-        </span>
-        <br />
-        chartMenu: <span className="font-bold">{chartMenu}</span>
-        <br />
-        sinastryChart === undefined:{" "}
-        <span className="font-bold text-blue-800">
-          {(sinastryChart === undefined).toString()}
-        </span>
-        <span className="font-bold">{sinastryChart === undefined}</span>
-        <br />
-        arabicParts === undefined:{" "}
-        <span className="font-bold text-blue-800">
-          {(arabicParts === undefined).toString()}
-        </span>
-        <span className="font-bold">{arabicParts === undefined}</span>
-        <br />
-        sinastryParts === undefined:{" "}
-        <span className="font-bold text-blue-800">
-          {(sinastryParts === undefined).toString()}
-        </span>
-        <span className="font-bold">{sinastryParts === undefined}</span>
-      </span> */}
+      {/* <div className="h-fit text-center">
+        <span className="font-bold text-xl">:: Debugging ::</span>
+
+        <div className="flex flex-col text-start items-start mt-2 gap-1">
+          <span>
+            birthChart === undefined:{" "}
+            <span className="font-bold text-blue-800">
+              {(birthChart === undefined).toString()}
+            </span>
+          </span>
+          <span>
+            chartMenu: <span className="font-bold">{chartMenu}</span>
+          </span>
+          <span>
+            sinastryChart === undefined:{" "}
+            <span className="font-bold text-blue-800">
+              {(sinastryChart === undefined).toString()}
+            </span>
+          </span>
+          <span>
+            arabicParts === undefined:{" "}
+            <span className="font-bold text-blue-800">
+              {(arabicParts === undefined).toString()}
+            </span>
+          </span>
+          <span>
+            lunarDerivedChart === undefined:{" "}
+            <span className="font-bold text-blue-800">
+              {(lunarDerivedChart === undefined).toString()}
+            </span>
+          </span>
+        </div>
+      </div> */}
 
       {birthChart && chartMenu === "birth" && (
         <div className="w-full flex flex-col items-center">
@@ -555,6 +586,7 @@ export default function BirthChart() {
             </ChartSelectorArrows>
             <ChartDate chartType="birth" birthChart={birthChart} />
             <ChartAndData
+              arabicParts={arabicParts}
               innerChart={birthChart}
               useArchArabicPartsForDataVisualization={false}
             />
@@ -570,9 +602,10 @@ export default function BirthChart() {
 
       {chartMenu === "lunarDerivedReturn" &&
         lunarDerivedChart &&
+        archArabicParts &&
         arabicParts && <LunarDerivedChart />}
 
-      {chartMenu === "sinastry" && (
+      {chartMenu === "sinastry" && sinastryChart && (
         <SinastryChart
           sinastryChart={sinastryChart}
           sinastryProfileName={sinastryProfile?.name}

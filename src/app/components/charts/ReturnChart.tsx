@@ -13,7 +13,7 @@ import ChartSelectorArrows from "../ChartSelectorArrows";
 export default function ReturnChart() {
   const { profileName } = useBirthChart();
   const { birthChart, returnChart } = useBirthChart();
-  const { archArabicParts } = useArabicParts();
+  const { arabicParts, archArabicParts } = useArabicParts();
   const [isSolarReturn, setIsSolarReturn] = useState(true);
   const [combineWithBirthChart, setCombineWithBirthChart] = useState(false);
   const [, setTargetDate] = useState<BirthDate>({
@@ -72,6 +72,7 @@ export default function ReturnChart() {
           {!combineWithBirthChart && returnChart && (
             <ChartAndData
               innerChart={returnChart}
+              arabicParts={archArabicParts}
               combineWithBirthChart={toggleShowCombinedchart}
               useArchArabicPartsForDataVisualization
               tableItemsPerPage={tableItemsPerPage}
@@ -83,6 +84,7 @@ export default function ReturnChart() {
             <ChartAndData
               innerChart={birthChart}
               outerChart={returnChart}
+              arabicParts={arabicParts}
               outerArabicParts={archArabicParts}
               useArchArabicPartsForDataVisualization
               combineWithBirthChart={toggleShowCombinedchart}
