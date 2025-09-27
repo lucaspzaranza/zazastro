@@ -14,7 +14,7 @@ export default function LunarDerivedChart() {
   const [renderChart, setRenderChart] = useState(false);
   const [combineWithBirthChart, setCombineWithBirthChart] = useState(false);
   const [combineWithReturnChart, setCombineWithReturnChart] = useState(false);
-  const { arabicParts, archArabicParts, solarReturnParts } = useArabicParts();
+  const { arabicParts, lunarDerivedParts, solarReturnParts } = useArabicParts();
   const [tableItemsPerPage, setTableItemsPerPage] = useState(
     ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT
   );
@@ -64,7 +64,7 @@ export default function LunarDerivedChart() {
           {!combineWithBirthChart && !combineWithReturnChart && (
             <ChartAndData
               innerChart={lunarDerivedChart}
-              arabicParts={archArabicParts}
+              arabicParts={lunarDerivedParts}
               useArchArabicPartsForDataVisualization
               combineWithBirthChart={toggleShowBirthCombinedchart}
               combineWithReturnChart={toggleShowReturnCombinedchart}
@@ -79,7 +79,7 @@ export default function LunarDerivedChart() {
               outerChart={lunarDerivedChart}
               useArchArabicPartsForDataVisualization
               arabicParts={arabicParts}
-              outerArabicParts={archArabicParts}
+              outerArabicParts={lunarDerivedParts}
               combineWithBirthChart={toggleShowBirthCombinedchart}
               tableItemsPerPage={tableItemsPerPage}
               onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
@@ -91,7 +91,7 @@ export default function LunarDerivedChart() {
               innerChart={returnChart}
               outerChart={lunarDerivedChart}
               arabicParts={solarReturnParts}
-              outerArabicParts={archArabicParts}
+              outerArabicParts={lunarDerivedParts}
               useArchArabicPartsForDataVisualization
               combineWithReturnChart={toggleShowReturnCombinedchart}
               tableItemsPerPage={tableItemsPerPage}

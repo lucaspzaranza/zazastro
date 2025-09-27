@@ -18,16 +18,22 @@ import { ArabicPartType, BirthChart } from "@/interfaces/BirthChartInterfaces";
 import React, { createContext, useState, useContext, ReactNode } from "react";
 
 interface ArabicPartsContextType {
-  arabicParts: ArabicPartsType | undefined;
+  arabicParts?: ArabicPartsType;
   updateArabicParts: (arabicPartsData?: ArabicPartsType) => void;
-  archArabicParts: ArabicPartsType | undefined;
+  archArabicParts?: ArabicPartsType;
   updateArchArabicParts: (archArabicPartsData?: ArabicPartsType) => void;
+
+  lunarDerivedParts?: ArabicPartsType;
+  updateLunarDerivedParts: (lunarDerivedPartsData?: ArabicPartsType) => void;
 
   calculateArabicParts: (
     birthChart: BirthChart,
     partType: ArabicPartType
   ) => void;
-  calculateBirthArchArabicParts: (ascendant: number) => void;
+  calculateBirthArchArabicParts: (
+    ascendant: number,
+    options: { isLunarDerivedChart: boolean }
+  ) => void;
   getPartsArray: (parts: ArabicPartsType) => ArabicPart[];
 
   /**
@@ -50,6 +56,9 @@ export const ArabicPartsContextProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [arabicParts, setArabicParts] = useState<ArabicPartsType | undefined>();
   const [archArabicParts, setArchArabicParts] = useState<
+    ArabicPartsType | undefined
+  >();
+  const [lunarDerivedParts, setLunarDerivedParts] = useState<
     ArabicPartsType | undefined
   >();
   const [solarReturnParts, setSolarReturnParts] = useState<
@@ -93,7 +102,10 @@ export const ArabicPartsContextProvider: React.FC<{ children: ReactNode }> = ({
     }
   }
 
-  function calculateBirthArchArabicParts(ascendant: number) {
+  function calculateBirthArchArabicParts(
+    ascendant: number,
+    options: { isLunarDerivedChart: boolean }
+  ) {
     if (!arabicParts) return;
     const archLotsObj: ArabicPartsType = {};
 
@@ -105,8 +117,9 @@ export const ArabicPartsContextProvider: React.FC<{ children: ReactNode }> = ({
       }
     });
 
-    // console.log("arch parts:", archLotsObj);
-    setArchArabicParts(archLotsObj);
+    if (options.isLunarDerivedChart) {
+      setLunarDerivedParts(archLotsObj);
+    } else setArchArabicParts(archLotsObj);
   }
 
   function getPartsArray(parts: ArabicPartsType): ArabicPart[] {
@@ -132,6 +145,14 @@ export const ArabicPartsContextProvider: React.FC<{ children: ReactNode }> = ({
     setArchArabicParts((previous) => {
       return archArabicPartsData
         ? { ...previous, ...archArabicPartsData }
+        : undefined;
+    });
+  };
+
+  const updateLunarDerivedParts = (lunarDerivedPartsData?: ArabicPartsType) => {
+    setLunarDerivedParts((previous) => {
+      return lunarDerivedPartsData
+        ? { ...previous, ...lunarDerivedPartsData }
         : undefined;
     });
   };
@@ -162,6 +183,8 @@ export const ArabicPartsContextProvider: React.FC<{ children: ReactNode }> = ({
         calculateArabicParts,
         calculateBirthArchArabicParts,
         getPartsArray,
+        lunarDerivedParts,
+        updateLunarDerivedParts,
       }}
     >
       {children}

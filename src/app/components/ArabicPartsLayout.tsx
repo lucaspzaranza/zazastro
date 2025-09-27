@@ -47,32 +47,33 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
     onToggleInnerPartsVisualization?.(!showInnerParts);
   }
 
+  function showSwitchPartsButton(): boolean {
+    let result = !isInsideModal && chartMenu !== "birth";
+    if (result) result = isCombinedWithBirthChart || isCombinedWithReturnChart;
+    if (!result) result = chartMenu === "sinastry";
+
+    return result;
+  }
+
   return (
     <div className="text-sm md:text-[1rem] flex flex-col gap-2">
       <h2 className="text-lg flex flex-row items-center justify-between font-bold mt-[-5px]">
         <span className="w-fit flex flex-row items-center justify-start gap-1">
           {title ?? "Partes Árabes"}:{" "}
-          {!isInsideModal &&
-            (isCombinedWithBirthChart || isCombinedWithReturnChart) &&
-            chartMenu !== "birth" && (
-              <>
-                <button
-                  title="Alterar entre partes internas e externas"
-                  className="hover:outline-2 outline-offset-4 hover:cursor-pointer"
-                  onClick={() => {
-                    toggleInnerPartsVisualization();
-                  }}
-                >
-                  <Image
-                    alt="change"
-                    src="/change.png"
-                    width={18}
-                    height={18}
-                  />
-                </button>
-                {!showInnerParts && "(E)"}
-              </>
-            )}
+          {showSwitchPartsButton() && (
+            <>
+              <button
+                title="Alterar entre partes internas e externas"
+                className="hover:outline-2 outline-offset-4 hover:cursor-pointer active:bg-gray-300"
+                onClick={() => {
+                  toggleInnerPartsVisualization();
+                }}
+              >
+                <Image alt="change" src="/change.png" width={18} height={18} />
+              </button>
+              {!showInnerParts && "(E)"}
+            </>
+          )}
         </span>
         {showMenuButtons && (
           <div className="h-full flex flex-row items-center justify-between gap-3">

@@ -24,6 +24,7 @@ import PresavedChartsDropdown from "./PresavedChartsDropdown";
 import { useProfiles } from "@/contexts/ProfilesContext";
 import { apiFetch } from "@/app/utils/api";
 import SinastryChart from "./SinastryChart";
+import Spinner from "../Spinner";
 
 type MenuButtonChoice =
   | "home"
@@ -89,14 +90,17 @@ export default function BirthChart() {
 
   useEffect(() => {
     if (returnChart) {
-      calculateBirthArchArabicParts(returnChart.housesData.ascendant);
+      calculateBirthArchArabicParts(returnChart.housesData.ascendant, {
+        isLunarDerivedChart: false,
+      });
     }
   }, [returnChart, arabicParts]);
 
   useEffect(() => {
     if (lunarDerivedChart) {
-      calculateBirthArchArabicParts(lunarDerivedChart.housesData.ascendant);
-      // console.log("lunar derived chart parts: ", archArabicParts);
+      calculateBirthArchArabicParts(lunarDerivedChart.housesData.ascendant, {
+        isLunarDerivedChart: true,
+      });
     }
   }, [lunarDerivedChart]);
 
@@ -537,7 +541,12 @@ export default function BirthChart() {
               </button>
             )}
 
-            {loading && <p className="w-full text-center">Carregando...</p>}
+            {loading && (
+              <span className="w-full text-start flex flex-row items-center justify-center gap-3 mt-2">
+                <Spinner />
+                <span>Carregando...</span>
+              </span>
+            )}
           </div>
         </div>
       )}
