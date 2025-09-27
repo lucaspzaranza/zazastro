@@ -60,6 +60,9 @@ export default function BirthChart() {
   const [sinastryProfile, setSinastryProfile] = useState<
     BirthChartProfile | undefined
   >();
+  const [progressionYear, setProgressionYear] = useState<number | undefined>(
+    undefined
+  );
 
   const firstProfileSetAtBeggining = useRef(false);
 
@@ -71,7 +74,7 @@ export default function BirthChart() {
 
   const solarReturnForm = useRef<HTMLFormElement>(null);
   const lunarReturnForm = useRef<HTMLFormElement>(null);
-  // const progressionForm = useRef<HTMLFormElement>(null);
+  const progressionForm = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     if (birthChart === undefined && returnChart === undefined) {
@@ -310,6 +313,10 @@ export default function BirthChart() {
     return "";
   }
 
+  function makeSecondaryProgression() {
+    console.log("progression year: ", progressionYear);
+  }
+
   return (
     <div className="w-[98vw] min-h-[50vh] mt-4 flex flex-col items-center justify-center gap-2">
       {birthChart === undefined && (
@@ -541,6 +548,52 @@ export default function BirthChart() {
               </button>
             )}
 
+            {menu === "secondaryProgressions" && (
+              <form
+                ref={progressionForm}
+                className="w-full flex flex-col justify-between gap-2"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  makeSecondaryProgression();
+                }}
+              >
+                <span>Selecione o mapa:</span>
+                <PresavedChartsDropdown
+                  onChange={(profile) => setSinastryProfile(profile)}
+                />
+
+                <div className="flex flex-row items-center gap-2">
+                  <label className="text-nowrap">Número de anos:</label>
+                  <input
+                    required
+                    type="number"
+                    placeholder="ex: 30"
+                    className="w-full border-2 p-1 rounded-sm"
+                    value={progressionYear ?? ""}
+                    onChange={(e) => {
+                      const parsed = Number.parseInt(e.target.value);
+                      if (Number.isNaN(parsed)) {
+                        setProgressionYear(undefined);
+                        return;
+                      }
+
+                      let val = parsed;
+                      if (val < 1) val = 1;
+                      if (val > 31) val = 31;
+                      setProgressionYear(val);
+                    }}
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="bg-blue-800 w-full text-white px-4 py-2 rounded hover:bg-blue-900"
+                >
+                  Gerar Progressão
+                </button>
+              </form>
+            )}
+
             {menu !== "home" && (
               <button
                 className="bg-blue-600 w-full text-white px-4 py-2 rounded hover:bg-blue-700"
@@ -548,22 +601,6 @@ export default function BirthChart() {
               >
                 Voltar
               </button>
-            )}
-
-            {menu === "secondaryProgressions" && (
-              <>
-                <span>Selecione o mapa:</span>
-                <PresavedChartsDropdown
-                  onChange={(profile) => setSinastryProfile(profile)}
-                />
-
-                <button
-                  onClick={() => makeSinastryCharts()}
-                  className="bg-blue-800 w-full text-white px-4 py-2 rounded hover:bg-blue-900"
-                >
-                  Gerar sinastria
-                </button>
-              </>
             )}
 
             {loading && (
