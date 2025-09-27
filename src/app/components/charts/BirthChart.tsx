@@ -25,6 +25,7 @@ import { useProfiles } from "@/contexts/ProfilesContext";
 import { apiFetch } from "@/app/utils/api";
 import SinastryChart from "./SinastryChart";
 import Spinner from "../Spinner";
+import Container from "../Container";
 
 type MenuButtonChoice =
   | "home"
@@ -70,6 +71,7 @@ export default function BirthChart() {
 
   const solarReturnForm = useRef<HTMLFormElement>(null);
   const lunarReturnForm = useRef<HTMLFormElement>(null);
+  // const progressionForm = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     if (birthChart === undefined && returnChart === undefined) {
@@ -311,14 +313,14 @@ export default function BirthChart() {
   return (
     <div className="w-[98vw] min-h-[50vh] mt-4 flex flex-col items-center justify-center gap-2">
       {birthChart === undefined && (
-        <div className="w-full flex flex-col items-center justify-center">
-          <h2 className="text-[1rem] sm:text-lg py-0 my-0 text-center sm:text-start mb-1">
+        <Container className="w-[90%] sm:w-1/4">
+          <h2 className="text-[1rem] sm:text-lg py-0 my-0 text-center sm:text-start mb-4">
             {getTitleMenuTitle()}
           </h2>
 
-          <div className="w-full p-4 sm:w-1/4 sm:p-0 flex flex-col gap-2">
+          <div className="w-full p-4 sm:p-0 flex flex-col gap-2">
             {menu === "home" && (
-              <div className="flex flex-col gap-2">
+              <div className="w-full flex flex-col gap-2">
                 <button
                   className="bg-blue-800 w-full text-white px-4 py-2 rounded hover:bg-blue-900"
                   onClick={() => setMenu("birthChart")}
@@ -345,6 +347,13 @@ export default function BirthChart() {
                   onClick={() => setMenu("sinastry")}
                 >
                   Combinar mapas (Sinastria)
+                </button>
+
+                <button
+                  className="bg-blue-800 w-full text-white px-4 py-2 rounded hover:bg-blue-900"
+                  onClick={() => setMenu("secondaryProgressions")}
+                >
+                  Progressão Secundária
                 </button>
               </div>
             )}
@@ -541,6 +550,22 @@ export default function BirthChart() {
               </button>
             )}
 
+            {menu === "secondaryProgressions" && (
+              <>
+                <span>Selecione o mapa:</span>
+                <PresavedChartsDropdown
+                  onChange={(profile) => setSinastryProfile(profile)}
+                />
+
+                <button
+                  onClick={() => makeSinastryCharts()}
+                  className="bg-blue-800 w-full text-white px-4 py-2 rounded hover:bg-blue-900"
+                >
+                  Gerar sinastria
+                </button>
+              </>
+            )}
+
             {loading && (
               <span className="w-full text-start flex flex-row items-center justify-center gap-3 mt-2">
                 <Spinner />
@@ -548,7 +573,7 @@ export default function BirthChart() {
               </span>
             )}
           </div>
-        </div>
+        </Container>
       )}
 
       {/* <div className="h-fit text-center">
@@ -604,7 +629,6 @@ export default function BirthChart() {
       )}
 
       {returnChart &&
-        // arabicParts &&
         (chartMenu === "solarReturn" || chartMenu === "lunarReturn") && (
           <ReturnChart />
         )}
