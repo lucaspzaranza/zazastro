@@ -1,20 +1,10 @@
-import {
-  BirthChart,
-  BirthDate,
-  ChartType,
-} from "@/interfaces/BirthChartInterfaces";
+import { BirthDate, ChatDateProps } from "@/interfaces/BirthChartInterfaces";
 import moment from "moment-timezone";
 import { useEffect, useState } from "react";
 import { getHourAndMinute } from "../utils/chartUtils";
 
-export const ChartDate = (
-  props: Readonly<{
-    chartType: ChartType;
-    customReturnTime?: string;
-    birthChart?: BirthChart;
-  }>
-) => {
-  const { chartType, birthChart } = props;
+export const ChartDate = (props: ChatDateProps) => {
+  const { chartType, birthChart, label } = props;
   const [date, setDate] = useState<BirthDate | undefined>();
 
   useEffect(() => {
@@ -58,6 +48,7 @@ export const ChartDate = (
   return (
     <div className="text-[0.9rem] text-center md:text-[1rem] font-bold">
       <p>
+        {label && <label>{label}: </label>}
         {date?.day.toString().padStart(2, "0")}/
         {date?.month.toString().padStart(2, "0")}/{date?.year} -{" "}
         {formatTime(date.time ?? "00:00")}

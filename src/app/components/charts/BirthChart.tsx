@@ -12,7 +12,6 @@ import {
   BirthDate,
   ReturnChartType,
 } from "@/interfaces/BirthChartInterfaces";
-import { ChartDate } from ".././ChartDate";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import ChartAndData from ".././ChartAndData";
 import ReturnChart from "./ReturnChart";
@@ -26,6 +25,7 @@ import { apiFetch } from "@/app/utils/api";
 import SinastryChart from "./SinastryChart";
 import Spinner from "../Spinner";
 import Container from "../Container";
+import SecondaryProgressionChart from "./SecondaryProgressionChart";
 
 type MenuButtonChoice =
   | "home"
@@ -43,6 +43,7 @@ export default function BirthChart() {
     birthChart,
     returnChart,
     lunarDerivedChart,
+    progressionChart,
     updateBirthChart,
     currentCity,
     updateCurrentCity,
@@ -94,6 +95,14 @@ export default function BirthChart() {
   }, [birthChart]);
 
   useEffect(() => {
+    if (progressionChart) {
+      calculateBirthArchArabicParts(progressionChart.housesData.ascendant);
+    } else {
+      setProgressionYear(undefined);
+    }
+  }, [progressionChart]);
+
+  useEffect(() => {
     if (returnChart) {
       calculateBirthArchArabicParts(returnChart.housesData.ascendant, {
         isLunarDerivedChart: false,
@@ -130,7 +139,7 @@ export default function BirthChart() {
     }
   }, [profiles]);
 
-  const getBirthChart = async (chartProfileToOverwrite?: BirthChartProfile) => {
+  async function getBirthChart(chartProfileToOverwrite?: BirthChartProfile) {
     setLoading(true);
     if (chartProfileToOverwrite) {
       setChartProfile(chartProfileToOverwrite);
@@ -155,14 +164,14 @@ export default function BirthChart() {
           birthDate:
             chartProfileToOverwrite?.birthDate ?? chartProfile?.birthDate,
         },
-        isReturnChart: false,
+        chartType: "birth",
       });
     } catch (error) {
       console.error("Erro ao consultar mapa astral:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   const getPlanetReturn = async (returnType: ReturnChartType) => {
     setLoading(true);
@@ -189,7 +198,7 @@ export default function BirthChart() {
     });
 
     updateBirthChart({
-      isReturnChart: false,
+      chartType: "birth",
       profileName: chartProfile?.name,
       chartData: {
         ...data,
@@ -200,7 +209,7 @@ export default function BirthChart() {
 
     if (chartProfile) {
       updateBirthChart({
-        isReturnChart: true,
+        chartType: "return",
         chartData: {
           planets: data.returnPlanets,
           housesData: data.returnHousesData,
@@ -277,7 +286,7 @@ export default function BirthChart() {
           ...data,
           birthDate: chartProfile?.birthDate,
         },
-        isReturnChart: false,
+        chartType: "birth",
       });
 
       updateBirthChart({
@@ -286,8 +295,7 @@ export default function BirthChart() {
           ...sinastryData,
           birthDate: sinastryProfile?.birthDate,
         },
-        isReturnChart: false,
-        isSinastryChart: true,
+        chartType: "sinastry",
       });
 
       const chartType: ChartMenuType = "sinastry";
@@ -306,22 +314,107 @@ export default function BirthChart() {
     else if (menu === "birthChart")
       return "Escolha ou crie um novo mapa astral";
     else if (menu === "solarReturn" || menu === "lunarReturn")
-      return "Escolha um mapa e digite o ano da revolução ";
+      return "Escolha um mapa e digite o ano da revolução";
     else if (menu === "sinastry")
-      return "Escolha os mapas a serem combinados em sinastria.";
+      return "Escolha os mapas a serem combinados em sinastria";
+    else if (menu === "secondaryProgressions") return "Progressões Secundárias";
 
-    return "";
+    return "Sem título";
   }
 
-  function makeSecondaryProgression() {
-    console.log("progression year: ", progressionYear);
+  async function makeSecondaryProgression() {
+    let birthDate = chartProfile?.birthDate;
+    if (!birthDate || !progressionYear) return;
+
+    setLoading(true);
+
+    const jsDate = new Date(birthDate.year, birthDate.month - 1, birthDate.day);
+    jsDate.setDate(jsDate.getDate() + progressionYear);
+
+    birthDate = {
+      ...birthDate,
+      day: jsDate.getDate(),
+      month: jsDate.getMonth() + 1,
+      year: jsDate.getFullYear(),
+    };
+
+    getBirthChart();
+
+    try {
+      const data = await apiFetch("birth-chart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          birthDate,
+        }),
+      });
+
+      updateBirthChart({
+        profileName: chartProfile?.name,
+        chartData: {
+          ...data,
+          birthDate,
+        },
+        chartType: "progression",
+      });
+    } catch (error) {
+      console.error("Erro ao consultar mapa astral:", error);
+    } finally {
+      setLoading(false);
+    }
+
+    const chartType: ChartMenuType = "progression";
+    addChartMenu(chartType);
+    updateChartMenuDirectly(chartType);
+    setLoading(false);
   }
+
+  // function getDebugData(): JSX.Element {
+  //   return (
+  //     <div className="h-fit text-center">
+  //       <span className="font-bold text-xl">:: Debugging ::</span>
+
+  //       <div className="flex flex-col text-start items-start mt-2 gap-1">
+  //         <span>
+  //           birthChart === undefined:{" "}
+  //           <span className="font-bold text-blue-800">
+  //             {(birthChart === undefined).toString()}
+  //           </span>
+  //         </span>
+  //         <span>
+  //           menu: <strong>{menu}</strong>
+  //         </span>
+  //         <span>
+  //           chartMenu: <span className="font-bold">{chartMenu}</span>
+  //         </span>
+  //         <span>
+  //           sinastryChart === undefined:{" "}
+  //           <span className="font-bold text-blue-800">
+  //             {(sinastryChart === undefined).toString()}
+  //           </span>
+  //         </span>
+  //         <span>
+  //           arabicParts === undefined:{" "}
+  //           <span className="font-bold text-blue-800">
+  //             {(arabicParts === undefined).toString()}
+  //           </span>
+  //         </span>
+  //         <span>
+  //           lunarDerivedChart === undefined:{" "}
+  //           <span className="font-bold text-blue-800">
+  //             {(lunarDerivedChart === undefined).toString()}
+  //           </span>
+  //         </span>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="w-[98vw] min-h-[50vh] mt-4 flex flex-col items-center justify-center gap-2">
       {birthChart === undefined && (
         <Container className="w-[90%] sm:w-1/4">
-          <h2 className="text-[1rem] sm:text-lg py-0 my-0 text-center sm:text-start mb-4">
+          <h2 className="text-[1rem] sm:text-lg text-center sm:text-start pt-4 px-2 sm:pt-0 sm:mb-4 font-bold">
             {getTitleMenuTitle()}
           </h2>
 
@@ -559,7 +652,7 @@ export default function BirthChart() {
               >
                 <span>Selecione o mapa:</span>
                 <PresavedChartsDropdown
-                  onChange={(profile) => setSinastryProfile(profile)}
+                  onChange={(profile) => setChartProfile(profile)}
                 />
 
                 <div className="flex flex-row items-center gap-2">
@@ -578,8 +671,7 @@ export default function BirthChart() {
                       }
 
                       let val = parsed;
-                      if (val < 1) val = 1;
-                      if (val > 31) val = 31;
+                      if (val < 0) val = 0;
                       setProgressionYear(val);
                     }}
                   />
@@ -603,49 +695,17 @@ export default function BirthChart() {
               </button>
             )}
 
-            {loading && (
-              <span className="w-full text-start flex flex-row items-center justify-center gap-3 mt-2">
-                <Spinner />
-                <span>Carregando...</span>
-              </span>
-            )}
+            <span
+              className={`w-full text-start flex flex-row items-center justify-center gap-3 mt-2 ${
+                loading ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <Spinner />
+              <span>Carregando...</span>
+            </span>
           </div>
         </Container>
       )}
-
-      {/* <div className="h-fit text-center">
-        <span className="font-bold text-xl">:: Debugging ::</span>
-
-        <div className="flex flex-col text-start items-start mt-2 gap-1">
-          <span>
-            birthChart === undefined:{" "}
-            <span className="font-bold text-blue-800">
-              {(birthChart === undefined).toString()}
-            </span>
-          </span>
-          <span>
-            chartMenu: <span className="font-bold">{chartMenu}</span>
-          </span>
-          <span>
-            sinastryChart === undefined:{" "}
-            <span className="font-bold text-blue-800">
-              {(sinastryChart === undefined).toString()}
-            </span>
-          </span>
-          <span>
-            arabicParts === undefined:{" "}
-            <span className="font-bold text-blue-800">
-              {(arabicParts === undefined).toString()}
-            </span>
-          </span>
-          <span>
-            lunarDerivedChart === undefined:{" "}
-            <span className="font-bold text-blue-800">
-              {(lunarDerivedChart === undefined).toString()}
-            </span>
-          </span>
-        </div>
-      </div> */}
 
       {birthChart && chartMenu === "birth" && (
         <div className="w-full flex flex-col items-center">
@@ -655,11 +715,14 @@ export default function BirthChart() {
                 Mapa Natal - {profileName}
               </h1>
             </ChartSelectorArrows>
-            <ChartDate chartType="birth" birthChart={birthChart} />
+            {/* <ChartDate chartType="birth" birthChart={birthChart} /> */}
             <ChartAndData
               arabicParts={arabicParts}
               innerChart={birthChart}
-              useArchArabicPartsForDataVisualization={false}
+              chartDateProps={{
+                chartType: "birth",
+                birthChart,
+              }}
             />
           </div>
         </div>
@@ -681,6 +744,12 @@ export default function BirthChart() {
           sinastryProfileName={sinastryProfile?.name}
         />
       )}
+
+      {chartMenu === "progression" && progressionChart && archArabicParts && (
+        <SecondaryProgressionChart />
+      )}
+
+      {/* {getDebugData()} */}
     </div>
   );
 }

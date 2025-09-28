@@ -5,6 +5,7 @@ import {
 } from "@/app/utils/chartUtils";
 import {
   BirthChart,
+  ChartType,
   planetTypes,
   SelectedCity,
 } from "@/interfaces/BirthChartInterfaces";
@@ -14,17 +15,19 @@ import React, { createContext, useState, useContext, ReactNode } from "react";
 interface UpdateBirthChartOptions {
   chartData?: BirthChart;
   profileName?: string;
-  isReturnChart: boolean;
-  isSinastryChart?: boolean;
+  chartType: ChartType;
 }
 
 interface BirthChartContextType {
   birthChart?: BirthChart;
   updateBirthChart: (chartOptions: UpdateBirthChartOptions) => void;
   returnChart?: BirthChart;
-  lunarDerivedChart?: BirthChart;
 
+  lunarDerivedChart?: BirthChart;
   updateLunarDerivedChart: (lunarDerivedChart?: BirthChart) => void;
+
+  progressionChart?: BirthChart;
+
   isCombinedWithBirthChart: boolean;
   updateIsCombinedWithBirthChart: (val: boolean) => void;
   isCombinedWithReturnChart: boolean;
@@ -49,6 +52,7 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
   const [profileName, setProfileName] = useState("");
   const [birthChart, setBirthChart] = useState<BirthChart>();
   const [returnChart, setReturnChart] = useState<BirthChart>();
+  const [progressionChart, setProgressionChart] = useState<BirthChart>();
   const [lunarDerivedChart, setLunarDerivedChart] = useState<
     BirthChart | undefined
   >();
@@ -69,7 +73,7 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const updateBirthChart = (chartOptions: UpdateBirthChartOptions) => {
-    const { chartData, isReturnChart, isSinastryChart } = chartOptions;
+    const { chartData, chartType } = chartOptions;
     const chartObject: BirthChart | undefined =
       chartData === undefined
         ? undefined
@@ -127,13 +131,18 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
 
     // console.log(chartObject);
 
-    if (chartOptions.profileName && !isSinastryChart) {
+    if (chartOptions.profileName && chartType !== "sinastry") {
       setProfileName(chartOptions.profileName);
     }
 
-    if (!isReturnChart && !isSinastryChart) setBirthChart(chartObject);
-    else if (!isSinastryChart && isReturnChart) setReturnChart(chartObject);
-    else if (isSinastryChart) setSinastryChart(chartObject);
+    // if (!isReturnChart && !isSinastryChart) setBirthChart(chartObject);
+    // else if (!isSinastryChart && isReturnChart) setReturnChart(chartObject);
+    // else if (isSinastryChart) setSinastryChart(chartObject);
+
+    if (chartType === "birth") setBirthChart(chartObject);
+    else if (chartType === "return") setReturnChart(chartObject);
+    else if (chartType === "sinastry") setSinastryChart(chartObject);
+    else if (chartType === "progression") setProgressionChart(chartObject);
   };
 
   const updateLunarDerivedChart = (lunarChart?: BirthChart) => {
@@ -165,6 +174,7 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
         updateCurrentCity,
         sinastryChart,
         updateSinastryChart,
+        progressionChart,
       }}
     >
       {children}

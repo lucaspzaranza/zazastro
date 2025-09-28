@@ -3,7 +3,6 @@ import {
   ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT,
   getReturnDateRangeString,
 } from "@/utils/chartUtils";
-import { ChartDate } from ".././ChartDate";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import ChartAndData from ".././ChartAndData";
 import { useBirthChart } from "@/contexts/BirthChartContext";
@@ -56,20 +55,25 @@ export default function LunarDerivedChart() {
               )}
             </h1>
           </ChartSelectorArrows>
-          <ChartDate
+          {/* <ChartDate
             chartType="return"
             customReturnTime={returnTime}
             birthChart={lunarDerivedChart}
-          />
+          /> */}
           {!combineWithBirthChart && !combineWithReturnChart && (
             <ChartAndData
               innerChart={lunarDerivedChart}
               arabicParts={lunarDerivedParts}
-              useArchArabicPartsForDataVisualization
               combineWithBirthChart={toggleShowBirthCombinedchart}
               combineWithReturnChart={toggleShowReturnCombinedchart}
               tableItemsPerPage={tableItemsPerPage}
               onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
+              chartDateProps={{
+                chartType: "return",
+                birthChart: lunarDerivedChart,
+                customReturnTime: returnTime,
+                label: "Retorno",
+              }}
             />
           )}
 
@@ -77,12 +81,17 @@ export default function LunarDerivedChart() {
             <ChartAndData
               innerChart={birthChart}
               outerChart={lunarDerivedChart}
-              useArchArabicPartsForDataVisualization
               arabicParts={arabicParts}
               outerArabicParts={lunarDerivedParts}
               combineWithBirthChart={toggleShowBirthCombinedchart}
               tableItemsPerPage={tableItemsPerPage}
               onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
+              chartDateProps={{
+                chartType: "return",
+                birthChart: lunarDerivedChart,
+                customReturnTime: returnTime,
+                label: "Retorno",
+              }}
             />
           )}
 
@@ -92,10 +101,15 @@ export default function LunarDerivedChart() {
               outerChart={lunarDerivedChart}
               arabicParts={solarReturnParts}
               outerArabicParts={lunarDerivedParts}
-              useArchArabicPartsForDataVisualization
               combineWithReturnChart={toggleShowReturnCombinedchart}
               tableItemsPerPage={tableItemsPerPage}
               onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
+              chartDateProps={{
+                chartType: "return",
+                birthChart: lunarDerivedChart,
+                customReturnTime: returnTime,
+                label: "Retorno",
+              }}
             />
           )}
         </>

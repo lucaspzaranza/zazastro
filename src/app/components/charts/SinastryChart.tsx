@@ -1,7 +1,6 @@
 import { useBirthChart } from "@/contexts/BirthChartContext";
 import { BirthChart } from "@/interfaces/BirthChartInterfaces";
 import { useState } from "react";
-import { ChartDate } from "../ChartDate";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import ChartAndData from "../ChartAndData";
 import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT } from "@/utils/chartUtils";
@@ -38,23 +37,32 @@ export default function SinastryChart(props: SinastryProps) {
 
       {birthChart && sinastryChart && sinastryParts && (
         <div className="w-full text-left flex flex-col items-center">
-          <div className=" flex flex-row font-bold">
+          {/* <div className=" flex flex-row font-bold">
             {profileName}:&nbsp;
             <ChartDate chartType="birth" birthChart={birthChart} />
           </div>
           <div className=" flex flex-row font-bold">
             {sinastryProfileName}:&nbsp;
             <ChartDate chartType="birth" birthChart={sinastryChart} />
-          </div>
+          </div> */}
 
           <ChartAndData
             innerChart={birthChart}
             outerChart={sinastryChart}
             arabicParts={arabicParts}
             outerArabicParts={sinastryParts}
-            useArchArabicPartsForDataVisualization={false}
             tableItemsPerPage={tableItemsPerPage}
             onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
+            chartDateProps={{
+              chartType: "birth",
+              birthChart: birthChart,
+              label: profileName,
+            }}
+            outerChartDateProps={{
+              chartType: "birth",
+              birthChart: sinastryChart,
+              label: sinastryProfileName,
+            }}
           />
         </div>
       )}

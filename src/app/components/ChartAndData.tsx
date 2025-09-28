@@ -1,4 +1,4 @@
-import { BirthChart } from "@/interfaces/BirthChartInterfaces";
+import { BirthChart, ChatDateProps } from "@/interfaces/BirthChartInterfaces";
 import React, { JSX, useCallback, useEffect, useState } from "react";
 import {
   angularLabels,
@@ -18,9 +18,9 @@ import ArabicPartsLayout from "./ArabicPartsLayout";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 import Image from "next/image";
+import { ChartDate } from "./ChartDate";
 
 interface Props {
-  useArchArabicPartsForDataVisualization: boolean;
   innerChart: BirthChart;
   outerChart?: BirthChart;
   arabicParts?: ArabicPartsType;
@@ -29,6 +29,8 @@ interface Props {
   combineWithReturnChart?: () => void;
   tableItemsPerPage?: number;
   onTableItemsPerPageChanged?: (newItemsPerPage: number) => void;
+  chartDateProps: ChatDateProps;
+  outerChartDateProps?: ChatDateProps;
 }
 
 export default function ChartAndData(props: Props) {
@@ -40,7 +42,8 @@ export default function ChartAndData(props: Props) {
     combineWithBirthChart,
     combineWithReturnChart,
     tableItemsPerPage,
-    onTableItemsPerPageChanged,
+    chartDateProps,
+    outerChartDateProps,
   } = {
     ...props,
   };
@@ -115,8 +118,10 @@ export default function ChartAndData(props: Props) {
   }, [useInnerHouses]);
 
   const handleReset = useCallback(() => {
-    updateBirthChart({ isReturnChart: false, chartData: undefined });
-    updateBirthChart({ isReturnChart: true, chartData: undefined });
+    updateBirthChart({ chartType: "birth", chartData: undefined });
+    updateBirthChart({ chartType: "return", chartData: undefined });
+    updateBirthChart({ chartType: "sinastry", chartData: undefined });
+    updateBirthChart({ chartType: "progression", chartData: undefined });
     updateSinastryChart(undefined);
     updateArabicParts(undefined);
     updateSinastryArabicParts(undefined);
@@ -142,13 +147,14 @@ export default function ChartAndData(props: Props) {
     setAspectsData(newAspectData);
   }
 
-  function handleOnItemsPerPagechanged(newItemsPerPage: number) {
-    onTableItemsPerPageChanged?.(newItemsPerPage);
-  }
-
   function renderChart(): JSX.Element {
     return (
       <div className="w-full flex flex-col items-center md:justify-end">
+        <div className="mb-2">
+          <ChartDate {...chartDateProps} />
+          {outerChartDateProps && <ChartDate {...outerChartDateProps} />}
+        </div>
+
         {innerChart && (
           <AstroChart
             props={{
@@ -214,7 +220,6 @@ export default function ChartAndData(props: Props) {
               arabicParts={arabicParts}
               outerArabicParts={outerArabicParts}
               initialItemsPerPage={itemsPerPage}
-              onItemsPerPageChanged={handleOnItemsPerPagechanged}
             />
           </div>
         )}

@@ -17,6 +17,10 @@ import { ArabicPartType, BirthChart } from "@/interfaces/BirthChartInterfaces";
 
 import React, { createContext, useState, useContext, ReactNode } from "react";
 
+interface ArchArabicPartsOptions {
+  isLunarDerivedChart: boolean;
+}
+
 interface ArabicPartsContextType {
   arabicParts?: ArabicPartsType;
   updateArabicParts: (arabicPartsData?: ArabicPartsType) => void;
@@ -32,7 +36,7 @@ interface ArabicPartsContextType {
   ) => void;
   calculateBirthArchArabicParts: (
     ascendant: number,
-    options: { isLunarDerivedChart: boolean }
+    options?: ArchArabicPartsOptions
   ) => void;
   getPartsArray: (parts: ArabicPartsType) => ArabicPart[];
 
@@ -104,7 +108,7 @@ export const ArabicPartsContextProvider: React.FC<{ children: ReactNode }> = ({
 
   function calculateBirthArchArabicParts(
     ascendant: number,
-    options: { isLunarDerivedChart: boolean }
+    options?: ArchArabicPartsOptions
   ) {
     if (!arabicParts) return;
     const archLotsObj: ArabicPartsType = {};
@@ -117,7 +121,7 @@ export const ArabicPartsContextProvider: React.FC<{ children: ReactNode }> = ({
       }
     });
 
-    if (options.isLunarDerivedChart) {
+    if (options?.isLunarDerivedChart) {
       setLunarDerivedParts(archLotsObj);
     } else setArchArabicParts(archLotsObj);
   }

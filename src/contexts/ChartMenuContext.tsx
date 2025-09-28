@@ -5,6 +5,7 @@ export type ChartMenuType =
   | "solarReturn"
   | "lunarReturn"
   | "lunarDerivedReturn"
+  | "progression"
   | "sinastry";
 
 interface ChartMenuContextType {
