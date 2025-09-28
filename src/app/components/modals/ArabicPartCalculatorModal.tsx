@@ -284,7 +284,13 @@ export default function ArabicPartCalculatorModal(
             }}
           >
             <div className="absolute w-[25px] h-[25px] hover:opacity-20 hover:bg-gray-400 active:bg-gray-900" />
-            <Image alt="close" src="/close.png" width={30} height={30} />
+            <Image
+              alt="close"
+              src="/close.png"
+              width={30}
+              height={30}
+              unoptimized
+            />
           </button>
         </header>
 

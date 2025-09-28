@@ -643,6 +643,7 @@ export default function AspectsTable({
           height={20}
           className="hover:scale-110"
           onClick={() => setOpenInfoPopup((prev) => !prev)}
+          unoptimized
         />
       </div>
 
@@ -816,6 +817,7 @@ export default function AspectsTable({
                     src="/trash.png"
                     width={15}
                     height={15}
+                    unoptimized
                   />
                 </button>
 

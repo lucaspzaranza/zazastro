@@ -15,7 +15,13 @@ export default function Home() {
     <div className="min-h-screen sm:min-h-[100vh] flex flex-col items-center justify-between font-[family-name:var(--font-geist-mono)] bg-gradient-to-b from-blue-50 via-slate-50 to-blue-200">
       <div className=" flex flex-row items-center gap-2 pt-4">
         <h1 className="text-3xl font-bold">Zazastro</h1>
-        <Image alt="logo" src="/pisces.png" width={30} height={30} />
+        <Image
+          alt="logo"
+          src="/pisces.png"
+          width={30}
+          height={30}
+          unoptimized
+        />
       </div>
       <ProfilesContextProvider>
         <ChartMenuContextProvider>

@@ -122,6 +122,7 @@ function AspectTableFilterButtonFn(
           src={imgSrc}
           width={14}
           height={14}
+          unoptimized
         />
       </button>
 

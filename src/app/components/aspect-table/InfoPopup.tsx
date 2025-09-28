@@ -17,6 +17,7 @@ export default function InfoPopup() {
               src="/aspects/sextile.png"
               width={aspectImgSize}
               height={aspectImgSize}
+              unoptimized
             />
             <span className="pl-2">Sextil</span>
           </div>
@@ -27,6 +28,7 @@ export default function InfoPopup() {
               src="/aspects/square.png"
               width={aspectImgSize}
               height={aspectImgSize}
+              unoptimized
             />
             <span className="pl-2">Quadratura</span>
           </div>
@@ -37,6 +39,7 @@ export default function InfoPopup() {
               src="/aspects/trine.png"
               width={aspectImgSize}
               height={aspectImgSize}
+              unoptimized
             />
             <span className="pl-2">Trígono</span>
           </div>
@@ -47,6 +50,7 @@ export default function InfoPopup() {
               src="/aspects/opposition.png"
               width={aspectImgSize}
               height={aspectImgSize}
+              unoptimized
             />
             <span className="pl-2">Oposição</span>
           </div>
@@ -57,6 +61,7 @@ export default function InfoPopup() {
               src="/aspects/conjunction.png"
               width={aspectImgSize}
               height={aspectImgSize}
+              unoptimized
             />
             <span className="pl-2">Conjunção</span>
           </div>

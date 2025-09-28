@@ -3,8 +3,8 @@ import { SiGithub, SiGmail, SiInstagram, SiLinkedin } from "react-icons/si";
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-gray-900 text-gray-200 py-4">
-      <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4">
+    <footer className="w-full bg-gray-900 text-gray-200 py-3 sm:py-4">
+      <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
         <p className="text-sm">
           &copy; {new Date().getFullYear()} Lucas Zaranza
         </p>

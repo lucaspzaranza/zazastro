@@ -48,7 +48,9 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
   }
 
   function showSwitchPartsButton(): boolean {
-    let result = !isInsideModal && chartMenu !== "birth";
+    if (isInsideModal) return false;
+
+    let result = chartMenu !== "birth";
     if (result) result = isCombinedWithBirthChart || isCombinedWithReturnChart;
     if (!result) result = chartMenu === "sinastry";
 
@@ -69,7 +71,13 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
                   toggleInnerPartsVisualization();
                 }}
               >
-                <Image alt="change" src="/change.png" width={18} height={18} />
+                <Image
+                  alt="change"
+                  src="/change.png"
+                  width={18}
+                  height={18}
+                  unoptimized
+                />
               </button>
               {!showInnerParts && "(E)"}
             </>
@@ -89,6 +97,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
                 src="/dropdown-menu.png"
                 width={20}
                 height={20}
+                unoptimized
               />
             </button>
 
@@ -104,6 +113,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
                 src="/customize.png"
                 width={20}
                 height={20}
+                unoptimized
               />
             </button>
             <button
@@ -118,6 +128,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
                 src="/see-more.png"
                 width={20}
                 height={20}
+                unoptimized
               />
             </button>
           </div>

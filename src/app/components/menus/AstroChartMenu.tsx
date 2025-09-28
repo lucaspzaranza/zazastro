@@ -62,6 +62,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
                 src={checkSrc}
                 width={checkSize}
                 height={checkSize}
+                unoptimized
               />
             )}
           </button>
@@ -80,6 +81,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
                 src={checkSrc}
                 width={checkSize}
                 height={checkSize}
+                unoptimized
               />
             )}
           </button>
@@ -98,6 +100,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
                 src={checkSrc}
                 width={checkSize}
                 height={checkSize}
+                unoptimized
               />
             )}
           </button>
@@ -119,6 +122,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
                   src={checkSrc}
                   width={checkSize}
                   height={checkSize}
+                  unoptimized
                 />
               )}
             </button>
@@ -139,6 +143,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
                   src={checkSrc}
                   width={checkSize}
                   height={checkSize}
+                  unoptimized
                 />
               )}
             </button>

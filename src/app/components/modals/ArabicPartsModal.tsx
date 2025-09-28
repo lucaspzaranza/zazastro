@@ -60,7 +60,13 @@ export default function ArabicPartsModal(props: ArabicPartsModalProps) {
             }}
           >
             <div className="absolute right-[2px] w-[25px] h-[25px] hover:opacity-20 hover:bg-gray-400 active:bg-gray-900" />
-            <Image alt="close" src="/close.png" width={30} height={30} />
+            <Image
+              alt="close"
+              src="/close.png"
+              width={30}
+              height={30}
+              unoptimized
+            />
           </button>
         </header>
 

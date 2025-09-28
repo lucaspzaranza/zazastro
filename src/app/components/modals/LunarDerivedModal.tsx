@@ -146,7 +146,13 @@ export default function LunarDerivedModal(props: LunarModalProps) {
           }}
         >
           <div className="absolute w-[19px] h-[19px] hover:opacity-20 hover:bg-gray-400 active:bg-gray-900" />
-          <Image alt="close" src="/close.png" width={25} height={25} />
+          <Image
+            alt="close"
+            src="/close.png"
+            width={25}
+            height={25}
+            unoptimized
+          />
         </button>
       </header>
 

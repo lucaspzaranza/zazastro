@@ -231,6 +231,7 @@ export function getPlanetImage(
       src={path}
       width={options.size ?? 15}
       height={options.size ?? 15}
+      unoptimized
     />
   );
 }
@@ -252,6 +253,7 @@ export function getArabicPartImage(
       src={path}
       width={options.size ?? 15}
       height={options.size ?? 15}
+      unoptimized
     />
   );
 }
@@ -264,7 +266,9 @@ export function getAspectImage(
   // const aspectType = aspect.aspectType;
   const path = `/${folder}/${aspectType}.png`;
 
-  return <Image alt="aspect" src={path} width={size} height={size} />;
+  return (
+    <Image alt="aspect" src={path} width={size} height={size} unoptimized />
+  );
 }
 
 export const formatSignColor = (stringWithSign: string): React.ReactNode => {

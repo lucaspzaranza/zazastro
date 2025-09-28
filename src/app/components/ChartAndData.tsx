@@ -264,6 +264,7 @@ export default function ChartAndData(props: Props) {
                       src="/change.png"
                       width={18}
                       height={18}
+                      unoptimized
                     />
                   </button>
                   {!useInnerPlanets && "(E)"}
@@ -341,6 +342,7 @@ export default function ChartAndData(props: Props) {
                       src="/change.png"
                       width={18}
                       height={18}
+                      unoptimized
                     />
                   </button>
                   {!useInnerHouses && "(E)"}
