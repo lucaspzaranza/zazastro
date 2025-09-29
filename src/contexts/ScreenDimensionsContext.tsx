@@ -14,6 +14,7 @@ interface ScreenDimensions {
 interface ScreenDimensionsContextType {
   screenDimensions: ScreenDimensions;
   isMobileBreakPoint: () => boolean;
+  isWidth1366: () => boolean;
 }
 
 const ScreenDimensionsContext = createContext<
@@ -47,12 +48,15 @@ export const ScreenDimensionsContextProvider: React.FC<{
   }, []);
 
   const isMobileBreakPoint = () => screenDimensions.width < MOBILE_BREAKPOINT;
+  const isWidth1366 = () =>
+    screenDimensions.width >= 1366 && screenDimensions.width < 1920;
 
   return (
     <ScreenDimensionsContext.Provider
       value={{
         screenDimensions,
         isMobileBreakPoint,
+        isWidth1366,
       }}
     >
       {children}

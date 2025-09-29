@@ -154,7 +154,7 @@ export default function ChartAndData(props: Props) {
   function renderChart(): JSX.Element {
     const content = (
       <>
-        <ChartSelectorArrows className="w-full mb-2 px-6">
+        <ChartSelectorArrows className="w-full mb-2 md:px-6">
           {title && (
             <h1 className="text-lg md:text-2xl font-bold text-center">
               {title}
@@ -196,9 +196,7 @@ export default function ChartAndData(props: Props) {
     return isMobileBreakPoint() ? (
       <div className="flex flex-col items-center">{content}</div>
     ) : (
-      <Container className="px-0! xl:ml-16 xl:mr-6 2xl:mr-1 2xl:ml-10!">
-        {content}
-      </Container>
+      <Container className="px-0! lg:mx-2 2xl:mx-6">{content}</Container>
     );
   }
 
@@ -217,63 +215,50 @@ export default function ChartAndData(props: Props) {
     );
 
     return (
-      <div className="w-full h-auto flex flex-col justify-start gap-2 md:gap-5 relative z-10">
+      <>
         {!isMobileBreakPoint() && (
-          <Container className="w-[450px] px-4!">
+          <div className="md:w-[450px] 2xl:w-[500px] flex flex-col gap-4">
+            <Container className="">
+              <ArabicPartsLayout
+                parts={partsArray}
+                showMenuButtons={true}
+                isInsideModal={false}
+                onToggleInnerPartsVisualization={
+                  handleOnToggleInnerPartsVisualization
+                }
+              />
+            </Container>
+
+            {arabicParts && innerChart && (
+              <Container className="">{tableContent}</Container>
+            )}
+          </div>
+        )}
+
+        {isMobileBreakPoint() && (
+          <>
             <ArabicPartsLayout
+              className="w-full text-[0.85rem] md:text-[1rem]"
               parts={partsArray}
+              partColWidth="w-[52.5%]! mr-2"
+              antisciaColWidth="w-1/2!"
               showMenuButtons={true}
               isInsideModal={false}
               onToggleInnerPartsVisualization={
                 handleOnToggleInnerPartsVisualization
               }
             />
-          </Container>
+            {arabicParts && innerChart && (
+              <div className="md:absolute md:top-full mb-4 md:mb-0">
+                {tableContent}
+              </div>
+            )}
+          </>
         )}
-
-        {isMobileBreakPoint() && (
-          <ArabicPartsLayout
-            className="w-full text-[0.85rem] md:text-[1rem]"
-            parts={partsArray}
-            partColWidth="w-[52.5%]! mr-2"
-            antisciaColWidth="w-1/2!"
-            showMenuButtons={true}
-            isInsideModal={false}
-            onToggleInnerPartsVisualization={
-              handleOnToggleInnerPartsVisualization
-            }
-          />
-        )}
-
-        {arabicParts && innerChart && isMobileBreakPoint() && (
-          <div className="md:absolute md:top-full mb-4 md:mb-0">
-            {tableContent}
-          </div>
-        )}
-
-        {arabicParts && innerChart && !isMobileBreakPoint() && (
-          <Container className="w-[450px]! mb-4 md:mb-0">
-            {tableContent}
-          </Container>
-        )}
-      </div>
+      </>
+      // <div className="w-full h-auto flex flex-col justify-start gap-2 md:gap-5 relative z-10">
+      // </div>
     );
-  }
-
-  function showSwitchPartsButton(): boolean {
-    let result = chartMenu !== "birth";
-    if (result) result = isCombinedWithBirthChart || isCombinedWithReturnChart;
-    if (!result) result = chartMenu === "sinastry";
-
-    return result;
-  }
-
-  function toggleInnerPlanetsVisualization() {
-    setUseInnerPlanets((prev) => !prev);
-  }
-
-  function toggleInnerHousesVisualization() {
-    setUseInnerHouses((prev) => !prev);
   }
 
   function renderPlanetsAndHouses(): JSX.Element {
@@ -305,52 +290,59 @@ export default function ChartAndData(props: Props) {
           </span>
         </h2>
         <ul className="w-full text-[0.85rem] md:text-[1rem]">
-          {chartForPlanets?.planets?.map((planet, index) => (
-            <li key={index} className="flex flex-row items-center">
-              {chartForPlanets.planetsWithSigns !== undefined && (
-                <div className="w-full flex flex-row">
-                  <span className="w-[55%] md:w-[14rem] flex flex-row items-center">
-                    <span className="w-full flex flex-row items-center justify-start md:justify-between mr-[-20px]">
-                      {planet.type === "northNode" && (
-                        <span className="w-8/12 md:w-full text-[0.75rem] md:text-[1rem]">
-                          {planet.name}
-                        </span>
-                      )}
-                      {planet.type !== "northNode" && (
-                        <span className="w-8/12 md:w-full">{planet.name}</span>
-                      )}
-                      {getPlanetImage(planet.type, {
-                        isRetrograde: planet.isRetrograde,
-                        size: !isMobileBreakPoint()
-                          ? planet.type === "northNode" ||
-                            planet.type === "southNode"
-                            ? 19
-                            : 15
-                          : planet.type === "northNode" ||
-                            planet.type === "southNode"
-                          ? 15
-                          : 13,
-                      })}
-                      :&nbsp;
-                    </span>
-                    <span className="w-7/12 md:w-9/12 text-end pr-2 md:pr-4">
-                      {formatSignColor(
-                        chartForPlanets.planetsWithSigns[index].position
-                      )}
-                    </span>
-                  </span>
-                  <span className="w-[10rem] pl-1 md:pl-0 md:w-[11rem] flex flex-row items-center">
+          {chartForPlanets?.planets?.map(
+            (planet, index) =>
+              chartForPlanets.planetsWithSigns && (
+                <li
+                  key={index}
+                  className="flex flex-row items-center justify-between"
+                >
+                  <div className="w-[18rem] flex flex-row items-center justify-start md:justify-between mr-[-20px]">
+                    {planet.type === "northNode" && (
+                      <span className="w-8/12 md:w-full text-[0.75rem] md:text-[1rem]">
+                        {planet.name}
+                      </span>
+                    )}
+                    {planet.type !== "northNode" && (
+                      <span className="w-8/12 md:w-full">{planet.name}</span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-row items-center">
+                    {getPlanetImage(planet.type, {
+                      isRetrograde: planet.isRetrograde,
+                      size: !isMobileBreakPoint()
+                        ? planet.type === "northNode" ||
+                          planet.type === "southNode"
+                          ? 19
+                          : 15
+                        : planet.type === "northNode" ||
+                          planet.type === "southNode"
+                        ? 15
+                        : 13,
+                    })}
+                    :&nbsp;
+                  </div>
+
+                  <div className="w-7/12 md:w-9/12 text-end pr-2 md:pr-4">
+                    {formatSignColor(
+                      chartForPlanets.planetsWithSigns[index].position
+                    )}
+                  </div>
+
+                  <div className="w-[10rem] pl-1 md:pl-0 md:w-[11rem] flex flex-row items-center">
                     Antiscion:&nbsp;
                     <span className="w-full text-end">
                       {formatSignColor(
                         chartForPlanets.planetsWithSigns[index].antiscion
                       )}
                     </span>
-                  </span>
-                </div>
-              )}
-            </li>
-          ))}
+                  </div>
+                  {/* <div className="w-full flex flex-row">
+                </div> */}
+                </li>
+              )
+          )}
         </ul>
       </>
     );
@@ -435,22 +427,42 @@ export default function ChartAndData(props: Props) {
     return (
       <div className="w-full md:w-[30rem] flex flex-col justify-start gap-2 md:gap-5 md:z-20">
         {!isMobileBreakPoint() && (
-          <Container className="w-full">{planetsContent}</Container>
+          <>
+            <Container className="w-full">{planetsContent}</Container>
+            <Container className="w-full md:w-[30rem]">
+              {housesContent}
+            </Container>
+          </>
         )}
-        {isMobileBreakPoint() && <div className="w-full">{planetsContent}</div>}
 
-        {!isMobileBreakPoint() && (
-          <Container className="w-full md:w-[30rem]">{housesContent}</Container>
-        )}
         {isMobileBreakPoint() && (
-          <div className="w-full md:w-[26rem]">{housesContent}</div>
+          <>
+            <div className="w-full">{planetsContent}</div>
+            <div className="w-full md:w-[26rem]">{housesContent}</div>
+          </>
         )}
       </div>
     );
   }
 
+  function showSwitchPartsButton(): boolean {
+    let result = chartMenu !== "birth";
+    if (result) result = isCombinedWithBirthChart || isCombinedWithReturnChart;
+    if (!result) result = chartMenu === "sinastry";
+
+    return result;
+  }
+
+  function toggleInnerPlanetsVisualization() {
+    setUseInnerPlanets((prev) => !prev);
+  }
+
+  function toggleInnerHousesVisualization() {
+    setUseInnerHouses((prev) => !prev);
+  }
+
   return (
-    <div className="w-[95%] md:w-full flex flex-row md:flex-row md:items-start md:justify-between mt-1">
+    <div className="w-[95%] md:w-full flex flex-col md:flex-row md:items-start md:justify-between mt-1">
       {isMobileBreakPoint() && (
         <>
           {renderChart()}
@@ -461,7 +473,7 @@ export default function ChartAndData(props: Props) {
 
       {!isMobileBreakPoint() && (
         <>
-          <div className="w-[415px]">{renderArabicPartsAndAspectsTable()}</div>
+          {renderArabicPartsAndAspectsTable()}
           {renderChart()}
           {renderPlanetsAndHouses()}
         </>
