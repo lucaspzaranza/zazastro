@@ -15,7 +15,6 @@ import {
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import ChartAndData from ".././ChartAndData";
 import ReturnChart from "./ReturnChart";
-import ChartSelectorArrows from "../ChartSelectorArrows";
 import { ChartMenuType, useChartMenu } from "@/contexts/ChartMenuContext";
 import LunarDerivedChart from "./LunarDerivedChart";
 import BirthChartForm from "./BirthChartForm";
@@ -710,14 +709,9 @@ export default function BirthChart() {
       {birthChart && chartMenu === "birth" && (
         <div className="w-full flex flex-col items-center">
           <div className="w-full text-left flex flex-col items-center mb-4">
-            <ChartSelectorArrows className="w-full md:w-[60%] mb-2">
-              <h1 className="text-lg md:text-2xl font-bold text-center">
-                Mapa Natal - {profileName}
-              </h1>
-            </ChartSelectorArrows>
-            {/* <ChartDate chartType="birth" birthChart={birthChart} /> */}
             <ChartAndData
               arabicParts={arabicParts}
+              title={`Mapa Natal - ${profileName}`}
               innerChart={birthChart}
               chartDateProps={{
                 chartType: "birth",

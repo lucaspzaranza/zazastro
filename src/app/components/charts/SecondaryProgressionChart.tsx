@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import ChartAndData from "../ChartAndData";
 import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT } from "@/utils/chartUtils";
-import ChartSelectorArrows from "../ChartSelectorArrows";
 
 export default function SecondaryProgressionChart() {
   const { profileName } = useBirthChart();
@@ -25,18 +24,8 @@ export default function SecondaryProgressionChart() {
 
   return (
     <div className="w-full flex flex-col items-center justify-center gap-3 mb-4">
-      <ChartSelectorArrows className="w-full md:w-[60%]">
-        {profileName && (
-          <h1 className="text-lg md:text-2xl font-bold text-center">
-            Progressão Secundária - {profileName}
-          </h1>
-        )}
-      </ChartSelectorArrows>
-
       {progressionChart && (
         <div className="w-full text-left flex flex-col items-center">
-          {/* <ChartDate chartType="return" birthChart={progressionChart} /> */}
-
           {!combineWithBirthChart && progressionChart && (
             <ChartAndData
               innerChart={progressionChart}
@@ -54,6 +43,7 @@ export default function SecondaryProgressionChart() {
                 birthChart: progressionChart,
                 label: "Progredido",
               }}
+              title={`Progressão Secundária - ${profileName}`}
             />
           )}
 
@@ -76,6 +66,7 @@ export default function SecondaryProgressionChart() {
                 birthChart: progressionChart,
                 label: "Progredido",
               }}
+              title={`Progressão Secundária - ${profileName}`}
             />
           )}
         </div>

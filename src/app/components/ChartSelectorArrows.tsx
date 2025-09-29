@@ -40,6 +40,7 @@ export default function ChartSelectorArrows(props: ChartSelectorProps) {
         disabled={isFirstChart()}
         onClick={previous}
         className="w-[2rem] h-[2rem] hover:outline-2 text-xl active:bg-gray-200 disabled:opacity-50"
+        title="Menu anterior"
       >
         ◀
       </button>
@@ -48,6 +49,7 @@ export default function ChartSelectorArrows(props: ChartSelectorProps) {
         disabled={isLastChart()}
         onClick={next}
         className="w-[2rem] h-[2rem] hover:outline-2 text-xl active:bg-gray-200 disabled:opacity-50"
+        title="Próximo menu"
       >
         ▶
       </button>

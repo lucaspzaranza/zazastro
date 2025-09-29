@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import ChartAndData from "../ChartAndData";
 import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT } from "@/utils/chartUtils";
-import ChartSelectorArrows from "../ChartSelectorArrows";
 
 interface SinastryProps {
   sinastryChart?: BirthChart;
@@ -27,25 +26,8 @@ export default function SinastryChart(props: SinastryProps) {
 
   return (
     <div className="w-full flex flex-col items-center justify-center gap-3 mb-4">
-      <ChartSelectorArrows className="w-full md:w-[60%]">
-        {profileName && (
-          <h1 className="text-lg md:text-2xl font-bold text-center">
-            Sinastria - {profileName} x {sinastryProfileName}
-          </h1>
-        )}
-      </ChartSelectorArrows>
-
       {birthChart && sinastryChart && sinastryParts && (
         <div className="w-full text-left flex flex-col items-center">
-          {/* <div className=" flex flex-row font-bold">
-            {profileName}:&nbsp;
-            <ChartDate chartType="birth" birthChart={birthChart} />
-          </div>
-          <div className=" flex flex-row font-bold">
-            {sinastryProfileName}:&nbsp;
-            <ChartDate chartType="birth" birthChart={sinastryChart} />
-          </div> */}
-
           <ChartAndData
             innerChart={birthChart}
             outerChart={sinastryChart}
@@ -63,6 +45,7 @@ export default function SinastryChart(props: SinastryProps) {
               birthChart: sinastryChart,
               label: sinastryProfileName,
             }}
+            title={`Sinastria - ${profileName} x ${sinastryProfileName}`}
           />
         </div>
       )}

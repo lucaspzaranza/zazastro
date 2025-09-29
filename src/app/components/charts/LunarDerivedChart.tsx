@@ -6,7 +6,6 @@ import {
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import ChartAndData from ".././ChartAndData";
 import { useBirthChart } from "@/contexts/BirthChartContext";
-import ChartSelectorArrows from "../ChartSelectorArrows";
 
 export default function LunarDerivedChart() {
   const [returnTime, setReturnTime] = useState("");
@@ -42,24 +41,18 @@ export default function LunarDerivedChart() {
     setTableItemsPerPage(newItemsPerPage);
   }
 
+  function getTitle() {
+    return `Mapa do Retorno Lunar Derivado para 
+              ${getReturnDateRangeString(
+                lunarDerivedChart?.returnTime ?? "0000-00-00 00:00:00",
+                "lunar"
+              )}`;
+  }
+
   return (
     <div className="w-full flex flex-col items-center justify-between">
       {lunarDerivedChart && renderChart && (
         <>
-          <ChartSelectorArrows className="w-full md:w-[60%] mb-2">
-            <h1 className="text-lg md:text-2xl font-bold text-center">
-              Mapa do Retorno Lunar Derivado para&nbsp;
-              {getReturnDateRangeString(
-                lunarDerivedChart.returnTime ?? "0000-00-00 00:00:00",
-                "lunar"
-              )}
-            </h1>
-          </ChartSelectorArrows>
-          {/* <ChartDate
-            chartType="return"
-            customReturnTime={returnTime}
-            birthChart={lunarDerivedChart}
-          /> */}
           {!combineWithBirthChart && !combineWithReturnChart && (
             <ChartAndData
               innerChart={lunarDerivedChart}
@@ -74,6 +67,7 @@ export default function LunarDerivedChart() {
                 customReturnTime: returnTime,
                 label: "Retorno",
               }}
+              title={getTitle()}
             />
           )}
 
@@ -92,6 +86,7 @@ export default function LunarDerivedChart() {
                 customReturnTime: returnTime,
                 label: "Retorno",
               }}
+              title={getTitle()}
             />
           )}
 
@@ -110,6 +105,7 @@ export default function LunarDerivedChart() {
                 customReturnTime: returnTime,
                 label: "Retorno",
               }}
+              title={getTitle()}
             />
           )}
         </>

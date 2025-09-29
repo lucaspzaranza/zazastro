@@ -1,5 +1,4 @@
 import { useBirthChart } from "@/contexts/BirthChartContext";
-import { BirthDate } from "@/interfaces/BirthChartInterfaces";
 import { useEffect, useState } from "react";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import ChartAndData from ".././ChartAndData";
@@ -7,7 +6,6 @@ import {
   ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT,
   getReturnDateRangeString,
 } from "@/utils/chartUtils";
-import ChartSelectorArrows from "../ChartSelectorArrows";
 
 export default function ReturnChart() {
   const { profileName } = useBirthChart();
@@ -15,17 +13,6 @@ export default function ReturnChart() {
   const { arabicParts, archArabicParts } = useArabicParts();
   const [isSolarReturn, setIsSolarReturn] = useState(true);
   const [combineWithBirthChart, setCombineWithBirthChart] = useState(false);
-  const [, setTargetDate] = useState<BirthDate>({
-    day: 0,
-    month: 0,
-    year: 0,
-    time: "",
-    coordinates: {
-      latitude: 0,
-      longitude: 0,
-    },
-  });
-
   const [tableItemsPerPage, setTableItemsPerPage] = useState(
     ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT
   );
@@ -36,11 +23,6 @@ export default function ReturnChart() {
 
   useEffect(() => {
     setIsSolarReturn(returnChart?.returnType === "solar");
-    if (returnChart?.targetDate) {
-      setTargetDate({
-        ...returnChart?.targetDate,
-      });
-    }
   }, [returnChart]);
 
   function handleOnItemsPerPagechanged(newItemsPerPage: number) {
@@ -49,25 +31,18 @@ export default function ReturnChart() {
 
   if (returnChart === undefined) return;
 
+  function getTitle() {
+    return `Retorno ${isSolarReturn ? "Solar" : "Lunar"} para 
+            ${getReturnDateRangeString(
+              returnChart?.returnTime ?? "0000-00-00 00:00:00",
+              isSolarReturn ? "solar" : "lunar"
+            )} - ${profileName}`;
+  }
+
   return (
     <div className="w-full flex flex-col items-center justify-center gap-3 mb-4">
-      <ChartSelectorArrows className="w-full md:w-[60%]">
-        {profileName && (
-          <h1 className="text-lg md:text-2xl font-bold text-center">
-            Retorno {isSolarReturn ? "Solar" : "Lunar"} para&nbsp;
-            {getReturnDateRangeString(
-              returnChart.returnTime ?? "0000-00-00 00:00:00",
-              isSolarReturn ? "solar" : "lunar"
-            )}{" "}
-            - {profileName}
-          </h1>
-        )}
-      </ChartSelectorArrows>
-
       {returnChart && returnChart.timezone && (
         <div className="w-full text-left flex flex-col items-center">
-          {/* <ChartDate chartType="return" birthChart={returnChart} /> */}
-
           {!combineWithBirthChart && returnChart && (
             <ChartAndData
               innerChart={returnChart}
@@ -80,6 +55,7 @@ export default function ReturnChart() {
                 birthChart: returnChart,
                 label: "Retorno",
               }}
+              title={getTitle()}
             />
           )}
 
@@ -97,6 +73,7 @@ export default function ReturnChart() {
                 birthChart: returnChart,
                 label: "Retorno",
               }}
+              title={getTitle()}
             />
           )}
         </div>
