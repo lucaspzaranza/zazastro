@@ -749,7 +749,7 @@ export default function AspectsTable({
                       <td className={tdClasses}>
                         <div
                           className={
-                            "w-full pl-1 flex flex-row items-center gap-1 text-[0.65rem] md:text-[0.7rem] font-bold break-all md:break-words"
+                            "w-full pl-1 flex flex-row items-center gap-1 text-[0.65rem] md:text-[0.7rem] font-bold break-words"
                           }
                         >
                           <Image

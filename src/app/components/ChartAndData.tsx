@@ -1,4 +1,8 @@
-import { BirthChart, ChatDateProps } from "@/interfaces/BirthChartInterfaces";
+import {
+  BirthChart,
+  ChatDateProps,
+  PlanetType,
+} from "@/interfaces/BirthChartInterfaces";
 import React, { JSX, useCallback, useEffect, useState } from "react";
 import {
   angularLabels,
@@ -66,17 +70,69 @@ export default function ChartAndData(props: Props) {
     updateLunarDerivedChart,
     updateIsCombinedWithBirthChart,
     updateIsCombinedWithReturnChart,
-    updateSinastryChart,
     isCombinedWithBirthChart,
     isCombinedWithReturnChart,
   } = useBirthChart();
   const { chartMenu, resetChartMenus } = useChartMenu();
-  const { updateArabicParts, updateSinastryArabicParts, getPartsArray } =
-    useArabicParts();
+  const {
+    updateArabicParts,
+    updateSinastryArabicParts,
+    getPartsArray,
+    updateSolarReturnParts,
+    updateArchArabicParts,
+  } = useArabicParts();
   const [partsArray, setPartsArray] = useState<ArabicPart[]>([]);
   const [useInnerPlanets, setUseInnerPlanets] = useState(true);
   const [useInnerHouses, setUseInnerHouses] = useState(true);
   const [useInnerParts, setUseInnerParts] = useState(true);
+
+  const [planetsAntiscion, setPlanetsAntiscion] = useState<
+    Record<PlanetType, boolean>
+  >({
+    sun: false,
+    moon: false,
+    mercury: false,
+    venus: false,
+    mars: false,
+    jupiter: false,
+    saturn: false,
+    uranus: false,
+    neptune: false,
+    pluto: false,
+    northNode: false,
+    southNode: false,
+  });
+
+  const [housesAntiscion, setHousesAntiscion] = useState<
+    Record<string, boolean>
+  >({
+    "Casa 1": false,
+    "Casa 2": false,
+    "Casa 3": false,
+    "Casa 4": false,
+    "Casa 5": false,
+    "Casa 6": false,
+    "Casa 7": false,
+    "Casa 8": false,
+    "Casa 9": false,
+    "Casa 10": false,
+    "Casa 11": false,
+    "Casa 12": false,
+  });
+
+  const togglePlanetAntiscion = (key: PlanetType) => {
+    setPlanetsAntiscion((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
+
+  const toggleHouseAntiscion = (key: string) => {
+    setHousesAntiscion((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
 
   function updateParts() {
     if (useInnerParts && arabicParts) {
@@ -126,9 +182,10 @@ export default function ChartAndData(props: Props) {
     updateBirthChart({ chartType: "return", chartData: undefined });
     updateBirthChart({ chartType: "sinastry", chartData: undefined });
     updateBirthChart({ chartType: "progression", chartData: undefined });
-    updateSinastryChart(undefined);
     updateArabicParts(undefined);
+    updateArchArabicParts(undefined);
     updateSinastryArabicParts(undefined);
+    updateSolarReturnParts(undefined);
     updateLunarDerivedChart(undefined);
     updateIsCombinedWithBirthChart(false);
     updateIsCombinedWithReturnChart(false);
@@ -295,20 +352,17 @@ export default function ChartAndData(props: Props) {
               chartForPlanets.planetsWithSigns && (
                 <li
                   key={index}
-                  className="flex flex-row items-center justify-between"
+                  className="w-full flex flex-row items-center justify-between xl:justify-between 2xl:justify-between xl:gap-2 2xl:gap-0"
                 >
-                  <div className="w-[18rem] flex flex-row items-center justify-start md:justify-between mr-[-20px]">
-                    {planet.type === "northNode" && (
-                      <span className="w-8/12 md:w-full text-[0.75rem] md:text-[1rem]">
-                        {planet.name}
-                      </span>
-                    )}
-                    {planet.type !== "northNode" && (
-                      <span className="w-8/12 md:w-full">{planet.name}</span>
-                    )}
+                  <div
+                    className={`w-[6rem] ${
+                      planetsAntiscion[planet.type] ? "antiscion" : ""
+                    }`}
+                  >
+                    {planet.name}
                   </div>
 
-                  <div className="flex flex-row items-center">
+                  <div className="w-[1.5rem] md:w-[2rem] flex flex-row items-center">
                     {getPlanetImage(planet.type, {
                       isRetrograde: planet.isRetrograde,
                       size: !isMobileBreakPoint()
@@ -320,17 +374,30 @@ export default function ChartAndData(props: Props) {
                           planet.type === "southNode"
                         ? 15
                         : 13,
+                      isAntiscion: planetsAntiscion[planet.type],
                     })}
                     :&nbsp;
                   </div>
-
-                  <div className="w-7/12 md:w-9/12 text-end pr-2 md:pr-4">
+                  <div className="w-[4rem] md:w-[4.5rem] xl:w-[4.5rem] 2xl:w-[4.5rem] text-end flex flex-row items-center justify-end">
                     {formatSignColor(
-                      chartForPlanets.planetsWithSigns[index].position
+                      planetsAntiscion[planet.type]
+                        ? chartForPlanets.planetsWithSigns[index].antiscion
+                        : chartForPlanets.planetsWithSigns[index].position
                     )}
                   </div>
 
-                  <div className="w-[10rem] pl-1 md:pl-0 md:w-[11rem] flex flex-row items-center">
+                  <button
+                    title="Antiscion"
+                    className={`w-[2rem] hidden xl:flex xl:flex-row xl:items-center xl:justify-center 2xl:hidden hover:outline-2 hover:bg-gray-200 active:bg-gray-400 
+                      ${planetsAntiscion[planet.type] ? "antiscion" : ""}`}
+                    onClick={() => {
+                      togglePlanetAntiscion(planet.type);
+                    }}
+                  >
+                    ▶
+                  </button>
+
+                  <div className="w-[10rem] pl-1 md:pl-0 md:w-[11rem] flex flex-row items-center xl:hidden 2xl:flex">
                     Antiscion:&nbsp;
                     <span className="w-full text-end">
                       {formatSignColor(
@@ -338,8 +405,6 @@ export default function ChartAndData(props: Props) {
                       )}
                     </span>
                   </div>
-                  {/* <div className="w-full flex flex-row">
-                </div> */}
                 </li>
               )
           )}
@@ -377,45 +442,50 @@ export default function ChartAndData(props: Props) {
         {chartForHouses && (
           <ul className="w-full mb-4 text-[0.85rem] md:text-[1rem]">
             {chartForHouses.housesData.housesWithSigns?.map((house, index) => (
-              <li key={house} className="w-full flex flex-row items-center">
-                <div className="w-full flex flex-row justify-between">
-                  <span className="w-1/2 flex flex-row items-center">
-                    <span
-                      className={
-                        (index % 3 === 0 ? "font-bold" : "") + " w-full"
-                      }
-                    >
-                      <span
-                        className={
-                          "w-full flex flex-row" +
-                          (!isMobileBreakPoint()
-                            ? index % 3 === 0
-                              ? "text-[0.975rem]"
-                              : ""
+              <li
+                key={index}
+                className="w-full flex flex-row items-center justify-between xl:justify-between 2xl:justify-between xl:gap-2 2xl:gap-0"
+              >
+                <div
+                  className={`w-[8rem] flex flex-row text-nowrap 
+                        ${
+                          !isMobileBreakPoint()
+                            ? ""
                             : index % 3 === 0
-                            ? "text-nowrap tracking-tighter"
-                            : "")
-                        }
-                      >
-                        Casa {index + 1}
-                        {index % 3 === 0 ? ` (${getHouseLabel(index)})` : ""}:
-                      </span>
-                    </span>
-                    &nbsp;
-                    <span className="text-end pr-0">
-                      {formatSignColor(house)}
-                    </span>
+                            ? "tracking-tighter"
+                            : ""
+                        } ${
+                    housesAntiscion[`Casa ${index + 1}`] ? "antiscion" : ""
+                  } ${index % 3 === 0 ? "font-bold" : ""}`}
+                >
+                  Casa {index + 1}
+                  {index % 3 === 0 ? ` (${getHouseLabel(index)})` : ""}:
+                </div>
+
+                <div className="w-1/2 md:w-[5rem] flex flex-row items-center justify-end">
+                  {!housesAntiscion[`Casa ${index + 1}`]
+                    ? formatSignColor(house)
+                    : getHouseAntiscion(chartForHouses.housesData.house[index])}
+                </div>
+
+                <button
+                  title="Antiscion"
+                  className={`w-[2rem] hidden xl:flex xl:flex-row xl:items-center xl:justify-center 2xl:hidden hover:outline-2 hover:bg-gray-200 active:bg-gray-400 
+                      ${
+                        housesAntiscion[`Casa ${index + 1}`] ? "antiscion" : ""
+                      }`}
+                  onClick={() => {
+                    toggleHouseAntiscion(`Casa ${index + 1}`);
+                  }}
+                >
+                  ▶
+                </button>
+
+                <div className="w-[10rem] pl-1 md:pl-0 md:w-[11rem] flex flex-row items-center xl:hidden 2xl:flex">
+                  Antiscion:&nbsp;
+                  <span className="w-full text-end">
+                    {getHouseAntiscion(chartForHouses.housesData.house[index])}
                   </span>
-                  {innerChart && (
-                    <span className="w-1/2 pl-4 flex flex-row pr-4">
-                      Antiscion:&nbsp;
-                      <span className="w-full text-end">
-                        {getHouseAntiscion(
-                          chartForHouses.housesData.house[index]
-                        )}
-                      </span>
-                    </span>
-                  )}
                 </div>
               </li>
             ))}
@@ -425,11 +495,13 @@ export default function ChartAndData(props: Props) {
     );
 
     return (
-      <div className="w-full md:w-[30rem] flex flex-col justify-start gap-2 md:gap-5 md:z-20">
+      <div className="w-full flex flex-col justify-start gap-2 md:gap-5 md:z-20">
         {!isMobileBreakPoint() && (
           <>
-            <Container className="w-full">{planetsContent}</Container>
-            <Container className="w-full md:w-[30rem]">
+            <Container className="xl:w-full 2xl:w-full">
+              {planetsContent}
+            </Container>
+            <Container className="xl:w-full 2xl:w-full">
               {housesContent}
             </Container>
           </>

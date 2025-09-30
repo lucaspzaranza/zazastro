@@ -49,7 +49,7 @@ export const ScreenDimensionsContextProvider: React.FC<{
 
   const isMobileBreakPoint = () => screenDimensions.width < MOBILE_BREAKPOINT;
   const isWidth1366 = () =>
-    screenDimensions.width >= 1366 && screenDimensions.width < 1920;
+    screenDimensions.width >= 1366 && screenDimensions.width < 1500;
 
   return (
     <ScreenDimensionsContext.Provider

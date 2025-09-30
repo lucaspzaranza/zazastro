@@ -739,7 +739,7 @@ export default function BirthChart() {
         />
       )}
 
-      {chartMenu === "progression" && progressionChart && archArabicParts && (
+      {chartMenu === "progression" && archArabicParts && (
         <SecondaryProgressionChart />
       )}
 
