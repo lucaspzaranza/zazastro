@@ -106,16 +106,12 @@ export default function AspectsTable({
     clearFilters();
 
     setFilteredAspects(aspects.map((asp) => ({ ...asp } as PlanetAspectData)));
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [aspects]);
 
   useEffect(() => {
     if (filteredAspects.length > 0) {
       updateTablePaginationAndPageCount();
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filteredAspects]);
 
   function getHouseName(element: AspectedElement): string {
