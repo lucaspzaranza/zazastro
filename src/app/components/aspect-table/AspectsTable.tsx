@@ -119,9 +119,8 @@ export default function AspectsTable({
     const houseNumber = extractHouseNumber(element.name)! + 1; // 0 - 11 to 1 - 12
 
     if ((houseNumber - 1) % 3 === 0) {
-      return `${angularLabels[houseNumber - 1]}${
-        element.isFromOuterChart ? "(E)" : ""
-      }`;
+      return `${angularLabels[houseNumber - 1]}${element.isFromOuterChart ? "(E)" : ""
+        }`;
     }
 
     return `C${houseNumber}${element.isFromOuterChart ? "(E)" : ""}`;
@@ -432,9 +431,8 @@ export default function AspectsTable({
     const rows: React.ReactNode[] = [];
 
     for (let index = 0; index < emptyRowsCount; index++) {
-      const trClasses = `flex flex-row border-t-2 ${
-        index > 0 ? "border-[#fdfdfd]" : ""
-      }`;
+      const trClasses = `flex flex-row border-t-2 ${index > 0 ? "border-[#fdfdfd]" : ""
+        }`;
       rows.push(
         <tr key={index} className={trClasses}>
           <td>&nbsp;</td>
@@ -643,7 +641,7 @@ export default function AspectsTable({
         />
       </div>
 
-      {openInfoPopup && <InfoPopup />}
+      {openInfoPopup && <div className="relative"><InfoPopup /></div>}
 
       <table className="w-full md:w-[415px] 2xl:w-[470px] flex flex-col border-2 text-[0.75rem] md:text-sm text-center bg-white">
         <thead>

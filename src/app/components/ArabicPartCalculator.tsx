@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import ArabicPartCalculatorDropdown from "./ArabicPartCalculatorDropdown";
+import ArabicPartCalculatorDropdown from "./modals/ArabicPartCalculatorDropdown";
 import {
   ArabicPartCalculatorDropdownItem,
   ArabicPartsType,
@@ -16,17 +16,10 @@ import {
   mod360,
 } from "@/app/utils/chartUtils";
 import { useChartMenu } from "@/contexts/ChartMenuContext";
-import Image from "next/image";
 
-interface ArabicPartCalculatorProps {
-  onClose?: () => void;
-}
-
-export default function ArabicPartCalculatorModal(
-  props: ArabicPartCalculatorProps
+export default function ArabicPartCalculator(
+ 
 ) {
-  const { onClose } = props;
-
   const { chartMenu } = useChartMenu();
   const { birthChart, returnChart, lunarDerivedChart } = useBirthChart();
   const { arabicParts } = useArabicParts();
@@ -149,9 +142,6 @@ export default function ArabicPartCalculatorModal(
     const projectedLongitude = mod360(
       decimalToDegreesMinutes(projectionPoint.longitude + distance)
     );
-    // const projectedLongitudeString = convertDecimalIntoDegMinString(
-    //   decimalToDegreesMinutes(projectedLongitude)
-    // );
 
     const archACRaw = getBirthArchAscendant();
     const archACString = convertDecimalIntoDegMinString(
@@ -273,67 +263,44 @@ export default function ArabicPartCalculatorModal(
   }
 
   return (
-    <div className="absolute w-full md:w-[30rem] h-[80vh] flex flex-row top-[-22%] items-center justify-start z-10 text-sm md:text-[1rem]">
-      <div className={`w-full md:w-[41rem] min-h-[26rem] bg-white outline-2`}>
-        <header className="relative w-full h-[3rem] bg-white flex flex-row items-center justify-center outline-1">
-          <h1 className="font-bold text-xl">Calcular Parte Árabe</h1>
-          <button
-            className="absolute right-1 flex flex-row items-center justify-center"
-            onClick={() => {
-              onClose?.();
-            }}
-          >
-            <div className="absolute w-[25px] h-[25px] hover:opacity-20 hover:bg-gray-400 active:bg-gray-900" />
-            <Image
-              alt="close"
-              src="/close.png"
-              width={30}
-              height={30}
-              unoptimized
-            />
-          </button>
-        </header>
+    <div className="w-full flex flex-col items-center justify-start text-sm md:text-[1rem] mb-3 md:mb-0">
+      <h2 className="w-full text-[0.9rem] text-center mb-1">
+        Escolha os pontos para o cálculo da parte.
+      </h2>
+      <h3 className="w-full text-[0.8rem] text-center mb-1">
+        (Valores captados do mapa natal)
+      </h3>
 
-        <div className="p-3">
-          <h2 className="w-full text-[0.9rem] text-center mb-1">
-            Escolha os pontos para o cálculo da parte.
-          </h2>
-          <h3 className="w-full text-[0.8rem] text-center mb-1">
-            (Valores captados do mapa natal)
-          </h3>
-
-          <div className="flex flex-col items-center justify-center gap-4">
-            <div className="w-full flex flex-row items-center justify-center gap-2">
-              <ArabicPartCalculatorDropdown
-                label="(A) Origem:"
-                onSelect={(el) => selectItem(el, 0)}
-              />
-              +
-              <ArabicPartCalculatorDropdown
-                label="(B) Até:"
-                onSelect={(el) => selectItem(el, 1)}
-              />
-              -
-              <ArabicPartCalculatorDropdown
-                label="(C) De:"
-                onSelect={(el) => selectItem(el, 2)}
-              />
-            </div>
-
-            <button
-              className="bg-blue-800 w-1/2 text-white px-4 py-1 rounded hover:bg-blue-900"
-              onClick={() => {
-                calculateLot();
-                setShowLotCalculation(true);
-              }}
-            >
-              Calcular
-            </button>
-          </div>
-
-          {showLotCalculation && <div>{lotCalculationHTML}</div>}
+      <div className="w-full flex flex-col items-center justify-center gap-4">
+        <div className="w-full flex flex-row items-center justify-center gap-2">
+          <ArabicPartCalculatorDropdown
+            label="(A) Origem:"
+            onSelect={(el) => selectItem(el, 0)}
+          />
+          +
+          <ArabicPartCalculatorDropdown
+            label="(B) Até:"
+            onSelect={(el) => selectItem(el, 1)}
+          />
+          -
+          <ArabicPartCalculatorDropdown
+            label="(C) De:"
+            onSelect={(el) => selectItem(el, 2)}
+          />
         </div>
+
+        <button
+          className="bg-blue-800 w-1/2 text-white px-4 py-1 rounded hover:bg-blue-900"
+          onClick={() => {
+            calculateLot();
+            setShowLotCalculation(true);
+          }}
+        >
+          Calcular
+        </button>
       </div>
+
+      {showLotCalculation && <div className="w-full">{lotCalculationHTML}</div>}
     </div>
   );
 }

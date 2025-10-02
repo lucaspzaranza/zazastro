@@ -279,7 +279,7 @@ export default function ChartAndData(props: Props) {
               <ArabicPartsLayout
                 parts={partsArray}
                 showMenuButtons={true}
-                isInsideModal={false}
+                showSwitchParts
                 onToggleInnerPartsVisualization={
                   handleOnToggleInnerPartsVisualization
                 }
@@ -297,10 +297,8 @@ export default function ChartAndData(props: Props) {
             <ArabicPartsLayout
               className="w-full text-[0.85rem] md:text-[1rem]"
               parts={partsArray}
-              partColWidth="w-[52.5%]! mr-2"
-              antisciaColWidth="w-1/2!"
               showMenuButtons={true}
-              isInsideModal={false}
+              showSwitchParts
               onToggleInnerPartsVisualization={
                 handleOnToggleInnerPartsVisualization
               }
@@ -313,8 +311,6 @@ export default function ChartAndData(props: Props) {
           </>
         )}
       </>
-      // <div className="w-full h-auto flex flex-col justify-start gap-2 md:gap-5 relative z-10">
-      // </div>
     );
   }
 
@@ -355,9 +351,8 @@ export default function ChartAndData(props: Props) {
                   className="w-full flex flex-row items-center justify-between xl:justify-between 2xl:justify-between xl:gap-2 2xl:gap-0"
                 >
                   <div
-                    className={`w-[6rem] ${
-                      planetsAntiscion[planet.type] ? "antiscion" : ""
-                    }`}
+                    className={`w-[6rem] ${planetsAntiscion[planet.type] ? "antiscion" : ""
+                      }`}
                   >
                     {planet.name}
                   </div>
@@ -372,8 +367,8 @@ export default function ChartAndData(props: Props) {
                           : 15
                         : planet.type === "northNode" ||
                           planet.type === "southNode"
-                        ? 15
-                        : 13,
+                          ? 15
+                          : 13,
                       isAntiscion: planetsAntiscion[planet.type],
                     })}
                     :&nbsp;
@@ -448,15 +443,13 @@ export default function ChartAndData(props: Props) {
               >
                 <div
                   className={`w-[8rem] flex flex-row text-nowrap 
-                        ${
-                          !isMobileBreakPoint()
-                            ? ""
-                            : index % 3 === 0
-                            ? "tracking-tighter"
-                            : ""
-                        } ${
-                    housesAntiscion[`Casa ${index + 1}`] ? "antiscion" : ""
-                  } ${index % 3 === 0 ? "font-bold" : ""}`}
+                        ${!isMobileBreakPoint()
+                      ? ""
+                      : index % 3 === 0
+                        ? "tracking-tighter"
+                        : ""
+                    } ${housesAntiscion[`Casa ${index + 1}`] ? "antiscion" : ""
+                    } ${index % 3 === 0 ? "font-bold" : ""}`}
                 >
                   Casa {index + 1}
                   {index % 3 === 0 ? ` (${getHouseLabel(index)})` : ""}:
@@ -471,9 +464,8 @@ export default function ChartAndData(props: Props) {
                 <button
                   title="Antiscion"
                   className={`w-[2rem] hidden xl:flex xl:flex-row xl:items-center xl:justify-center 2xl:hidden hover:outline-2 hover:bg-gray-200 active:bg-gray-400 
-                      ${
-                        housesAntiscion[`Casa ${index + 1}`] ? "antiscion" : ""
-                      }`}
+                      ${housesAntiscion[`Casa ${index + 1}`] ? "antiscion" : ""
+                    }`}
                   onClick={() => {
                     toggleHouseAntiscion(`Casa ${index + 1}`);
                   }}
@@ -547,7 +539,9 @@ export default function ChartAndData(props: Props) {
         <>
           {renderArabicPartsAndAspectsTable()}
           {renderChart()}
-          {renderPlanetsAndHouses()}
+          <div className="z-0">
+            {renderPlanetsAndHouses()}
+          </div>
         </>
       )}
     </div>

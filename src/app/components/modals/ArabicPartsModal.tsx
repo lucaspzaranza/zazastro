@@ -49,7 +49,7 @@ export default function ArabicPartsModal(props: ArabicPartsModalProps) {
   }
 
   return (
-    <div className="absolute w-full md:w-[98vw] h-full md:h-[80vh] flex flex-row items-center justify-center z-20 md:z-auto">
+    <div className="absolute w-[92vw] md:w-[95vw] h-full md:h-[80vh] flex flex-row items-center justify-center z-20 md:z-auto">
       <div className="w-[41rem] h-[31rem] bg-gray-300 border-2">
         <header className="relative w-full h-[3rem] bg-white flex flex-row items-center justify-center border-b-2">
           <h1 className="font-bold text-xl">Partes Árabes</h1>

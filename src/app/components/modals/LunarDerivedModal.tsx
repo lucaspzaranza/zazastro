@@ -136,7 +136,9 @@ export default function LunarDerivedModal(props: LunarModalProps) {
   };
 
   return (
-    <div className="absolute w-[20rem] h-[8.5rem] border-2 rounded-md bg-white flex flex-col py-1 items-center justify-start z-10 gap-2">
+      
+
+    <div className="absolute w-[20rem] h-[8.5rem] border-2 rounded-md bg-white flex flex-col py-1 items-center justify-start z-50 gap-2">
       <header className="relative w-full flex flex-row items-center justify-center border-b-2">
         <h1 className="font-bold text-lg">Retorno Lunar Derivado</h1>
         <button

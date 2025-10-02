@@ -11,7 +11,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   // evita gerar sourcemaps de produção
   productionBrowserSourceMaps: false,
-  allowedDevOrigins: ["http://192.168.18.104:3000"],
+  allowedDevOrigins: ["http://192.168.18.108:3000"],
 
   webpack: (config, { dev }) => {
     if (dev) {

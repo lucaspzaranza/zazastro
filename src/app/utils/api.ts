@@ -11,8 +11,8 @@ export const API_BASE = (() => {
         // PC local
         return "http://localhost:3001";
       } else {
-        // celular na mesma rede local (acessa seu IP da rede)
-        return "http://192.168.18.104:3001";
+        // celular na mesma rede local
+        return "https://zazastro-api.onrender.com"
       }
     } else {
       // Server-side em dev: fallback
