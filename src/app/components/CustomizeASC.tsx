@@ -144,7 +144,7 @@ export default function CustomizeASC(props: ASCModalProps) {
       </div>
 
       <span className="w-full text-sm italic h-full flex flex-row items-center mt-2">
-        *Baseado no Ascendente do Mapa Natal.
+        *Baseadas no Ascendente do Mapa Natal.
       </span>
 
     </div>

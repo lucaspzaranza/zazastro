@@ -351,7 +351,7 @@ export default function ChartAndData(props: Props) {
                   className="w-full flex flex-row items-center justify-between xl:gap-2 2xl:gap-0"
                 >
                   <div
-                    className={`w-[6rem] ${planetsAntiscion[planet.type] ? "antiscion" : ""
+                    className={`w-[5.5rem] md:w-[6rem] ${planetsAntiscion[planet.type] ? "antiscion" : ""
                       }`}
                   >
                     {planet.name}
@@ -393,7 +393,7 @@ export default function ChartAndData(props: Props) {
                     ▶
                   </button>
 
-                  <div className="w-[10rem] pl-1 md:pl-0 md:w-[11rem] flex flex-row items-center xl:hidden 2xl:flex">
+                  <div className="w-[10rem] pl-3 md:pl-0 md:w-[11rem] flex flex-row items-center xl:hidden 2xl:flex">
                     Antiscion:
                     <span className="w-full text-end">
                       {formatSignColor(
@@ -440,14 +440,14 @@ export default function ChartAndData(props: Props) {
             {chartForHouses.housesData.housesWithSigns?.map((house, index) => (
               <li
                 key={index}
-                className="w-full flex flex-row items-center justify-between xl:justify-between 2xl:justify-between xl:gap-2 2xl:gap-0"
+                className="w-full flex flex-row items-center justify-between xl:gap-2 2xl:gap-0"
               >
                 <div
-                  className={`w-[8rem] flex flex-row text-nowrap 
+                  className={`w-[6.5rem] md:w-[8rem] flex flex-row text-nowrap 
                         ${!isMobileBreakPoint()
                       ? ""
                       : index % 3 === 0
-                        ? "tracking-tighter"
+                        ? ""
                         : ""
                     } ${housesAntiscion[`Casa ${index + 1}`] ? "antiscion" : ""
                     } ${index % 3 === 0 ? "font-bold" : ""}`}
@@ -456,7 +456,7 @@ export default function ChartAndData(props: Props) {
                   {index % 3 === 0 ? ` (${getHouseLabel(index)})` : ""}:
                 </div>
 
-                <div className="w-1/2 md:w-[5rem] flex flex-row items-center justify-end">
+                <div className="w-[4rem] md:w-[5rem] flex flex-row items-center justify-end">
                   {!housesAntiscion[`Casa ${index + 1}`]
                     ? formatSignColor(house)
                     : getHouseAntiscion(chartForHouses.housesData.house[index])}
@@ -474,8 +474,8 @@ export default function ChartAndData(props: Props) {
                   ▶
                 </button>
 
-                <div className="w-[10rem] pl-1 md:pl-0 md:w-[11rem] flex flex-row items-center xl:hidden 2xl:flex">
-                  Antiscion:&nbsp;
+                <div className="w-[9rem] md:w-[11rem] flex flex-row items-center xl:hidden 2xl:flex">
+                  Antiscion:
                   <span className="w-full text-end">
                     {getHouseAntiscion(chartForHouses.housesData.house[index])}
                   </span>
