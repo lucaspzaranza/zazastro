@@ -67,7 +67,6 @@ export default function ReturnChart() {
               outerArabicParts={archArabicParts}
               combineWithBirthChart={toggleShowCombinedchart}
               tableItemsPerPage={tableItemsPerPage}
-              sho
               onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
               chartDateProps={{
                 chartType: "return",

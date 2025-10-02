@@ -348,7 +348,7 @@ export default function ChartAndData(props: Props) {
               chartForPlanets.planetsWithSigns && (
                 <li
                   key={index}
-                  className="w-full flex flex-row items-center justify-between xl:justify-between 2xl:justify-between xl:gap-2 2xl:gap-0"
+                  className="w-full flex flex-row items-center justify-between xl:gap-2 2xl:gap-0"
                 >
                   <div
                     className={`w-[6rem] ${planetsAntiscion[planet.type] ? "antiscion" : ""
@@ -357,7 +357,7 @@ export default function ChartAndData(props: Props) {
                     {planet.name}
                   </div>
 
-                  <div className="w-[1.5rem] md:w-[2rem] flex flex-row items-center">
+                  <div className="w-[1.5rem] flex flex-row items-center">
                     {getPlanetImage(planet.type, {
                       isRetrograde: planet.isRetrograde,
                       size: !isMobileBreakPoint()
@@ -371,8 +371,9 @@ export default function ChartAndData(props: Props) {
                           : 13,
                       isAntiscion: planetsAntiscion[planet.type],
                     })}
-                    :&nbsp;
+                    :
                   </div>
+
                   <div className="w-[4rem] md:w-[4.5rem] xl:w-[4.5rem] 2xl:w-[4.5rem] text-end flex flex-row items-center justify-end">
                     {formatSignColor(
                       planetsAntiscion[planet.type]
@@ -393,7 +394,7 @@ export default function ChartAndData(props: Props) {
                   </button>
 
                   <div className="w-[10rem] pl-1 md:pl-0 md:w-[11rem] flex flex-row items-center xl:hidden 2xl:flex">
-                    Antiscion:&nbsp;
+                    Antiscion:
                     <span className="w-full text-end">
                       {formatSignColor(
                         chartForPlanets.planetsWithSigns[index].antiscion
@@ -490,10 +491,10 @@ export default function ChartAndData(props: Props) {
       <div className="w-full flex flex-col justify-start gap-2 md:gap-5 md:z-20">
         {!isMobileBreakPoint() && (
           <>
-            <Container className="xl:w-full 2xl:w-full">
+            <Container className="xl:w-full 2xl:w-[105%] px-6!">
               {planetsContent}
             </Container>
-            <Container className="xl:w-full 2xl:w-full">
+            <Container className="xl:w-full 2xl:w-[105%] px-6!">
               {housesContent}
             </Container>
           </>
@@ -526,7 +527,7 @@ export default function ChartAndData(props: Props) {
   }
 
   return (
-    <div className="w-[95%] md:w-full flex flex-col md:flex-row md:items-start md:justify-between mt-1">
+    <div className="w-[95%] md:w-full flex flex-col md:flex-row md:items-start md:justify-center mt-1">
       {isMobileBreakPoint() && (
         <>
           {renderChart()}

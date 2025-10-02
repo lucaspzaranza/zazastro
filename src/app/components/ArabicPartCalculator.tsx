@@ -264,10 +264,10 @@ export default function ArabicPartCalculator(
 
   return (
     <div className="w-full flex flex-col items-center justify-start text-sm md:text-[1rem] mb-3 md:mb-0">
-      <h2 className="w-full text-[0.9rem] text-center mb-1">
+      <h2 className="w-full text-center">
         Escolha os pontos para o cálculo da parte.
       </h2>
-      <h3 className="w-full text-[0.8rem] text-center mb-1">
+      <h3 className="w-full italic text-[0.8rem] text-center mb-1">
         (Valores captados do mapa natal)
       </h3>
 
