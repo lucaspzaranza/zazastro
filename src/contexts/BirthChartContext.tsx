@@ -78,66 +78,60 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
       chartData === undefined
         ? undefined
         : {
-            ...chartData,
+          ...chartData,
 
-            planets: chartData.planets.map((planet) => {
-              return {
-                ...planet,
-                longitude: decimalToDegreesMinutes(planet.longitude),
-                antiscion: getAntiscion(planet.longitude),
+          planets: chartData.planets.map((planet) => {
+            return {
+              ...planet,
+              longitude: decimalToDegreesMinutes(planet.longitude),
+              antiscion: getAntiscion(planet.longitude),
 
-                longitudeRaw: planet.longitude,
-                antiscionRaw: getAntiscion(planet.longitude, true),
-                type: planetTypes[planet.id],
-              };
-            }),
+              longitudeRaw: planet.longitude,
+              antiscionRaw: getAntiscion(planet.longitude, true),
+              type: planetTypes[planet.id],
+            };
+          }),
 
-            planetsWithSigns: chartData.planets.map((planet) => {
-              return {
-                position: getDegreeAndSign(
-                  decimalToDegreesMinutes(planet.longitude),
-                  getGlyphOnly
-                ),
-                antiscion: getDegreeAndSign(
-                  getAntiscion(planet.longitude),
-                  getGlyphOnly
-                ),
-              };
-            }),
-
-            housesData: {
-              ...chartData?.housesData,
-              housesWithSigns: chartData.housesData?.house.map((houseLong) => {
-                return getDegreeAndSign(
-                  decimalToDegreesMinutes(houseLong),
-                  getGlyphOnly
-                );
-              }),
-            },
-
-            birthDate: chartData.birthDate,
-
-            fixedStars: chartData.fixedStars.map((star) => ({
-              ...star,
-              elementType: "fixedStar",
-              isAntiscion: false,
-              isFromOuterChart: false,
-              longitudeSign: getDegreeAndSign(
-                decimalToDegreesMinutes(star.longitude),
+          planetsWithSigns: chartData.planets.map((planet) => {
+            return {
+              position: getDegreeAndSign(
+                decimalToDegreesMinutes(planet.longitude),
                 getGlyphOnly
               ),
-            })),
-          };
+              antiscion: getDegreeAndSign(
+                getAntiscion(planet.longitude),
+                getGlyphOnly
+              ),
+            };
+          }),
 
-    // console.log(chartObject);
+          housesData: {
+            ...chartData?.housesData,
+            housesWithSigns: chartData.housesData?.house.map((houseLong) => {
+              return getDegreeAndSign(
+                decimalToDegreesMinutes(houseLong),
+                getGlyphOnly
+              );
+            }),
+          },
+
+          birthDate: chartData.birthDate,
+
+          fixedStars: chartData.fixedStars.map((star) => ({
+            ...star,
+            elementType: "fixedStar",
+            isAntiscion: false,
+            isFromOuterChart: false,
+            longitudeSign: getDegreeAndSign(
+              decimalToDegreesMinutes(star.longitude),
+              getGlyphOnly
+            ),
+          })),
+        };
 
     if (chartOptions.profileName && chartType !== "sinastry") {
       setProfileName(chartOptions.profileName);
     }
-
-    // if (!isReturnChart && !isSinastryChart) setBirthChart(chartObject);
-    // else if (!isSinastryChart && isReturnChart) setReturnChart(chartObject);
-    // else if (isSinastryChart) setSinastryChart(chartObject);
 
     if (chartType === "birth") setBirthChart(chartObject);
     else if (chartType === "return") setReturnChart(chartObject);

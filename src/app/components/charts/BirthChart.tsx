@@ -1,7 +1,7 @@
 "use client";
 
 import { useBirthChart } from "@/contexts/BirthChartContext";
-import { useEffect, useRef, useState } from "react";
+import { JSX, useEffect, useRef, useState } from "react";
 import {
   convertDegMinToDecimal,
   fortalCoords,
@@ -78,6 +78,7 @@ export default function BirthChart() {
 
   useEffect(() => {
     if (birthChart === undefined && returnChart === undefined) {
+      console.log('setando para home...');
       setMenu("home");
     }
 
@@ -325,8 +326,6 @@ export default function BirthChart() {
     let birthDate = chartProfile?.birthDate;
     if (!birthDate || !progressionYear) return;
 
-    setLoading(true);
-
     const jsDate = new Date(birthDate.year, birthDate.month - 1, birthDate.day);
     jsDate.setDate(jsDate.getDate() + progressionYear);
 
@@ -337,7 +336,8 @@ export default function BirthChart() {
       year: jsDate.getFullYear(),
     };
 
-    getBirthChart();
+    await getBirthChart();
+    setLoading(true);
 
     try {
       const data = await apiFetch("birth-chart", {
@@ -356,62 +356,76 @@ export default function BirthChart() {
         },
         chartType: "progression",
       });
+
+      const chartType: ChartMenuType = "progression";
+      addChartMenu(chartType);
+      updateChartMenuDirectly(chartType);
     } catch (error) {
       console.error("Erro ao consultar mapa astral:", error);
     } finally {
       setLoading(false);
     }
-
-    const chartType: ChartMenuType = "progression";
-    addChartMenu(chartType);
-    updateChartMenuDirectly(chartType);
-    setLoading(false);
   }
 
-  // function getDebugData(): JSX.Element {
-  //   return (
-  //     <div className="h-fit text-center">
-  //       <span className="font-bold text-xl">:: Debugging ::</span>
+  function _getDebugData(): JSX.Element {
+    return (
+      <div className="h-fit text-center">
+        <span className="font-bold text-xl">:: Debugging ::</span>
 
-  //       <div className="flex flex-col text-start items-start mt-2 gap-1">
-  //         <span>
-  //           birthChart === undefined:{" "}
-  //           <span className="font-bold text-blue-800">
-  //             {(birthChart === undefined).toString()}
-  //           </span>
-  //         </span>
-  //         <span>
-  //           menu: <strong>{menu}</strong>
-  //         </span>
-  //         <span>
-  //           chartMenu: <span className="font-bold">{chartMenu}</span>
-  //         </span>
-  //         <span>
-  //           sinastryChart === undefined:{" "}
-  //           <span className="font-bold text-blue-800">
-  //             {(sinastryChart === undefined).toString()}
-  //           </span>
-  //         </span>
-  //         <span>
-  //           arabicParts === undefined:{" "}
-  //           <span className="font-bold text-blue-800">
-  //             {(arabicParts === undefined).toString()}
-  //           </span>
-  //         </span>
-  //         <span>
-  //           lunarDerivedChart === undefined:{" "}
-  //           <span className="font-bold text-blue-800">
-  //             {(lunarDerivedChart === undefined).toString()}
-  //           </span>
-  //         </span>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+        <div className="flex flex-col text-start items-start mt-2 gap-1">
+          <span>
+            birthChart === undefined:{" "}
+            <span className="font-bold text-blue-800">
+              {(birthChart === undefined).toString()}
+            </span>
+          </span>
+          <span>
+            menu: <strong>{menu}</strong>
+          </span>
+          <span>
+            chartMenu: <span className="font-bold">{chartMenu}</span>
+          </span>
+          <span>
+            sinastryChart === undefined:{" "}
+            <span className="font-bold text-blue-800">
+              {(sinastryChart === undefined).toString()}
+            </span>
+          </span>
+          <span>
+            arabicParts === undefined:{" "}
+            <span className="font-bold text-blue-800">
+              {(arabicParts === undefined).toString()}
+            </span>
+          </span>
+          <span>
+            archArabicParts === undefined:{" "}
+            <span className="font-bold text-blue-800">
+              {(archArabicParts === undefined).toString()}
+            </span>
+          </span>
+          <span>
+            lunarDerivedChart === undefined:{" "}
+            <span className="font-bold text-blue-800">
+              {(lunarDerivedChart === undefined).toString()}
+            </span>
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  function canRenderChart(): boolean {
+    if ((menu === "birthChart" || menu === "home") && birthChart) return true;
+    if ((menu === "solarReturn" || menu === "lunarReturn") && returnChart) return true;
+    if (menu === "sinastry" && sinastryChart) return true;
+    if (menu === "secondaryProgressions" && progressionChart && birthChart) return true;
+
+    return false;
+  }
 
   return (
     <div className="w-[98vw] min-h-[50vh] mt-4 flex flex-col items-center justify-center gap-2">
-      {birthChart === undefined && (
+      {!canRenderChart() && (
         <Container className="w-[90%] sm:w-1/4">
           <h2 className="text-[1rem] sm:text-lg text-center sm:text-start pt-4 px-2 sm:pt-0 sm:mb-4 font-bold">
             {getTitleMenuTitle()}
@@ -695,9 +709,8 @@ export default function BirthChart() {
             )}
 
             <span
-              className={`w-full text-start flex flex-row items-center justify-center gap-3 mt-2 ${
-                loading ? "opacity-100" : "opacity-0"
-              }`}
+              className={`w-full text-start flex flex-row items-center justify-center gap-3 mt-2 ${loading ? "opacity-100" : "opacity-0"
+                }`}
             >
               <Spinner />
               <span>Carregando...</span>
@@ -706,44 +719,47 @@ export default function BirthChart() {
         </Container>
       )}
 
-      {birthChart && chartMenu === "birth" && (
-        <div className="w-full flex flex-col items-center">
-          <div className="w-full text-left flex flex-col items-center mb-4">
-            <ChartAndData
-              arabicParts={arabicParts}
-              title={`Mapa Natal - ${profileName}`}
-              innerChart={birthChart}
-              chartDateProps={{
-                chartType: "birth",
-                birthChart,
-              }}
-            />
+      {canRenderChart() && <>
+        {birthChart && chartMenu === "birth" && (
+          <div className="w-full flex flex-col items-center">
+            <div className="w-full text-left flex flex-col items-center mb-4">
+              <ChartAndData
+                arabicParts={arabicParts}
+                title={`Mapa Natal - ${profileName}`}
+                innerChart={birthChart}
+                chartDateProps={{
+                  chartType: "birth",
+                  birthChart,
+                }}
+              />
+            </div>
           </div>
-        </div>
-      )}
-
-      {returnChart &&
-        (chartMenu === "solarReturn" || chartMenu === "lunarReturn") && (
-          <ReturnChart />
         )}
 
-      {chartMenu === "lunarDerivedReturn" &&
-        lunarDerivedChart &&
-        archArabicParts &&
-        arabicParts && <LunarDerivedChart />}
+        {returnChart &&
+          (chartMenu === "solarReturn" || chartMenu === "lunarReturn") && (
+            <ReturnChart />
+          )}
 
-      {chartMenu === "sinastry" && sinastryChart && (
-        <SinastryChart
-          sinastryChart={sinastryChart}
-          sinastryProfileName={sinastryProfile?.name}
-        />
-      )}
+        {chartMenu === "lunarDerivedReturn" &&
+          lunarDerivedChart &&
+          archArabicParts &&
+          arabicParts && <LunarDerivedChart />}
 
-      {chartMenu === "progression" && archArabicParts && (
-        <SecondaryProgressionChart />
-      )}
+        {chartMenu === "sinastry" && sinastryChart && (
+          <SinastryChart
+            sinastryChart={sinastryChart}
+            sinastryProfileName={sinastryProfile?.name}
+          />
+        )}
 
-      {/* {getDebugData()} */}
+        {chartMenu === "progression" && (
+          <SecondaryProgressionChart />
+        )}
+      </>}
+
+
+      {/* {_getDebugData()} */}
     </div>
   );
 }

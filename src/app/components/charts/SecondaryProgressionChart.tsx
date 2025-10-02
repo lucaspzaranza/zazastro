@@ -22,10 +22,14 @@ export default function SecondaryProgressionChart() {
     setTableItemsPerPage(newItemsPerPage);
   }
 
+  if (!progressionChart || !birthChart) {
+    return null;
+  }
+
   return (
     <div className="w-full flex flex-col items-center justify-center gap-3 mb-4">
       <div className="w-full text-left flex flex-col items-center">
-        {!combineWithBirthChart && progressionChart && (
+        {!combineWithBirthChart && (
           <ChartAndData
             innerChart={progressionChart}
             arabicParts={archArabicParts}
@@ -46,7 +50,7 @@ export default function SecondaryProgressionChart() {
           />
         )}
 
-        {combineWithBirthChart && birthChart && progressionChart && (
+        {combineWithBirthChart && (
           <ChartAndData
             innerChart={birthChart}
             outerChart={progressionChart}
