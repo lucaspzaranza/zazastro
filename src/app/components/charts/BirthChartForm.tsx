@@ -210,7 +210,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
                 }
 
                 let val = parsed;
-                if (val < 1) val = 1;
+                if (val < 0) val = 1;
                 if (val > 31) val = 31;
                 setDay(val);
               }}

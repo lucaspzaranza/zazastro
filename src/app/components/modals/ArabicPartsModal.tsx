@@ -49,9 +49,9 @@ export default function ArabicPartsModal(props: ArabicPartsModalProps) {
   }
 
   return (
-    <div className="absolute w-[92vw] md:w-[95vw] h-full md:h-[80vh] flex flex-row items-center justify-center z-20 md:z-auto">
-      <div className="w-[41rem] h-[31rem] bg-gray-300 border-2">
-        <header className="relative w-full h-[3rem] bg-white flex flex-row items-center justify-center border-b-2">
+    <div className="absolute w-[92vw] md:w-[95vw] h-[15vh] md:h-[80vh] flex flex-row items-center justify-center z-20 md:z-auto">
+      <div className="w-full md:w-[41rem] h-[37rem] bg-gray-300 outline-2 rounded-md">
+        <header className="relative w-full h-[3rem] bg-white flex flex-row items-center rounded-md rounded-b-none justify-center border-b-2">
           <h1 className="font-bold text-xl">Partes Árabes</h1>
           <button
             className="absolute right-1 flex flex-row items-center justify-center"
@@ -70,7 +70,7 @@ export default function ArabicPartsModal(props: ArabicPartsModalProps) {
           </button>
         </header>
 
-        <div className="relative w-full h-[27.2rem] rounded-sm rounded-t-0 z-20 p-3 overflow-auto">
+        <div className="relative w-full h-[92%] rounded-sm rounded-t-0 z-20 p-3 overflow-auto">
           <ul className="w-full pt-4 flex flex-col items-center justify-center gap-3">
             {parts?.map((arabicPart, index) => {
               return (

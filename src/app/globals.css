@@ -28,3 +28,7 @@ body {
 .antiscion {
   @apply text-[#ff914d];
 }
+
+.default-btn {
+  @apply bg-blue-800 w-full text-white px-4 py-2 rounded hover:bg-blue-900
+}

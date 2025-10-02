@@ -18,7 +18,7 @@ import {
 import { useChartMenu } from "@/contexts/ChartMenuContext";
 
 export default function ArabicPartCalculator(
- 
+
 ) {
   const { chartMenu } = useChartMenu();
   const { birthChart, returnChart, lunarDerivedChart } = useBirthChart();
@@ -263,7 +263,7 @@ export default function ArabicPartCalculator(
   }
 
   return (
-    <div className="w-full flex flex-col items-center justify-start text-sm md:text-[1rem] mb-3 md:mb-0">
+    <div className="w-full md:min-h-[24.8rem] flex flex-col items-center justify-start text-sm md:text-[1rem] mb-3 md:mb-0">
       <h2 className="w-full text-center">
         Escolha os pontos para o cálculo da parte.
       </h2>

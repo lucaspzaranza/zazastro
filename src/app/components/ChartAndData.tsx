@@ -324,7 +324,7 @@ export default function ChartAndData(props: Props) {
               <>
                 <button
                   title="Alterar entre partes internas e externas"
-                  className="hover:outline-2 outline-offset-4 hover:cursor-pointer active:bg-gray-300"
+                  className="rounded-sm hover:outline-2 outline-offset-4 hover:cursor-pointer active:bg-gray-300"
                   onClick={() => {
                     toggleInnerPlanetsVisualization();
                   }}
@@ -384,7 +384,7 @@ export default function ChartAndData(props: Props) {
 
                   <button
                     title="Antiscion"
-                    className={`w-[2rem] hidden xl:flex xl:flex-row xl:items-center xl:justify-center 2xl:hidden hover:outline-2 hover:bg-gray-200 active:bg-gray-400 
+                    className={`rounded-sm w-[2rem] hidden xl:flex xl:flex-row xl:items-center xl:justify-center 2xl:hidden hover:outline-2 hover:bg-gray-200 active:bg-gray-400 
                       ${planetsAntiscion[planet.type] ? "antiscion" : ""}`}
                     onClick={() => {
                       togglePlanetAntiscion(planet.type);
@@ -417,7 +417,7 @@ export default function ChartAndData(props: Props) {
               <>
                 <button
                   title="Alterar entre partes internas e externas"
-                  className="hover:outline-2 outline-offset-4 hover:cursor-pointer active:bg-gray-300"
+                  className="rounded-sm hover:outline-2 outline-offset-4 hover:cursor-pointer active:bg-gray-300"
                   onClick={() => {
                     toggleInnerHousesVisualization();
                   }}
@@ -464,7 +464,7 @@ export default function ChartAndData(props: Props) {
 
                 <button
                   title="Antiscion"
-                  className={`w-[2rem] hidden xl:flex xl:flex-row xl:items-center xl:justify-center 2xl:hidden hover:outline-2 hover:bg-gray-200 active:bg-gray-400 
+                  className={`rounded-sm w-[2rem] hidden xl:flex xl:flex-row xl:items-center xl:justify-center 2xl:hidden hover:outline-2 hover:bg-gray-200 active:bg-gray-400 
                       ${housesAntiscion[`Casa ${index + 1}`] ? "antiscion" : ""
                     }`}
                   onClick={() => {
