@@ -18,6 +18,7 @@ import {
 import moment from "moment";
 import Image from "next/image";
 import React, { useState } from "react";
+import Spinner from "../Spinner";
 
 interface LunarModalProps {
   onClose?: () => void;
@@ -33,12 +34,15 @@ export default function LunarDerivedModal(props: LunarModalProps) {
   const [month, setMonth] = useState(1);
   const [year, setYear] = useState(0);
 
+  const [loading, setLoading] = useState(false);
+
   const { isCombinedWithBirthChart, updateIsCombinedWithBirthChart } =
     useBirthChart();
 
   const makeChart = async () => {
     if (birthChart === undefined) return;
 
+    setLoading(true);
     updateSolarReturnParts(archArabicParts);
 
     const returnDate = moment.tz(birthChart.returnTime, birthChart.timezone!);
@@ -126,6 +130,8 @@ export default function LunarDerivedModal(props: LunarModalProps) {
       })),
     });
 
+    setLoading(false);
+
     setTimeout(() => {
       if (isCombinedWithBirthChart) {
         updateIsCombinedWithBirthChart(false);
@@ -136,9 +142,9 @@ export default function LunarDerivedModal(props: LunarModalProps) {
   };
 
   return (
-      
 
-    <div className="absolute w-[20rem] h-[8.5rem] border-2 rounded-md bg-white flex flex-col py-1 items-center justify-start z-50 gap-2">
+
+    <div className="absolute w-[20rem] h-[12rem] border-2 rounded-md bg-white flex flex-col py-1 items-center justify-start z-50 gap-2">
       <header className="relative w-full flex flex-row items-center justify-center border-b-2">
         <h1 className="font-bold text-lg">Retorno Lunar Derivado</h1>
         <button
@@ -207,7 +213,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
           />
         </div>
 
-        <div className="w-full flex flex-row items-center justify-center gap-2">
+        <div className="w-full h-full flex flex-col items-center justify-center gap-2">
           <button
             type="submit"
             className="w-full bg-blue-800 text-white px-4 py-2 rounded hover:bg-blue-900"
@@ -217,6 +223,14 @@ export default function LunarDerivedModal(props: LunarModalProps) {
           >
             Gerar Mapa
           </button>
+
+          <span
+            className={`w-full text-start flex flex-row items-center justify-center gap-3 mt-2 ${loading ? "opacity-100" : "opacity-0"
+              }`}
+          >
+            <Spinner />
+            <span>Carregando...</span>
+          </span>
         </div>
       </form>
     </div>

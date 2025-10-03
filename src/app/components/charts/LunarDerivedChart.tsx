@@ -42,11 +42,11 @@ export default function LunarDerivedChart() {
   }
 
   function getTitle() {
-    return `Mapa do Retorno Lunar Derivado para 
+    return `Retorno Lunar Derivado para 
               ${getReturnDateRangeString(
-                lunarDerivedChart?.returnTime ?? "0000-00-00 00:00:00",
-                "lunar"
-              )}`;
+      lunarDerivedChart?.returnTime ?? "0000-00-00 00:00:00",
+      "lunar"
+    )}`;
   }
 
   return (

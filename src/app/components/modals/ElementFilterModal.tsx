@@ -56,19 +56,14 @@ function ElementFilterModalFn(
     clearSignal,
   } = props;
 
-  const getUseOuterChartElements = () =>
-    chartMenu !== "birth" &&
-    returnChart !== undefined &&
-    (isCombinedWithBirthChart || isCombinedWithReturnChart);
+  // const getUseOuterChartElements = () =>
+  //   chartMenu !== "birth" &&
+  //   returnChart !== undefined &&
+  //   (isCombinedWithBirthChart || isCombinedWithReturnChart);
 
-  const { returnChart, isCombinedWithBirthChart, isCombinedWithReturnChart } =
+  const { returnChart, lunarDerivedChart, sinastryChart, progressionChart, isCombinedWithBirthChart, isCombinedWithReturnChart } =
     useBirthChart();
   const { chartMenu } = useChartMenu();
-
-  const [useInnerChartElements, setUseInnerChartElements] = useState(true);
-  const [useOuterChartElements, setUseOuterChartElements] = useState(
-    getUseOuterChartElements()
-  );
 
   const [useInnerPlanets, setUseInnerPlanets] = useState(true);
   const [useInnerPlanetsAntiscion, setUseInnerPlanetsAntiscion] =
@@ -85,6 +80,31 @@ function ElementFilterModalFn(
   const [useOuterArabicPartsAntiscion, setUseOuterArabicPartsAntiscion] =
     useState(true);
   const [useOuterHouses, setUseOuterHouses] = useState(true);
+
+  const getUseOuterChartElements = (): boolean => {
+    let result: boolean = false;
+
+    if (chartMenu === "birth") return false;
+
+    if (chartMenu === "solarReturn" || chartMenu === "lunarReturn")
+      result = returnChart !== undefined && isCombinedWithBirthChart;
+
+    if (chartMenu === "lunarDerivedReturn")
+      result = lunarDerivedChart !== undefined && (isCombinedWithBirthChart || isCombinedWithReturnChart);
+
+    if (chartMenu === "sinastry")
+      result = sinastryChart !== undefined;
+
+    if (chartMenu === "progression")
+      result = progressionChart !== undefined && isCombinedWithBirthChart;
+
+    return result;
+  }
+
+  const [useInnerChartElements, setUseInnerChartElements] = useState(true);
+  const [useOuterChartElements, setUseOuterChartElements] = useState(
+    getUseOuterChartElements()
+  );
 
   function getElements(): AspectedElement[] {
     let result: AspectedElement[] = [];

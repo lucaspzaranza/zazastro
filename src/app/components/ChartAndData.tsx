@@ -488,13 +488,13 @@ export default function ChartAndData(props: Props) {
     );
 
     return (
-      <div className="w-full flex flex-col justify-start gap-2 md:gap-5 md:z-20">
+      <div className="w-full flex flex-col justify-start gap-2 md:gap-5">
         {!isMobileBreakPoint() && (
           <>
-            <Container className="xl:w-full 2xl:w-[105%] px-6!">
+            <Container className="xl:w-full 2xl:w-[29rem] px-6!">
               {planetsContent}
             </Container>
-            <Container className="xl:w-full 2xl:w-[105%] px-6!">
+            <Container className="xl:w-full 2xl:w-[29rem] px-6!">
               {housesContent}
             </Container>
           </>
@@ -540,7 +540,7 @@ export default function ChartAndData(props: Props) {
         <>
           {renderArabicPartsAndAspectsTable()}
           {renderChart()}
-          <div className="z-0">
+          <div className="w-auto">
             {renderPlanetsAndHouses()}
           </div>
         </>
