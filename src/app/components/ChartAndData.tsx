@@ -522,7 +522,7 @@ export default function ChartAndData(props: Props) {
   }
 
   return (
-    <div className="w-[95%] md:w-full flex flex-col md:flex-row md:items-start md:justify-center mt-1">
+    <div className="w-[95%] md:w-full flex flex-col md:flex-row md:items-start md:justify-center mt-1 mb:mb-4">
       {isMobileBreakPoint() && (
         <>
           {renderChart()}

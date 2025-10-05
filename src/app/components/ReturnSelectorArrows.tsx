@@ -6,6 +6,7 @@ import { MdKeyboardDoubleArrowLeft, MdKeyboardDoubleArrowRight } from "react-ico
 import { apiFetch } from "../utils/api";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import { makeLunarDerivedChart } from "../utils/chartUtils";
+import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 
 interface ChartSelectorProps {
   children: React.ReactNode;
@@ -17,7 +18,9 @@ export default function ReturnSelectorArrows(props: ChartSelectorProps) {
   const { children } = props;
 
   const { profileName, birthChart, returnChart, lunarDerivedChart, progressionChart, updateBirthChart,
+    isCombinedWithBirthChart, isCombinedWithReturnChart,
     updateLunarDerivedChart, updateIsCombinedWithBirthChart, updateIsCombinedWithReturnChart } = useBirthChart();
+  const { isMobileBreakPoint } = useScreenDimensions();
   const { chartMenu } = useChartMenu();
   const { archArabicParts, updateSolarReturnParts } = useArabicParts();
 
@@ -147,11 +150,18 @@ export default function ReturnSelectorArrows(props: ChartSelectorProps) {
     else if (chartMenu === "progression") getProgression(direction);
   }
 
+  const getMobileTopValue = () => {
+    if (isMobileBreakPoint()) {
+      if (isCombinedWithBirthChart || isCombinedWithReturnChart) return "top-[19rem]";
+      else return "top-[19rem]";
+    } else return ""
+  }
+
   return (
     <div className="relative w-full h-full flex flex-row items-center justify-between">
       <button
         onClick={() => getChart("previous")}
-        className={`absolute top-[19rem] md:top-auto outline-2 md:outline-0 left-1 
+        className={`absolute ${getMobileTopValue()} md:top-auto outline-2 md:outline-0 left-1 
           w-[5rem] md:w-[2rem] h-[2rem] mb-3 mr-2 flex flex-row items-center justify-center md:justify-start 
           text-xl hover:outline-2 active:bg-gray-300 rounded-md`}
         title="Retorno anterior"
@@ -165,7 +175,7 @@ export default function ReturnSelectorArrows(props: ChartSelectorProps) {
 
       <button
         onClick={() => getChart("next")}
-        className={`absolute top-[19rem] md:top-auto outline-2 md:outline-0 right-1
+        className={`absolute ${getMobileTopValue()} md:top-auto outline-2 md:outline-0 right-1
           w-[5rem] md:w-[2rem] h-[2rem] mb-3 ml-2 flex flex-row items-center justify-center md:justify-end 
           text-xl hover:outline-2 active:bg-gray-300 rounded-md`}
         title="Próximo retorno"

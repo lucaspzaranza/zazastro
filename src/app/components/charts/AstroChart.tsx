@@ -2054,11 +2054,14 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     setShowArabicPartsAntiscia((prev) => !prev);
   };
 
-  const containerClasses = showOuterchart ? "mb-16 mt-10" : "mb-2";
+  let containerClasses = showOuterchart ? "mb-16 mt-10" : "mb-0";
+  if (isMobileBreakPoint()) {
+    containerClasses = showOuterchart ? "mb-10 mt-5" : "mb-2";
+  }
 
   return (
     <div
-      className={`w-full flex flex-col justify-center items-center gap-8 
+      className={`w-full flex flex-col justify-center items-center gap-8
         ${useReturnSelectorArrows ? 'mx-16' : 'mx-10'} ${isProgressionChart() ? 'md:mx-16' : 'mx-0'}`}
     >
       <div className="w-full md:px-4">
