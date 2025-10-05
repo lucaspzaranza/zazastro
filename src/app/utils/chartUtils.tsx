@@ -6,10 +6,12 @@ import {
 import { AspectType } from "@/interfaces/AstroChartInterfaces";
 import {
   BirthChart,
-  BirthChartProfile,
+  BirthDate,
+  FixedStar,
+  Planet,
   PlanetType,
+  planetTypes,
   ReturnChartType,
-  SelectedCity,
 } from "@/interfaces/BirthChartInterfaces";
 import Image from "next/image";
 
@@ -222,9 +224,8 @@ export function getPlanetImage(
 ): React.ReactNode {
   const folder = "planets";
   const { isAntiscion, isRetrograde } = options;
-  const path = `/${folder}${isAntiscion ? "/antiscion" : ""}/${planet}${
-    isRetrograde ? "-rx" : ""
-  }.png`;
+  const path = `/${folder}${isAntiscion ? "/antiscion" : ""}/${planet}${isRetrograde ? "-rx" : ""
+    }.png`;
   return (
     <Image
       alt="planet"
@@ -244,9 +245,8 @@ export function getArabicPartImage(
 ): React.ReactNode {
   const folder = "planets";
   const part = lot.planet ? lot.partKey : "custom-lot";
-  const path = `/${folder}${
-    options.isAntiscion ? "/antiscion" : ""
-  }/${part}.png`;
+  const path = `/${folder}${options.isAntiscion ? "/antiscion" : ""
+    }/${part}.png`;
   return (
     <Image
       alt="arabicPart"
@@ -401,13 +401,11 @@ export function getHourAndMinute(decimalTime: number): string {
 }
 
 export function convertDegMinToDecimal(deg: number, min: number) {
-  // const [deg, min] = time.split(":").map(Number);
   const decimal = deg + min / 60;
   return parseFloat(decimal.toFixed(4));
 }
 
 export function convertDegMinNumberToDecimal(degMin: number) {
-  // console.log(degMin);
   const degrees = Math.floor(degMin);
   const minutes = Number.parseFloat(((degMin - degrees) * 100).toFixed(2));
 
@@ -431,7 +429,8 @@ export const clampLongitude = (
   const min = rawString.split(".")[1];
 
   let degNumber = deg === undefined ? 0 : Number.parseInt(deg);
-  let minNumber = min === undefined ? 0 : Number.parseInt(min);
+  let minNumber = min === undefined ? 0 : Number.parseInt(min.padEnd(2, "0"));
+  console.log(`degNumber: ${degNumber}, minNumber: ${minNumber}`);
 
   if (degNumber < 0) degNumber = 0;
   else if (degNumber > degThreshold) degNumber = degThreshold;
@@ -504,181 +503,61 @@ export function convertDecimalIntoDegMinString(decimal: number): string {
   const deg = array[0];
   let min = array[1];
 
-  // if (deg?.length === 1) deg = deg?.padStart(2, "0") ?? "";
-
   if (!min) min = "00";
   else if (min.length === 1) min = min.padEnd(2, "0") ?? "";
 
   return `${deg}°${min}'`;
 }
 
-export const fortalCoords: SelectedCity = {
-  latitude: -3.71839, // Fortaleza
-  longitude: -38.5434,
-  name: "Fortaleza/CE",
-};
+export function makeLunarDerivedChart(data: any, birthDate: BirthDate, targetDate: BirthDate): BirthChart {
+  return {
+    ...data,
+    returnTime: data.returnTime,
+    birthDate,
+    targetDate,
+    planets: data.returnPlanets.map((planet: Planet) => {
+      return {
+        ...planet,
+        longitude: decimalToDegreesMinutes(planet.longitude),
+        antiscion: getAntiscion(planet.longitude),
 
-// const quixabaCoordinates: SelectedCity = {
-//   latitude: -4.5461,
-//   longitude: -37.6923,
-//   name: "Quixaba/CE",
-// };
-
-const aracatiCoordinates: SelectedCity = {
-  latitude: -4.56273,
-  longitude: -37.7691,
-  name: "Aracati/CE",
-};
-
-const SPCoordinates: SelectedCity = {
-  latitude: -23.5489,
-  longitude: -46.6388,
-  name: "São Paulo/SP",
-};
-
-const MontesClarosCoordinates: SelectedCity = {
-  latitude: -16.737,
-  longitude: -43.8647,
-  name: "Montes Claros/MG",
-};
-
-const icoordinates: SelectedCity = {
-  latitude: -6.4011,
-  longitude: -38.8622,
-  name: "Icó/CE",
-};
-
-const barbacenaCoordinates: SelectedCity = {
-  latitude: -21.2264,
-  longitude: -43.7742,
-  name: "Barbacena/MG",
-};
-
-const pindaCoords: SelectedCity = {
-  latitude: -22.9236,
-  longitude: -45.4598,
-  name: "Pindamonhangaba/SP",
-};
-
-export const presavedBirthDates: Record<string, BirthChartProfile> = {
-  lucasz: {
-    name: "Lucas Zaranza",
-    birthDate: {
-      year: 1993,
-      month: 8,
-      day: 31,
-      time: convertDegMinToDecimal(6, 45).toString(),
-      coordinates: fortalCoords,
+        longitudeRaw: planet.longitude,
+        antiscionRaw: getAntiscion(planet.longitude, true),
+        type: planetTypes[planet.id],
+      };
+    }),
+    planetsWithSigns: data.returnPlanets.map((planet: Planet) => {
+      return {
+        position: getDegreeAndSign(
+          decimalToDegreesMinutes(planet.longitude),
+          true
+        ),
+        antiscion: getDegreeAndSign(
+          getAntiscion(planet.longitude),
+          true
+        ),
+      };
+    }),
+    housesData: {
+      ...data?.returnHousesData,
+      housesWithSigns: data.returnHousesData?.house.map(
+        (houseLong: number) => {
+          return getDegreeAndSign(
+            decimalToDegreesMinutes(houseLong),
+            true
+          );
+        }
+      ),
     },
-  },
-  elisa: {
-    name: "Elisa Ferraz",
-    birthDate: {
-      year: 1994,
-      month: 6,
-      day: 23,
-      time: convertDegMinToDecimal(20, 19).toString(),
-      coordinates: SPCoordinates,
-    },
-  },
-  aline: {
-    name: "Aline Zaranza",
-    birthDate: {
-      year: 1999,
-      month: 3,
-      day: 22,
-      time: convertDegMinToDecimal(12, 39).toString(),
-      coordinates: fortalCoords,
-    },
-  },
-  alana: {
-    name: "Alana Angelim",
-    birthDate: {
-      year: 1997,
-      month: 5,
-      day: 1,
-      time: convertDegMinToDecimal(13, 47).toString(),
-      coordinates: icoordinates,
-    },
-  },
-  noivado: {
-    name: "Noivado",
-    birthDate: {
-      year: 2025,
-      month: 4,
-      day: 26,
-      time: convertDegMinToDecimal(17, 5).toString(),
-      coordinates: aracatiCoordinates,
-    },
-  },
-  jana: {
-    name: "Janaina Libarino",
-    birthDate: {
-      year: 1995,
-      month: 6,
-      day: 20,
-      time: convertDegMinToDecimal(2, 20).toString(),
-      coordinates: SPCoordinates,
-    },
-  },
-  anaFlavia: {
-    name: "Ana Flávia",
-    birthDate: {
-      year: 1994,
-      month: 12,
-      day: 2,
-      time: convertDegMinToDecimal(5, 15).toString(),
-      coordinates: MontesClarosCoordinates,
-    },
-  },
-  layCurcio: {
-    name: "Laiza Curcio",
-    birthDate: {
-      year: 1995,
-      month: 5,
-      day: 11,
-      time: convertDegMinToDecimal(8, 45).toString(),
-      coordinates: barbacenaCoordinates,
-    },
-  },
-  eduardoLay: {
-    name: "Eduardo da Lay",
-    birthDate: {
-      year: 1995,
-      month: 5,
-      day: 24,
-      time: convertDegMinToDecimal(10, 45).toString(),
-      coordinates: barbacenaCoordinates,
-    },
-  },
-  lala: {
-    name: "Laís Pontes",
-    birthDate: {
-      year: 2002,
-      month: 5,
-      day: 4,
-      time: convertDegMinToDecimal(2, 24).toString(),
-      coordinates: fortalCoords,
-    },
-  },
-  zanin: {
-    name: "Amanda Zanin",
-    birthDate: {
-      year: 1994,
-      month: 8,
-      day: 10,
-      time: convertDegMinToDecimal(12, 5).toString(),
-      coordinates: pindaCoords,
-    },
-  },
-  horariaReatamosEmSetembro: {
-    name: "(Horária) Nos falamos em Setembro?",
-    birthDate: {
-      year: 2025,
-      month: 8,
-      day: 31,
-      time: convertDegMinToDecimal(18, 52).toString(),
-      coordinates: fortalCoords,
-    },
-  },
-};
+    fixedStars: data.fixedStars.map((star: FixedStar) => ({
+      ...star,
+      elementType: "fixedStar",
+      isAntiscion: false,
+      isFromOuterChart: false,
+      longitudeSign: getDegreeAndSign(
+        decimalToDegreesMinutes(star.longitude),
+        true
+      ),
+    })),
+  };
+}

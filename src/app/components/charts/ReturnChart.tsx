@@ -9,17 +9,12 @@ import {
 
 export default function ReturnChart() {
   const { profileName } = useBirthChart();
-  const { birthChart, returnChart } = useBirthChart();
+  const { birthChart, returnChart, isCombinedWithBirthChart } = useBirthChart();
   const { arabicParts, archArabicParts } = useArabicParts();
   const [isSolarReturn, setIsSolarReturn] = useState(true);
-  const [combineWithBirthChart, setCombineWithBirthChart] = useState(false);
   const [tableItemsPerPage, setTableItemsPerPage] = useState(
     ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT
   );
-
-  const toggleShowCombinedchart = () => {
-    setCombineWithBirthChart((prev) => !prev);
-  };
 
   useEffect(() => {
     setIsSolarReturn(returnChart?.returnType === "solar");
@@ -34,20 +29,19 @@ export default function ReturnChart() {
   function getTitle() {
     return `Retorno ${isSolarReturn ? "Solar" : "Lunar"} para 
             ${getReturnDateRangeString(
-              returnChart?.returnTime ?? "0000-00-00 00:00:00",
-              isSolarReturn ? "solar" : "lunar"
-            )} - ${profileName}`;
+      returnChart?.returnTime ?? "0000-00-00 00:00:00",
+      isSolarReturn ? "solar" : "lunar"
+    )} - ${profileName}`;
   }
 
   return (
     <div className="w-full flex flex-col items-center justify-center gap-3 mb-4">
       {returnChart && returnChart.timezone && (
         <div className="w-full text-left flex flex-col items-center">
-          {!combineWithBirthChart && returnChart && (
+          {!isCombinedWithBirthChart && returnChart && (
             <ChartAndData
               innerChart={returnChart}
               arabicParts={archArabicParts}
-              combineWithBirthChart={toggleShowCombinedchart}
               tableItemsPerPage={tableItemsPerPage}
               onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
               chartDateProps={{
@@ -59,13 +53,12 @@ export default function ReturnChart() {
             />
           )}
 
-          {combineWithBirthChart && birthChart && (
+          {isCombinedWithBirthChart && birthChart && (
             <ChartAndData
               innerChart={birthChart}
               outerChart={returnChart}
               arabicParts={arabicParts}
               outerArabicParts={archArabicParts}
-              combineWithBirthChart={toggleShowCombinedchart}
               tableItemsPerPage={tableItemsPerPage}
               onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
               chartDateProps={{

@@ -17,8 +17,7 @@ export interface AstroChartProps {
     outerHouses?: HousesData;
     outerArabicParts?: ArabicPartsType;
     fixedStars?: FixedStar[];
-    combineWithBirthChart?: () => void;
-    combineWithReturnChart?: () => void;
+    useReturnSelectorArrows?: boolean;
     onUpdateAspectsData?: (aspectsData: PlanetAspectData[]) => void;
   };
 }

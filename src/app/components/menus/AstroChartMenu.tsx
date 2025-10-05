@@ -1,12 +1,12 @@
 import { useBirthChart } from "@/contexts/BirthChartContext";
 import { useChartMenu } from "@/contexts/ChartMenuContext";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import LunarDerivedModal from "../modals/LunarDerivedModal";
 import Image from "next/image";
 
 interface AstroChartMenuProps {
-  toggleCombineWithBirthChart?: () => void;
-  toggleCombineWithReturnChart?: () => void;
+  toggleCombineWithBirthChart?: boolean;
+  toggleCombineWithReturnChart?: boolean;
   togglePlanetsAntiscia?: () => void;
   toggleArabicParts?: () => void;
   toggleArabicPartsAntiscia?: () => void;
@@ -27,6 +27,10 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
   const [lunarDerivedModal, setLunarDerivedModal] = useState(false);
 
   const {
+    birthChart,
+    returnChart,
+    lunarDerivedChart,
+    progressionChart,
     isCombinedWithBirthChart,
     updateIsCombinedWithBirthChart,
     isCombinedWithReturnChart,
@@ -34,6 +38,12 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
   } = useBirthChart();
 
   const { chartMenu } = useChartMenu();
+
+  useEffect(() => {
+    setPlanetsAntiscia(false);
+    setArabicParts(false);
+    setArabicPartsAntiscia(false);
+  }, [birthChart, returnChart, lunarDerivedChart, progressionChart]);
 
   function handleOnCloseLunarModal() {
     setLunarDerivedModal(false);
@@ -107,12 +117,11 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
         </div>
 
         <div className="w-full flex flex-row justify-center gap-1">
-          {toggleCombineWithBirthChart && (
+          {toggleCombineWithBirthChart && !isCombinedWithReturnChart && (
             <button
               className={className}
               onClick={() => {
                 updateIsCombinedWithBirthChart(!isCombinedWithBirthChart);
-                toggleCombineWithBirthChart?.();
               }}
             >
               Combinar com Mapa Natal
@@ -128,12 +137,11 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
             </button>
           )}
 
-          {toggleCombineWithReturnChart && (
+          {toggleCombineWithReturnChart && !isCombinedWithBirthChart && (
             <button
               className={className}
               onClick={() => {
                 updateIsCombinedWithReturnChart(!isCombinedWithReturnChart);
-                toggleCombineWithReturnChart?.();
               }}
             >
               Combinar com Retorno Solar

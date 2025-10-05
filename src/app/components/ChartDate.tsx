@@ -22,7 +22,7 @@ export const ChartDate = (props: ChatDateProps) => {
 
       setDate(transformedDate);
     } else if (birthChart.timezone) {
-      const returnTime = props.customReturnTime ?? birthChart.returnTime;
+      const returnTime = birthChart.returnTime;
       const returnDate = moment.tz(returnTime, birthChart.timezone);
       setDate({
         day: returnDate.date(),

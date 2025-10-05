@@ -58,9 +58,11 @@ export default function CustomizeASC(props: ASCModalProps) {
 
   function calculateCustomASC() {
     const rawValue = ascInputRef.current?.value ?? "0.0";
+    console.log("Raw value:", rawValue);
 
     if (customACMode === 0) {
       const convertedString = clampLongitude(rawValue, 29);
+      console.log("Converted String:", convertedString);
       const longitude =
         convertDegMinNumberToDecimal(convertedString);
       const value = signIndex * 30 + longitude;
@@ -112,17 +114,24 @@ export default function CustomizeASC(props: ASCModalProps) {
               <input
                 ref={ascInputRef}
                 inputMode="decimal"
-                // pattern="[0-9]*[.,]?[0-9]*"
                 className="border-2 rounded-sm w-[5rem] md:w-[8rem] p-1 text-sm bg-white"
                 placeholder="ex: 29.37"
                 onChange={(e) => {
-                  const convertedString = clampLongitude(e.target.value, 29);
-                  if (isNaN(convertedString)) return;
+                  const lastChar = e.target.value[e.target.value.length - 1];
 
-                  e.target.value =
-                    e.target.value.length > 0
-                      ? convertedString.toString()
-                      : e.target.value;
+                  if (Number.isNaN(Number(lastChar)) && lastChar !== ".") {
+                    e.target.value = e.target.value.slice(0, -1);
+                    return;
+                  }
+
+                  const [deg, min] = e.target.value.split(".");
+                  if (deg && Number.parseInt(deg) > 29) {
+                    e.target.value = "29" + (min ? "." + min : "");
+                  }
+
+                  if (min && Number.parseInt(min) > 59) {
+                    e.target.value = deg + ".59";
+                  }
                 }}
               />
             </div>
@@ -138,17 +147,24 @@ export default function CustomizeASC(props: ASCModalProps) {
             <input
               ref={ascInputRef}
               inputMode="decimal"
-              // pattern="[0-9]*[.,]?[0-9]*"
               className="border-2 rounded-sm w-full p-1 text-sm bg-white"
               placeholder="ex: 290.37"
               onChange={(e) => {
-                const convertedString = clampLongitude(e.target.value, 360);
-                if (isNaN(convertedString)) return;
+                const lastChar = e.target.value[e.target.value.length - 1];
 
-                e.target.value =
-                  e.target.value.length > 0
-                    ? convertedString.toString()
-                    : e.target.value;
+                if (Number.isNaN(Number(lastChar)) && lastChar !== ".") {
+                  e.target.value = e.target.value.slice(0, -1);
+                  return;
+                }
+
+                const [deg, min] = e.target.value.split(".");
+                if (deg && Number.parseInt(deg) > 359) {
+                  e.target.value = "359" + (min ? "." + min : "");
+                }
+
+                if (min && Number.parseInt(min) > 59) {
+                  e.target.value = deg + ".59";
+                }
               }}
             />
           </form>

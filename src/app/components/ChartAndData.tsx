@@ -31,8 +31,6 @@ interface Props {
   outerChart?: BirthChart;
   arabicParts?: ArabicPartsType;
   outerArabicParts?: ArabicPartsType;
-  combineWithBirthChart?: () => void;
-  combineWithReturnChart?: () => void;
   tableItemsPerPage?: number;
   onTableItemsPerPageChanged?: (newItemsPerPage: number) => void;
   chartDateProps: ChatDateProps;
@@ -46,8 +44,6 @@ export default function ChartAndData(props: Props) {
     outerChart,
     arabicParts,
     outerArabicParts,
-    combineWithBirthChart,
-    combineWithReturnChart,
     tableItemsPerPage,
     chartDateProps,
     outerChartDateProps,
@@ -73,7 +69,7 @@ export default function ChartAndData(props: Props) {
     isCombinedWithBirthChart,
     isCombinedWithReturnChart,
   } = useBirthChart();
-  const { chartMenu, resetChartMenus } = useChartMenu();
+  const { chartMenu, resetChartMenus, isReturnChart, isProgressionChart } = useChartMenu();
   const {
     updateArabicParts,
     updateSinastryArabicParts,
@@ -182,11 +178,11 @@ export default function ChartAndData(props: Props) {
     updateBirthChart({ chartType: "return", chartData: undefined });
     updateBirthChart({ chartType: "sinastry", chartData: undefined });
     updateBirthChart({ chartType: "progression", chartData: undefined });
+    updateLunarDerivedChart(undefined);
     updateArabicParts(undefined);
     updateArchArabicParts(undefined);
     updateSinastryArabicParts(undefined);
     updateSolarReturnParts(undefined);
-    updateLunarDerivedChart(undefined);
     updateIsCombinedWithBirthChart(false);
     updateIsCombinedWithReturnChart(false);
     resetChartMenus();
@@ -233,9 +229,8 @@ export default function ChartAndData(props: Props) {
               outerHouses: outerChart?.housesData,
               outerArabicParts,
               fixedStars: innerChart.fixedStars,
-              combineWithBirthChart,
-              combineWithReturnChart,
               onUpdateAspectsData: handleOnUpdateAspectsData,
+              useReturnSelectorArrows: isReturnChart() || isProgressionChart(),
             }}
           />
         )}

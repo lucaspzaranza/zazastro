@@ -4,7 +4,6 @@ import { useBirthChart } from "@/contexts/BirthChartContext";
 import { JSX, useEffect, useRef, useState } from "react";
 import {
   convertDegMinToDecimal,
-  fortalCoords,
   monthsNames,
 } from "../../utils/chartUtils";
 import {
@@ -78,7 +77,6 @@ export default function BirthChart() {
 
   useEffect(() => {
     if (birthChart === undefined && returnChart === undefined) {
-      console.log('setando para home...');
       setMenu("home");
     }
 
@@ -242,7 +240,10 @@ export default function BirthChart() {
       month: now.getMonth() + 1,
       year: now.getFullYear(),
       time: hourString,
-      coordinates: currentCity ?? fortalCoords,
+      coordinates: currentCity ?? {
+        latitude: 0,
+        longitude: 0
+      },
     };
 
     // console.log(birthDate);

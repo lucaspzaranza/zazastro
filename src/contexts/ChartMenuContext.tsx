@@ -19,6 +19,9 @@ interface ChartMenuContextType {
   addChartMenu: (menuType: ChartMenuType) => void;
   removeChartMenu: (menuType: ChartMenuType) => void;
   resetChartMenus: () => void;
+  isReturnChart: () => boolean;
+  isLunarDerivedReturnChart: () => boolean;
+  isProgressionChart: () => boolean;
 }
 
 const ChartMenuContext = createContext<ChartMenuContextType | undefined>(
@@ -76,6 +79,18 @@ export const ChartMenuContextProvider: React.FC<{ children: ReactNode }> = ({
     setChartMenu("birth");
   };
 
+  const isProgressionChart = () => {
+    return chartMenu === "progression";
+  }
+
+  const isReturnChart = () => {
+    return chartMenu === "solarReturn" || chartMenu === "lunarReturn" || chartMenu === "lunarDerivedReturn";
+  }
+
+  const isLunarDerivedReturnChart = () => {
+    return chartMenu === "lunarDerivedReturn";
+  }
+
   return (
     <ChartMenuContext.Provider
       value={{
@@ -89,6 +104,9 @@ export const ChartMenuContextProvider: React.FC<{ children: ReactNode }> = ({
         addChartMenu,
         removeChartMenu,
         resetChartMenus,
+        isReturnChart,
+        isLunarDerivedReturnChart,
+        isProgressionChart
       }}
     >
       {children}

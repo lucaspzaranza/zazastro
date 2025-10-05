@@ -26,6 +26,8 @@ import {
 } from "@/interfaces/AstroChartInterfaces";
 import AstroChartMenu from "../menus/AstroChartMenu";
 import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
+import ReturnSelectorArrows from "../ReturnSelectorArrows";
+import { useChartMenu } from "@/contexts/ChartMenuContext";
 
 const ASPECTS: Aspect[] = [
   { type: "conjunction", angle: 0 },
@@ -44,13 +46,13 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     outerHouses,
     outerArabicParts,
     fixedStars,
-    combineWithBirthChart,
-    combineWithReturnChart,
+    useReturnSelectorArrows,
     onUpdateAspectsData,
   } = { ...props };
 
   const ref = useRef<SVGSVGElement>(null);
   const { isMobileBreakPoint } = useScreenDimensions();
+  const { isReturnChart, isLunarDerivedReturnChart, isProgressionChart } = useChartMenu();
   const [testValue] = useState(2.5);
   const [showArabicParts, setShowArabicParts] = useState(false);
   const [showPlanetsAntiscia, setShowPlanetsAntiscia] = useState(false);
@@ -83,8 +85,8 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       ? 1.25
       : 1.5
     : showOuterchart
-    ? 0.7
-    : 0.85;
+      ? 0.7
+      : 0.85;
   const scaledSize = size * scaleFactor;
   const center = size / 2;
   const radius = size / 2 - 40;
@@ -97,9 +99,6 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   const getHouseDataAscendant = () => housesData?.ascendant ?? 0;
 
   const zodiacRotation = 270 - getHouseDataAscendant();
-
-  // const svgRef = useRef<SVGSVGElement | null>(null);
-  // const groupRef = useRef<SVGGElement | null>(null);
 
   function getOverlapElement(chartElement: ChartElement): ChartElementOverlap {
     return overlapElements.find(
@@ -555,8 +554,8 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         aspectedElement.elementType === "arabicPart")
     )
       // some of them is arabic part and the other isn't house, so may be arabicPart or a planet,
-      // so the orb will be only 1 degree
-      return 1;
+      // so the orb will be only 1.2 degree
+      return 1.2;
     else if (
       (element.elementType === "house" ||
         aspectedElement.elementType === "house") &&
@@ -1027,8 +1026,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       .attr("transform", `translate(${center}, ${center})`)
       .attr(
         "transform",
-        `translate(${center * scaleFactor}, ${
-          center * scaleFactor
+        `translate(${center * scaleFactor}, ${center * scaleFactor
         }) scale(${scaleFactor})`
       );
 
@@ -1306,9 +1304,8 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         .attr("stroke-width", 1);
 
       // 6) desenha o ícone do planeta
-      const iconSrc = `/planets/${planet.type}${
-        planet.isRetrograde ? "-rx" : ""
-      }.png`;
+      const iconSrc = `/planets/${planet.type}${planet.isRetrograde ? "-rx" : ""
+        }.png`;
 
       baseGroup
         .attr("data-name", planet.type)
@@ -1377,9 +1374,8 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
 
         // 6) desenha o ícone do planeta
         const iconAntSize = 13; // px
-        const iconAntSrc = `/planets/antiscion/${planet.type}${
-          planet.isRetrograde ? "-rx" : ""
-        }.png`;
+        const iconAntSrc = `/planets/antiscion/${planet.type}${planet.isRetrograde ? "-rx" : ""
+          }.png`;
 
         baseGroup
           .append("image")
@@ -1671,9 +1667,8 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
 
         // 6) desenha o ícone do planeta
         const iconSize = 13; // px
-        const iconSrc = `/planets/${planet.type}${
-          planet.isRetrograde ? "-rx" : ""
-        }.png`;
+        const iconSrc = `/planets/${planet.type}${planet.isRetrograde ? "-rx" : ""
+          }.png`;
 
         baseGroup
           .append("image")
@@ -1742,9 +1737,8 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             .attr("stroke-width", 1);
 
           // 6) desenha o ícone do planeta
-          const iconAntSrc = `/planets/antiscion/${planet.type}${
-            planet.isRetrograde ? "-rx" : ""
-          }.png`;
+          const iconAntSrc = `/planets/antiscion/${planet.type}${planet.isRetrograde ? "-rx" : ""
+            }.png`;
 
           baseGroup
             .append("image")
@@ -1997,13 +1991,6 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   }, [
     planets,
     housesData,
-    // gap,
-    // rowSize,
-    // maxRowsBeforeDiagonal,
-    // rowInwardStep,
-    // perpSpacing,
-    // diagonalPerpStep,
-    // diagonalInwardStep,
     showArabicParts,
     showPlanetsAntiscia,
     showArabicPartsAntiscia,
@@ -2042,6 +2029,19 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     });
   }, [fixedStarsAspects]);
 
+  useEffect(() => {
+    setShowArabicParts(false);
+    setShowPlanetsAntiscia(false);
+    setShowArabicPartsAntiscia(false);
+  }, [planets,
+    housesData,
+    arabicParts,
+    outerPlanets,
+    outerHouses,
+    outerArabicParts,
+    fixedStars,
+    useReturnSelectorArrows]);
+
   const toggleArabicParts = () => {
     setShowArabicParts((prev) => !prev);
   };
@@ -2058,53 +2058,25 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
 
   return (
     <div
-      className={`w-full md:w-[40vw] flex flex-col justify-center items-center md:mx-10 gap-8`}
+      className={`w-full flex flex-col justify-center items-center gap-8 
+        ${useReturnSelectorArrows ? 'mx-0' : 'mx-10'} ${isProgressionChart() ? 'md:mx-16' : 'mx-0'}`}
     >
-      <AstroChartMenu
-        toggleCombineWithBirthChart={
-          combineWithBirthChart !== undefined
-            ? combineWithBirthChart
-            : undefined
-        }
-        toggleCombineWithReturnChart={
-          combineWithReturnChart !== undefined
-            ? combineWithReturnChart
-            : undefined
-        }
-        togglePlanetsAntiscia={toggleAntiscia}
-        toggleArabicParts={toggleArabicParts}
-        toggleArabicPartsAntiscia={toggleArabicPartsAntiscia}
-      />
-
-      {/* <label>
-        Teste:
-        <input
-          type="number"
-          className="w-2/12 border-2 rounded-sm ml-1 mb-1"
-          value={testValue}
-          onChange={(e) => setTestValue(Number.parseFloat(e.target.value))}
+      <div className="w-full md:px-4">
+        <AstroChartMenu
+          togglePlanetsAntiscia={toggleAntiscia}
+          toggleArabicParts={toggleArabicParts}
+          toggleArabicPartsAntiscia={toggleArabicPartsAntiscia}
+          toggleCombineWithBirthChart={isReturnChart() || isProgressionChart()}
+          toggleCombineWithReturnChart={isLunarDerivedReturnChart()}
         />
-      </label> */}
+      </div>
 
-      <svg className={containerClasses} ref={ref}></svg>
-      {/* <div className="w-[80vw] flex flex-row items-center justify-between">
-        <AstroChartOverlapDebugFields
-          gap={gap}
-          onGap={(val) => setGap(val)}
-          rowSize={rowSize}
-          onRowSize={(val) => setRowSize(val)}
-          maxRowsBeforeDiagonal={maxRowsBeforeDiagonal}
-          onMaxRowsBeforeDiagonal={(val) => setMaxRowsBeforeDiagonal(val)}
-          rowInwardStep={rowInwardStep}
-          onRowInwardStep={(val) => setRowInwardStep(val)}
-          perpSpacing={perpSpacing}
-          onPerpSpacing={(val) => setPerpSpacing(val)}
-          diagonalPerpStep={diagonalPerpStep}
-          onDiagonalPerpStep={(val) => setDiagonalPerpStep(val)}
-          diagonalInwardStep={diagonalInwardStep}
-          onDiagonalInwardStep={(val) => setDiagonalInwardStep(val)}
-        />
-      </div> */}
+      {useReturnSelectorArrows ? (
+        <ReturnSelectorArrows>
+          <svg className={containerClasses} ref={ref}></svg>
+        </ReturnSelectorArrows>
+      ) :
+        <svg className={containerClasses} ref={ref}></svg>}
     </div>
   );
 };

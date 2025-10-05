@@ -15,7 +15,7 @@ export type PlanetType =
   | "southNode";
 
 export type ReturnChartType = "solar" | "lunar";
-export type ChartType = "birth" | "return" | "sinastry" | "progression";
+export type ChartType = "birth" | "return" | "sinastry" | "progression" | "lunarDerived";
 export type ArabicPartType = "birth" | "arch" | "solarReturn" | "sinastry";
 
 export const planetTypes: PlanetType[] = [
@@ -117,7 +117,6 @@ export interface FixedStar extends ChartElement {
 
 export interface ChatDateProps {
   chartType: ChartType;
-  customReturnTime?: string;
   label?: string;
   birthChart?: BirthChart;
 }

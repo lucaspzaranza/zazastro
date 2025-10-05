@@ -1,9 +1,7 @@
 import { apiFetch } from "@/app/utils/api";
 import {
   convertDegMinToDecimal,
-  decimalToDegreesMinutes,
-  getAntiscion,
-  getDegreeAndSign,
+  makeLunarDerivedChart,
   monthsNames,
 } from "@/app/utils/chartUtils";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
@@ -11,9 +9,6 @@ import { useBirthChart } from "@/contexts/BirthChartContext";
 
 import {
   BirthDate,
-  FixedStar,
-  Planet,
-  planetTypes,
 } from "@/interfaces/BirthChartInterfaces";
 import moment from "moment";
 import Image from "next/image";
@@ -23,8 +18,6 @@ import Spinner from "../Spinner";
 interface LunarModalProps {
   onClose?: () => void;
 }
-
-const getGlyphOnly = true;
 
 export default function LunarDerivedModal(props: LunarModalProps) {
   const { onClose } = props;
@@ -79,71 +72,19 @@ export default function LunarDerivedModal(props: LunarModalProps) {
       }),
     });
 
-    updateLunarDerivedChart?.({
-      ...data,
-      returnTime: data.returnTime,
-      birthDate,
-      targetDate,
-      planets: data.returnPlanets.map((planet: Planet) => {
-        return {
-          ...planet,
-          longitude: decimalToDegreesMinutes(planet.longitude),
-          antiscion: getAntiscion(planet.longitude),
-
-          longitudeRaw: planet.longitude,
-          antiscionRaw: getAntiscion(planet.longitude, true),
-          type: planetTypes[planet.id],
-        };
-      }),
-      planetsWithSigns: data.returnPlanets.map((planet: Planet) => {
-        return {
-          position: getDegreeAndSign(
-            decimalToDegreesMinutes(planet.longitude),
-            getGlyphOnly
-          ),
-          antiscion: getDegreeAndSign(
-            getAntiscion(planet.longitude),
-            getGlyphOnly
-          ),
-        };
-      }),
-      housesData: {
-        ...data?.returnHousesData,
-        housesWithSigns: data.returnHousesData?.house.map(
-          (houseLong: number) => {
-            return getDegreeAndSign(
-              decimalToDegreesMinutes(houseLong),
-              getGlyphOnly
-            );
-          }
-        ),
-      },
-      fixedStars: data.fixedStars.map((star: FixedStar) => ({
-        ...star,
-        elementType: "fixedStar",
-        isAntiscion: false,
-        isFromOuterChart: false,
-        longitudeSign: getDegreeAndSign(
-          decimalToDegreesMinutes(star.longitude),
-          getGlyphOnly
-        ),
-      })),
-    });
-
+    const lunarDerivedChart = makeLunarDerivedChart(data, birthDate, targetDate);
+    updateLunarDerivedChart?.(lunarDerivedChart);
     setLoading(false);
 
     setTimeout(() => {
       if (isCombinedWithBirthChart) {
         updateIsCombinedWithBirthChart(false);
       }
-
       onClose?.();
     }, 100);
   };
 
   return (
-
-
     <div className="absolute w-[20rem] h-[12rem] border-2 rounded-md bg-white flex flex-col py-1 items-center justify-start z-50 gap-2">
       <header className="relative w-full flex flex-row items-center justify-center border-b-2">
         <h1 className="font-bold text-lg">Retorno Lunar Derivado</h1>
