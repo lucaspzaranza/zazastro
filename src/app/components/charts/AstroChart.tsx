@@ -2059,7 +2059,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   return (
     <div
       className={`w-full flex flex-col justify-center items-center gap-8 
-        ${useReturnSelectorArrows ? 'mx-0' : 'mx-10'} ${isProgressionChart() ? 'md:mx-16' : 'mx-0'}`}
+        ${useReturnSelectorArrows ? 'mx-16' : 'mx-10'} ${isProgressionChart() ? 'md:mx-16' : 'mx-0'}`}
     >
       <div className="w-full md:px-4">
         <AstroChartMenu
