@@ -52,7 +52,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
   const checkSrc = "/check.png";
   const checkSize = 13;
   const className =
-    "bg-blue-800 flex flex-row gap-1 items-center justify-center text-[0.65rem] md:text-[0.75rem] w-full text-white px-0 py-2 rounded hover:bg-blue-900";
+    "default-btn flex flex-row gap-1 items-center justify-center text-[0.65rem] md:text-[0.75rem] w-full text-white px-0 py-2 rounded";
 
   return (
     <>

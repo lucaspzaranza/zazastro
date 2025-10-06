@@ -237,7 +237,7 @@ export default function ChartAndData(props: Props) {
 
         <button
           type="button"
-          className="w-full md:w-[25.5rem] mt-6 mb-2 bg-blue-800 text-white px-4 py-2 rounded hover:bg-blue-900"
+          className="default-btn w-full! md:w-[25.5rem]! mt-6 mb-2"
           onClick={handleReset}
         >
           Menu Principal
@@ -378,7 +378,7 @@ export default function ChartAndData(props: Props) {
                   </div>
 
                   <button
-                    title="Antiscion"
+                    title={`${planetsAntiscion[planet.type] ? "Normal" : "Antiscion"}`}
                     className={`rounded-sm w-[2rem] hidden xl:flex xl:flex-row xl:items-center xl:justify-center 2xl:hidden hover:outline-2 hover:bg-gray-200 active:bg-gray-400 
                       ${planetsAntiscion[planet.type] ? "antiscion" : ""}`}
                     onClick={() => {
@@ -458,7 +458,7 @@ export default function ChartAndData(props: Props) {
                 </div>
 
                 <button
-                  title="Antiscion"
+                  title={`${housesAntiscion[`Casa ${index + 1}`] ? "Normal" : "Antiscion"}`}
                   className={`rounded-sm w-[2rem] hidden xl:flex xl:flex-row xl:items-center xl:justify-center 2xl:hidden hover:outline-2 hover:bg-gray-200 active:bg-gray-400 
                       ${housesAntiscion[`Casa ${index + 1}`] ? "antiscion" : ""
                     }`}

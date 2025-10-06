@@ -436,35 +436,35 @@ export default function BirthChart() {
             {menu === "home" && (
               <div className="w-full flex flex-col gap-2">
                 <button
-                  className="bg-blue-800 w-full text-white px-4 py-2 rounded hover:bg-blue-900"
+                  className="default-btn"
                   onClick={() => setMenu("birthChart")}
                 >
                   Mapa Natal
                 </button>
 
                 <button
-                  className="bg-blue-800 w-full text-white px-4 py-2 rounded hover:bg-blue-900"
+                  className="default-btn"
                   onClick={() => setMenu("solarReturn")}
                 >
                   Revolução Solar
                 </button>
 
                 <button
-                  className="bg-blue-800 w-full text-white px-4 py-2 rounded hover:bg-blue-900"
+                  className="default-btn"
                   onClick={() => setMenu("lunarReturn")}
                 >
                   Revolução Lunar
                 </button>
 
                 <button
-                  className="bg-blue-800 w-full text-white px-4 py-2 rounded hover:bg-blue-900"
+                  className="default-btn"
                   onClick={() => setMenu("sinastry")}
                 >
                   Combinar mapas (Sinastria)
                 </button>
 
                 <button
-                  className="bg-blue-800 w-full text-white px-4 py-2 rounded hover:bg-blue-900"
+                  className="default-btn"
                   onClick={() => setMenu("secondaryProgressions")}
                 >
                   Progressão Secundária
@@ -528,7 +528,7 @@ export default function BirthChart() {
                         solarReturnForm.current?.reportValidity();
                       }
                     }}
-                    className="bg-blue-800 w-full text-white px-4 py-2 rounded hover:bg-blue-900"
+                    className="default-btn"
                   >
                     Revolução Solar
                   </button>
@@ -617,7 +617,7 @@ export default function BirthChart() {
                         lunarReturnForm.current?.reportValidity();
                       }
                     }}
-                    className="bg-blue-800 w-full text-white px-4 py-2 rounded hover:bg-blue-900"
+                    className="default-btn"
                   >
                     Revolução Lunar
                   </button>
@@ -639,7 +639,7 @@ export default function BirthChart() {
 
                 <button
                   onClick={() => makeSinastryCharts()}
-                  className="bg-blue-800 w-full text-white px-4 py-2 rounded hover:bg-blue-900"
+                  className="default-btn"
                 >
                   Gerar sinastria
                 </button>
@@ -649,7 +649,7 @@ export default function BirthChart() {
             {menu === "home" && (
               <button
                 onClick={() => getMomentBirthChart()}
-                className="bg-blue-800 w-full text-white px-4 py-2 rounded hover:bg-blue-900"
+                className="default-btn"
               >
                 Mapa do Momento
               </button>
@@ -693,7 +693,7 @@ export default function BirthChart() {
 
                 <button
                   type="submit"
-                  className="bg-blue-800 w-full text-white px-4 py-2 rounded hover:bg-blue-900"
+                  className="default-btn"
                 >
                   Gerar Progressão
                 </button>
@@ -702,7 +702,7 @@ export default function BirthChart() {
 
             {menu !== "home" && (
               <button
-                className="bg-blue-600 w-full text-white px-4 py-2 rounded hover:bg-blue-700"
+                className="default-btn"
                 onClick={() => setMenu("home")}
               >
                 Voltar

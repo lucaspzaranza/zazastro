@@ -157,7 +157,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
         <div className="w-full h-full flex flex-col items-center justify-center gap-2">
           <button
             type="submit"
-            className="w-full bg-blue-800 text-white px-4 py-2 rounded hover:bg-blue-900"
+            className="default-btn"
             onClick={() => {
               makeChart();
             }}

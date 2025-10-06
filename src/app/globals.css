@@ -38,5 +38,5 @@ progress {
 }
 
 .default-btn {
-  @apply bg-blue-800 w-full text-white px-4 py-2 rounded hover:bg-blue-900
+  @apply bg-gradient-to-b from-blue-500 via-blue-800 from-10% to-blue-900 to-100% w-full text-white px-4 py-2 rounded hover:from-blue-600 hover:via-blue-900 hover:to-blue-950 transition-all;
 }

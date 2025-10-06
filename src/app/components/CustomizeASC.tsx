@@ -57,12 +57,10 @@ export default function CustomizeASC(props: ASCModalProps) {
   }, [customAscendant, birthChart, baseParts]);
 
   function calculateCustomASC() {
-    const rawValue = ascInputRef.current?.value ?? "0.0";
-    console.log("Raw value:", rawValue);
+    const rawValue = ascInputRef.current?.value.replace(',', '.') ?? "0.0";
 
     if (customACMode === 0) {
       const convertedString = clampLongitude(rawValue, 29);
-      console.log("Converted String:", convertedString);
       const longitude =
         convertDegMinNumberToDecimal(convertedString);
       const value = signIndex * 30 + longitude;
@@ -113,18 +111,17 @@ export default function CustomizeASC(props: ASCModalProps) {
               </select>
               <input
                 ref={ascInputRef}
-                inputMode="decimal"
                 className="border-2 rounded-sm w-[5rem] md:w-[8rem] p-1 text-sm bg-white"
                 placeholder="ex: 29.37"
                 onChange={(e) => {
                   const lastChar = e.target.value[e.target.value.length - 1];
 
-                  if (Number.isNaN(Number(lastChar)) && lastChar !== ".") {
+                  if (Number.isNaN(Number(lastChar)) && (lastChar !== "." && lastChar !== ",")) {
                     e.target.value = e.target.value.slice(0, -1);
                     return;
                   }
 
-                  const [deg, min] = e.target.value.split(".");
+                  const [deg, min] = e.target.value.split(/[.,]/);
                   if (deg && Number.parseInt(deg) > 29) {
                     e.target.value = "29" + (min ? "." + min : "");
                   }
@@ -146,18 +143,17 @@ export default function CustomizeASC(props: ASCModalProps) {
             }}>
             <input
               ref={ascInputRef}
-              inputMode="decimal"
               className="border-2 rounded-sm w-full p-1 text-sm bg-white"
               placeholder="ex: 290.37"
               onChange={(e) => {
                 const lastChar = e.target.value[e.target.value.length - 1];
 
-                if (Number.isNaN(Number(lastChar)) && lastChar !== ".") {
+                if (Number.isNaN(Number(lastChar)) && (lastChar !== "." && lastChar !== ",")) {
                   e.target.value = e.target.value.slice(0, -1);
                   return;
                 }
 
-                const [deg, min] = e.target.value.split(".");
+                const [deg, min] = e.target.value.split(/[.,]/);
                 if (deg && Number.parseInt(deg) > 359) {
                   e.target.value = "359" + (min ? "." + min : "");
                 }

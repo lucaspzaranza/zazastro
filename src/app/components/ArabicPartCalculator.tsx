@@ -290,7 +290,7 @@ export default function ArabicPartCalculator(
         </div>
 
         <button
-          className="bg-blue-800 w-1/2 text-white px-4 py-1 rounded hover:bg-blue-900"
+          className="default-btn w-1/2!"
           onClick={() => {
             calculateLot();
             setShowLotCalculation(true);
