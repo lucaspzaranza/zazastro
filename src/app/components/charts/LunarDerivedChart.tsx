@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import {
-  ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT,
   getReturnDateRangeString,
 } from "@/utils/chartUtils";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import ChartAndData from ".././ChartAndData";
 import { useBirthChart } from "@/contexts/BirthChartContext";
+import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT } from "@/app/utils/constants";
 
 export default function LunarDerivedChart() {
   const [returnTime, setReturnTime] = useState("");
@@ -37,7 +37,7 @@ export default function LunarDerivedChart() {
   }
 
   return (
-    <div className="w-full flex flex-col items-center justify-between">
+    <div className="w-full flex flex-col items-center justify-between mb-4">
       {lunarDerivedChart && renderChart && (
         <>
           {!isCombinedWithBirthChart && !isCombinedWithReturnChart && (

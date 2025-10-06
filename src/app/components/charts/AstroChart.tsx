@@ -2054,9 +2054,9 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     setShowArabicPartsAntiscia((prev) => !prev);
   };
 
-  let containerClasses = showOuterchart ? "mb-16 mt-10" : "mb-0";
+  let containerClasses = showOuterchart ? "mb-16 mt-10" : "mb-4";
   if (isMobileBreakPoint()) {
-    containerClasses = showOuterchart ? "mb-10 mt-5" : "mb-2";
+    containerClasses = showOuterchart ? "mb-10 mt-5" : "mb-4";
   }
 
   return (

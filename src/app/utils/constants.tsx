@@ -1,0 +1,2 @@
+export const ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT = 10;
+export const SKELETON_LOADER_TIME = 250;

@@ -33,6 +33,8 @@ import {
 import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 import Image from "next/image";
 import InfoPopup from "./InfoPopup";
+import { SkeletonTable } from "../skeletons";
+import { SKELETON_LOADER_TIME } from "@/app/utils/constants";
 
 export default function AspectsTable({
   aspects,
@@ -71,6 +73,7 @@ export default function AspectsTable({
 
   const backupValue = useRef(0);
 
+  const [loading, setLoading] = useState(true);
   const [openInfoPopup, setOpenInfoPopup] = useState(false);
   const [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage ?? 5);
   const [tableCurrentPage, setTableCurrentPage] = useState(1);
@@ -106,6 +109,10 @@ export default function AspectsTable({
     clearFilters();
 
     setFilteredAspects(aspects.map((asp) => ({ ...asp } as PlanetAspectData)));
+
+    setTimeout(() => {
+      setLoading(false);
+    }, SKELETON_LOADER_TIME);
   }, [aspects]);
 
   useEffect(() => {
@@ -627,229 +634,233 @@ export default function AspectsTable({
   }
 
   return (
-    <div>
-      <div className="w-full flex flex-row items-center justify-between">
-        <h2 className="font-bold text-lg mb-2">Aspectos:</h2>
-        <Image
-          alt="info"
-          src="/info.png"
-          width={20}
-          height={20}
-          className="hover:scale-110"
-          onClick={() => setOpenInfoPopup((prev) => !prev)}
-          unoptimized
-        />
-      </div>
+    loading ? (
+      <div className="w-full">
+        <SkeletonTable rows={10} />
+      </div>) :
+      <>
+        <div className="w-full flex flex-row items-center justify-between">
+          <h2 className="font-bold text-lg mb-2">Aspectos:</h2>
+          <Image
+            alt="info"
+            src="/info.png"
+            width={20}
+            height={20}
+            className="hover:scale-110"
+            onClick={() => setOpenInfoPopup((prev) => !prev)}
+            unoptimized
+          />
+        </div>
 
-      {openInfoPopup && <div className="relative"><InfoPopup /></div>}
+        {openInfoPopup && <div className="w-full md:w-[415px] 2xl:w-[470px] relative"><InfoPopup /></div>}
 
-      <table className="w-full md:w-[415px] 2xl:w-[470px] flex flex-col border-2 text-[0.75rem] md:text-sm text-center bg-white">
-        <thead>
-          <tr className="flex flex-row justify-between">
-            <th className="w-3/4 text-center border-r-2">Elemento</th>
-            <th className="w-3/4 text-center border-r-2">Aspecto</th>
-            <th className="w-full text-center border-r-2">Aspectado</th>
-            <th className="w-10/12 text-center border-r-2">Distância</th>
-            <th className="w-1/2 text-center">Tipo</th>
-          </tr>
-          <tr className="flex flex-row items-center justify-between border-t-2">
-            <th className="w-3/4 h-full text-center border-r-2 text-[0.85rem]">
-              <AspectTableFilterButton
-                ref={elementButtonRef}
-                type="element"
-                openModal={filterModalIsOpenArray[0]}
-                modalIndex={0}
-                disableFilterBtn={disableFilter(0)}
-                elements={getColumnAspectedElements("element")}
-                onModalButtonClick={toggleFilterModalOpening}
-                onConfirm={handleOnConfirmFilter}
-                getElementImage={getElementImage}
-              />
-            </th>
-            <th className="w-3/4 text-center border-r-2">
-              <AspectTableFilterButton
-                ref={aspectButtonRef}
-                type="aspect"
-                openModal={filterModalIsOpenArray[1]}
-                modalIndex={1}
-                disableFilterBtn={disableFilter(1)}
-                onModalButtonClick={toggleFilterModalOpening}
-                onConfirm={handleOnConfirmFilter}
-              />
-            </th>
-            <th className="w-full text-center border-r-2">
-              <AspectTableFilterButton
-                ref={aspectedElementButtonRef}
-                type="aspectedElement"
-                openModal={filterModalIsOpenArray[2]}
-                modalIndex={2}
-                disableFilterBtn={disableFilter(2)}
-                elements={getColumnAspectedElements("aspectedElement")}
-                onModalButtonClick={toggleFilterModalOpening}
-                onConfirm={handleOnConfirmFilter}
-                getElementImage={getElementImage}
-              />
-            </th>
-            <th className="w-10/12 text-center border-r-2">
-              <AspectTableFilterButton
-                ref={distanceButtonRef}
-                type="distance"
-                openModal={filterModalIsOpenArray[3]}
-                modalIndex={3}
-                disableFilterBtn={disableFilter(3)}
-                onModalButtonClick={toggleFilterModalOpening}
-                onConfirm={handleOnConfirmFilter}
-              />
-            </th>
-            <th className="w-1/2 text-center">
-              <AspectTableFilterButton
-                ref={distanceTypeButtonRef}
-                type="aspectDistanceType"
-                openModal={filterModalIsOpenArray[4]}
-                modalIndex={4}
-                disableFilterBtn={disableFilter(4)}
-                distanceTypes={distanceTypes}
-                onModalButtonClick={toggleFilterModalOpening}
-                onConfirm={handleOnConfirmFilter}
-              />
-            </th>
-          </tr>
-        </thead>
-        {filteredAspects && filteredAspects.length > 0 && (
-          <tbody className="flex flex-col border-b-2">
-            {filteredAspects
-              .filter(
-                (_, index) =>
-                  index >= itemsPerPage * (tableCurrentPage - 1) &&
-                  index < itemsPerPage * tableCurrentPage
-              )
-              .map((aspect, index) => {
-                return (
-                  <tr className="flex flex-row border-t-2" key={index}>
-                    <td className={tdClasses3W4}>
-                      {getElementImage(aspect.element)}
-                    </td>
-                    <td className={tdClasses3W4}>
-                      {getAspectImage(aspect.aspectType)}
-                    </td>
-                    {aspect.aspectedElement.elementType !== "fixedStar" && (
-                      <td className={tdClasses}>
-                        {" "}
-                        {getElementImage(aspect.aspectedElement)}
-                      </td>
-                    )}
-
-                    {aspect.aspectedElement.elementType === "fixedStar" && (
-                      <td className={tdClasses}>
-                        <div
-                          className={
-                            "w-full pl-1 flex flex-row items-center gap-1 text-[0.65rem] md:text-[0.7rem] font-bold break-words"
-                          }
-                        >
-                          <Image
-                            alt="star"
-                            src="/star.png"
-                            width={10}
-                            height={10}
-                          />
-                          {aspect.aspectedElement.name}
-                        </div>
-                      </td>
-                    )}
-
-                    <td className={tdClasses10W12}>
-                      {getAspectDistance(aspect)}
-                    </td>
-                    <td className="w-1/2 flex flex-row items-center justify-center">
-                      {getAspectDistanceType(aspect)}
-                    </td>
-                  </tr>
-                );
-              })}
-
-            {getEmptyTableRows()}
-          </tbody>
-        )}
-
-        {(filteredAspects === undefined || filteredAspects.length === 0) && (
-          <tbody className="flex flex-col border-y-2">
-            <tr className="flex flex-row">
-              <td className="w-full">Nenhum aspecto encontrado.</td>
+        <table className="w-full md:w-[415px] 2xl:w-[470px] flex flex-col border-2 text-[0.75rem] md:text-sm text-center bg-white">
+          <thead>
+            <tr className="flex flex-row justify-between">
+              <th className="w-3/4 text-center border-r-2">Elemento</th>
+              <th className="w-3/4 text-center border-r-2">Aspecto</th>
+              <th className="w-full text-center border-r-2">Aspectado</th>
+              <th className="w-10/12 text-center border-r-2">Distância</th>
+              <th className="w-1/2 text-center">Tipo</th>
             </tr>
-          </tbody>
-        )}
-        <tfoot className="h-7 flex flex-row items-center justify-around p-2 font-bold">
-          <tr className="w-full flex flex-row justify-between">
-            <td className="w-1/2 text-start md:text-center flex flex-row items-center tracking-tight">
-              {isMobileBreakPoint() && <span>Ítens</span>}
-              {!isMobileBreakPoint() && (
-                <span className="w-full text-nowrap">Ítens por página</span>
-              )}
+            <tr className="flex flex-row items-center justify-between border-t-2">
+              <th className="w-3/4 h-full text-center border-r-2 text-[0.85rem]">
+                <AspectTableFilterButton
+                  ref={elementButtonRef}
+                  type="element"
+                  openModal={filterModalIsOpenArray[0]}
+                  modalIndex={0}
+                  disableFilterBtn={disableFilter(0)}
+                  elements={getColumnAspectedElements("element")}
+                  onModalButtonClick={toggleFilterModalOpening}
+                  onConfirm={handleOnConfirmFilter}
+                  getElementImage={getElementImage}
+                />
+              </th>
+              <th className="w-3/4 text-center border-r-2">
+                <AspectTableFilterButton
+                  ref={aspectButtonRef}
+                  type="aspect"
+                  openModal={filterModalIsOpenArray[1]}
+                  modalIndex={1}
+                  disableFilterBtn={disableFilter(1)}
+                  onModalButtonClick={toggleFilterModalOpening}
+                  onConfirm={handleOnConfirmFilter}
+                />
+              </th>
+              <th className="w-full text-center border-r-2">
+                <AspectTableFilterButton
+                  ref={aspectedElementButtonRef}
+                  type="aspectedElement"
+                  openModal={filterModalIsOpenArray[2]}
+                  modalIndex={2}
+                  disableFilterBtn={disableFilter(2)}
+                  elements={getColumnAspectedElements("aspectedElement")}
+                  onModalButtonClick={toggleFilterModalOpening}
+                  onConfirm={handleOnConfirmFilter}
+                  getElementImage={getElementImage}
+                />
+              </th>
+              <th className="w-10/12 text-center border-r-2">
+                <AspectTableFilterButton
+                  ref={distanceButtonRef}
+                  type="distance"
+                  openModal={filterModalIsOpenArray[3]}
+                  modalIndex={3}
+                  disableFilterBtn={disableFilter(3)}
+                  onModalButtonClick={toggleFilterModalOpening}
+                  onConfirm={handleOnConfirmFilter}
+                />
+              </th>
+              <th className="w-1/2 text-center">
+                <AspectTableFilterButton
+                  ref={distanceTypeButtonRef}
+                  type="aspectDistanceType"
+                  openModal={filterModalIsOpenArray[4]}
+                  modalIndex={4}
+                  disableFilterBtn={disableFilter(4)}
+                  distanceTypes={distanceTypes}
+                  onModalButtonClick={toggleFilterModalOpening}
+                  onConfirm={handleOnConfirmFilter}
+                />
+              </th>
+            </tr>
+          </thead>
+          {filteredAspects && filteredAspects.length > 0 && (
+            <tbody className="flex flex-col border-b-2">
+              {filteredAspects
+                .filter(
+                  (_, index) =>
+                    index >= itemsPerPage * (tableCurrentPage - 1) &&
+                    index < itemsPerPage * tableCurrentPage
+                )
+                .map((aspect, index) => {
+                  return (
+                    <tr className="flex flex-row border-t-2" key={index}>
+                      <td className={tdClasses3W4}>
+                        {getElementImage(aspect.element)}
+                      </td>
+                      <td className={tdClasses3W4}>
+                        {getAspectImage(aspect.aspectType)}
+                      </td>
+                      {aspect.aspectedElement.elementType !== "fixedStar" && (
+                        <td className={tdClasses}>
+                          {" "}
+                          {getElementImage(aspect.aspectedElement)}
+                        </td>
+                      )}
 
-              <select
-                value={itemsPerPage}
-                className="border-2 ml-1"
-                onChange={(e) => {
-                  updateTableItemsPerPage(Number.parseInt(e.target.value));
-                }}
-              >
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={15}>15</option>
-              </select>
-            </td>
+                      {aspect.aspectedElement.elementType === "fixedStar" && (
+                        <td className={tdClasses}>
+                          <div
+                            className={
+                              "w-full pl-1 flex flex-row items-center gap-1 text-[0.65rem] md:text-[0.7rem] font-bold break-words"
+                            }
+                          >
+                            <Image
+                              alt="star"
+                              src="/star.png"
+                              width={10}
+                              height={10}
+                            />
+                            {aspect.aspectedElement.name}
+                          </div>
+                        </td>
+                      )}
 
-            <td className="w-full flex flex-row items-center justify-end gap-1">
-              <div className="w-full flex flex-row items-center">
-                <button
-                  className="hover:outline-2 outline-offset-[-2px] p-1 active:bg-gray-200"
-                  onClick={() => clearFilters()}
-                  title="Limpar Filtros"
+                      <td className={tdClasses10W12}>
+                        {getAspectDistance(aspect)}
+                      </td>
+                      <td className="w-1/2 flex flex-row items-center justify-center">
+                        {getAspectDistanceType(aspect)}
+                      </td>
+                    </tr>
+                  );
+                })}
+
+              {getEmptyTableRows()}
+            </tbody>
+          )}
+
+          {(filteredAspects === undefined || filteredAspects.length === 0) && (
+            <tbody className="flex flex-col border-y-2">
+              <tr className="flex flex-row">
+                <td className="w-full">Nenhum aspecto encontrado.</td>
+              </tr>
+            </tbody>
+          )}
+          <tfoot className="h-7 flex flex-row items-center justify-around p-2 font-bold">
+            <tr className="w-full flex flex-row justify-between">
+              <td className="w-1/2 text-start md:text-center flex flex-row items-center tracking-tight">
+                {isMobileBreakPoint() && <span>Ítens</span>}
+                {!isMobileBreakPoint() && (
+                  <span className="w-full text-nowrap">Ítens por página</span>
+                )}
+
+                <select
+                  value={itemsPerPage}
+                  className="border-2 ml-1"
+                  onChange={(e) => {
+                    updateTableItemsPerPage(Number.parseInt(e.target.value));
+                  }}
                 >
-                  <Image
-                    alt="trash-can"
-                    src="/trash.png"
-                    width={15}
-                    height={15}
-                    unoptimized
-                  />
-                </button>
+                  <option value={5}>5</option>
+                  <option value={10}>10</option>
+                  <option value={15}>15</option>
+                </select>
+              </td>
 
-                <div className="w-min pl-1 tracking-tight">
-                  {tableCurrentPage}/{tablePageCount}
+              <td className="w-full flex flex-row items-center justify-end gap-1">
+                <div className="w-full flex flex-row items-center">
+                  <button
+                    className="hover:outline-2 outline-offset-[-2px] p-1 active:bg-gray-200"
+                    onClick={() => clearFilters()}
+                    title="Limpar Filtros"
+                  >
+                    <Image
+                      alt="trash-can"
+                      src="/trash.png"
+                      width={15}
+                      height={15}
+                      unoptimized
+                    />
+                  </button>
+
+                  <div className="w-min pl-1 tracking-tight">
+                    {tableCurrentPage}/{tablePageCount}
+                  </div>
                 </div>
-              </div>
 
-              <div className="w-fit flex flex-row items-center justify-between gap-2">
-                <button
-                  className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
-                  onClick={() => updateTableCurrentPage(-999)}
-                >
-                  |◀
-                </button>
-                <button
-                  className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
-                  onClick={() => updateTableCurrentPage(-1)}
-                >
-                  ◀
-                </button>
-                <button
-                  className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
-                  onClick={() => updateTableCurrentPage(1)}
-                >
-                  ▶
-                </button>
-                <button
-                  className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
-                  onClick={() => updateTableCurrentPage(999)}
-                >
-                  ▶|
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
+                <div className="w-fit flex flex-row items-center justify-between gap-2">
+                  <button
+                    className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
+                    onClick={() => updateTableCurrentPage(-999)}
+                  >
+                    |◀
+                  </button>
+                  <button
+                    className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
+                    onClick={() => updateTableCurrentPage(-1)}
+                  >
+                    ◀
+                  </button>
+                  <button
+                    className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
+                    onClick={() => updateTableCurrentPage(1)}
+                  >
+                    ▶
+                  </button>
+                  <button
+                    className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
+                    onClick={() => updateTableCurrentPage(999)}
+                  >
+                    ▶|
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </>
   );
 }

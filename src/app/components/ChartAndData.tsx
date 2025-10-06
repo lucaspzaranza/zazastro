@@ -6,7 +6,6 @@ import {
 import React, { JSX, useCallback, useEffect, useState } from "react";
 import {
   angularLabels,
-  ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT,
   formatSignColor,
   getAntiscion,
   getDegreeAndSign,
@@ -25,6 +24,8 @@ import Image from "next/image";
 import { ChartDate } from "./ChartDate";
 import ChartSelectorArrows from "./ChartSelectorArrows";
 import Container from "./Container";
+import { SkeletonTable } from "./skeletons";
+import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT, SKELETON_LOADER_TIME } from "../utils/constants";
 
 interface Props {
   innerChart: BirthChart;
@@ -52,6 +53,7 @@ export default function ChartAndData(props: Props) {
     ...props,
   };
 
+  const [loading, setLoading] = useState(true);
   const { isMobileBreakPoint } = useScreenDimensions();
   const [chartForPlanets, setChartForPlanets] = useState<
     BirthChart | undefined
@@ -69,7 +71,7 @@ export default function ChartAndData(props: Props) {
     isCombinedWithBirthChart,
     isCombinedWithReturnChart,
   } = useBirthChart();
-  const { chartMenu, resetChartMenus, isReturnChart, isProgressionChart } = useChartMenu();
+  const { chartMenu, resetChartMenus, isReturnChart, isSinastryChart, isProgressionChart } = useChartMenu();
   const {
     updateArabicParts,
     updateSinastryArabicParts,
@@ -136,6 +138,10 @@ export default function ChartAndData(props: Props) {
     } else if (outerArabicParts) {
       setPartsArray(getPartsArray(outerArabicParts));
     }
+
+    setTimeout(() => {
+      setLoading(false);
+    }, SKELETON_LOADER_TIME);
   }
 
   useEffect(() => {
@@ -206,7 +212,7 @@ export default function ChartAndData(props: Props) {
 
   function renderChart(): JSX.Element {
     const content = (
-      <>
+      <div className="w-full md:min-w-[45rem] flex flex-col items-center justify-center">
         <ChartSelectorArrows className="w-full mb-2 md:px-6">
           {title && (
             <h1 className="text-lg md:text-2xl font-bold text-center">
@@ -242,13 +248,13 @@ export default function ChartAndData(props: Props) {
         >
           Menu Principal
         </button>
-      </>
+      </div>
     );
 
     return isMobileBreakPoint() ? (
       <div className="flex flex-col items-center">{content}</div>
     ) : (
-      <Container className="px-0! lg:mx-2 2xl:mx-6">{content}</Container>
+      <Container className={`px-0! lg:mx-2 2xl:mx-6 ${isSinastryChart() ? "px-0!" : ""}`}>{content}</Container>
     );
   }
 
@@ -271,14 +277,20 @@ export default function ChartAndData(props: Props) {
         {!isMobileBreakPoint() && (
           <div className="md:w-[450px] 2xl:w-[500px] flex flex-col gap-4">
             <Container className="">
-              <ArabicPartsLayout
-                parts={partsArray}
-                showMenuButtons={true}
-                showSwitchParts
-                onToggleInnerPartsVisualization={
-                  handleOnToggleInnerPartsVisualization
-                }
-              />
+              {loading ?
+                <div className="w-full">
+                  <SkeletonTable rows={8} />
+                </div>
+                :
+                <ArabicPartsLayout
+                  parts={partsArray}
+                  showMenuButtons={true}
+                  showSwitchParts
+                  onToggleInnerPartsVisualization={
+                    handleOnToggleInnerPartsVisualization
+                  }
+                />
+              }
             </Container>
 
             {arabicParts && innerChart && (
@@ -289,15 +301,17 @@ export default function ChartAndData(props: Props) {
 
         {isMobileBreakPoint() && (
           <>
-            <ArabicPartsLayout
-              className="w-full text-[0.85rem] md:text-[1rem]"
-              parts={partsArray}
-              showMenuButtons={true}
-              showSwitchParts
-              onToggleInnerPartsVisualization={
-                handleOnToggleInnerPartsVisualization
-              }
-            />
+            {loading ? <SkeletonTable rows={9} /> :
+              <ArabicPartsLayout
+                parts={partsArray}
+                showMenuButtons={true}
+                showSwitchParts
+                onToggleInnerPartsVisualization={
+                  handleOnToggleInnerPartsVisualization
+                }
+              />
+            }
+
             {arabicParts && innerChart && (
               <div className="md:absolute md:top-full mb-4 md:mb-0">
                 {tableContent}

@@ -20,6 +20,7 @@ interface ChartMenuContextType {
   removeChartMenu: (menuType: ChartMenuType) => void;
   resetChartMenus: () => void;
   isReturnChart: () => boolean;
+  isSinastryChart: () => boolean;
   isLunarDerivedReturnChart: () => boolean;
   isProgressionChart: () => boolean;
 }
@@ -91,6 +92,10 @@ export const ChartMenuContextProvider: React.FC<{ children: ReactNode }> = ({
     return chartMenu === "lunarDerivedReturn";
   }
 
+  const isSinastryChart = () => {
+    return chartMenu === "sinastry";
+  }
+
   return (
     <ChartMenuContext.Provider
       value={{
@@ -106,7 +111,8 @@ export const ChartMenuContextProvider: React.FC<{ children: ReactNode }> = ({
         resetChartMenus,
         isReturnChart,
         isLunarDerivedReturnChart,
-        isProgressionChart
+        isProgressionChart,
+        isSinastryChart
       }}
     >
       {children}

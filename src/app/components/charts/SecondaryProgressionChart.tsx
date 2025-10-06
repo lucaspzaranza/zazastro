@@ -2,7 +2,7 @@ import { useBirthChart } from "@/contexts/BirthChartContext";
 import { useState } from "react";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import ChartAndData from "../ChartAndData";
-import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT } from "@/utils/chartUtils";
+import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT } from "@/app/utils/constants";
 
 export default function SecondaryProgressionChart() {
   const { profileName } = useBirthChart();

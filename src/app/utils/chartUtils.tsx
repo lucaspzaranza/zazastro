@@ -15,8 +15,6 @@ import {
 } from "@/interfaces/BirthChartInterfaces";
 import Image from "next/image";
 
-export const ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT = 10;
-
 export const allSigns = [
   "Áries ♈︎",
   "Touro ♉︎",

@@ -33,10 +33,34 @@ progress {
   /* Tailwind blue-500 */
 }
 
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.skeleton-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.3),
+      transparent);
+  animation: shimmer 1s infinite;
+}
+
+
 .antiscion {
   @apply text-[#ff914d];
 }
 
 .default-btn {
-  @apply bg-gradient-to-b from-blue-500 via-blue-800 from-10% to-blue-900 to-100% w-full text-white px-4 py-2 rounded hover:from-blue-600 hover:via-blue-900 hover:to-blue-950 transition-all;
+  @apply bg-gradient-to-b from-blue-600 via-blue-800 from-10% to-blue-900 to-100% w-full text-white px-4 py-2 rounded hover:from-blue-600 hover:via-blue-900 hover:to-blue-950 transition-all;
 }
