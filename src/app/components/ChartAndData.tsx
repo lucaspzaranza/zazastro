@@ -26,6 +26,7 @@ import ChartSelectorArrows from "./ChartSelectorArrows";
 import Container from "./Container";
 import { SkeletonTable } from "./skeletons";
 import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT, SKELETON_LOADER_TIME } from "../utils/constants";
+import Spinner from "./Spinner";
 
 interface Props {
   innerChart: BirthChart;
@@ -70,6 +71,7 @@ export default function ChartAndData(props: Props) {
     updateIsCombinedWithReturnChart,
     isCombinedWithBirthChart,
     isCombinedWithReturnChart,
+    loadingNextChart
   } = useBirthChart();
   const { chartMenu, resetChartMenus, isReturnChart, isSinastryChart, isProgressionChart } = useChartMenu();
   const {
@@ -212,42 +214,53 @@ export default function ChartAndData(props: Props) {
 
   function renderChart(): JSX.Element {
     const content = (
-      <div className="w-full md:min-w-[45rem] flex flex-col items-center justify-center">
-        <ChartSelectorArrows className="w-full mb-2 md:px-6">
-          {title && (
-            <h1 className="text-lg md:text-2xl font-bold text-center">
-              {title}
-            </h1>
+      <div className="w-full md:min-w-[45rem] flex flex-col items-center justify-center relative">
+        {loadingNextChart &&
+          <div
+            className={`absolute w-full h-[98%] md:h-[108%] px-3 md:px-0 bg-white/10 backdrop-blur-sm flex flex-col items-center justify-center z-10 
+              md:rounded-2xl transition-all duration-200 ease-in-out opacity-0 animate-[fadeIn_0.2s_forwards]`}>
+            <Spinner size="16" />
+            <h2 className="font-bold text-lg pl-10 mt-3">Carregando...</h2>
+          </div>
+        }
+
+        <>
+          <ChartSelectorArrows className="w-full mb-2 md:px-6">
+            {title && (
+              <h1 className="text-lg md:text-2xl font-bold text-center">
+                {title}
+              </h1>
+            )}
+          </ChartSelectorArrows>
+          <div className="mb-2">
+            <ChartDate {...chartDateProps} />
+            {outerChartDateProps && <ChartDate {...outerChartDateProps} />}
+          </div>
+
+          {innerChart && (
+            <AstroChart
+              props={{
+                planets: innerChart.planets,
+                housesData: innerChart.housesData,
+                arabicParts: arabicParts,
+                outerPlanets: outerChart?.planets,
+                outerHouses: outerChart?.housesData,
+                outerArabicParts,
+                fixedStars: innerChart.fixedStars,
+                onUpdateAspectsData: handleOnUpdateAspectsData,
+                useReturnSelectorArrows: isReturnChart() || isProgressionChart(),
+              }}
+            />
           )}
-        </ChartSelectorArrows>
-        <div className="mb-2">
-          <ChartDate {...chartDateProps} />
-          {outerChartDateProps && <ChartDate {...outerChartDateProps} />}
-        </div>
 
-        {innerChart && (
-          <AstroChart
-            props={{
-              planets: innerChart.planets,
-              housesData: innerChart.housesData,
-              arabicParts: arabicParts,
-              outerPlanets: outerChart?.planets,
-              outerHouses: outerChart?.housesData,
-              outerArabicParts,
-              fixedStars: innerChart.fixedStars,
-              onUpdateAspectsData: handleOnUpdateAspectsData,
-              useReturnSelectorArrows: isReturnChart() || isProgressionChart(),
-            }}
-          />
-        )}
-
-        <button
-          type="button"
-          className="default-btn w-full! md:w-[25.5rem]! mt-6 mb-2"
-          onClick={handleReset}
-        >
-          Menu Principal
-        </button>
+          <button
+            type="button"
+            className="default-btn w-full! md:w-[25.5rem]! mt-6 mb-2"
+            onClick={handleReset}
+          >
+            Menu Principal
+          </button>
+        </>
       </div>
     );
 

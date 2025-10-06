@@ -19,7 +19,8 @@ export default function ReturnSelectorArrows(props: ChartSelectorProps) {
 
   const { profileName, birthChart, returnChart, lunarDerivedChart, progressionChart, updateBirthChart,
     isCombinedWithBirthChart, isCombinedWithReturnChart,
-    updateLunarDerivedChart, updateIsCombinedWithBirthChart, updateIsCombinedWithReturnChart } = useBirthChart();
+    updateLunarDerivedChart, updateIsCombinedWithBirthChart, updateIsCombinedWithReturnChart,
+    updateLoadingNextChart } = useBirthChart();
   const { isMobileBreakPoint } = useScreenDimensions();
   const { chartMenu } = useChartMenu();
   const { archArabicParts, updateSolarReturnParts } = useArabicParts();
@@ -97,17 +98,21 @@ export default function ReturnSelectorArrows(props: ChartSelectorProps) {
       year: jsDate.getFullYear(),
     };
 
-    const data = await apiFetch("return/lunar", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        birthDate: lunarDerivedChart.birthDate,
-        targetDate,
-      }),
-    });
+    try {
+      const data = await apiFetch("return/lunar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          birthDate: lunarDerivedChart.birthDate,
+          targetDate,
+        }),
+      });
 
-    const newLunarDerivedChart = makeLunarDerivedChart(data, initialDate, targetDate);
-    updateLunarDerivedChart?.(newLunarDerivedChart);
+      const newLunarDerivedChart = makeLunarDerivedChart(data, initialDate, targetDate);
+      updateLunarDerivedChart?.(newLunarDerivedChart);
+    } catch (error) {
+      console.error("Erro ao consultar mapa astral:", error);
+    }
   }
 
   async function getProgression(direction: DirectionType) {
@@ -134,20 +139,25 @@ export default function ReturnSelectorArrows(props: ChartSelectorProps) {
         },
         chartType: "progression",
       });
-
     } catch (error) {
       console.error("Erro ao consultar mapa astral:", error);
     }
   }
 
-  const getChart = (direction: DirectionType) => {
-    updateIsCombinedWithBirthChart(false);
-    updateIsCombinedWithReturnChart(false);
+  const getChart = async (direction: DirectionType) => {
+    updateLoadingNextChart(true);
 
-    if (chartMenu === "lunarReturn" || chartMenu === "solarReturn")
-      getReturn(returnChart?.returnType || "solar", direction);
-    else if (chartMenu === "lunarDerivedReturn") getLunarDerivedReturn(direction);
-    else if (chartMenu === "progression") getProgression(direction);
+    setTimeout(async () => {
+      updateIsCombinedWithBirthChart(false);
+      updateIsCombinedWithReturnChart(false);
+
+      if (chartMenu === "lunarReturn" || chartMenu === "solarReturn")
+        await getReturn(returnChart?.returnType || "solar", direction);
+      else if (chartMenu === "lunarDerivedReturn") await getLunarDerivedReturn(direction);
+      else if (chartMenu === "progression") await getProgression(direction);
+
+      updateLoadingNextChart(false);
+    }, 300)
   }
 
   const getMobileTopValue = () => {

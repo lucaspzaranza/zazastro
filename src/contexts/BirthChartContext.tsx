@@ -38,6 +38,9 @@ interface BirthChartContextType {
 
   sinastryChart?: BirthChart;
   updateSinastryChart: (sinastryChart?: BirthChart) => void;
+
+  loadingNextChart: boolean;
+  updateLoadingNextChart: (val: boolean) => void;
 }
 
 const BirthChartContext = createContext<BirthChartContextType | undefined>(
@@ -63,6 +66,7 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
     useState(false);
 
   const [currentCity, setCurrentCity] = useState<SelectedCity | undefined>();
+  const [loadingNextChart, setLoadingNextChart] = useState(false);
 
   const updateIsCombinedWithBirthChart = (val: boolean) => {
     setIsCombinedWithBirthChart(val);
@@ -151,6 +155,10 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
     setCurrentCity(newCity);
   };
 
+  const updateLoadingNextChart = (val: boolean) => {
+    setLoadingNextChart(val);
+  }
+
   return (
     <BirthChartContext.Provider
       value={{
@@ -169,6 +177,8 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
         sinastryChart,
         updateSinastryChart,
         progressionChart,
+        loadingNextChart,
+        updateLoadingNextChart
       }}
     >
       {children}
