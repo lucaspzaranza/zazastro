@@ -24,7 +24,7 @@ import Image from "next/image";
 import { ChartDate } from "./ChartDate";
 import ChartSelectorArrows from "./ChartSelectorArrows";
 import Container from "./Container";
-import { SkeletonTable } from "./skeletons";
+import { SkeletonLine, SkeletonTable } from "./skeletons";
 import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT, SKELETON_LOADER_TIME } from "../utils/constants";
 import Spinner from "./Spinner";
 
@@ -55,7 +55,7 @@ export default function ChartAndData(props: Props) {
   };
 
   const [loading, setLoading] = useState(true);
-  const { isMobileBreakPoint } = useScreenDimensions();
+  const { isMobileBreakPoint, isScreen1366 } = useScreenDimensions();
   const [chartForPlanets, setChartForPlanets] = useState<
     BirthChart | undefined
   >(outerChart ?? innerChart);
@@ -85,6 +85,7 @@ export default function ChartAndData(props: Props) {
   const [useInnerPlanets, setUseInnerPlanets] = useState(true);
   const [useInnerHouses, setUseInnerHouses] = useState(true);
   const [useInnerParts, setUseInnerParts] = useState(true);
+  const [nextChartContentLoaded, setNextChartContentLoaded] = useState(false);
 
   const [planetsAntiscion, setPlanetsAntiscion] = useState<
     Record<PlanetType, boolean>
@@ -160,6 +161,16 @@ export default function ChartAndData(props: Props) {
   }, [innerChart, outerChart]);
 
   useEffect(() => {
+    if (!loadingNextChart) {
+      setChartForPlanets(innerChart);
+      setChartForHouses(innerChart);
+      setNextChartContentLoaded(true);
+    } else {
+      setNextChartContentLoaded(false);
+    }
+  }, [loadingNextChart])
+
+  useEffect(() => {
     if (
       isCombinedWithBirthChart ||
       isCombinedWithReturnChart ||
@@ -217,7 +228,7 @@ export default function ChartAndData(props: Props) {
       <div className="w-full md:min-w-[45rem] flex flex-col items-center justify-center relative">
         {loadingNextChart &&
           <div
-            className={`absolute w-full h-[98%] md:h-[108%] px-3 md:px-0 bg-white/10 backdrop-blur-sm flex flex-col items-center justify-center z-10 
+            className={`absolute w-full h-[55%] top-60 md:top-auto md:h-[108%] px-3 md:px-0 bg-white/10 backdrop-blur-sm flex flex-col items-center justify-center z-10 
               md:rounded-2xl transition-all duration-200 ease-in-out opacity-0 animate-[fadeIn_0.2s_forwards]`}>
             <Spinner size="16" />
             <h2 className="font-bold text-lg pl-10 mt-3">Carregando...</h2>
@@ -290,8 +301,9 @@ export default function ChartAndData(props: Props) {
         {!isMobileBreakPoint() && (
           <div className="md:w-[450px] 2xl:w-[500px] flex flex-col gap-4">
             <Container className="">
-              {loading ?
+              {(loading || loadingNextChart) ?
                 <div className="w-full">
+                  <SkeletonLine width="w-1/3" className="mb-4" />
                   <SkeletonTable rows={8} />
                 </div>
                 :
@@ -314,7 +326,12 @@ export default function ChartAndData(props: Props) {
 
         {isMobileBreakPoint() && (
           <>
-            {loading ? <SkeletonTable rows={9} /> :
+            {(loading || loadingNextChart) ?
+              <div className="w-full">
+                <SkeletonLine width="w-1/3" className="mb-4" />
+                <SkeletonTable rows={8} />
+              </div>
+              :
               <ArabicPartsLayout
                 parts={partsArray}
                 showMenuButtons={true}
@@ -337,177 +354,191 @@ export default function ChartAndData(props: Props) {
   }
 
   function renderPlanetsAndHouses(): JSX.Element {
-    const planetsContent = (
-      <>
-        <h2 className="font-bold self-start text-lg mb-2 mt-[-5px] flex flex-row items-center gap-1">
-          Planetas:
-          <span className="w-fit flex flex-row items-center justify-start gap-1">
-            {showSwitchPartsButton() && (
-              <>
-                <button
-                  title="Alterar entre partes internas e externas"
-                  className="rounded-sm hover:outline-2 outline-offset-4 hover:cursor-pointer active:bg-gray-300"
-                  onClick={() => {
-                    toggleInnerPlanetsVisualization();
-                  }}
-                >
-                  <Image
-                    alt="change"
-                    src="/change.png"
-                    width={18}
-                    height={18}
-                    unoptimized
-                  />
-                </button>
-                {!useInnerPlanets && "(E)"}
-              </>
+    const planetsContent =
+      !nextChartContentLoaded ?
+        <div className="w-full h-full flex flex-col">
+          <SkeletonLine width="w-1/3" className="mb-4" />
+          <SkeletonTable rows={10} cols={isScreen1366() ? 2 : 3}
+            colsWidthArray={isScreen1366() ? ["w-24", "w-36"] : undefined}
+          />
+        </div>
+        :
+        <div className="w-full">
+          <h2 className="font-bold self-start text-lg mb-2 mt-[-5px] flex flex-row items-center gap-1">
+            Planetas:
+            <span className="w-fit flex flex-row items-center justify-start gap-1">
+              {showSwitchPartsButton() && (
+                <>
+                  <button
+                    title="Alterar entre partes internas e externas"
+                    className="rounded-sm hover:outline-2 outline-offset-4 hover:cursor-pointer active:bg-gray-300"
+                    onClick={() => {
+                      toggleInnerPlanetsVisualization();
+                    }}
+                  >
+                    <Image
+                      alt="change"
+                      src="/change.png"
+                      width={18}
+                      height={18}
+                      unoptimized
+                    />
+                  </button>
+                  {!useInnerPlanets && "(E)"}
+                </>
+              )}
+            </span>
+          </h2>
+          <ul className="w-full text-[0.85rem] md:text-[1rem]">
+            {chartForPlanets?.planets?.map(
+              (planet, index) =>
+                chartForPlanets.planetsWithSigns && (
+                  <li
+                    key={index}
+                    className="w-full flex flex-row items-center justify-between xl:gap-2 2xl:gap-0"
+                  >
+                    <div
+                      className={`w-[5.5rem] md:w-[6rem] ${planetsAntiscion[planet.type] ? "antiscion" : ""
+                        }`}
+                    >
+                      {planet.name}
+                    </div>
+
+                    <div className="w-[1.5rem] flex flex-row items-center">
+                      {getPlanetImage(planet.type, {
+                        isRetrograde: planet.isRetrograde,
+                        size: !isMobileBreakPoint()
+                          ? planet.type === "northNode" ||
+                            planet.type === "southNode"
+                            ? 19
+                            : 15
+                          : planet.type === "northNode" ||
+                            planet.type === "southNode"
+                            ? 15
+                            : 13,
+                        isAntiscion: planetsAntiscion[planet.type],
+                      })}
+                      :
+                    </div>
+
+                    <div className="w-[4rem] md:w-[4.5rem] xl:w-[4.5rem] 2xl:w-[4.5rem] text-end flex flex-row items-center justify-end">
+                      {formatSignColor(
+                        planetsAntiscion[planet.type]
+                          ? chartForPlanets.planetsWithSigns[index].antiscion
+                          : chartForPlanets.planetsWithSigns[index].position
+                      )}
+                    </div>
+
+                    <button
+                      title={`${planetsAntiscion[planet.type] ? "Normal" : "Antiscion"}`}
+                      className={`rounded-sm w-[2rem] hidden xl:flex xl:flex-row xl:items-center xl:justify-center 2xl:hidden hover:outline-2 hover:bg-gray-200 active:bg-gray-400 
+                      ${planetsAntiscion[planet.type] ? "antiscion" : ""}`}
+                      onClick={() => {
+                        togglePlanetAntiscion(planet.type);
+                      }}
+                    >
+                      ▶
+                    </button>
+
+                    <div className="w-[10rem] pl-3 md:pl-0 md:w-[11rem] flex flex-row items-center xl:hidden 2xl:flex">
+                      Antiscion:
+                      <span className="w-full text-end">
+                        {formatSignColor(
+                          chartForPlanets.planetsWithSigns[index].antiscion
+                        )}
+                      </span>
+                    </div>
+                  </li>
+                )
             )}
-          </span>
-        </h2>
-        <ul className="w-full text-[0.85rem] md:text-[1rem]">
-          {chartForPlanets?.planets?.map(
-            (planet, index) =>
-              chartForPlanets.planetsWithSigns && (
+          </ul>
+        </div>
+
+    const housesContent =
+      !nextChartContentLoaded ?
+        <div className="w-full h-full flex flex-col">
+          <SkeletonLine width="w-1/3" className="mb-4" />
+          <SkeletonTable rows={11} cols={isScreen1366() ? 2 : 3}
+            colsWidthArray={isScreen1366() ? ["w-24", "w-36"] : undefined}
+          />
+        </div>
+        :
+        <div className="w-full">
+          <h2 className="font-bold self-start text-lg mb-2 flex flex-row items-center gap-1">
+            Casas:
+            <span className="w-fit flex flex-row items-center justify-start gap-1">
+              {showSwitchPartsButton() && (
+                <>
+                  <button
+                    title="Alterar entre partes internas e externas"
+                    className="rounded-sm hover:outline-2 outline-offset-4 hover:cursor-pointer active:bg-gray-300"
+                    onClick={() => {
+                      toggleInnerHousesVisualization();
+                    }}
+                  >
+                    <Image
+                      alt="change"
+                      src="/change.png"
+                      width={18}
+                      height={18}
+                      unoptimized
+                    />
+                  </button>
+                  {!useInnerHouses && "(E)"}
+                </>
+              )}
+            </span>
+          </h2>
+          {chartForHouses && (
+            <ul className="w-full mb-4 text-[0.85rem] md:text-[1rem]">
+              {chartForHouses.housesData.housesWithSigns?.map((house, index) => (
                 <li
                   key={index}
                   className="w-full flex flex-row items-center justify-between xl:gap-2 2xl:gap-0"
                 >
                   <div
-                    className={`w-[5.5rem] md:w-[6rem] ${planetsAntiscion[planet.type] ? "antiscion" : ""
-                      }`}
+                    className={`w-[6.5rem] md:w-[8rem] flex flex-row text-nowrap 
+                        ${!isMobileBreakPoint()
+                        ? ""
+                        : index % 3 === 0
+                          ? ""
+                          : ""
+                      } ${housesAntiscion[`Casa ${index + 1}`] ? "antiscion" : ""
+                      } ${index % 3 === 0 ? "font-bold" : ""}`}
                   >
-                    {planet.name}
+                    Casa {index + 1}
+                    {index % 3 === 0 ? ` (${getHouseLabel(index)})` : ""}:
                   </div>
 
-                  <div className="w-[1.5rem] flex flex-row items-center">
-                    {getPlanetImage(planet.type, {
-                      isRetrograde: planet.isRetrograde,
-                      size: !isMobileBreakPoint()
-                        ? planet.type === "northNode" ||
-                          planet.type === "southNode"
-                          ? 19
-                          : 15
-                        : planet.type === "northNode" ||
-                          planet.type === "southNode"
-                          ? 15
-                          : 13,
-                      isAntiscion: planetsAntiscion[planet.type],
-                    })}
-                    :
-                  </div>
-
-                  <div className="w-[4rem] md:w-[4.5rem] xl:w-[4.5rem] 2xl:w-[4.5rem] text-end flex flex-row items-center justify-end">
-                    {formatSignColor(
-                      planetsAntiscion[planet.type]
-                        ? chartForPlanets.planetsWithSigns[index].antiscion
-                        : chartForPlanets.planetsWithSigns[index].position
-                    )}
+                  <div className="w-[4rem] md:w-[5rem] flex flex-row items-center justify-end">
+                    {!housesAntiscion[`Casa ${index + 1}`]
+                      ? formatSignColor(house)
+                      : getHouseAntiscion(chartForHouses.housesData.house[index])}
                   </div>
 
                   <button
-                    title={`${planetsAntiscion[planet.type] ? "Normal" : "Antiscion"}`}
+                    title={`${housesAntiscion[`Casa ${index + 1}`] ? "Normal" : "Antiscion"}`}
                     className={`rounded-sm w-[2rem] hidden xl:flex xl:flex-row xl:items-center xl:justify-center 2xl:hidden hover:outline-2 hover:bg-gray-200 active:bg-gray-400 
-                      ${planetsAntiscion[planet.type] ? "antiscion" : ""}`}
+                      ${housesAntiscion[`Casa ${index + 1}`] ? "antiscion" : ""
+                      }`}
                     onClick={() => {
-                      togglePlanetAntiscion(planet.type);
+                      toggleHouseAntiscion(`Casa ${index + 1}`);
                     }}
                   >
                     ▶
                   </button>
 
-                  <div className="w-[10rem] pl-3 md:pl-0 md:w-[11rem] flex flex-row items-center xl:hidden 2xl:flex">
+                  <div className="w-[9rem] md:w-[11rem] flex flex-row items-center xl:hidden 2xl:flex">
                     Antiscion:
                     <span className="w-full text-end">
-                      {formatSignColor(
-                        chartForPlanets.planetsWithSigns[index].antiscion
-                      )}
+                      {getHouseAntiscion(chartForHouses.housesData.house[index])}
                     </span>
                   </div>
                 </li>
-              )
+              ))}
+            </ul>
           )}
-        </ul>
-      </>
-    );
-
-    const housesContent = (
-      <>
-        <h2 className="font-bold self-start text-lg mb-2 flex flex-row items-center gap-1">
-          Casas:
-          <span className="w-fit flex flex-row items-center justify-start gap-1">
-            {showSwitchPartsButton() && (
-              <>
-                <button
-                  title="Alterar entre partes internas e externas"
-                  className="rounded-sm hover:outline-2 outline-offset-4 hover:cursor-pointer active:bg-gray-300"
-                  onClick={() => {
-                    toggleInnerHousesVisualization();
-                  }}
-                >
-                  <Image
-                    alt="change"
-                    src="/change.png"
-                    width={18}
-                    height={18}
-                    unoptimized
-                  />
-                </button>
-                {!useInnerHouses && "(E)"}
-              </>
-            )}
-          </span>
-        </h2>
-        {chartForHouses && (
-          <ul className="w-full mb-4 text-[0.85rem] md:text-[1rem]">
-            {chartForHouses.housesData.housesWithSigns?.map((house, index) => (
-              <li
-                key={index}
-                className="w-full flex flex-row items-center justify-between xl:gap-2 2xl:gap-0"
-              >
-                <div
-                  className={`w-[6.5rem] md:w-[8rem] flex flex-row text-nowrap 
-                        ${!isMobileBreakPoint()
-                      ? ""
-                      : index % 3 === 0
-                        ? ""
-                        : ""
-                    } ${housesAntiscion[`Casa ${index + 1}`] ? "antiscion" : ""
-                    } ${index % 3 === 0 ? "font-bold" : ""}`}
-                >
-                  Casa {index + 1}
-                  {index % 3 === 0 ? ` (${getHouseLabel(index)})` : ""}:
-                </div>
-
-                <div className="w-[4rem] md:w-[5rem] flex flex-row items-center justify-end">
-                  {!housesAntiscion[`Casa ${index + 1}`]
-                    ? formatSignColor(house)
-                    : getHouseAntiscion(chartForHouses.housesData.house[index])}
-                </div>
-
-                <button
-                  title={`${housesAntiscion[`Casa ${index + 1}`] ? "Normal" : "Antiscion"}`}
-                  className={`rounded-sm w-[2rem] hidden xl:flex xl:flex-row xl:items-center xl:justify-center 2xl:hidden hover:outline-2 hover:bg-gray-200 active:bg-gray-400 
-                      ${housesAntiscion[`Casa ${index + 1}`] ? "antiscion" : ""
-                    }`}
-                  onClick={() => {
-                    toggleHouseAntiscion(`Casa ${index + 1}`);
-                  }}
-                >
-                  ▶
-                </button>
-
-                <div className="w-[9rem] md:w-[11rem] flex flex-row items-center xl:hidden 2xl:flex">
-                  Antiscion:
-                  <span className="w-full text-end">
-                    {getHouseAntiscion(chartForHouses.housesData.house[index])}
-                  </span>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </>
-    );
+        </div>
 
     return (
       <div className="w-full flex flex-col justify-start gap-2 md:gap-5">

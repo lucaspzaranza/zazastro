@@ -35,6 +35,7 @@ import Image from "next/image";
 import InfoPopup from "./InfoPopup";
 import { SkeletonTable } from "../skeletons";
 import { SKELETON_LOADER_TIME } from "@/app/utils/constants";
+import { useBirthChart } from "@/contexts/BirthChartContext";
 
 export default function AspectsTable({
   aspects,
@@ -92,6 +93,7 @@ export default function AspectsTable({
     useState<TableFilterOptions>();
 
   const { isMobileBreakPoint } = useScreenDimensions();
+  const { loadingNextChart } = useBirthChart();
 
   const distanceValues: AspectDistance[] = [];
   const distanceTypes: AspectDistanceTypeInterface[] = [];
@@ -634,9 +636,9 @@ export default function AspectsTable({
   }
 
   return (
-    loading ? (
+    (loading || loadingNextChart) ? (
       <div className="w-full">
-        <SkeletonTable rows={10} />
+        <SkeletonTable rows={12} />
       </div>) :
       <>
         <div className="w-full flex flex-row items-center justify-between">

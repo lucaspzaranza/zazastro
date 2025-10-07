@@ -146,18 +146,19 @@ export default function ReturnSelectorArrows(props: ChartSelectorProps) {
 
   const getChart = async (direction: DirectionType) => {
     updateLoadingNextChart(true);
+    updateIsCombinedWithBirthChart(false);
+    updateIsCombinedWithReturnChart(false);
 
     setTimeout(async () => {
-      updateIsCombinedWithBirthChart(false);
-      updateIsCombinedWithReturnChart(false);
-
       if (chartMenu === "lunarReturn" || chartMenu === "solarReturn")
         await getReturn(returnChart?.returnType || "solar", direction);
       else if (chartMenu === "lunarDerivedReturn") await getLunarDerivedReturn(direction);
       else if (chartMenu === "progression") await getProgression(direction);
 
-      updateLoadingNextChart(false);
-    }, 300)
+      setTimeout(() => {
+        updateLoadingNextChart(false);
+      }, 200);
+    }, 100);
   }
 
   const getMobileTopValue = () => {
