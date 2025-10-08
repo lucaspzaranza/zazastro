@@ -54,7 +54,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   const ref = useRef<SVGSVGElement>(null);
   const { isMobileBreakPoint } = useScreenDimensions();
   const { isReturnChart, isLunarDerivedReturnChart, isSinastryChart, isProgressionChart } = useChartMenu();
-  const { isMountingChart, updateIsMountingChart } = useBirthChart();
+  const { isMountingChart, updateIsMountingChart, isCombinedWithBirthChart, isCombinedWithReturnChart } = useBirthChart();
   const [testValue] = useState(2.5);
   const [showArabicParts, setShowArabicParts] = useState(false);
   const [showPlanetsAntiscia, setShowPlanetsAntiscia] = useState(false);
@@ -2065,32 +2065,35 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     setShowArabicPartsAntiscia((prev) => !prev);
   };
 
-  let className = "absolute right-[3.75rem]";
+  let className = "absolute right-[4.5rem]";
 
-  if (isReturnChart()) {
-    className = "absolute " + showOuterChart ? "right-28" : "right-20";
-  }
+  if (!isMobileBreakPoint()) {
+    if (isReturnChart())
+      className = "absolute " + showOuterChart ? "right-28" : "right-20";
 
-  if (isSinastryChart()) {
-    className = "absolute right-[6.8rem] top-12"
-  }
+    if (isSinastryChart())
+      className = "absolute right-[6.8rem] top-12"
 
-  if (isProgressionChart()) {
-    className = "mb-2"
-  }
-
-  if (isMobileBreakPoint()) {
+    if (isProgressionChart())
+      className = "";
+  } else {
     className = showOuterChart ? "mb-8" : "mb-6";
+    className += " absolute left-3";
 
-    if (isSinastryChart()) {
+    if (isCombinedWithBirthChart || isCombinedWithReturnChart)
+      className = "absolute left-10 top-4"
+
+    if (isSinastryChart())
       className = "absolute right-10 top-6"
-    }
+
+    if (isProgressionChart())
+      className = "absolute " + (!isCombinedWithBirthChart ? "left-3 top-[-0.75rem]" : "left-9 top-4");
   }
 
   return (
     <div
       className={`w-full flex flex-col justify-center items-center gap-8
-        ${useReturnSelectorArrows ? 'mx-14' : 'mx-10'} ${isProgressionChart() ? 'md:mx-14' : 'mx-0'}`}
+        ${useReturnSelectorArrows ? 'mx-14' : 'mx-10'}`}
     >
       <div className="w-full md:px-4">
         <AstroChartMenu

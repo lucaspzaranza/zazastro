@@ -172,7 +172,7 @@ export default function ReturnSelectorArrows(props: ChartSelectorProps) {
     <div className="relative w-full h-full flex flex-row items-center justify-between">
       <button
         onClick={() => getChart("previous")}
-        className={`absolute ${getMobileTopValue()} md:top-auto outline-2 md:outline-0 left-1 
+        className={`absolute ${getMobileTopValue()} md:top-auto outline-2 md:outline-0 left-2 
           w-[5rem] md:w-[2rem] h-[2rem] mb-3 mr-2 flex flex-row items-center justify-center md:justify-start 
           text-xl hover:outline-2 active:bg-gray-300 rounded-md`}
         title="Retorno anterior"
@@ -186,7 +186,7 @@ export default function ReturnSelectorArrows(props: ChartSelectorProps) {
 
       <button
         onClick={() => getChart("next")}
-        className={`absolute ${getMobileTopValue()} md:top-auto outline-2 md:outline-0 right-1
+        className={`absolute ${getMobileTopValue()} md:top-auto outline-2 md:outline-0 right-2
           w-[5rem] md:w-[2rem] h-[2rem] mb-3 ml-2 flex flex-row items-center justify-center md:justify-end 
           text-xl hover:outline-2 active:bg-gray-300 rounded-md`}
         title="Próximo retorno"

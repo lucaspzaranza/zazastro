@@ -228,10 +228,10 @@ export default function ChartAndData(props: Props) {
 
   function renderChart(): JSX.Element {
     const content = (
-      <div className="w-full md:min-w-[45rem] flex flex-col items-center justify-center relative">
+      <div className="w-full md:min-w-[47rem] flex flex-col items-center justify-center relative">
         {(loadingNextChart || isMountingChart) &&
           <div
-            className={`absolute w-full h-[55%] top-60 md:top-auto md:h-[108%] px-3 md:px-0 bg-white/10 backdrop-blur-sm flex flex-col items-center justify-center z-10 
+            className={`absolute w-full h-[55%] top-0 md:top-auto md:h-[108%] px-3 md:px-0 bg-white/10 backdrop-blur-sm flex flex-col items-center justify-center z-10 
               md:rounded-2xl transition-all duration-200 ease-in-out opacity-0 animate-[fadeIn_0.2s_forwards]`}>
             <Spinner size="16" />
             <h2 className="font-bold text-lg pl-10 mt-3">Carregando...</h2>
