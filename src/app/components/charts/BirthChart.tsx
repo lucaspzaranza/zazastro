@@ -759,7 +759,6 @@ export default function BirthChart() {
         )}
       </>}
 
-
       {/* {_getDebugData()} */}
     </div>
   );

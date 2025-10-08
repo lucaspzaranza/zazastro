@@ -93,7 +93,7 @@ export default function AspectsTable({
     useState<TableFilterOptions>();
 
   const { isMobileBreakPoint } = useScreenDimensions();
-  const { loadingNextChart } = useBirthChart();
+  const { loadingNextChart, isMountingChart } = useBirthChart();
 
   const distanceValues: AspectDistance[] = [];
   const distanceTypes: AspectDistanceTypeInterface[] = [];
@@ -636,7 +636,7 @@ export default function AspectsTable({
   }
 
   return (
-    (loading || loadingNextChart) ? (
+    (loading || loadingNextChart || isMountingChart) ? (
       <div className="w-full">
         <SkeletonTable rows={12} />
       </div>) :
