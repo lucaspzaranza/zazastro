@@ -28,6 +28,7 @@ import AstroChartMenu from "../menus/AstroChartMenu";
 import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 import ReturnSelectorArrows from "../ReturnSelectorArrows";
 import { useChartMenu } from "@/contexts/ChartMenuContext";
+import { useBirthChart } from "@/contexts/BirthChartContext";
 
 const ASPECTS: Aspect[] = [
   { type: "conjunction", angle: 0 },
@@ -52,14 +53,16 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
 
   const ref = useRef<SVGSVGElement>(null);
   const { isMobileBreakPoint } = useScreenDimensions();
-  const { isReturnChart, isLunarDerivedReturnChart, isProgressionChart } = useChartMenu();
+  const { isReturnChart, isLunarDerivedReturnChart, isSinastryChart, isProgressionChart } = useChartMenu();
+  const { isMountingChart, updateIsMountingChart } = useBirthChart();
   const [testValue] = useState(2.5);
   const [showArabicParts, setShowArabicParts] = useState(false);
   const [showPlanetsAntiscia, setShowPlanetsAntiscia] = useState(false);
   const [showArabicPartsAntiscia, setShowArabicPartsAntiscia] = useState(false);
-  const [showOuterchart] = useState(
+  const [showOuterChart, setShowOuterChart] = useState(
     outerPlanets !== undefined && outerHouses !== undefined
   );
+
   const [fixedStarsAspects, setFixedStarAspects] = useState<PlanetAspectData[]>(
     []
   );
@@ -81,10 +84,10 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   // const size = 200; // default: 400
   const size = !isMobileBreakPoint() ? 400 : 370;
   const scaleFactor = !isMobileBreakPoint()
-    ? showOuterchart
+    ? showOuterChart
       ? 1.25
       : 1.5
-    : showOuterchart
+    : showOuterChart
       ? 0.7
       : 0.85;
   const scaledSize = size * scaleFactor;
@@ -975,10 +978,13 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   }
 
   useEffect(() => {
+    setShowOuterChart(outerPlanets !== undefined && outerHouses !== undefined);
+  }, [outerPlanets, outerHouses]);
+
+  useEffect(() => {
     if (!ref.current) return;
     const svg = d3.select(ref.current);
     svg.selectAll("*").remove();
-
     chartElementsForAspect.current = [];
 
     const zodiacSigns = [
@@ -1051,7 +1057,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       .attr("stroke", "black")
       .attr("stroke-width", 1);
 
-    if (showOuterchart) {
+    if (showOuterChart) {
       baseGroup
         .append("circle")
         .attr("r", outerChartBorderRadius)
@@ -1177,7 +1183,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       const y = midRadius * Math.sin(angleRad);
 
       let txt = (j + 1).toString();
-      if (showOuterchart && j % 3 === 0) {
+      if (showOuterChart && j % 3 === 0) {
         // angular house
         txt = angularLabels[j];
       }
@@ -1188,7 +1194,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         .attr("y", y)
         .attr("font-size", 10)
         .attr("text-anchor", "middle")
-        .attr("font-weight", showOuterchart && j % 3 === 0 ? "bold" : "plain")
+        .attr("font-weight", showOuterChart && j % 3 === 0 ? "bold" : "plain")
         .attr("alignment-baseline", "middle")
         .text(txt);
     }
@@ -1201,7 +1207,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     const labelOffset = 25; // distância extra para posicionar o texto
 
     // Linhas externas de grau (a cada 10°)
-    if (!showOuterchart) {
+    if (!showOuterChart) {
       for (let deg = 0; deg < 360; deg += 10) {
         const angleSVG = 360 - deg - 90;
         const rad = (angleSVG * Math.PI) / 180;
@@ -1570,7 +1576,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         .attr("stroke-width", houseLineStrokeWidth(i));
 
       // Só para as casas angulares, adiciona traço e sigla
-      if (!showOuterchart && i % 3 === 0) {
+      if (!showOuterChart && i % 3 === 0) {
         // 1) pequeno traço de continuidade
         const originLineX = outerZodiacRadius * Math.cos(angleRad);
         const originLineY = outerZodiacRadius * Math.sin(angleRad);
@@ -1614,7 +1620,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       });
     }
 
-    if (showOuterchart && outerPlanets) {
+    if (showOuterChart && outerPlanets) {
       outerPlanets.forEach((planet) => {
         const chartElement: ChartElement = {
           id: chartElementsForAspect.current.length,
@@ -1757,7 +1763,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       });
     }
 
-    if (showOuterchart && showArabicParts && outerArabicParts) {
+    if (showOuterChart && showArabicParts && outerArabicParts) {
       arabicPartKeys.forEach((key) => {
         const lot = outerArabicParts[key];
 
@@ -1833,7 +1839,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       });
     }
 
-    if (showOuterchart && showArabicPartsAntiscia && outerArabicParts) {
+    if (showOuterChart && showArabicPartsAntiscia && outerArabicParts) {
       arabicPartKeys.forEach((key) => {
         const lot = outerArabicParts[key];
         if (lot !== undefined && lot.planet) {
@@ -1910,7 +1916,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     }
 
     // Desenha as cúspide das casas do mapa externo
-    if (showOuterchart && outerHouses) {
+    if (showOuterChart && outerHouses) {
       const cuspsOuter = outerHouses.house.map((a) => ((a % 360) + 360) % 360);
 
       // desenha cada cúspide das casas
@@ -1988,6 +1994,10 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       radius: smallInnerRadius,
       lineStartOffset,
     });
+
+    setTimeout(() => {
+      updateIsMountingChart(false);
+    }, 100);
   }, [
     planets,
     housesData,
@@ -1995,6 +2005,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     showPlanetsAntiscia,
     showArabicPartsAntiscia,
     testValue,
+    showOuterChart
   ]);
 
   useEffect(() => {
@@ -2054,15 +2065,32 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     setShowArabicPartsAntiscia((prev) => !prev);
   };
 
-  let containerClasses = showOuterchart ? "mb-16 mt-10" : "mb-4";
+  let className = "absolute right-[3.75rem]";
+
+  if (isReturnChart()) {
+    className = "absolute " + showOuterChart ? "right-28" : "right-20";
+  }
+
+  if (isSinastryChart()) {
+    className = "absolute right-[6.8rem] top-12"
+  }
+
+  if (isProgressionChart()) {
+    className = "mb-2"
+  }
+
   if (isMobileBreakPoint()) {
-    containerClasses = showOuterchart ? "mb-10 mt-5" : "mb-2";
+    className = showOuterChart ? "mb-8" : "mb-6";
+
+    if (isSinastryChart()) {
+      className = "absolute right-10 top-6"
+    }
   }
 
   return (
     <div
       className={`w-full flex flex-col justify-center items-center gap-8
-        ${useReturnSelectorArrows ? 'mx-16' : 'mx-10'} ${isProgressionChart() ? 'md:mx-16' : 'mx-0'}`}
+        ${useReturnSelectorArrows ? 'mx-14' : 'mx-10'} ${isProgressionChart() ? 'md:mx-14' : 'mx-0'}`}
     >
       <div className="w-full md:px-4">
         <AstroChartMenu
@@ -2074,12 +2102,14 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         />
       </div>
 
-      {useReturnSelectorArrows ? (
-        <ReturnSelectorArrows>
-          <svg className={containerClasses} ref={ref}></svg>
-        </ReturnSelectorArrows>
-      ) :
-        <svg className={containerClasses} ref={ref}></svg>}
+      <div className={`relative w-full h-[20rem] md:h-[38rem] ${(isMountingChart ? "opacity-0" : "")}`}>
+        {useReturnSelectorArrows ? (
+          <ReturnSelectorArrows>
+            <svg className={className} ref={ref}></svg>
+          </ReturnSelectorArrows>
+        ) :
+          <svg className={className} ref={ref}></svg>}
+      </div>
     </div>
   );
 };

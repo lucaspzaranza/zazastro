@@ -6,6 +6,8 @@ import {
   getReturnDateRangeString,
 } from "@/utils/chartUtils";
 import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT } from "@/app/utils/constants";
+import { BirthChart } from "@/interfaces/BirthChartInterfaces";
+import { ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 
 export default function ReturnChart() {
   const { profileName } = useBirthChart();
@@ -18,13 +20,11 @@ export default function ReturnChart() {
 
   useEffect(() => {
     setIsSolarReturn(returnChart?.returnType === "solar");
-  }, [returnChart]);
+  }, [returnChart, isCombinedWithBirthChart]);
 
   function handleOnItemsPerPagechanged(newItemsPerPage: number) {
     setTableItemsPerPage(newItemsPerPage);
   }
-
-  if (returnChart === undefined) return;
 
   function getTitle() {
     return `Retorno ${isSolarReturn ? "Solar" : "Lunar"} para 
@@ -34,43 +34,33 @@ export default function ReturnChart() {
     )} - ${profileName}`;
   }
 
+  const getInnerChart = (): BirthChart => !isCombinedWithBirthChart ? returnChart! : birthChart!;
+  const getOuterchart = (): BirthChart | undefined => !isCombinedWithBirthChart ? undefined : returnChart;
+  const getInnerArabicParts = (): ArabicPartsType | undefined =>
+    !isCombinedWithBirthChart ? archArabicParts : arabicParts
+  const getOuterArabicParts = (): ArabicPartsType | undefined =>
+    isCombinedWithBirthChart ? archArabicParts : undefined;
+
   return (
     <div className="w-full flex flex-col items-center justify-center gap-3 mb-4">
       {returnChart && returnChart.timezone && (
         <div className="w-full text-left flex flex-col items-center">
-          {!isCombinedWithBirthChart && returnChart && (
-            <ChartAndData
-              innerChart={returnChart}
-              arabicParts={archArabicParts}
-              tableItemsPerPage={tableItemsPerPage}
-              onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
-              chartDateProps={{
-                chartType: "return",
-                birthChart: returnChart,
-                label: "Retorno",
-              }}
-              title={getTitle()}
-            />
-          )}
-
-          {isCombinedWithBirthChart && birthChart && (
-            <ChartAndData
-              innerChart={birthChart}
-              outerChart={returnChart}
-              arabicParts={arabicParts}
-              outerArabicParts={archArabicParts}
-              tableItemsPerPage={tableItemsPerPage}
-              onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
-              chartDateProps={{
-                chartType: "return",
-                birthChart: returnChart,
-                label: "Retorno",
-              }}
-              title={getTitle()}
-            />
-          )}
+          <ChartAndData
+            innerChart={getInnerChart()}
+            outerChart={getOuterchart()}
+            arabicParts={getInnerArabicParts()}
+            outerArabicParts={getOuterArabicParts()}
+            tableItemsPerPage={tableItemsPerPage}
+            onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
+            chartDateProps={{
+              chartType: "return",
+              birthChart: returnChart,
+              label: "Retorno",
+            }}
+            title={getTitle()}
+          />
         </div>
       )}
-    </div>
+    </div >
   );
 }

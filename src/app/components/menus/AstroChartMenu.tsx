@@ -35,6 +35,8 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
     updateIsCombinedWithBirthChart,
     isCombinedWithReturnChart,
     updateIsCombinedWithReturnChart,
+    isMountingChart,
+    updateIsMountingChart
   } = useBirthChart();
 
   const { chartMenu } = useChartMenu();
@@ -43,7 +45,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
     setPlanetsAntiscia(false);
     setArabicParts(false);
     setArabicPartsAntiscia(false);
-  }, [birthChart, returnChart, lunarDerivedChart, progressionChart]);
+  }, [birthChart, returnChart, lunarDerivedChart, progressionChart, isMountingChart]);
 
   function handleOnCloseLunarModal() {
     setLunarDerivedModal(false);
@@ -122,6 +124,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
               className={className}
               onClick={() => {
                 updateIsCombinedWithBirthChart(!isCombinedWithBirthChart);
+                updateIsMountingChart(true);
               }}
             >
               Combinar com Mapa Natal
@@ -142,6 +145,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
               className={className}
               onClick={() => {
                 updateIsCombinedWithReturnChart(!isCombinedWithReturnChart);
+                updateIsMountingChart(true);
               }}
             >
               Combinar com Retorno Solar
