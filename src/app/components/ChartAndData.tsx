@@ -223,7 +223,7 @@ export default function ChartAndData(props: Props) {
 
   function renderChart(): JSX.Element {
     const content = (
-      <div className="w-full md:min-w-[47rem] flex flex-col items-center justify-center relative">
+      <div className="w-full md:min-w-[46rem] 2xl:min-w-[48rem] flex flex-col items-center justify-center relative">
         {(loadingNextChart || isMountingChart) &&
           <div
             className={`absolute w-full h-full top-0 md:top-auto md:h-[108%] px-3 md:px-0 bg-white/10 backdrop-blur-sm flex flex-col items-center justify-center z-10 

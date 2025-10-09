@@ -93,7 +93,6 @@ export default function BirthChart() {
     }, 300);
 
     return () => clearTimeout(timeout);
-    // }, [chartMenu, activeChart]);
   }, [chartMenu]);
 
   useEffect(() => {
