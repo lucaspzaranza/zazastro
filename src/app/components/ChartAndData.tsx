@@ -1,3 +1,5 @@
+"use client";
+
 import {
   BirthChart,
   ChatDateProps,
@@ -158,7 +160,6 @@ export default function ChartAndData(props: Props) {
   }
 
   useEffect(() => {
-    // console.log('render ChartAndData.tsx');
     setUseInnerPlanets(outerChart === undefined);
     setUseInnerHouses(outerChart === undefined);
   }, [innerChart, outerChart]);
@@ -174,17 +175,11 @@ export default function ChartAndData(props: Props) {
   }, [loadingNextChart])
 
   useEffect(() => {
-    if (
-      isCombinedWithBirthChart ||
-      isCombinedWithReturnChart ||
-      chartMenu === "sinastry"
-    ) {
-      setChartForPlanets(innerChart);
-      setChartForHouses(innerChart);
+    setChartForPlanets(innerChart);
+    setChartForHouses(innerChart);
 
-      setUseInnerPlanets(true);
-      setUseInnerHouses(true);
-    }
+    setUseInnerPlanets(true);
+    setUseInnerHouses(true);
   }, [isCombinedWithBirthChart, isCombinedWithReturnChart, chartMenu]);
 
   useEffect(() => {

@@ -117,6 +117,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
             type="number"
             className="border-2 w-16 p-1 rounded-sm"
             placeholder="Dia"
+            required
             onChange={(e) => {
               if (e.target.value.length > 0) {
                 let val = Number.parseInt(e.target.value);
@@ -131,6 +132,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
           <select
             className="border-2 w-full h-full rounded-sm"
             onChange={(e) => setMonth(Number.parseInt(e.target.value) + 1)}
+            required
           >
             {monthsNames.map((month, index) => (
               <option key={index} value={index}>
@@ -143,6 +145,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
             type="number"
             className="border-2 w-20 p-1 rounded-sm"
             placeholder="Ano"
+            required
             onChange={(e) => {
               if (e.target.value.length > 0) {
                 let val = Number.parseInt(e.target.value);
@@ -158,9 +161,9 @@ export default function LunarDerivedModal(props: LunarModalProps) {
           <button
             type="submit"
             className="default-btn"
-            onClick={() => {
-              makeChart();
-            }}
+          // onClick={() => {
+          //   makeChart();
+          // }}
           >
             Gerar Mapa
           </button>

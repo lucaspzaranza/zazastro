@@ -1,5 +1,5 @@
 import { CgWebsite } from "react-icons/cg";
-import { SiGithub, SiGmail, SiInstagram, SiLinkedin } from "react-icons/si";
+import { SiGithub, SiGmail, SiInstagram, SiLinkedin, SiWhatsapp } from "react-icons/si";
 
 export default function Footer() {
   return (
@@ -30,6 +30,17 @@ export default function Footer() {
           >
             <SiLinkedin size={20} />
             <span className="hidden sm:inline">LinkedIn</span>
+          </a>
+
+          <a
+            href="https://api.whatsapp.com/send?phone=5585991753445"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="LinkedIn - abre em nova aba"
+            className="hover:text-blue-400 transition-colors flex items-center gap-2"
+          >
+            <SiWhatsapp size={20} />
+            <span className="hidden sm:inline">Whatsapp</span>
           </a>
 
           <a
