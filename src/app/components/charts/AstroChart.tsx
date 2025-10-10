@@ -81,7 +81,6 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   const chartElementsForAspect = useRef<ChartElement[]>([]);
   let overlapElements: ChartElementOverlap[] = [];
 
-  // const size = 200; // default: 400
   const size = !isMobileBreakPoint() ? 400 : 370;
   const scaleFactor = !isMobileBreakPoint()
     ? showOuterChart
@@ -191,7 +190,6 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
 
   function nearestElementIsBelowCurrentElement(
     currentElement: ChartElement,
-    currentInwardIndex: number,
     nearestElementOverlapData?: ChartElementOverlap
   ): boolean {
     if (!nearestElementOverlapData) return false;
@@ -200,7 +198,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       nearestElementOverlapData.element.longitude - currentElement.longitude
     );
     return (
-      nearestElementOverlapData.position !== "inward" &&
+      // nearestElementOverlapData.position !== "inward" &&
       distance < inwardZoneRadius
     );
   }
@@ -247,7 +245,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     let loopCount = 0;
 
     let overlappedElements = getOverlappedElementsForChartElement(chartElement);
-    let previousLoopElements = [...overlappedElements];
+    // let previousLoopElements = [...overlappedElements];
 
     while (overlappedElements.length > 0) {
       const elementsFurtherBack = overlappedElements.filter(
@@ -262,10 +260,15 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         chartElement,
         overlappedElements
       );
+
       const nearestOverlapData = getOverlapElement(nearestElement);
+
+      if (chartElement.planetType === "saturn" && !chartElement.isAntiscion && loopCount === 0) {
+        console.log(nearestOverlapData);
+      }
+
       const nearestElIsBelowCurrentEl = nearestElementIsBelowCurrentElement(
         chartElement,
-        inwardIndex,
         nearestOverlapData
       );
 
@@ -277,7 +280,6 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       }
 
       const distance = Math.abs(
-        // nearestElement.longitude - chartElement.longitude
         nearestOverlapData.element.longitude - chartElement.longitude
       );
 
@@ -309,7 +311,6 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         // has elements at only one side
 
         let chartElementLong = chartElement.longitude;
-        // let nearestElementLong = nearestElement.longitude;
         let nearestElementLong = nearestOverlapData.element.longitude;
 
         const upperLimit = chartElementLong + overlapRange;
@@ -331,6 +332,8 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             offset += symbolOffset;
           }
           inwardIndex = belowElement ? belowElement.inwardIndex + 1 : 1;
+
+
         } else if (
           nearestOverlapData?.position !== "inward" &&
           position !== "inward"
@@ -384,24 +387,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         overlappedElements = getOverlappedElementsForChartElement(chartElement);
       }
 
-      if (deepEqual(overlappedElements, previousLoopElements)) {
-        // console.log(
-        //   "mudou foi nada, vamo simbora. loopCount: ",
-        //   loopCount,
-        //   " elemento: ",
-        //   originalChartElement.planetType,
-        //   " antiscion: ",
-        //   originalChartElement.isAntiscion
-        // );
-        break;
-      } else {
-        // if (originalChartElement.planetType === "neptune" && loopCount === 10) {
-        //   console.log(overlappedElements);
-        //   console.log(previousLoopElements);
-        // }
-      }
-
-      previousLoopElements = [...overlappedElements];
+      // previousLoopElements = [...overlappedElements];
       loopCount++;
 
       if (loopCount > 10) {
@@ -1256,6 +1242,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
 
     // Desenha os planetas
     const lineStartOffset = 6; // quão “para dentro” a linha começa
+    // planets?.filter(p => p.type === "sun" || p.type === "moon" || p.type === "saturn")?.forEach((planet) => {
     planets?.forEach((planet) => {
       const chartElement: ChartElement = {
         id: chartElementsForAspect.current.length,
