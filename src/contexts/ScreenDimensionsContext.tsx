@@ -27,15 +27,15 @@ export const ScreenDimensionsContextProvider: React.FC<{
   children: ReactNode;
 }> = ({ children }) => {
   const [screenDimensions, setScreenDimensions] = useState<ScreenDimensions>({
-    width: typeof window !== "undefined" ? window.innerWidth : 0,
-    height: typeof window !== "undefined" ? window.innerHeight : 0,
+    width: typeof window !== "undefined" ? window.screen.width : 0,
+    height: typeof window !== "undefined" ? window.screen.height : 0,
   });
 
   useEffect(() => {
     function handleResize() {
       setScreenDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight,
+        width: window.screen.width,
+        height: window.screen.height,
       });
     }
 
@@ -49,7 +49,7 @@ export const ScreenDimensionsContextProvider: React.FC<{
 
   const isMobileBreakPoint = () => screenDimensions.width < MOBILE_BREAKPOINT;
   const isScreen1366 = () =>
-    screenDimensions.width >= 1366 && screenDimensions.width < 1600;
+    screenDimensions.width >= 1366 && screenDimensions.width < 1580;
 
   return (
     <ScreenDimensionsContext.Provider

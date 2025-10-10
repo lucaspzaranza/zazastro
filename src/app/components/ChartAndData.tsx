@@ -223,7 +223,7 @@ export default function ChartAndData(props: Props) {
 
   function renderChart(): JSX.Element {
     const content = (
-      <div className="w-full md:min-w-[46rem] 2xl:min-w-[48rem] flex flex-col items-center justify-center relative">
+      <div className="w-full md:min-w-[46rem] 2xl:min-w-[46rem] 3xl:min-w-48rem flex flex-col items-center justify-center relative">
         {(loadingNextChart || isMountingChart) &&
           <div
             className={`absolute w-full h-full top-0 md:top-auto md:h-[108%] px-3 md:px-0 bg-white/10 backdrop-blur-sm flex flex-col items-center justify-center z-10 
@@ -297,8 +297,8 @@ export default function ChartAndData(props: Props) {
     return (
       <>
         {!isMobileBreakPoint() && (
-          <div className="md:w-[450px] 2xl:w-[500px] flex flex-col gap-4">
-            <Container className="">
+          <div className="md:w-[450px] 2xl:w-[450px] 3xl:w-[500px] flex flex-col gap-4 2xl:mr-[-15px] 3xl:mr-zero">
+            <Container>
               {(loading || loadingNextChart) ?
                 <div className="w-full">
                   <SkeletonLine width="w-1/3" className="mb-4" />
@@ -429,7 +429,7 @@ export default function ChartAndData(props: Props) {
 
                     <button
                       title={`${planetsAntiscion[planet.type] ? "Normal" : "Antiscion"}`}
-                      className={`rounded-sm w-[2rem] hidden xl:flex xl:flex-row xl:items-center xl:justify-center 2xl:hidden hover:outline-2 hover:bg-gray-200 active:bg-gray-400 
+                      className={`rounded-sm w-[2rem] hidden xl:flex xl:flex-row xl:items-center xl:justify-center 3xl:hidden hover:outline-2 hover:bg-gray-200 active:bg-gray-400 
                       ${planetsAntiscion[planet.type] ? "antiscion" : ""}`}
                       onClick={() => {
                         togglePlanetAntiscion(planet.type);
@@ -438,7 +438,7 @@ export default function ChartAndData(props: Props) {
                       ▶
                     </button>
 
-                    <div className="w-[10rem] pl-3 md:pl-0 md:w-[11rem] flex flex-row items-center xl:hidden 2xl:flex">
+                    <div className="w-[10rem] pl-3 md:pl-0 md:w-[11rem] flex flex-row items-center xl:hidden 3xl:flex">
                       Antiscion:
                       <span className="w-full text-end">
                         {formatSignColor(
@@ -516,7 +516,7 @@ export default function ChartAndData(props: Props) {
 
                   <button
                     title={`${housesAntiscion[`Casa ${index + 1}`] ? "Normal" : "Antiscion"}`}
-                    className={`rounded-sm w-[2rem] hidden xl:flex xl:flex-row xl:items-center xl:justify-center 2xl:hidden hover:outline-2 hover:bg-gray-200 active:bg-gray-400 
+                    className={`rounded-sm w-[2rem] hidden xl:flex xl:flex-row xl:items-center xl:justify-center 3xl:hidden hover:outline-2 hover:bg-gray-200 active:bg-gray-400 
                       ${housesAntiscion[`Casa ${index + 1}`] ? "antiscion" : ""
                       }`}
                     onClick={() => {
@@ -526,7 +526,7 @@ export default function ChartAndData(props: Props) {
                     ▶
                   </button>
 
-                  <div className="w-[9rem] md:w-[11rem] flex flex-row items-center xl:hidden 2xl:flex">
+                  <div className="w-[9rem] md:w-[11rem] flex flex-row items-center xl:hidden 3xl:flex">
                     Antiscion:
                     <span className="w-full text-end">
                       {getHouseAntiscion(chartForHouses.housesData.house[index])}
@@ -542,10 +542,10 @@ export default function ChartAndData(props: Props) {
       <div className="w-full flex flex-col justify-start gap-2 md:gap-5">
         {!isMobileBreakPoint() && (
           <>
-            <Container className="xl:w-full 2xl:w-[29rem] px-6!">
+            <Container className="xl:w-full 2xl:w-[18.5rem] 3xl:w-29rem px-6! 2xl:ml-[-15px] 3xl:ml-zero">
               {planetsContent}
             </Container>
-            <Container className="xl:w-full 2xl:w-[29rem] px-6!">
+            <Container className="xl:w-full 2xl:w-[18.5rem] 3xl:w-29rem px-6! 2xl:ml-[-15px] 3xl:ml-zero">
               {housesContent}
             </Container>
           </>

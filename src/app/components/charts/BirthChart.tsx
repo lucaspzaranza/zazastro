@@ -24,6 +24,7 @@ import SinastryChart from "./SinastryChart";
 import Spinner from "../Spinner";
 import Container from "../Container";
 import SecondaryProgressionChart from "./SecondaryProgressionChart";
+import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 
 type MenuButtonChoice =
   | "home"
@@ -68,6 +69,7 @@ export default function BirthChart() {
   const { chartMenu, addChartMenu, updateChartMenuDirectly } = useChartMenu();
   const { calculateArabicParts, calculateBirthArchArabicParts } =
     useArabicParts();
+  const { screenDimensions } = useScreenDimensions();
 
   const [menu, setMenu] = useState<MenuButtonChoice>("home");
   const [isClientReady, setIsClientReady] = useState(false);
@@ -394,6 +396,12 @@ export default function BirthChart() {
         <span className="font-bold text-xl">:: Debugging ::</span>
 
         <div className="flex flex-col text-start items-start mt-2 gap-1">
+          <span>
+            screenDimensions:{" "}
+            <span className="font-bold text-blue-800">
+              [w: {screenDimensions.width}px x h: {screenDimensions.height}px]
+            </span>
+          </span>
           <span>
             birthChart === undefined:{" "}
             <span className="font-bold text-blue-800">
@@ -776,44 +784,6 @@ export default function BirthChart() {
 
       default: return null;
     }
-
-    // <>
-    //   {birthChart && chartMenu === "birth" && (
-    //     <div className="w-full flex flex-col items-center">
-    //       <div className="w-full text-left flex flex-col items-center mb-4">
-    //         <ChartAndData
-    //           arabicParts={arabicParts}
-    //           title={`Mapa Natal - ${profileName}`}
-    //           innerChart={birthChart}
-    //           chartDateProps={{
-    //             chartType: "birth",
-    //             birthChart,
-    //           }}
-    //         />
-    //       </div>
-    //     </div>
-    //   )}
-
-    //   {returnChart && (chartMenu === "solarReturn" || chartMenu === "lunarReturn") && (
-    //     <ReturnChart />
-    //   )}
-
-    //   {chartMenu === "lunarDerivedReturn" &&
-    //     lunarDerivedChart &&
-    //     archArabicParts &&
-    //     arabicParts && <LunarDerivedChart />}
-
-    //   {chartMenu === "sinastry" && sinastryChart && (
-    //     <SinastryChart
-    //       sinastryChart={sinastryChart}
-    //       sinastryProfileName={sinastryProfile?.name}
-    //     />
-    //   )}
-
-    //   {chartMenu === "progression" && (
-    //     <SecondaryProgressionChart />
-    //   )}
-    // </>
   }
 
   if (!isClientReady) {

@@ -75,3 +75,46 @@ progress {
 .default-btn {
   @apply bg-gradient-to-b from-blue-600 via-blue-800 from-10% to-blue-900 to-100% w-full text-white px-4 py-2 rounded hover:from-blue-600 hover:via-blue-900 hover:to-blue-950 transition-all;
 }
+
+@media (min-width: 1600px) {
+  .\33 xl\:w-29rem {
+    width: 29rem;
+  }
+
+  .\33 xl\:color {
+    background-color: firebrick;
+  }
+
+  .\33 xl\:flex {
+    display: flex;
+  }
+
+  .\33 xl\:hidden {
+    display: none;
+  }
+
+  .\33 xl\:min-w-48rem {
+    min-width: 48rem;
+  }
+
+  .\33 xl\:left-5-5rem {
+    position: absolute;
+    left: 5.5rem;
+  }
+
+  .\33 xl\:ml-zero {
+    margin-left: 0px;
+  }
+
+  .\33 xl\:mr-zero {
+    margin-right: 0px;
+  }
+
+  .\33 xl\:w-\[470px\] {
+    width: 470px;
+  }
+
+  .\33 xl\:w-\[500px\] {
+    width: 500px;
+  }
+}

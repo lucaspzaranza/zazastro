@@ -2065,7 +2065,8 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     setShowArabicPartsAntiscia((prev) => !prev);
   };
 
-  let className = "absolute right-[4.5rem]";
+  let className = `absolute
+    xl:right-[4.5rem] 2xl:left-[4.25rem] 3xl:left-5-5rem`;
 
   if (!isMobileBreakPoint()) {
     if (isReturnChart())

@@ -654,9 +654,9 @@ export default function AspectsTable({
           />
         </div>
 
-        {openInfoPopup && <div className="w-full md:w-[415px] 2xl:w-[470px] relative"><InfoPopup /></div>}
+        {openInfoPopup && <div className="w-full 2xl:w-[420px] 3xl:w-[470px] relative"><InfoPopup /></div>}
 
-        <table className="w-full md:w-[415px] 2xl:w-[470px] flex flex-col border-2 text-[0.75rem] md:text-sm text-center bg-white">
+        <table className="w-full 2xl:w-[420px] 3xl:w-[470px] flex flex-col border-2 text-[0.75rem] md:text-sm text-center bg-white">
           <thead>
             <tr className="flex flex-row justify-between">
               <th className="w-3/4 text-center border-r-2">Elemento</th>
