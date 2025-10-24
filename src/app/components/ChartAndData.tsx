@@ -77,7 +77,7 @@ export default function ChartAndData(props: Props) {
     isMountingChart
   } = useBirthChart();
   const { chartMenu, resetChartMenus, isReturnChart,
-    isSinastryChart, isProgressionChart } = useChartMenu();
+    isSinastryChart, isProgressionChart, isProfectionChart } = useChartMenu();
   const {
     updateArabicParts,
     updateSinastryArabicParts,
@@ -195,6 +195,7 @@ export default function ChartAndData(props: Props) {
     updateBirthChart({ chartType: "return", chartData: undefined });
     updateBirthChart({ chartType: "sinastry", chartData: undefined });
     updateBirthChart({ chartType: "progression", chartData: undefined });
+    updateBirthChart({ chartType: "profection", chartData: undefined });
     updateLunarDerivedChart(undefined);
     updateArabicParts(undefined);
     updateArchArabicParts(undefined);
@@ -257,7 +258,7 @@ export default function ChartAndData(props: Props) {
                 outerArabicParts,
                 fixedStars: innerChart.fixedStars,
                 onUpdateAspectsData: handleOnUpdateAspectsData,
-                useReturnSelectorArrows: isReturnChart() || isProgressionChart(),
+                useReturnSelectorArrows: isReturnChart() || isProgressionChart() || isProfectionChart(),
               }}
             />
           )}

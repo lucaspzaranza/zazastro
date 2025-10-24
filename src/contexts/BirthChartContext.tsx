@@ -27,6 +27,7 @@ interface BirthChartContextType {
   updateLunarDerivedChart: (lunarDerivedChart?: BirthChart) => void;
 
   progressionChart?: BirthChart;
+  profectionChart?: BirthChart;
 
   isCombinedWithBirthChart: boolean;
   updateIsCombinedWithBirthChart: (val: boolean) => void;
@@ -63,6 +64,7 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
     BirthChart | undefined
   >();
   const [sinastryChart, setSinastryChart] = useState<BirthChart | undefined>();
+  const [profectionChart, setProfectionChart] = useState<BirthChart | undefined>();
   const [isCombinedWithBirthChart, setIsCombinedWithBirthChart] =
     useState(false);
   const [isCombinedWithReturnChart, setIsCombinedWithReturnChart] =
@@ -145,6 +147,7 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
     else if (chartType === "return") setReturnChart(chartObject);
     else if (chartType === "sinastry") setSinastryChart(chartObject);
     else if (chartType === "progression") setProgressionChart(chartObject);
+    else if (chartType === "profection") setProfectionChart(chartObject);
   };
 
   const updateLunarDerivedChart = (lunarChart?: BirthChart) => {
@@ -189,6 +192,7 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
         updateLoadingNextChart,
         isMountingChart,
         updateIsMountingChart,
+        profectionChart,
       }}
     >
       {children}

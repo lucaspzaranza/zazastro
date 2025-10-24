@@ -5,7 +5,7 @@ import React, { useEffect } from "react";
 import { MdKeyboardDoubleArrowLeft, MdKeyboardDoubleArrowRight } from "react-icons/md";
 import { apiFetch } from "../utils/api";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
-import { makeLunarDerivedChart } from "../utils/chartUtils";
+import { getProfectionChart, makeLunarDerivedChart } from "../utils/chartUtils";
 import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 
 interface ChartSelectorProps {
@@ -17,7 +17,7 @@ type DirectionType = "previous" | "next";
 export default function ReturnSelectorArrows(props: ChartSelectorProps) {
   const { children } = props;
 
-  const { profileName, birthChart, returnChart, lunarDerivedChart, progressionChart, updateBirthChart,
+  const { profileName, birthChart, returnChart, lunarDerivedChart, progressionChart, profectionChart, updateBirthChart,
     isCombinedWithBirthChart, isCombinedWithReturnChart,
     updateLunarDerivedChart, updateIsCombinedWithBirthChart, updateIsCombinedWithReturnChart,
     updateLoadingNextChart } = useBirthChart();
@@ -144,6 +144,19 @@ export default function ReturnSelectorArrows(props: ChartSelectorProps) {
     }
   }
 
+  function getProfection(direction: DirectionType) {
+    if (!profectionChart) return;
+
+    const profectedChart = getProfectionChart(profectionChart, direction === "previous" ? -1 : 1);
+
+    updateBirthChart({
+      chartData: {
+        ...profectedChart,
+      },
+      chartType: "profection",
+    });
+  }
+
   const getChart = async (direction: DirectionType) => {
     updateLoadingNextChart(true);
     updateIsCombinedWithBirthChart(false);
@@ -154,6 +167,7 @@ export default function ReturnSelectorArrows(props: ChartSelectorProps) {
         await getReturn(returnChart?.returnType || "solar", direction);
       else if (chartMenu === "lunarDerivedReturn") await getLunarDerivedReturn(direction);
       else if (chartMenu === "progression") await getProgression(direction);
+      else if (chartMenu === "profection") getProfection(direction);
 
       setTimeout(() => {
         updateLoadingNextChart(false);

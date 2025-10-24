@@ -31,6 +31,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
     returnChart,
     lunarDerivedChart,
     progressionChart,
+    profectionChart,
     isCombinedWithBirthChart,
     updateIsCombinedWithBirthChart,
     isCombinedWithReturnChart,
@@ -45,7 +46,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
     setPlanetsAntiscia(false);
     setArabicParts(false);
     setArabicPartsAntiscia(false);
-  }, [birthChart, returnChart, lunarDerivedChart, progressionChart, isMountingChart]);
+  }, [birthChart, returnChart, lunarDerivedChart, progressionChart, profectionChart, isMountingChart]);
 
   function handleOnCloseLunarModal() {
     setLunarDerivedModal(false);

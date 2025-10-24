@@ -4,12 +4,16 @@ import { useBirthChart } from "@/contexts/BirthChartContext";
 import { JSX, useEffect, useRef, useState } from "react";
 import {
   convertDegMinToDecimal,
+  getHousesProfection,
+  getPlanetsProfection,
+  getProfectionChart,
   monthsNames,
 } from "../../utils/chartUtils";
 import {
   BirthChartProfile,
   BirthDate,
   ReturnChartType,
+  BirthChart as BirthChartType
 } from "@/interfaces/BirthChartInterfaces";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import ChartAndData from ".././ChartAndData";
@@ -25,6 +29,7 @@ import Spinner from "../Spinner";
 import Container from "../Container";
 import SecondaryProgressionChart from "./SecondaryProgressionChart";
 import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
+import ProfectionChart from "./ProfectionChart";
 
 type MenuButtonChoice =
   | "home"
@@ -33,7 +38,8 @@ type MenuButtonChoice =
   | "solarReturn"
   | "lunarReturn"
   | "sinastry"
-  | "secondaryProgressions";
+  | "secondaryProgressions"
+  | "profection";
 
 export default function BirthChart() {
   const [loading, setLoading] = useState(false);
@@ -43,6 +49,7 @@ export default function BirthChart() {
     returnChart,
     lunarDerivedChart,
     progressionChart,
+    profectionChart,
     updateBirthChart,
     currentCity,
     updateCurrentCity,
@@ -64,6 +71,10 @@ export default function BirthChart() {
     undefined
   );
 
+  const [profectionYear, setProfectionYear] = useState<number | undefined>(
+    undefined
+  );
+
   const firstProfileSetAtBeggining = useRef(false);
 
   const { chartMenu, addChartMenu, updateChartMenuDirectly } = useChartMenu();
@@ -79,6 +90,7 @@ export default function BirthChart() {
   const solarReturnForm = useRef<HTMLFormElement>(null);
   const lunarReturnForm = useRef<HTMLFormElement>(null);
   const progressionForm = useRef<HTMLFormElement>(null);
+  const profectionForm = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     setIsClientReady(true);
@@ -111,6 +123,10 @@ export default function BirthChart() {
   useEffect(() => {
     if (birthChart) {
       calculateArabicParts(birthChart, "birth");
+
+      if (menu === "profection") {
+        makeProfection();
+      }
     }
   }, [birthChart]);
 
@@ -143,6 +159,12 @@ export default function BirthChart() {
       calculateArabicParts(sinastryChart, "sinastry");
     }
   }, [sinastryChart]);
+
+  useEffect(() => {
+    if (profectionChart) {
+      calculateBirthArchArabicParts(profectionChart.housesData.ascendant);
+    }
+  }, [profectionChart]);
 
   useEffect(() => {
     if (menu === "home") {
@@ -341,6 +363,7 @@ export default function BirthChart() {
     else if (menu === "sinastry")
       return "Escolha os mapas a serem combinados em sinastria";
     else if (menu === "secondaryProgressions") return "Progressões Secundárias";
+    else if (menu === "profection") return "Profecção Anual";
 
     return "Sem título";
   }
@@ -388,6 +411,31 @@ export default function BirthChart() {
     } finally {
       setLoading(false);
     }
+  }
+
+  function makeProfection() {
+    setLoading(true);
+
+    if (!birthChart) {
+      setLoading(false);
+      return;
+    }
+
+    const profectedChart = getProfectionChart(birthChart, profectionYear || 0);
+
+    updateBirthChart({
+      chartData: {
+        ...profectedChart,
+      },
+      profileName: chartProfile?.name,
+      chartType: "profection",
+    });
+
+    const chartType: ChartMenuType = "profection";
+    addChartMenu(chartType);
+    updateChartMenuDirectly(chartType);
+    setLoading(false);
+    setProfectionYear(undefined);
   }
 
   function _getDebugData(): JSX.Element {
@@ -448,6 +496,7 @@ export default function BirthChart() {
     if ((menu === "solarReturn" || menu === "lunarReturn") && returnChart) return true;
     if (menu === "sinastry" && sinastryChart) return true;
     if (menu === "secondaryProgressions" && progressionChart && birthChart) return true;
+    if (menu === "profection" && profectionChart && birthChart) return true;
 
     return false;
   }
@@ -494,6 +543,13 @@ export default function BirthChart() {
               onClick={() => setMenu("secondaryProgressions")}
             >
               Progressão Secundária
+            </button>
+
+            <button
+              className="default-btn"
+              onClick={() => setMenu("profection")}
+            >
+              Profecção
             </button>
           </div>
         )}
@@ -726,6 +782,51 @@ export default function BirthChart() {
           </form>
         )}
 
+        {menu === "profection" && (
+          <form
+            ref={profectionForm}
+            className="w-full flex flex-col justify-between gap-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              getBirthChart();
+            }}
+          >
+            <span>Selecione o mapa:</span>
+            <PresavedChartsDropdown
+              onChange={(profile) => setChartProfile(profile)}
+            />
+
+            <div className="flex flex-row items-center gap-2">
+              <label className="text-nowrap">Número de anos:</label>
+              <input
+                required
+                type="number"
+                placeholder="ex: 30"
+                className="w-full border-2 p-1 rounded-sm"
+                value={profectionYear ?? ""}
+                onChange={(e) => {
+                  const parsed = Number.parseInt(e.target.value);
+                  if (Number.isNaN(parsed)) {
+                    setProfectionYear(undefined);
+                    return;
+                  }
+
+                  let val = parsed;
+                  if (val < 0) val = 0;
+                  setProfectionYear(val);
+                }}
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="default-btn"
+            >
+              Gerar Profecção
+            </button>
+          </form>
+        )}
+
         {menu !== "home" && (
           <button
             className="default-btn"
@@ -781,6 +882,9 @@ export default function BirthChart() {
 
       case "progression":
         return <SecondaryProgressionChart />;
+
+      case "profection":
+        return <ProfectionChart />;
 
       default: return null;
     }

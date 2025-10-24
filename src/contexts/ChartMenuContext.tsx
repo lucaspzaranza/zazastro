@@ -6,7 +6,8 @@ export type ChartMenuType =
   | "lunarReturn"
   | "lunarDerivedReturn"
   | "progression"
-  | "sinastry";
+  | "sinastry"
+  | "profection";
 
 interface ChartMenuContextType {
   chartMenu: ChartMenuType;
@@ -23,6 +24,7 @@ interface ChartMenuContextType {
   isSinastryChart: () => boolean;
   isLunarDerivedReturnChart: () => boolean;
   isProgressionChart: () => boolean;
+  isProfectionChart: () => boolean;
 }
 
 const ChartMenuContext = createContext<ChartMenuContextType | undefined>(
@@ -96,6 +98,10 @@ export const ChartMenuContextProvider: React.FC<{ children: ReactNode }> = ({
     return chartMenu === "sinastry";
   }
 
+  const isProfectionChart = () => {
+    return chartMenu === "profection";
+  }
+
   return (
     <ChartMenuContext.Provider
       value={{
@@ -112,7 +118,8 @@ export const ChartMenuContextProvider: React.FC<{ children: ReactNode }> = ({
         isReturnChart,
         isLunarDerivedReturnChart,
         isProgressionChart,
-        isSinastryChart
+        isSinastryChart,
+        isProfectionChart
       }}
     >
       {children}

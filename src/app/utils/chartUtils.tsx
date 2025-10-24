@@ -559,3 +559,39 @@ export function makeLunarDerivedChart(data: any, birthDate: BirthDate, targetDat
     })),
   };
 }
+
+export const getHousesProfection = (houses: number[], years: number) => {
+  const offset = (years * 30) % 360;
+  return houses.map(h => ((h + offset) % 360 + 360) % 360);
+}
+
+export const getPlanetsProfection = (planets: Planet[], years: number): Planet[] => {
+  const offset = (years * 30) % 360;
+  return planets.map(p => ({
+    ...p,
+    longitude: ((p.longitude + offset) % 360 + 360) % 360,
+    longitudeRaw: ((p.longitudeRaw + offset) % 360 + 360) % 360
+  }));
+}
+
+export const getProfectionChart = (birthChart: BirthChart, profectionYear: number) => {
+  const profectedHousesData = getHousesProfection(birthChart.housesData.house, profectionYear);
+  const profectedPlanetsData = getPlanetsProfection(birthChart.planets, profectionYear);
+
+  const profectedChart: BirthChart = {
+    ...birthChart,
+    birthDate: {
+      ...birthChart.birthDate,
+      year: profectionYear ? birthChart.birthDate.year + profectionYear : birthChart.birthDate.year,
+    },
+    planets: profectedPlanetsData,
+    housesData: {
+      ...birthChart.housesData,
+      ascendant: profectedHousesData[0],
+      mc: profectedHousesData[9],
+      house: profectedHousesData,
+    },
+  }
+
+  return profectedChart;
+}

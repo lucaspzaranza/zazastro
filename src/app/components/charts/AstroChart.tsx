@@ -53,7 +53,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
 
   const ref = useRef<SVGSVGElement>(null);
   const { isMobileBreakPoint } = useScreenDimensions();
-  const { isReturnChart, isLunarDerivedReturnChart, isSinastryChart, isProgressionChart } = useChartMenu();
+  const { isReturnChart, isLunarDerivedReturnChart, isSinastryChart, isProgressionChart, isProfectionChart } = useChartMenu();
   const { isMountingChart, updateIsMountingChart, isCombinedWithBirthChart, isCombinedWithReturnChart } = useBirthChart();
   const [testValue] = useState(2.5);
   const [showArabicParts, setShowArabicParts] = useState(false);
@@ -2062,7 +2062,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     if (isSinastryChart())
       className = "absolute right-[6.8rem] top-12"
 
-    if (isProgressionChart())
+    if (isProgressionChart() || isProfectionChart())
       className = "";
   } else {
     className = showOuterChart ? "mb-8" : "mb-6";
@@ -2088,7 +2088,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
           togglePlanetsAntiscia={toggleAntiscia}
           toggleArabicParts={toggleArabicParts}
           toggleArabicPartsAntiscia={toggleArabicPartsAntiscia}
-          toggleCombineWithBirthChart={isReturnChart() || isProgressionChart()}
+          toggleCombineWithBirthChart={isReturnChart() || isProgressionChart() || isProfectionChart()}
           toggleCombineWithReturnChart={isLunarDerivedReturnChart()}
         />
       </div>

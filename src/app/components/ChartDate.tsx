@@ -10,7 +10,7 @@ export const ChartDate = (props: ChatDateProps) => {
   useEffect(() => {
     if (birthChart === undefined) return;
 
-    if (chartType === "birth") {
+    if (chartType === "birth" || chartType === "profection") {
       const convertedTime = getHourAndMinute(
         Number.parseFloat(birthChart.birthDate.time)
       );
@@ -21,7 +21,8 @@ export const ChartDate = (props: ChatDateProps) => {
       };
 
       setDate(transformedDate);
-    } else if (birthChart.timezone) {
+    }
+    else if (birthChart.timezone) {
       const returnTime = birthChart.returnTime;
       const returnDate = moment.tz(returnTime, birthChart.timezone);
       setDate({
@@ -45,7 +46,13 @@ export const ChartDate = (props: ChatDateProps) => {
 
   if (date === undefined) return;
 
-  return (
+  if (chartType === "profection")
+    return <div className="text-[0.9rem] text-center md:text-[1rem] font-bold">
+      <p>
+        Profecção para o ano {date.year}
+      </p>
+    </div>
+  else return (
     <div className="text-[0.9rem] text-center md:text-[1rem] font-bold">
       <p>
         {label && <label>{label}: </label>}
