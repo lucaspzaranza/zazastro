@@ -11,7 +11,7 @@ export default function Footer() {
 
         <div className="flex gap-6 text-lg">
           <a
-            href="https://instagram.com/lucaspzaranza"
+            href="https://instagram.com/lucas.zaranza"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Instagram - abre em nova aba"
@@ -53,7 +53,7 @@ export default function Footer() {
           </a>
 
           <a
-            href="https://lucasz.vercel.app/"
+            href="https://www.lucaszaranza.com.br/"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Website pessoal"
