@@ -2,6 +2,7 @@ import {
   decimalToDegreesMinutes,
   getAntiscion,
   getDegreeAndSign,
+  HOUSE_SYSTEMS,
 } from "@/app/utils/chartUtils";
 import {
   BirthChart,
@@ -9,6 +10,7 @@ import {
   planetTypes,
   SelectedCity,
 } from "@/interfaces/BirthChartInterfaces";
+import { HouseSystem } from "@/types/HouseSystem";
 
 import React, { createContext, useState, useContext, ReactNode } from "react";
 
@@ -45,6 +47,9 @@ interface BirthChartContextType {
 
   isMountingChart: boolean;
   updateIsMountingChart: (val: boolean) => void;
+
+  houseSystem?: HouseSystem;
+  updateHouseSystem?: (houseSystem: HouseSystem) => void;
 }
 
 const BirthChartContext = createContext<BirthChartContextType | undefined>(
@@ -73,7 +78,7 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
   const [currentCity, setCurrentCity] = useState<SelectedCity | undefined>();
   const [loadingNextChart, setLoadingNextChart] = useState(false);
   const [isMountingChart, setIsMountingChart] = useState(false);
-
+  const [houseSystem, setHouseSystem] = useState<HouseSystem | undefined>('placidus');
   const updateIsCombinedWithBirthChart = (val: boolean) => {
     setIsCombinedWithBirthChart(val);
   };
@@ -161,7 +166,7 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
   const selectCity = (selectedCity?: SelectedCity) => {
     const cityName = selectedCity?.name?.split(",")[0];
 
-    const cityObj: SelectedCity | undefined = selectedCity? {
+    const cityObj: SelectedCity | undefined = selectedCity ? {
       ...selectedCity,
       name: cityName,
     } : undefined;
@@ -175,6 +180,10 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
 
   const updateIsMountingChart = (val: boolean) => {
     setIsMountingChart(val);
+  }
+
+  const updateHouseSystem = (houseSystem: HouseSystem) => {
+    setHouseSystem(houseSystem);
   }
 
   return (
@@ -200,6 +209,8 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
         isMountingChart,
         updateIsMountingChart,
         profectionChart,
+        houseSystem,
+        updateHouseSystem,
       }}
     >
       {children}

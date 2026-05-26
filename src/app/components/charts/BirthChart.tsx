@@ -31,6 +31,7 @@ import SecondaryProgressionChart from "./SecondaryProgressionChart";
 import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 import ProfectionChart from "./ProfectionChart";
 import CitySearch from "../CitySearch";
+import HouseSystemDropdown from "../HouseSystemDropdown";
 
 type MenuButtonChoice =
   | "home"
@@ -56,6 +57,7 @@ export default function BirthChart() {
     currentCity,
     selectCity,
     sinastryChart,
+    houseSystem,
   } = useBirthChart();
   const { profiles } = useProfiles();
   const { arabicParts, archArabicParts } = useArabicParts();
@@ -189,6 +191,8 @@ export default function BirthChart() {
       setChartProfile(chartProfileToOverwrite);
     }
 
+    console.log(houseSystem);
+
     if (chartProfileToOverwrite?.birthDate?.coordinates)
       selectCity(chartProfileToOverwrite?.birthDate?.coordinates);
 
@@ -198,7 +202,7 @@ export default function BirthChart() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           birthDate:
-            chartProfileToOverwrite?.birthDate ?? chartProfile?.birthDate,
+            { ...chartProfileToOverwrite?.birthDate ?? chartProfile?.birthDate, houseSystem }
         }),
       });
 
@@ -839,12 +843,14 @@ export default function BirthChart() {
             <CitySearch
               onSelect={selectCity}
             />
+            <HouseSystemDropdown />
             <button
               className="default-btn"
               onClick={() => getMomentBirthChart()}
             >
               Gerar Mapa
             </button>
+
           </>
         )}
 

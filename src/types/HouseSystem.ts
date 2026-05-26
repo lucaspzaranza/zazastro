@@ -1,0 +1,1 @@
+export type HouseSystem = 'placidus' | 'regiomontanus' | 'campanus' | 'wholeSign' | 'equal' | 'porphyry';

@@ -14,6 +14,7 @@ import CitySearch from "../CitySearch";
 import { useProfiles } from "@/contexts/ProfilesContext";
 import { useBirthChart } from "@/contexts/BirthChartContext";
 import Image from "next/image";
+import HouseSystemDropdown from "../HouseSystemDropdown";
 
 interface BirthChartFormProps {
   currentBirthDate?: BirthDate;
@@ -153,13 +154,16 @@ export default function BirthChartForm(props: BirthChartFormProps) {
       )}
 
       {menu === 0 && !editProfile && !showDeleteProfileMenu && (
-        <PresavedChartsDropdown
-          onChange={(newProfile) => {
-            if (newProfile) {
-              setProfile(newProfile);
-            }
-          }}
-        />
+        <>
+          <PresavedChartsDropdown
+            onChange={(newProfile) => {
+              if (newProfile) {
+                setProfile(newProfile);
+              }
+            }}
+          />
+          <HouseSystemDropdown />
+        </>
       )}
 
       {((menu === 1 && !editProfile) || (menu === 0 && editProfile)) && (
@@ -275,6 +279,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
             }
             onSelect={selectCity}
           />
+          <HouseSystemDropdown />
         </>
       )}
 
@@ -307,6 +312,8 @@ export default function BirthChartForm(props: BirthChartFormProps) {
           </button>
         </div>
       )}
+
+
 
       {!showDeleteProfileMenu && !editProfile && (
         <button

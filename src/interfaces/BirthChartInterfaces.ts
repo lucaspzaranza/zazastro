@@ -39,6 +39,7 @@ export interface BirthDate {
   year: number;
   time: string;
   coordinates: SelectedCity;
+  houseSystem?: string;
 }
 
 export interface BirthChartProfile {

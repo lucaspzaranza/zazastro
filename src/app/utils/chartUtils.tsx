@@ -13,6 +13,7 @@ import {
   planetTypes,
   ReturnChartType,
 } from "@/interfaces/BirthChartInterfaces";
+import { HouseSystem } from "@/types/HouseSystem";
 import Image from "next/image";
 
 export const allSigns = [
@@ -134,6 +135,16 @@ export const fixedNames = {
   houseName: "house",
   outerKeyPrefix: "outer",
 };
+
+export const HOUSE_SYSTEMS: Record<HouseSystem, string> = {
+  placidus: "P",
+  regiomontanus: "R",
+  wholeSign: "W",
+  campanus: "C",
+  equal: "E",
+  porphyry: "O",
+};
+
 
 export const arabicPartCalculatorItems: Record<
   string,
