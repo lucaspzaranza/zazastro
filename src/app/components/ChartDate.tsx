@@ -1,11 +1,13 @@
 import { BirthDate, ChatDateProps } from "@/interfaces/BirthChartInterfaces";
 import moment from "moment-timezone";
 import { useEffect, useState } from "react";
-import { getHourAndMinute } from "../utils/chartUtils";
+import { getHourAndMinute, getHouseSystemLabel } from "../utils/chartUtils";
+import { useBirthChart } from "@/contexts/BirthChartContext";
 
 export const ChartDate = (props: ChatDateProps) => {
   const { chartType, birthChart, label } = props;
   const [date, setDate] = useState<BirthDate | undefined>();
+  const { houseSystem } = useBirthChart();
 
   useEffect(() => {
     if (birthChart === undefined) return;
@@ -49,7 +51,7 @@ export const ChartDate = (props: ChatDateProps) => {
   if (chartType === "profection")
     return <div className="text-[0.9rem] text-center md:text-[1rem] font-bold">
       <p>
-        Profecção para o ano {date.year}
+        Profecção para o ano {date.year} ({getHouseSystemLabel(houseSystem ?? "placidus")})
       </p>
     </div>
   else return (
@@ -60,7 +62,7 @@ export const ChartDate = (props: ChatDateProps) => {
         {date?.month.toString().padStart(2, "0")}/{date?.year} -{" "}
         {formatTime(date.time ?? "00:00")}
         &nbsp;-&nbsp;
-        {date?.coordinates.name}
+        {date?.coordinates.name} ({getHouseSystemLabel(houseSystem ?? "placidus")})
       </p>
     </div>
   );

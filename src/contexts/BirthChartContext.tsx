@@ -49,7 +49,7 @@ interface BirthChartContextType {
   updateIsMountingChart: (val: boolean) => void;
 
   houseSystem?: HouseSystem;
-  updateHouseSystem?: (houseSystem: HouseSystem) => void;
+  updateHouseSystem: (houseSystem: HouseSystem) => void;
 }
 
 const BirthChartContext = createContext<BirthChartContextType | undefined>(

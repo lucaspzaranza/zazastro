@@ -32,6 +32,7 @@ import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 import ProfectionChart from "./ProfectionChart";
 import CitySearch from "../CitySearch";
 import HouseSystemDropdown from "../HouseSystemDropdown";
+import { HouseSystem } from "@/types/HouseSystem";
 
 type MenuButtonChoice =
   | "home"
@@ -58,6 +59,7 @@ export default function BirthChart() {
     selectCity,
     sinastryChart,
     houseSystem,
+    updateHouseSystem
   } = useBirthChart();
   const { profiles } = useProfiles();
   const { arabicParts, archArabicParts } = useArabicParts();
@@ -172,6 +174,7 @@ export default function BirthChart() {
 
   useEffect(() => {
     if (menu === "home") {
+      updateHouseSystem("placidus" as HouseSystem);
       firstProfileSetAtBeggining.current = false;
       setChartProfile(profiles[0]);
       setSinastryProfile(profiles[0]);

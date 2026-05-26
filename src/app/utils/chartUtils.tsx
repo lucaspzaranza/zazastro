@@ -611,3 +611,5 @@ export const getProfectionChart = (birthChart: BirthChart, profectionYear: numbe
 
   return profectedChart;
 }
+
+export const getHouseSystemLabel = (houseSystem: HouseSystem) => houseSystem.charAt(0).toUpperCase() + houseSystem.slice(1);
