@@ -1,15 +1,16 @@
+import { useTranslations } from "next-intl";
 import Image from "next/image";
-import React from "react";
 
 export default function InfoPopup() {
   const aspectImgSize = 15;
+  const t = useTranslations();
 
   return (
     <div className="absolute w-full bg-white border-2 z-10 flex flex-col gap-1">
-      <h2 className="text-lg text-center font-bold border-b-2">Legenda</h2>
+      <h2 className="text-lg text-center font-bold border-b-2">{t("aspects.legend")}</h2>
 
       <div className="p-2 flex flex-col gap-1">
-        <h2 className="text-sm md:text-[1rem] font-bold">Aspectos:</h2>
+        <h2 className="text-sm md:text-[1rem] font-bold">{t("aspects.aspects")}:</h2>
         <div className="grid grid-cols-3 text-[1rem]">
           <div className="flex flex-row items-center justify-start">
             <Image
@@ -19,7 +20,7 @@ export default function InfoPopup() {
               height={aspectImgSize}
               unoptimized
             />
-            <span className="pl-2">Sextil</span>
+            <span className="pl-2">{t("aspects.sextile")}</span>
           </div>
 
           <div className="flex flex-row items-center justify-start">
@@ -30,7 +31,7 @@ export default function InfoPopup() {
               height={aspectImgSize}
               unoptimized
             />
-            <span className="pl-2">Quadratura</span>
+            <span className="pl-2">{t("aspects.square")}</span>
           </div>
 
           <div className="flex flex-row items-center justify-end md:justify-start">
@@ -41,7 +42,7 @@ export default function InfoPopup() {
               height={aspectImgSize}
               unoptimized
             />
-            <span className="pl-2">Trígono</span>
+            <span className="pl-2">{t("aspects.trine")}</span>
           </div>
 
           <div className="flex flex-row items-center justify-start">
@@ -52,7 +53,7 @@ export default function InfoPopup() {
               height={aspectImgSize}
               unoptimized
             />
-            <span className="pl-2">Oposição</span>
+            <span className="pl-2">{t("aspects.opposition")}</span>
           </div>
 
           <div className="flex flex-row items-center justify-start">
@@ -63,15 +64,15 @@ export default function InfoPopup() {
               height={aspectImgSize}
               unoptimized
             />
-            <span className="pl-2">Conjunção</span>
+            <span className="pl-2">{t("aspects.conjunction")}</span>
           </div>
         </div>
-        <h2 className="text-sm md:text-[1rem] font-bold">Elementos:</h2>
-        <div>(C): Casa astrológica</div>
-        <div>(E): Elementos do mapa externo</div>
-        <h2 className="text-sm md:text-[1rem] font-bold">Tipo de aspecto:</h2>
-        <div>(A): Aplicativo</div>
-        <div>(S): Separativo</div>
+        <h2 className="text-sm md:text-[1rem] font-bold">{t("aspects.elements")}:</h2>
+        <div>{t("aspects.houseInitial")}: {t("aspects.house")}</div>
+        <div>{t("aspects.outerInitial")}: {t("aspects.outerElement")}</div>
+        <h2 className="text-sm md:text-[1rem] font-bold">{t("aspects.aspectType")}:</h2>
+        <div>(A): {t("aspects.applicative")}</div>
+        <div>(S): {t("aspects.separative")}</div>
       </div>
     </div>
   );

@@ -1,0 +1,300 @@
+{
+  "home": {
+    "title": "Zazastro",
+    "subtitle": "Selecione o tipo de mapa que deseja",
+    "birthChart": "Mapa Astral",
+    "solarReturn": "Revolução Solar",
+    "lunarReturn": "Revolução Lunar",
+    "sinastry": "Combinar mapas (Sinastria)",
+    "secondaryProgressions": "Progressões Secundárias",
+    "profections": "Profecção",
+    "momentChart": "Mapa do Momento",
+    "selectChart": "Selecione o mapa",
+    "numOfYears": "Número de anos",
+    "loading": "Carregando..."
+  },
+  "birthChart": {
+    "title": "Escolha ou crie um novo mapa astral",
+    "load": "Carregar mapa",
+    "create": "Gerar Mapa Natal",
+    "createMomentChart": "Gerar Mapa",
+    "chartTitle": "Mapa Natal - ",
+    "planetsAntiscion": "Antiscion Planetas",
+    "arabicParts": "Partes Árabes",
+    "arabicPartsAntiscion": "Antiscion Partes Árabes",
+    "mainMenu": "Menu Principal",
+    "house": "Casa",
+    "houses": "Casas",
+    "planets": "Planetas",
+    "aspects": "Aspectos"
+  },
+  "returnChart": {
+    "title": "Escolha um mapa e digite o ano da revolução",
+    "inputPlaceholder": "Ano Rev. Solar",
+    "combineWithBirthChart": "Combinar com Mapa Natal",
+    "combineWithSolarReturnChart": "Combinar com Retorno Solar",
+    "lunarDerivedReturn": "Retorno Lunar Derivado",
+    "return": "Retorno",
+    "solarReturnFor": "Retorno Solar para",
+    "lunarReturnFor": "Retorno Lunar para",
+    "lunarDerivedReturnFor": "Retorno Lunar Derivado para"
+  },
+  "synastryChart": {
+    "title": "Escolha os mapas a serem combinados em sinastria",
+    "firstChart": "Primeiro mapa",
+    "secondChart": "Segundo mapa",
+    "makeSynastry": "Gerar Sinastria"
+  },
+  "secondaryProgressions": {
+    "title": "Progressões Secundárias",
+    "generateProgression": "Gerar Progressão"
+  },
+  "profections": {
+    "title": "Profecção Anual",
+    "generateProfection": "Gerar Profecção"
+  },
+  "momentChart": {
+    "title": "Mapa do Momento"
+  },
+  "form": {
+    "houseSystem": "Sistema de Casas",
+    "edit": "Editar",
+    "editProfile": "Editar Perfil",
+    "saveEditAndMakeChart": "Salvar edições e gerar Mapa Natal",
+    "delete": "Deletar",
+    "back": "Voltar",
+    "name": "Nome",
+    "day": "Dia",
+    "month": "Mês",
+    "year": "Ano",
+    "city": "Digite a cidade",
+    "searching": "Buscando...",
+    "noResults": "Sem resultados.",
+    "yes": "Sim",
+    "no": "Não",
+    "areYouSureYouWantToDelete": "Tem certeza que deseja deletar o perfil de ",
+    "deletedSuccessfully": "Perfil deletado com sucesso."
+  },
+  "houses": {
+    "1": {
+      "name": "Casa 1",
+      "specialName": "Ascendente",
+      "acronym": "ASC"
+    },
+    "2": {
+      "name": "Casa 2",
+      "acronym": "C2"
+    },
+    "3": {
+      "name": "Casa 3",
+      "acronym": "C3"
+    },
+    "4": {
+      "name": "Casa 4",
+      "specialName": "Fundo do Céu",
+      "acronym": "IC"
+    },
+    "5": {
+      "name": "Casa 5",
+      "acronym": "C5"
+    },
+    "6": {
+      "name": "Casa 6",
+      "acronym": "C6"
+    },
+     "7": {
+       "name": "Casa 7",
+      "specialName": "Descendente",
+      "acronym": "DSC"
+    },
+    "8": {
+      "name": "Casa 8",
+      "acronym": "C8"
+    },
+    "9": {
+      "name": "Casa 9",
+      "acronym": "C9"
+    },
+    "10": {
+      "name": "Casa 10",
+      "specialName": "Meio do Céu",
+      "acronym": "MC"
+    },
+    "11": {
+      "name": "Casa 11",
+      "acronym": "C11"
+    },
+    "12": {
+      "name": "Casa 12",
+      "acronym": "C12"
+    }
+  },
+  "months": {
+    "1": "Janeiro",
+    "2": "Fevereiro",
+    "3": "Março",
+    "4": "Abril",
+    "5": "Maio",
+    "6": "Junho",
+    "7": "Julho",
+    "8": "Agosto",
+    "9": "Setembro",
+    "10": "Outubro",
+    "11": "Novembro",
+    "12": "Dezembro"
+  },
+  "houseSystems": {
+    "placidus": "Plácido",
+    "koch": "Koch",
+    "regiomontanus": "Regiomontanus",
+    "campanus": "Campanus",
+    "equal": "Casas Iguais",
+    "wholeSign": "Signos Inteiros",
+    "porphyry": "Porfírio"
+  },
+  "planets": {
+    "sun": "Sol",
+    "moon": "Lua",
+    "mercury": "Mercúrio",
+    "venus": "Vênus",
+    "mars": "Marte",
+    "jupiter": "Júpiter",
+    "saturn": "Saturno",
+    "uranus": "Urano",
+    "neptune": "Netuno",
+    "pluto": "Plutão",
+    "northNode": "Nodo Norte",
+    "southNode": "Nodo Sul"
+  },
+  "signs": {
+    "aries": "Áries ♈︎",
+    "taurus": "Touro ♉︎",
+    "gemini": "Gêmeos ♊︎",
+    "cancer": "Câncer ♋︎",
+    "leo": "Leão ♌︎",
+    "virgo": "Virgo ♍︎",
+    "libra": "Libra ♎︎",
+    "scorpio": "Escorpião ♏︎",
+    "sagittarius": "Sagitário ♐︎",
+    "capricorn": "Capricórnio ♑︎",
+    "aquarius": "Aquário ♒︎",
+    "pisces": "Peixes ♓︎"
+  },
+  "arabicParts": {
+    "title": "Partes Árabes",
+    "customizeASC": "Personalizar Ascendente",
+    "lotCalculator": "Calcular Parte Árabe",
+    "choosePoints": "Escolha os pontos para o cálculo da parte",
+    "valuesFromBirthChart": "(Valores captados do mapa natal)",
+    "seeMoreDetails": "Ver mais detalhes",
+    "origin": "(A) Origem:",
+    "until": "(B) Até:",
+    "from": "(C) De:",
+    "calculate": "Calcular",
+    "angles": "Ângulos",
+    "planets": "Planetas",
+    "houses": "Casas",
+    "lots": "Partes Árabes",
+    "lotIsIn": "Parte Árabe está em ",
+    "calculationDetails": "Detalhes do Cálculo",
+    "significator": "Significador",
+    "trigger": "Gatilho",
+    "distance": "Distância",
+    "in": "em",
+    "projectedIn": "Projetado em",
+    "distanceFromASC": "Distância pro Ascendente",
+    "distanceFromBirthASC": "Distância pro Ascendente Natal",
+    "projectedInBirthArch": "Parte Árabe projetada no Arco Natal",
+    "asc": "Ascendente",
+    "projectedLotInBirthArch": "Parte projetada no Arco do Ascendente (AC do Arco + Distância pro AC Natal) =",
+    "archLotIsIn": "Parte Árabe do arco está em",
+    "perSign": "Por Signo",
+    "perDeg": "Por Grau",
+    "basedUponBirthChart": "*Baseadas no Ascendente do Mapa Natal.",
+    "associatedTo": "Associada a",
+    "formula": "Fórmula",
+    "ruler": "Dispositor",
+
+    "fortune": {
+      "short": "Fortuna",
+      "complete": "Parte da Fortuna"
+    },
+    "spirit": {
+      "short": "Espírito",
+      "complete": "Parte do Espírito"
+    },
+    "necessity": {
+      "short": "Necessidade",
+      "complete": "Parte da Necessidade"
+    },
+    "love": {
+      "short": "Amor",
+      "complete": "Parte do Amor"
+    },
+    "valor": {
+      "short": "Valor",
+      "complete": "Parte do Valor"
+    },
+    "victory": {
+      "short": "Vitória",
+      "complete": "Parte da Vitória"
+    },
+    "captivity": {
+      "short": "Cativeiro",
+      "complete": "Parte do Cativeiro"
+    },
+    "marriage": {
+      "short": "Casamento",
+      "complete": "Parte do Casamento"
+    },
+    "resignation": {
+      "short": "Renúncia",
+      "complete": "Parte da Renúncia"
+    },
+    "children": {
+      "short": "Filhos",
+      "complete": "Parte dos Filhos"
+    }
+  },
+  "aspects": {
+    "title": "Aspectos",
+    "element": "Elemento",
+    "aspect": "Aspecto",
+    "aspects": "Aspectos",
+    "aspected": "Aspectado",
+    "distance": "Distância",
+    "type": "Tipo",
+    "items": "Ítens",
+    "itemsPerPage": "Ítens por página",
+    "legend": "Legenda",
+    "sextile": "Sextil",
+    "square": "Quadratura",
+    "trine": "Trígono",
+    "opposition": "Oposição",
+    "conjunction": "Conjunção",
+    "elements": "Elementos",
+    "houseInitial": "C",
+    "outerInitial": "E",
+    "house": "Casa astrológica",
+    "outerElement": "Elementos do mapa externo",
+    "aspectType": "Tipo de aspecto",
+    "applicative": "Aplicativo" ,
+    "separative": "Separativo",
+    "filterByElement": "Filtrar por Elemento",
+    "filterByAspect": "Filtrar por Aspecto",
+    "filterByDistance": "Filtrar por Distância",
+    "filterByAspectType": "Filtrar por Tipo de Aspecto",
+    "lowerLimit": "Limite Inferior",
+    "upperLimit": "Limite Superior",
+    "select": "Selecione",
+    "equalsTo": "Igual a",
+    "lessThan": "Menor que",
+    "lessThanOrEqualTo": "Menor ou igual a",
+    "greaterThan": "Maior que",
+    "greaterThanOrEqualTo": "Maior ou igual a",
+    "all": "Todos",
+    "filter": "Filtrar",
+    "cancel": "Cancelar",
+    "noAspectFound": "Nenhum aspecto encontrado."
+  }
+}

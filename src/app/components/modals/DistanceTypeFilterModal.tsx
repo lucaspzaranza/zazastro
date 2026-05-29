@@ -14,6 +14,7 @@ import React, {
   useState,
 } from "react";
 import AspectTableFilterModalLayout from "./AspectTableFilterModalLayout";
+import { useTranslations } from "next-intl";
 
 function DistanceTypeFilterModalFn(
   props: FilterModalProps,
@@ -29,6 +30,8 @@ function DistanceTypeFilterModalFn(
     applyFilterIsActiveClasses,
     clearSignal,
   } = props;
+
+  const t = useTranslations();
 
   const defaultCheckboxes = useMemo<DistanceTypeFilterModalCheckboxState[]>(
     () => [
@@ -149,7 +152,7 @@ function DistanceTypeFilterModalFn(
   return (
     <AspectTableFilterModalLayout
       isVisible={isVisible}
-      title="Filtrar por Tipo de Aspecto"
+      title={t("aspects.filterByAspectType")}
       onCancel={cancelAndResetState}
       onConfirm={confirm}
       className={`w-[160px] ${className}`}
@@ -164,7 +167,7 @@ function DistanceTypeFilterModalFn(
                 checked={checkboxesChecked[0]?.isChecked ?? false}
                 onChange={() => toggleSingleCheckbox(0)}
               />
-              <label htmlFor="dt-0">Aplicativo</label>
+              <label htmlFor="dt-0">{t("aspects.applicative")}</label>
             </div>
 
             <div className="w-full flex flex-row gap-1">
@@ -174,7 +177,7 @@ function DistanceTypeFilterModalFn(
                 checked={checkboxesChecked[1]?.isChecked ?? false}
                 onChange={() => toggleSingleCheckbox(1)}
               />
-              <label htmlFor="dt-1">Separativo</label>
+              <label htmlFor="dt-1">{t("aspects.separative")}</label>
             </div>
 
             <div className="w-full flex flex-row gap-1">
@@ -184,7 +187,7 @@ function DistanceTypeFilterModalFn(
                 checked={allCheckboxesChecked}
                 onChange={toggleAllCheckboxes}
               />
-              <label htmlFor="dt-all">Todos</label>
+              <label htmlFor="dt-all">{t("aspects.all")}</label>
             </div>
           </div>
         </div>

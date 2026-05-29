@@ -35,6 +35,7 @@ export interface ChartElement {
 
 export interface ChartElementForArabicPartCalculation {
   name: string;
+  key: string;
   elementType: ElementType;
   longitude: number;
 }

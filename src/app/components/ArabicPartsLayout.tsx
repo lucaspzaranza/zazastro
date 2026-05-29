@@ -9,6 +9,7 @@ import Image from "next/image";
 import { useChartMenu } from "@/contexts/ChartMenuContext";
 import { useBirthChart } from "@/contexts/BirthChartContext";
 import { BsThreeDots } from "react-icons/bs";
+import { useTranslations } from "next-intl";
 
 type ArabicPartsMenu = "default" | "customizeASC" | "lotCalculator";
 
@@ -45,6 +46,8 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
   const { isMobileBreakPoint } = useScreenDimensions();
   const { chartMenu } = useChartMenu();
 
+  const t = useTranslations();
+
   function toggleInnerPartsVisualization() {
     setShowInnerParts((prev) => !prev);
     onToggleInnerPartsVisualization?.(!showInnerParts);
@@ -63,9 +66,9 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
   const getTitle = () => {
     if (title) return title;
 
-    if (menu === "default") return "Partes Árabes:";
-    if (menu === "customizeASC") return "Personalizar\nAscendente:";
-    if (menu === "lotCalculator") return "Calcular Parte Árabe:";
+    if (menu === "default") return t("arabicParts.title") + ":";
+    if (menu === "customizeASC") return t("arabicParts.customizeASC") + ":";
+    if (menu === "lotCalculator") return t("arabicParts.lotCalculator") + ":";
   }
 
   function renderMenuButtons(): JSX.Element {
@@ -173,7 +176,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
           height={20}
           unoptimized
         />
-        <span className="text-sm font-normal">Calcular Parte Árabe</span>
+        <span className="text-sm font-normal">{t("arabicParts.lotCalculator")}</span>
       </button>
 
       <button
@@ -191,7 +194,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
           height={20}
           unoptimized
         />
-        <span className="text-sm font-normal">Personalizar Ascendente</span>
+        <span className="text-sm font-normal">{t("arabicParts.customizeASC")}</span>
       </button>
       <button
         title="Ver mais"
@@ -208,7 +211,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
           height={20}
           unoptimized
         />
-        <span className="text-sm font-normal">Ver Mais Detalhes</span>
+        <span className="text-sm font-normal">{t("arabicParts.seeMoreDetails")}</span>
       </button>
     </>
   }
@@ -273,7 +276,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
                   <span
                     className="w-[8rem] md:w-[9rem] flex flex-row items-center justify-between"
                   >
-                    <span>{arabicPart?.name}</span>
+                    {t(`arabicParts.${arabicPart?.partKey}.short`)}
 
                     <span className="w-full flex flex-row items-center justify-end mr-4 md:mr-0 md:pr-1">
                       {getArabicPartImage(arabicPart, {

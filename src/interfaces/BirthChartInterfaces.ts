@@ -1,3 +1,4 @@
+import { ChartMenuType } from "@/contexts/ChartMenuContext";
 import { ChartElement } from "./AstroChartInterfaces";
 
 export type PlanetType =
@@ -46,6 +47,7 @@ export interface BirthChartProfile {
   name?: string;
   id?: string;
   birthDate?: BirthDate;
+  chartMenu?: ChartMenuType
 }
 
 export interface PlanetWithSign {

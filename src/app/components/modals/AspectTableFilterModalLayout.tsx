@@ -1,6 +1,7 @@
 "use client";
 
 import { FilterModalProps } from "@/interfaces/AspectTableInterfaces";
+import { useTranslations } from "next-intl";
 import React from "react";
 
 export default function AspectTableFilterModalLayout({
@@ -15,6 +16,8 @@ export default function AspectTableFilterModalLayout({
     isVisible ? "block" : "hidden"
   } ${className}`;
 
+  const t = useTranslations();
+
   return (
     <div className={classes}>
       <span className=" border-b-2 p-1">{title}</span>
@@ -24,13 +27,13 @@ export default function AspectTableFilterModalLayout({
           className="border-2 px-1 hover:bg-gray-200 active:bg-gray-300"
           onClick={() => onCancel?.()}
         >
-          Cancelar
+          {t("aspects.cancel")}
         </button>
         <button
           className="border-2 px-1 hover:bg-gray-200 active:bg-gray-300"
           onClick={() => onConfirm?.()}
         >
-          Filtrar
+          {t("aspects.filter")}
         </button>
       </div>
     </div>

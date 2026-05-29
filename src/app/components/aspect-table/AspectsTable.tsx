@@ -36,6 +36,7 @@ import InfoPopup from "./InfoPopup";
 import { SkeletonTable } from "../skeletons";
 import { SKELETON_LOADER_TIME } from "@/app/utils/constants";
 import { useBirthChart } from "@/contexts/BirthChartContext";
+import { useTranslations } from "next-intl";
 
 export default function AspectsTable({
   aspects,
@@ -73,6 +74,10 @@ export default function AspectsTable({
     useRef<AspectFilterButtonImperativeHandle | null>(null);
 
   const backupValue = useRef(0);
+
+  const t = useTranslations();
+  const houseInitial = t("aspects.houseInitial");
+  const outerInitial = t("aspects.outerInitial");
 
   const [loading, setLoading] = useState(true);
   const [openInfoPopup, setOpenInfoPopup] = useState(false);
@@ -124,15 +129,16 @@ export default function AspectsTable({
   }, [filteredAspects]);
 
   function getHouseName(element: AspectedElement): string {
+    // console.log('getHouseName');
     if (element.elementType !== "house") return "-";
-    const houseNumber = extractHouseNumber(element.name)! + 1; // 0 - 11 to 1 - 12
+    const houseNumber = extractHouseNumber(element.name)! + 1; // 0 - 11 to 1 - 12    
 
     if ((houseNumber - 1) % 3 === 0) {
-      return `${angularLabels[houseNumber - 1]}${element.isFromOuterChart ? "(E)" : ""
+      return `${angularLabels[houseNumber - 1]}${element.isFromOuterChart ? `(${outerInitial})` : ""
         }`;
     }
 
-    return `C${houseNumber}${element.isFromOuterChart ? "(E)" : ""}`;
+    return `${houseInitial}${houseNumber}${element.isFromOuterChart ? `(${outerInitial})` : ""}`;
   }
 
   function getPlanetInfo(element: AspectedElement): Planet | undefined {
@@ -163,7 +169,7 @@ export default function AspectsTable({
             isAntiscion: element.isAntiscion,
             isRetrograde: element.isRetrograde,
           })}
-          {element.isFromOuterChart ? "(E)" : ""}
+          {element.isFromOuterChart ? `(${outerInitial})` : ""}
         </div>
       );
     }
@@ -177,7 +183,7 @@ export default function AspectsTable({
             {getArabicPartImage(arabicPart, {
               isAntiscion: element.isAntiscion,
             })}
-            {element.isFromOuterChart ? "(E)" : ""}
+            {element.isFromOuterChart ? `(${outerInitial})` : ""}
           </div>
         );
       }
@@ -467,6 +473,7 @@ export default function AspectsTable({
       });
     }
 
+    // console.log(elements);
     return elements;
   }
 
@@ -642,7 +649,7 @@ export default function AspectsTable({
       </div>) :
       <>
         <div className="w-full 2xl:w-[420px] 3xl:w-[470px] flex flex-row items-center justify-between">
-          <h2 className="font-bold text-lg mb-2">Aspectos:</h2>
+          <h2 className="font-bold text-lg mb-2">{t("aspects.title")}:</h2>
           <Image
             alt="info"
             src="/info.png"
@@ -659,11 +666,11 @@ export default function AspectsTable({
         <table className="w-full 2xl:w-[420px] 3xl:w-[470px] flex flex-col border-2 text-[0.75rem] md:text-sm text-center bg-white">
           <thead>
             <tr className="flex flex-row justify-between">
-              <th className="w-3/4 text-center border-r-2">Elemento</th>
-              <th className="w-3/4 text-center border-r-2">Aspecto</th>
-              <th className="w-full text-center border-r-2">Aspectado</th>
-              <th className="w-10/12 text-center border-r-2">Distância</th>
-              <th className="w-1/2 text-center">Tipo</th>
+              <th className="w-3/4 text-center border-r-2">{t("aspects.element")}</th>
+              <th className="w-3/4 text-center border-r-2">{t("aspects.aspect")}</th>
+              <th className="w-full text-center border-r-2">{t("aspects.aspected")}</th>
+              <th className="w-10/12 text-center border-r-2">{t("aspects.distance")}</th>
+              <th className="w-1/2 text-center">{t("aspects.type")}</th>
             </tr>
             <tr className="flex flex-row items-center justify-between border-t-2">
               <th className="w-3/4 h-full text-center border-r-2 text-[0.85rem]">
@@ -787,16 +794,16 @@ export default function AspectsTable({
           {(filteredAspects === undefined || filteredAspects.length === 0) && (
             <tbody className="flex flex-col border-y-2">
               <tr className="flex flex-row">
-                <td className="w-full">Nenhum aspecto encontrado.</td>
+                <td className="w-full">{t("aspects.noAspectFound")}</td>
               </tr>
             </tbody>
           )}
           <tfoot className="h-7 flex flex-row items-center justify-around p-2 font-bold">
             <tr className="w-full flex flex-row justify-between">
               <td className="w-1/2 text-start md:text-center flex flex-row items-center tracking-tight">
-                {isMobileBreakPoint() && <span>Ítens</span>}
+                {isMobileBreakPoint() && <span>{t("aspects.items")}</span>}
                 {!isMobileBreakPoint() && (
-                  <span className="w-full text-nowrap">Ítens por página</span>
+                  <span className="w-full text-nowrap">{t("aspects.itemsPerPage")}</span>
                 )}
 
                 <select

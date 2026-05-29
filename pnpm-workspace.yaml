@@ -1,3 +1,9 @@
+allowBuilds:
+  '@parcel/watcher': false
+  '@swc/core': false
+  '@tailwindcss/oxide': false
+  sharp: false
+  unrs-resolver: false
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'
   - sharp

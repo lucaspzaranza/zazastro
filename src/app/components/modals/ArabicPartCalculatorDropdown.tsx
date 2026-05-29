@@ -1,6 +1,6 @@
-import { arabicPartCalculatorItems } from "@/app/utils/chartUtils";
+import { useArabicPartCalculatorItems } from "@/hooks/useArabicPartCalculatorItems";
 import { ArabicPartCalculatorDropdownItem } from "@/interfaces/ArabicPartInterfaces";
-import React from "react";
+import { useTranslations } from "next-intl";
 
 interface ArabicPartCalculatorDropdownProps {
   label: string;
@@ -11,7 +11,8 @@ export default function ArabicPartCalculatorDropdown(
   props: ArabicPartCalculatorDropdownProps
 ) {
   const { label, onSelect } = props;
-  const items = arabicPartCalculatorItems;
+  const items = useArabicPartCalculatorItems();
+  const t = useTranslations();
 
   const flatMap = new Map<string, ArabicPartCalculatorDropdownItem>();
 
@@ -24,7 +25,7 @@ export default function ArabicPartCalculatorDropdown(
       <label className="text-nowrap">{label}</label>
       <select
         className="w-full md:w-[7.5rem] border-2 rounded-sm bg-white"
-        defaultValue={items["Ângulos"][0].key}
+        defaultValue={items["angles"][0].key}
         onChange={(e) => {
           const selected = flatMap.get(e.target.value);
           if (selected) {
@@ -33,7 +34,7 @@ export default function ArabicPartCalculatorDropdown(
         }}
       >
         {Object.entries(items).map(([group, items]) => (
-          <optgroup key={group} label={group}>
+          <optgroup key={group} label={t(`arabicParts.${group}`)}>
             {items.map((item) => (
               <option key={item.key} value={item.key}>
                 {item.name}

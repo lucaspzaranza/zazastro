@@ -14,6 +14,7 @@ import moment from "moment";
 import Image from "next/image";
 import React, { useState } from "react";
 import Spinner from "../Spinner";
+import { useTranslations } from "next-intl";
 
 interface LunarModalProps {
   onClose?: () => void;
@@ -31,6 +32,8 @@ export default function LunarDerivedModal(props: LunarModalProps) {
 
   const { isCombinedWithBirthChart, updateIsCombinedWithBirthChart } =
     useBirthChart();
+
+  const t = useTranslations();
 
   const makeChart = async () => {
     if (birthChart === undefined) return;
@@ -87,7 +90,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
   return (
     <div className="absolute w-[20rem] h-[12rem] border-2 rounded-md bg-white flex flex-col py-1 items-center justify-start z-50 gap-2">
       <header className="relative w-full flex flex-row items-center justify-center border-b-2">
-        <h1 className="font-bold text-lg">Retorno Lunar Derivado</h1>
+        <h1 className="font-bold text-lg">{t("returnChart.lunarDerivedReturn")}</h1>
         <button
           className="absolute right-1 flex flex-row items-center justify-center"
           onClick={() => {
@@ -116,7 +119,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
           <input
             type="number"
             className="border-2 w-16 p-1 rounded-sm"
-            placeholder="Dia"
+            placeholder={t("form.day")}
             required
             onChange={(e) => {
               if (e.target.value.length > 0) {
@@ -136,7 +139,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
           >
             {monthsNames.map((month, index) => (
               <option key={index} value={index}>
-                {month}
+                {t(`months.${index + 1}`)}
               </option>
             ))}
           </select>
@@ -144,7 +147,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
           <input
             type="number"
             className="border-2 w-20 p-1 rounded-sm"
-            placeholder="Ano"
+            placeholder={t("form.year")}
             required
             onChange={(e) => {
               if (e.target.value.length > 0) {
@@ -165,7 +168,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
           //   makeChart();
           // }}
           >
-            Gerar Mapa
+            {t("birthChart.createMomentChart")}
           </button>
 
           <span
@@ -173,7 +176,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
               }`}
           >
             <Spinner />
-            <span>Carregando...</span>
+            <span>{t("home.loading")}</span>
           </span>
         </div>
       </form>

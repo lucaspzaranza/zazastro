@@ -1,6 +1,7 @@
 "use client";
 
 import { SelectedCity } from "@/interfaces/BirthChartInterfaces";
+import { useTranslations } from "next-intl";
 import { useState, useEffect, useRef } from "react";
 
 interface CityResult {
@@ -24,6 +25,7 @@ export default function CitySearch({
   const [queryError, setQueryError] = useState(false);
 
   const canQuery = useRef(false);
+  const t = useTranslations();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -107,7 +109,7 @@ export default function CitySearch({
         required
         className="border-2 p-1 rounded"
         type="text"
-        placeholder="Digite a cidade"
+        placeholder={t("form.city")}
         value={query}
         onChange={(e) => {
           if (!canQuery.current) {
@@ -119,8 +121,8 @@ export default function CitySearch({
 
       <div className="relative">
         <div className="absolute">
-          {isLoading && <p>Buscando...</p>}
-          {queryError && <p>Sem resultados.</p>}
+          {isLoading && <p>{t("form.searching")}</p>}
+          {queryError && <p>{t("form.noResults")}</p>}
         </div>
 
         {results.length > 0 && !isLoading && (

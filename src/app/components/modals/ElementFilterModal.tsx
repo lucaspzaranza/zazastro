@@ -17,22 +17,10 @@ import React, {
   useState,
 } from "react";
 import AspectTableFilterModalLayout from "./AspectTableFilterModalLayout";
-import {
-  allElements,
-  arabicParts,
-  arabicPartsAntiscion,
-  fixedStar,
-  houses,
-  outerArabicParts,
-  outerArabicPartsAntiscion,
-  outerHouses,
-  outerPlanets,
-  outerPlanetsAntiscion,
-  planets,
-  planetsAntiscion,
-} from "@/app/utils/aspectTableUtils";
 import { useBirthChart } from "@/contexts/BirthChartContext";
 import { useChartMenu } from "@/contexts/ChartMenuContext";
+import { useTranslations } from "next-intl";
+import { useAspectTableUtils } from "@/hooks/useAspectTableUtils";
 
 interface ExtendedFilterModalProps extends FilterModalProps {
   columnType: "element" | "aspectedElement";
@@ -56,13 +44,31 @@ function ElementFilterModalFn(
     clearSignal,
   } = props;
 
+  const t = useTranslations();
+  const locale = useTranslations();
+
+  const { allElements,
+    arabicParts,
+    arabicPartsAntiscion,
+    fixedStar,
+    houses,
+    outerArabicParts,
+    outerArabicPartsAntiscion,
+    outerHouses,
+    outerPlanets,
+    outerPlanetsAntiscion,
+    planets,
+    planetsAntiscion
+  } = useAspectTableUtils();
+
   // const getUseOuterChartElements = () =>
   //   chartMenu !== "birth" &&
   //   returnChart !== undefined &&
   //   (isCombinedWithBirthChart || isCombinedWithReturnChart);
 
-  const { returnChart, lunarDerivedChart, sinastryChart, progressionChart, isCombinedWithBirthChart, isCombinedWithReturnChart } =
-    useBirthChart();
+  const { returnChart, lunarDerivedChart, sinastryChart, 
+    progressionChart, isCombinedWithBirthChart, 
+    isCombinedWithReturnChart } = useBirthChart();
   const { chartMenu } = useChartMenu();
 
   const [useInnerPlanets, setUseInnerPlanets] = useState(true);
@@ -131,7 +137,11 @@ function ElementFilterModalFn(
       }
 
       if (useInnerHouses) {
-        result = [...result, ...houses.map((planet) => ({ ...planet }))];
+        // result = [...result, ...houses.map((planet) => ({ ...planet }))];
+        result = [...result, ...houses.map((planet, index) => ({ 
+          ...planet 
+        }))];
+        // console.log(houses);
       }
     }
 
@@ -264,6 +274,7 @@ function ElementFilterModalFn(
     useOuterArabicParts,
     useOuterArabicPartsAntiscion,
     useOuterHouses,
+    locale
   ]);
 
   function resetAllCheckboxes() {
@@ -371,7 +382,7 @@ function ElementFilterModalFn(
   return (
     <AspectTableFilterModalLayout
       isVisible={isVisible}
-      title="Filtrar por Elemento"
+      title={t("aspects.filterByElement")}
       onCancel={cancelAndResetState}
       onConfirm={confirmWithAspectsChecked}
       className={`w-[90vw] md:w-[630px] ${className}`}
@@ -401,7 +412,7 @@ function ElementFilterModalFn(
                 checked={allCheckboxesChecked}
                 onChange={toggleAllCheckboxes}
               />
-              <label htmlFor="aspect-all">Todos</label>
+              <label htmlFor="aspect-all">{t("aspects.all")}</label>
             </div>
           )}
         </div>

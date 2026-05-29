@@ -15,6 +15,7 @@ import React, {
 } from "react";
 import AspectTableFilterModalLayout from "./AspectTableFilterModalLayout";
 import { clampLongitude } from "@/app/utils/chartUtils";
+import { useTranslations } from "next-intl";
 
 const filterFunctions: Record<string, (val: number, limit: number) => boolean> =
   {
@@ -39,6 +40,8 @@ function DistanceFilterModalFn(
     applyFilterIsActiveClasses,
     clearSignal,
   } = props;
+
+  const t = useTranslations();
 
   const defaultState = useMemo<DistanceFilterModalState>(
     () => ({
@@ -177,7 +180,7 @@ function DistanceFilterModalFn(
   return (
     <AspectTableFilterModalLayout
       isVisible={isVisible}
-      title="Filtrar por Distância"
+      title={t("aspects.filterByDistance")}
       onCancel={cancelAndResetState}
       onConfirm={confirm}
       className={`w-[280px] ${className}`}
@@ -197,7 +200,7 @@ function DistanceFilterModalFn(
                 !currentState.useLowerLimit ? "text-gray-400" : ""
               }`}
             >
-              Limite Inferior
+              {t("aspects.lowerLimit")}
             </label>
           </div>
           <div className="flex flex-row items-center justify-center gap-1">
@@ -211,13 +214,13 @@ function DistanceFilterModalFn(
               }}
             >
               <option disabled value="0">
-                Selecione
+                {t("aspects.select")}
               </option>
-              <option value="1">Igual a {"=="}</option>
-              <option value="2">Menor que {"<"}</option>
-              <option value="3">Menor ou igual a {"<="}</option>
-              <option value="4">Maior que {">"}</option>
-              <option value="5">Maior ou igual a {">="}</option>
+              <option value="1">{t("aspects.equalsTo")} {"=="}</option>
+              <option value="2">{t("aspects.lessThan")} {"<"}</option>
+              <option value="3">{t("aspects.lessThanOrEqualTo")} {"<="}</option>
+              <option value="4">{t("aspects.greaterThan")} {">"}</option>
+              <option value="5">{t("aspects.greaterThanOrEqualTo")} {">="}</option>
             </select>
             <input
               type="number"
@@ -254,7 +257,7 @@ function DistanceFilterModalFn(
                 !currentState.useUpperLimit ? "text-gray-400" : ""
               }`}
             >
-              Limite Superior
+              {t("aspects.upperLimit")}
             </label>
           </div>
           <div className="flex flex-row items-center justify-center gap-1">
@@ -268,13 +271,13 @@ function DistanceFilterModalFn(
               }}
             >
               <option disabled value="0">
-                Selecione
+                {t("aspects.select")}
               </option>
-              <option value="1">Igual a {"=="}</option>
-              <option value="2">Menor que {"<"}</option>
-              <option value="3">Menor ou igual a {"<="}</option>
-              <option value="4">Maior que {">"}</option>
-              <option value="5">Maior ou igual a {">="}</option>
+              <option value="1">{t("aspects.equalsTo")} {"=="}</option>
+              <option value="2">{t("aspects.lessThan")} {"<"}</option>
+              <option value="3">{t("aspects.lessThanOrEqualTo")} {"<="}</option>
+              <option value="4">{t("aspects.greaterThan")} {">"}</option>
+              <option value="5">{t("aspects.greaterThanOrEqualTo")} {">="}</option>
             </select>
             <input
               type="number"

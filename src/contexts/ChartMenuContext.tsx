@@ -1,7 +1,10 @@
+"use client";
+
 import React, { createContext, useState, useContext, ReactNode } from "react";
 
 export type ChartMenuType =
   | "birth"
+  | "moment"
   | "solarReturn"
   | "lunarReturn"
   | "lunarDerivedReturn"

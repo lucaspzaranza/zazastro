@@ -6,7 +6,8 @@ import {
   planesNamesByType,
 } from "@/app/utils/chartUtils";
 import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
-import { ArabicPart } from "@/interfaces/ArabicPartInterfaces";
+import { ArabicPart, FormulaDescription, FormulaElement } from "@/interfaces/ArabicPartInterfaces";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import React from "react";
 
@@ -17,6 +18,7 @@ interface ArabicPartsModalProps {
 
 export default function ArabicPartsModal(props: ArabicPartsModalProps) {
   const { parts, onClose } = props;
+  const t = useTranslations();
 
   const { isMobileBreakPoint } = useScreenDimensions();
 
@@ -27,7 +29,7 @@ export default function ArabicPartsModal(props: ArabicPartsModalProps) {
 
   function getRulerSpan(arabicPart: ArabicPart): React.ReactNode {
     const ruler = getZodiacRuler(arabicPart.longitude);
-    const planetName = planesNamesByType[ruler];
+    const planetName = t(`planets.${ruler}`);
     const planetIcon = getPlanetImage(ruler);
 
     return (
@@ -38,7 +40,7 @@ export default function ArabicPartsModal(props: ArabicPartsModalProps) {
   }
 
   function getAssociatedPlanet(arabicPart: ArabicPart): React.ReactNode {
-    const planetName = planesNamesByType[arabicPart.planet!];
+    const planetName = t(`planets.${arabicPart.planet!}`);
     const planetIcon = getPlanetImage(arabicPart.planet!);
 
     return (
@@ -48,11 +50,31 @@ export default function ArabicPartsModal(props: ArabicPartsModalProps) {
     );
   }
 
+  const getTranslatedFormulaElement = (el: FormulaElement) => {
+    if(el.type === "planet")
+      return t(`planets.${el.key}`);
+    else if(el.type === "house") 
+      return t(`houses.${el.key}.acronym`);
+    else if(el.type === "arabicPart")
+      return t(`arabicParts.${el.key}.complete`);
+
+    return '';
+  }
+
+  function getFormulaDescription(formula: FormulaDescription): string {
+    const signals = formula.signals.split(", ");
+    const projected = getTranslatedFormulaElement(formula.projectedFrom);
+    const significator = getTranslatedFormulaElement(formula.significator);
+    const trigger = getTranslatedFormulaElement(formula.trigger);
+
+    return `${projected} ${signals[0]} ${significator} ${signals[1]} ${trigger}`;
+  }
+
   return (
     <div className="absolute w-[92vw] md:w-full md:left-0 h-[15vh] md:h-[80vh] flex flex-row items-center justify-center z-30">
       <div className="w-full md:w-[41rem] h-[37rem] bg-gray-300 outline-2 rounded-md">
         <header className="relative w-full h-[3rem] bg-white flex flex-row items-center rounded-md rounded-b-none justify-center border-b-2">
-          <h1 className="font-bold text-xl">Partes Árabes</h1>
+          <h1 className="font-bold text-xl">{t("arabicParts.title")}</h1>
           <button
             className="absolute right-1 flex flex-row items-center justify-center"
             onClick={() => {
@@ -79,7 +101,7 @@ export default function ArabicPartsModal(props: ArabicPartsModalProps) {
                   className="bg-white outline-1 px-4 w-full flex flex-col items-center"
                 >
                   <span className="w-full flex flex-row items-center justify-start text-lg">
-                    <strong>{arabicPart?.name}</strong>&nbsp;
+                    <strong>{t(`arabicParts.${arabicPart?.partKey}.complete`)}</strong>&nbsp;
                     {getArabicPartImage(arabicPart, {
                       size: 18,
                       isAntiscion: false,
@@ -100,22 +122,22 @@ export default function ArabicPartsModal(props: ArabicPartsModalProps) {
 
                   {arabicPart.planet && (
                     <div className="w-full flex flex-row items-center justify-start">
-                      Associada a: {getAssociatedPlanet(arabicPart)}
+                      {t("arabicParts.associatedTo")}: {getAssociatedPlanet(arabicPart)}
                     </div>
                   )}
 
                   {arabicPart.zodiacRuler && (
                     <div className="w-full flex flex-row items-center justify-start">
-                      Dispositor: {getRulerSpan(arabicPart)}
+                      {t("arabicParts.ruler")}: {getRulerSpan(arabicPart)}
                     </div>
                   )}
 
                   <div className="w-full flex flex-row items-center justify-start">
-                    Fórmula: {arabicPart.formulaDescription}
+                    {t("arabicParts.formula")}: {getFormulaDescription(arabicPart.formulaDescription)}
                   </div>
 
                   <div className="w-full flex flex-row items-center justify-start">
-                    Distância pro Ascendente Natal:{" "}
+                    {t("arabicParts.distanceFromBirthASC")}:{" "}
                     {formatNumberToDegMin(arabicPart.distanceFromASC)}
                   </div>
                 </li>

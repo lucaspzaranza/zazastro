@@ -1,9 +1,9 @@
 import { PlanetType } from "./BirthChartInterfaces";
-import { ElementType } from "./AstroChartInterfaces";
+import { ChartElement, ElementType } from "./AstroChartInterfaces";
 
 export interface ArabicPart {
   name: string;
-  formulaDescription: string;
+  formulaDescription: FormulaDescription;
   longitude: number;
   longitudeRaw: number;
   longitudeSign: string;
@@ -15,6 +15,18 @@ export interface ArabicPart {
   zodiacRuler?: PlanetType;
   planet?: PlanetType;
   partKey: keyof ArabicPartsType;
+}
+
+export interface FormulaElement {
+  type: ElementType
+  key: string
+}
+
+export interface FormulaDescription {
+  projectedFrom: FormulaElement,
+  significator: FormulaElement,
+  trigger: FormulaElement,
+  signals: string
 }
 
 export interface ArabicPartsType {

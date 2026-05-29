@@ -29,6 +29,7 @@ import Container from "./Container";
 import { SkeletonLine, SkeletonTable } from "./skeletons";
 import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT, SKELETON_LOADER_TIME } from "../utils/constants";
 import Spinner from "./Spinner";
+import { useTranslations } from "next-intl";
 
 interface Props {
   innerChart: BirthChart;
@@ -90,6 +91,8 @@ export default function ChartAndData(props: Props) {
   const [useInnerHouses, setUseInnerHouses] = useState(true);
   const [useInnerParts, setUseInnerParts] = useState(true);
   const [nextChartContentLoaded, setNextChartContentLoaded] = useState(false);
+  const t = useTranslations();
+  const [translatedTitle, setTranslatedTitle] = useState(title);
 
   const [planetsAntiscion, setPlanetsAntiscion] = useState<
     Record<PlanetType, boolean>
@@ -158,6 +161,12 @@ export default function ChartAndData(props: Props) {
   function handleOnToggleInnerPartsVisualization(showInnerParts: boolean) {
     setUseInnerParts(showInnerParts);
   }
+
+  useEffect(() => {
+    if(chartMenu === "moment") {
+      setTranslatedTitle(t("birthChart.chartTitle") + " " + t("momentChart.title"))
+    }
+  }, [title])
 
   useEffect(() => {
     setUseInnerPlanets(outerChart === undefined);
@@ -230,7 +239,7 @@ export default function ChartAndData(props: Props) {
             className={`absolute w-full h-full top-0 md:top-auto md:h-[108%] px-3 md:px-0 bg-white/10 backdrop-blur-sm flex flex-col items-center justify-center z-10 
               md:rounded-2xl transition-all duration-200 ease-in-out opacity-0 animate-[fadeIn_0.2s_forwards]`}>
             <Spinner size="16" />
-            <h2 className="font-bold text-lg pl-10 mt-3">Carregando...</h2>
+            <h2 className="font-bold text-lg pl-10 mt-3">{t("home.loading")}</h2>
           </div>
         }
 
@@ -238,7 +247,8 @@ export default function ChartAndData(props: Props) {
           <ChartSelectorArrows className="w-full mb-2 md:px-6">
             {title && (
               <h1 className="text-lg md:text-2xl font-bold text-center">
-                {title}
+                {/* {title} */}
+                {translatedTitle}
               </h1>
             )}
           </ChartSelectorArrows>
@@ -268,7 +278,7 @@ export default function ChartAndData(props: Props) {
             className="default-btn w-full! md:w-[25.5rem]! mt-6 mb-2"
             onClick={handleReset}
           >
-            Menu Principal
+            {t("birthChart.mainMenu")}
           </button>
         </>
       </div>
@@ -364,7 +374,7 @@ export default function ChartAndData(props: Props) {
         :
         <div className="w-full">
           <h2 className="font-bold self-start text-lg mb-2 mt-[-5px] flex flex-row items-center gap-1">
-            Planetas:
+            {t("birthChart.planets")}:
             <span className="w-fit flex flex-row items-center justify-start gap-1">
               {showSwitchPartsButton() && (
                 <>
@@ -400,7 +410,7 @@ export default function ChartAndData(props: Props) {
                       className={`w-[5.5rem] md:w-[6rem] ${planetsAntiscion[planet.type] ? "antiscion" : ""
                         }`}
                     >
-                      {planet.name}
+                      {t(`planets.${planet.type}`)}
                     </div>
 
                     <div className="w-[1.5rem] flex flex-row items-center">
@@ -464,7 +474,7 @@ export default function ChartAndData(props: Props) {
         :
         <div className="w-full">
           <h2 className="font-bold self-start text-lg mb-2 flex flex-row items-center gap-1">
-            Casas:
+            {t("birthChart.houses")}:
             <span className="w-fit flex flex-row items-center justify-start gap-1">
               {showSwitchPartsButton() && (
                 <>
@@ -505,7 +515,7 @@ export default function ChartAndData(props: Props) {
                       } ${housesAntiscion[`Casa ${index + 1}`] ? "antiscion" : ""
                       } ${index % 3 === 0 ? "font-bold" : ""}`}
                   >
-                    Casa {index + 1}
+                    {t("birthChart.house")} {index + 1}
                     {index % 3 === 0 ? ` (${getHouseLabel(index)})` : ""}:
                   </div>
 

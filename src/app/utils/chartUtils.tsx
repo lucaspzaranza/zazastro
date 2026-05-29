@@ -16,6 +16,21 @@ import {
 import { HouseSystem } from "@/types/HouseSystem";
 import Image from "next/image";
 
+export const signsKeys = [
+  "aries",
+  "taurus",
+  "gemini",
+  "cancer",
+  "leo",
+  "virgo",
+  "libra",
+  "scorpio",
+  "sagittarius",
+  "capricorn",
+  "aquarius",
+  "pisces"
+]
+
 export const allSigns = [
   "Áries ♈︎",
   "Touro ♉︎",
@@ -143,54 +158,6 @@ export const HOUSE_SYSTEMS: Record<HouseSystem, string> = {
   campanus: "C",
   equal: "E",
   porphyry: "O",
-};
-
-
-export const arabicPartCalculatorItems: Record<
-  string,
-  ArabicPartCalculatorDropdownItem[]
-> = {
-  Ângulos: [
-    { name: "AC", type: "house", key: "house-0" },
-    { name: "IC", type: "house", key: "house-3" },
-    { name: "DC", type: "house", key: "house-6" },
-    { name: "MC", type: "house", key: "house-9" },
-  ],
-
-  Planetas: [
-    { name: "Sol", type: "planet", key: "sun" },
-    { name: "Lua", type: "planet", key: "moon" },
-    { name: "Mercúrio", type: "planet", key: "mercury" },
-    { name: "Vênus", type: "planet", key: "venus" },
-    { name: "Marte", type: "planet", key: "mars" },
-    { name: "Júpiter", type: "planet", key: "jupiter" },
-    { name: "Saturno", type: "planet", key: "saturn" },
-  ],
-
-  Casas: [
-    { name: "Casa 1 (AC)", type: "house", key: "house-0" },
-    { name: "Casa 2", type: "house", key: "house-1" },
-    { name: "Casa 3", type: "house", key: "house-2" },
-    { name: "Casa 4 (IC)", type: "house", key: "house-3" },
-    { name: "Casa 5", type: "house", key: "house-4" },
-    { name: "Casa 6", type: "house", key: "house-5" },
-    { name: "Casa 7 (DC)", type: "house", key: "house-6" },
-    { name: "Casa 8", type: "house", key: "house-7" },
-    { name: "Casa 9", type: "house", key: "house-8" },
-    { name: "Casa 10 (MC)", type: "house", key: "house-9" },
-    { name: "Casa 11", type: "house", key: "house-10" },
-    { name: "Casa 12", type: "house", key: "house-11" },
-  ],
-
-  "Partes Árabes": [
-    { name: "Fortuna", type: "arabicPart", key: "fortune" },
-    { name: "Espírito", type: "arabicPart", key: "spirit" },
-    { name: "Necessidade", type: "arabicPart", key: "necessity" },
-    { name: "Amor", type: "arabicPart", key: "love" },
-    { name: "Valor", type: "arabicPart", key: "valor" },
-    { name: "Vitória", type: "arabicPart", key: "victory" },
-    { name: "Cativeiro", type: "arabicPart", key: "captivity" },
-  ],
 };
 
 export const getSignGlyphUnicode = (signEmoji: string): string => {

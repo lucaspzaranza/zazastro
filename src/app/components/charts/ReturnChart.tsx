@@ -8,6 +8,7 @@ import {
 import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT } from "@/app/utils/constants";
 import { BirthChart } from "@/interfaces/BirthChartInterfaces";
 import { ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
+import { useTranslations } from "next-intl";
 
 export default function ReturnChart() {
   const { profileName } = useBirthChart();
@@ -18,6 +19,8 @@ export default function ReturnChart() {
     ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT
   );
 
+  const t = useTranslations();
+
   useEffect(() => {
     setIsSolarReturn(returnChart?.returnType === "solar");
   }, [returnChart, isCombinedWithBirthChart]);
@@ -27,7 +30,7 @@ export default function ReturnChart() {
   }
 
   function getTitle() {
-    return `Retorno ${isSolarReturn ? "Solar" : "Lunar"} para 
+    return `${isSolarReturn ? t("returnChart.solarReturnFor") : t("returnChart.lunarReturnFor")}  
             ${getReturnDateRangeString(
       returnChart?.returnTime ?? "0000-00-00 00:00:00",
       isSolarReturn ? "solar" : "lunar"
@@ -55,7 +58,7 @@ export default function ReturnChart() {
             chartDateProps={{
               chartType: "return",
               birthChart: returnChart,
-              label: "Retorno",
+              label: t("returnChart.return"),
             }}
             title={getTitle()}
           />

@@ -2027,7 +2027,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   ]);
 
   useEffect(() => {
-    console.log(fixedStarsAspects);
+    // console.log(fixedStarsAspects);
 
     fixedStarsAspects.forEach((asp) => {
       // 1) ângulo zodiacal original (graus → rad)

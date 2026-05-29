@@ -4,12 +4,14 @@ import {
   convertDegMinNumberToDecimal,
   decimalToDegreesMinutes,
   getDegreesInsideASign,
+  signsKeys,
 } from "@/app/utils/chartUtils";
 import React, { useEffect, useRef, useState } from "react";
 import ArabicPartsLayout from "./ArabicPartsLayout";
 import { ArabicPart } from "@/interfaces/ArabicPartInterfaces";
 import { useBirthChart } from "@/contexts/BirthChartContext";
-import { calculateBirthArchArabicPart } from "@/app/utils/arabicPartsUtils";
+import { useArabicPartsUtils } from "@/hooks/useArabicPartsUtils";
+import { useTranslations } from "next-intl";
 
 interface ASCModalProps {
   baseParts?: ArabicPart[];
@@ -18,6 +20,8 @@ interface ASCModalProps {
 export default function CustomizeASC(props: ASCModalProps) {
   const { baseParts } = props;
   const { birthChart } = useBirthChart();
+  const t = useTranslations();
+  const { calculateBirthArchArabicPart } = useArabicPartsUtils();
 
   const [calculatedParts] = useState<ArabicPart[] | undefined>(undefined);
   const [partsToUse, setPartsToUse] = useState<ArabicPart[] | undefined>(
@@ -82,8 +86,8 @@ export default function CustomizeASC(props: ASCModalProps) {
             setCustomACMode(val);
           }}
         >
-          <option value={0}>Por Signo</option>
-          <option value={1}>Por Grau</option>
+          <option value={0}>{t("arabicParts.perSign")}</option>
+          <option value={1}>{t("arabicParts.perDeg")}</option>
         </select>
 
         {customACMode === 0 && (
@@ -101,10 +105,10 @@ export default function CustomizeASC(props: ASCModalProps) {
                   setSignIndex(newSignIndex);
                 }}
               >
-                {allSigns.map((sign, index) => {
+                {signsKeys.map((signKey, index) => {
                   return (
                     <option key={index} value={index}>
-                      {sign}
+                      {t(`signs.${signKey}`)}
                     </option>
                   );
                 })}
@@ -168,20 +172,20 @@ export default function CustomizeASC(props: ASCModalProps) {
       </div>
 
       <button className="default-btn w-full" onClick={calculateCustomASC}>
-        Calcular
+        {t("arabicParts.calculate")}
       </button>
 
       <div className="w-full flex flex-col items-start mt-4">
         <ArabicPartsLayout
           showSwitchParts={false}
           parts={partsToUse}
-          title="Partes Árabes*"
+          title={t("arabicParts.title") + "*"}
           showMenuButtons={false}
         />
       </div>
 
       <span className="w-full text-sm italic h-full flex flex-row items-center mt-2">
-        *Baseadas no Ascendente do Mapa Natal.
+        {t("arabicParts.basedUponBirthChart")}
       </span>
 
     </div>

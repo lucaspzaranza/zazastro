@@ -33,6 +33,7 @@ import ProfectionChart from "./ProfectionChart";
 import CitySearch from "../CitySearch";
 import HouseSystemDropdown from "../HouseSystemDropdown";
 import { HouseSystem } from "@/types/HouseSystem";
+import { useTranslations } from "next-intl";
 
 type MenuButtonChoice =
   | "home"
@@ -47,6 +48,8 @@ type MenuButtonChoice =
 
 export default function BirthChart() {
   const [loading, setLoading] = useState(false);
+  const t = useTranslations();
+
   const {
     profileName,
     birthChart,
@@ -194,7 +197,7 @@ export default function BirthChart() {
       setChartProfile(chartProfileToOverwrite);
     }
 
-    console.log(houseSystem);
+    // console.log(houseSystem);
 
     if (chartProfileToOverwrite?.birthDate?.coordinates)
       selectCity(chartProfileToOverwrite?.birthDate?.coordinates);
@@ -303,8 +306,10 @@ export default function BirthChart() {
 
     // console.log(birthDate);
 
+    // setMenu("momentChart");
+    updateChartMenuDirectly("moment");
     getBirthChart({
-      name: "Mapa do Momento",
+      name: t("home.momentChart"),
       birthDate,
     });
   };
@@ -367,16 +372,16 @@ export default function BirthChart() {
   };
 
   function getTitleMenuTitle(): string {
-    if (menu === "home") return "Selecione o tipo de mapa que deseja";
+    if (menu === "home") return t("home.subtitle");
     else if (menu === "birthChart")
-      return "Escolha ou crie um novo mapa astral";
+      return t("birthChart.title");
     else if (menu === "solarReturn" || menu === "lunarReturn")
-      return "Escolha um mapa e digite o ano da revolução";
+      return t("returnChart.title");
     else if (menu === "sinastry")
-      return "Escolha os mapas a serem combinados em sinastria";
-    else if (menu === "secondaryProgressions") return "Progressões Secundárias";
-    else if (menu === "profection") return "Profecção Anual";
-    else if (menu === "momentMap") return "Mapa do Momento";
+      return t("synastryChart.title");
+    else if (menu === "secondaryProgressions") return t("secondaryProgressions.title");
+    else if (menu === "profection") return t("profections.title");
+    else if (menu === "momentMap") return t("momentChart.title");
 
     return "Sem título";
   }
@@ -528,42 +533,42 @@ export default function BirthChart() {
               className="default-btn"
               onClick={() => setMenu("birthChart")}
             >
-              Mapa Natal
+              {t("home.birthChart")}
             </button>
 
             <button
               className="default-btn"
               onClick={() => setMenu("solarReturn")}
             >
-              Revolução Solar
+              {t("home.solarReturn")}
             </button>
 
             <button
               className="default-btn"
               onClick={() => setMenu("lunarReturn")}
             >
-              Revolução Lunar
+              {t("home.lunarReturn")}
             </button>
 
             <button
               className="default-btn"
               onClick={() => setMenu("sinastry")}
             >
-              Combinar mapas (Sinastria)
+              {t("home.sinastry")}
             </button>
 
             <button
               className="default-btn"
               onClick={() => setMenu("secondaryProgressions")}
             >
-              Progressão Secundária
+              {t("home.secondaryProgressions")}
             </button>
 
             <button
               className="default-btn"
               onClick={() => setMenu("profection")}
             >
-              Profecção
+              {t("home.profections")}
             </button>
           </div>
         )}
@@ -598,7 +603,7 @@ export default function BirthChart() {
               <input
                 required
                 className="border-2 rounded-sm w-full p-1"
-                placeholder="Ano Rev. Solar"
+                placeholder={t("returnChart.inputPlaceholder")}
                 type="number"
                 onChange={(e) => {
                   if (e.target.value.length > 0) {
@@ -626,7 +631,7 @@ export default function BirthChart() {
                 }}
                 className="default-btn"
               >
-                Revolução Solar
+                {t("home.solarReturn")} 
               </button>
             </form>
           </>
@@ -656,7 +661,7 @@ export default function BirthChart() {
                 <input
                   required
                   className="border-2 rounded-sm w-1/3 px-1"
-                  placeholder="Dia"
+                  placeholder={t("form.day")}
                   type="number"
                   onChange={(e) => {
                     if (e.target.value.length > 0) {
@@ -679,7 +684,7 @@ export default function BirthChart() {
                 >
                   {monthsNames.map((month, index) => (
                     <option key={index} value={index + 1}>
-                      {month}
+                      {t(`months.${index + 1}`)}
                     </option>
                   ))}
                 </select>
@@ -688,7 +693,7 @@ export default function BirthChart() {
                   required
                   type="number"
                   className="border-2 w-20 p-1 rounded-sm"
-                  placeholder="Ano"
+                  placeholder={t("form.year")}
                   onChange={(e) => {
                     if (e.target.value.length > 0) {
                       let val = Number.parseInt(e.target.value);
@@ -715,7 +720,7 @@ export default function BirthChart() {
                 }}
                 className="default-btn"
               >
-                Revolução Lunar
+                {t("home.lunarReturn")}
               </button>
             </form>
           </>
@@ -723,12 +728,12 @@ export default function BirthChart() {
 
         {menu === "sinastry" && (
           <>
-            <span>Primeiro mapa:</span>
+            <span>{t("synastryChart.firstChart")}:</span>
             <PresavedChartsDropdown
               onChange={(profile) => setChartProfile(profile)}
             />
 
-            <span>Segundo mapa:</span>
+            <span>{t("synastryChart.secondChart")}:</span>
             <PresavedChartsDropdown
               onChange={(profile) => setSinastryProfile(profile)}
             />
@@ -737,7 +742,7 @@ export default function BirthChart() {
               onClick={() => makeSinastryCharts()}
               className="default-btn"
             >
-              Gerar sinastria
+              {t("synastryChart.makeSynastry")}
             </button>
           </>
         )}
@@ -747,7 +752,7 @@ export default function BirthChart() {
             onClick={() => setMenu("momentMap")}
             className="default-btn"
           >
-            Mapa do Momento
+            {t("home.momentChart")}
           </button>
         )}
 
@@ -760,13 +765,13 @@ export default function BirthChart() {
               makeSecondaryProgression();
             }}
           >
-            <span>Selecione o mapa:</span>
+            <span>{t("home.selectChart")}:</span>
             <PresavedChartsDropdown
               onChange={(profile) => setChartProfile(profile)}
             />
 
             <div className="flex flex-row items-center gap-2">
-              <label className="text-nowrap">Número de anos:</label>
+              <label className="text-nowrap">{t("home.numOfYears")}:</label>
               <input
                 required
                 type="number"
@@ -791,7 +796,7 @@ export default function BirthChart() {
               type="submit"
               className="default-btn"
             >
-              Gerar Progressão
+              {t("secondaryProgressions.generateProgression")}
             </button>
           </form>
         )}
@@ -805,13 +810,13 @@ export default function BirthChart() {
               getBirthChart();
             }}
           >
-            <span>Selecione o mapa:</span>
+            <span>{t("home.selectChart")}:</span>
             <PresavedChartsDropdown
               onChange={(profile) => setChartProfile(profile)}
             />
 
             <div className="flex flex-row items-center gap-2">
-              <label className="text-nowrap">Número de anos:</label>
+              <label className="text-nowrap">{t("home.numOfYears")}:</label>
               <input
                 required
                 type="number"
@@ -836,7 +841,7 @@ export default function BirthChart() {
               type="submit"
               className="default-btn"
             >
-              Gerar Profecção
+              {t("profections.generateProfection")}
             </button>
           </form>
         )}
@@ -851,7 +856,7 @@ export default function BirthChart() {
               className="default-btn"
               onClick={() => getMomentBirthChart()}
             >
-              Gerar Mapa
+              {t("birthChart.createMomentChart")}
             </button>
 
           </>
@@ -863,7 +868,7 @@ export default function BirthChart() {
             className="default-btn"
             onClick={() => setMenu("home")}
           >
-            Voltar
+            {t("form.back")}
           </button>
         )}
 
@@ -872,7 +877,7 @@ export default function BirthChart() {
             }`}
         >
           <Spinner />
-          <span>Carregando...</span>
+          <span>{t("home.loading")}</span>
         </span>
       </div>
     </Container>
@@ -880,11 +885,12 @@ export default function BirthChart() {
   const getChartContent = (): JSX.Element | null => {
     switch (activeChart) {
       case "birth":
+      case "moment":
         return birthChart ? <div className="w-full flex flex-col items-center">
           <div className="w-full text-left flex flex-col items-center mb-4">
             <ChartAndData
               arabicParts={arabicParts}
-              title={`Mapa Natal - ${profileName}`}
+              title={`${t("birthChart.chartTitle")}${profileName}`}
               innerChart={birthChart}
               chartDateProps={{
                 chartType: "birth",

@@ -1,0 +1,300 @@
+{
+  "home": {
+    "title": "Zazastro",
+    "subtitle": "Select a chart to view",
+    "birthChart": "Birth Chart",
+    "solarReturn": "Solar Return",
+    "lunarReturn": "Lunar Return",
+    "sinastry": "Combine Charts (Sinastry)",
+    "secondaryProgressions": "Secondary Progressions",
+    "profections": "Profections",
+    "momentChart": "Moment Chart",
+    "selectChart": "Select Chart",
+    "numOfYears": "Number of Years",
+    "loading": "Loading..."
+  },
+  "birthChart": {
+    "title": "Choose or create a chart",
+    "load": "Load Chart",
+    "create": "Create Birth Chart",
+    "createMomentChart": "Generate Chart",
+    "chartTitle": "Birth Chart - ",
+    "planetsAntiscion": "Planets Antiscion",
+    "arabicParts": "Arabic Parts",
+    "arabicPartsAntiscion": "Arabic Parts Antiscion",
+    "mainMenu": "Main Menu",
+    "house": "House",
+    "houses": "Houses",
+    "planets": "Planets",
+    "aspects": "Aspects"
+  },
+  "returnChart": {
+    "title": "Choose a chart and enter the year of the return",
+    "inputPlaceholder": "Solar Return Year",
+    "combineWithBirthChart": "Combine with Birth Chart",
+    "combineWithSolarReturnChart": "Combine with Solar Return Chart",
+    "lunarDerivedReturn": "Lunar Derived Return",
+    "return": "Return",
+    "solarReturnFor": "Solar Return for",
+    "lunarReturnFor": "Lunar Return for",
+    "lunarDerivedReturnFor": "Lunar Derived Return for"
+  },
+  "synastryChart": {
+    "title": "Choose charts to combine in sinastry",
+    "firstChart": "First Chart",
+    "secondChart": "Second Chart",
+    "makeSynastry": "Generate Sinastry"
+  },
+  "secondaryProgressions": {
+    "title": "Secondary Progressions",
+    "generateProgression": "Generate Progressions"
+  },
+  "profections": {
+    "title": "Yearly Profection",
+    "generateProfection": "Generate Profections"
+  },
+  "momentChart": {
+    "title": "Moment Chart"
+  },
+  "form": {
+    "houseSystem": "House System",
+    "edit": "Edit",
+    "editProfile": "Edit Profile",
+    "saveEditAndMakeChart": "Save Edits and Generate Birth Chart",
+    "delete": "Delete",
+    "back": "Back",
+    "name": "Name",
+    "day": "Day",
+    "month": "Month",
+    "year": "Year",
+    "city": "Enter city",
+    "searching": "Seaching...",
+    "noResults": "No Results.",
+    "yes": "Yes",
+    "no": "No",
+    "areYouSureYouWantToDelete": "Are you sure you want to delete the profile of ",
+    "deletedSuccessfully": "Profile deleted successfully."
+  },
+  "houses": {
+    "1": {
+      "name": "House 1",
+      "specialName": "Ascendant",
+      "acronym": "ASC"
+    },
+    "2": {
+      "name": "House 2",
+      "acronym": "C2"
+    },
+    "3": {
+      "name": "House 3",
+      "acronym": "C3"
+    },
+    "4": {
+      "name": "House 4",
+      "specialName": "Imum Coeli",
+      "acronym": "IC"
+    },
+    "5": {
+      "name": "House 5",
+      "acronym": "C5"
+    },
+    "6": {
+      "name": "House 6",
+      "acronym": "C6"
+    },
+    "7": {
+      "name": "House 7",
+      "specialName": "Descendant",
+      "acronym": "DSC"
+    },
+    "8": {
+      "name": "House 8",
+      "acronym": "C8"
+    },
+    "9": {
+      "name": "House 9",
+      "acronym": "C9"
+    },
+    "10": {
+      "name": "House 10",
+      "specialName": "Midheaven",
+      "acronym": "MC"
+    },
+    "11": {
+      "name": "House 11",
+      "acronym": "C11"
+    },
+    "12": {
+      "name": "House 12",
+      "acronym": "C12"
+    }
+  },
+  "months": {
+    "1": "January",
+    "2": "February",
+    "3": "March",
+    "4": "April",
+    "5": "May",
+    "6": "June",
+    "7": "July",
+    "8": "August",
+    "9": "September",
+    "10": "October",
+    "11": "November",
+    "12": "December"
+  },
+  "houseSystems": {
+    "placidus": "Placidus",
+    "koch": "Koch",
+    "regiomontanus": "Regiomontanus",
+    "campanus": "Campanus",
+    "equal": "Equal Houses",
+    "wholeSign": "Whole Signs",
+    "porphyry": "Porphyry"
+  },
+  "planets": {
+    "sun": "Sun",
+    "moon": "Moon",
+    "mercury": "Mercury",
+    "venus": "Venus",
+    "mars": "Mars",
+    "jupiter": "Jupiter",
+    "saturn": "Saturn",
+    "uranus": "Uranus",
+    "neptune": "Neptune",
+    "pluto": "Pluto",
+    "northNode": "North Node",
+    "southNode": "South Node"
+  },
+  "signs": {
+    "aries": "Aries ♈︎",
+    "taurus": "Taurus ♉︎",
+    "gemini": "Gemini ♊︎",
+    "cancer": "Cancer ♋︎",
+    "leo": "Leo ♌︎",
+    "virgo": "Virgo ♍︎",
+    "libra": "Libra ♎︎",
+    "scorpio": "Scorpio ♏︎",
+    "sagittarius": "Sagittarius ♐︎",
+    "capricorn": "Capricorn ♑︎",
+    "aquarius": "Aquarius ♒︎",
+    "pisces": "Pisces ♓︎"
+  },
+  "arabicParts": {
+    "title": "Arabic Parts",
+    "customizeASC": "Customize Ascendant",
+    "lotCalculator": "Calculate Arabic Part",
+    "choosePoints": "Choose points for calculation of the part",
+    "valuesFromBirthChart": "(Values captured from the birth chart)",
+    "seeMoreDetails": "See more details",
+    "origin": "(A) Origin:",
+    "until": "(B) Until:",
+    "from": "(C) From:",
+    "calculate": "Calculate",
+    "angles": "Angles",
+    "planets": "Planets",
+    "houses": "Houses",
+    "lots": "Arabic Parts",
+    "lotIsIn": "Lot is in ",
+    "calculationDetails": "Calculation Details",
+    "significator": "Significator",
+    "trigger": "Trigger",
+    "distance": "Distance",
+    "in": "in",
+    "projectedIn": "Projected in",
+    "distanceFromASC": "Distance from Ascendant",
+    "distanceFromBirthASC": "Distance from Birth Ascendant",
+    "projectedInBirthArch": "Arabic Part projected in Birth Arch",
+    "asc": "Ascendant",
+    "projectedLotInBirthArch": "Projected Lot into Ascendant Arch (Arch ASC + Distance from Birth ASC) =",
+    "archLotIsIn": "Arch Lot is in",
+    "perSign": "Per Sign",
+    "perDeg": "Per Degree",
+    "basedUponBirthChart": "*Based upon Birth Chart Ascendant.",
+    "associatedTo": "Associated to",
+    "formula": "Formula",
+    "ruler": "Ruler",
+
+    "fortune": {
+      "short": "Fortune",
+      "complete": "Lot of Fortune"
+    },
+    "spirit": {
+      "short": "Spirit",
+      "complete": "Lot of Spirit"
+    },
+    "necessity": {
+      "short": "Necessity",
+      "complete": "Lot of Necessity"
+    },
+    "love": {
+      "short": "Love",
+      "complete": "Lot of Love"
+    },
+    "valor": {
+      "short": "Courage",
+      "complete": "Lot of Courage"
+    },
+    "victory": {
+      "short": "Victory",
+      "complete": "Lot of Victory"
+    },
+    "captivity": {
+      "short": "Captivity",
+      "complete": "Lot of Captivity"
+    },
+    "marriage": {
+      "short": "Marriage",
+      "complete": "Lot of Marriage"
+    },
+    "resignation": {
+      "short": "Resignation",
+      "complete": "Lot of Resignation"
+    },
+    "children": {
+      "short": "Children",
+      "complete": "Lot of Children"
+    }
+  },
+  "aspects": {
+    "title": "Aspects",
+    "element": "Element",
+    "aspect": "Aspect",
+    "aspects": "Aspects",
+    "aspected": "Aspected",
+    "distance": "Distance",
+    "type": "Type",
+    "items": "Items",
+    "itemsPerPage": "Items per page",
+    "legend": "Legend",
+    "sextile": "Sextile",
+    "square": "Square",
+    "trine": "Trine",
+    "opposition": "Opposition",
+    "conjunction": "Conjunction",
+    "elements": "Elements",
+    "houseInitial": "H",
+    "outerInitial": "O",
+    "house": "Astrological House",
+    "outerElement": "Outer Chart Elements",
+    "aspectType": "Aspect Type",
+    "applicative": "Applicative",
+    "separative": "Separative",
+    "filterByElement": "Filter by Element",
+    "filterByAspect": "Filter by Aspect",
+    "filterByDistance": "Filter by Distance",
+    "filterByAspectType": "Filter by Aspect Type",
+    "lowerLimit": "Lower Limit",
+    "upperLimit": "Upper Limit",
+    "select": "Select",
+    "equalsTo": "Equal to",
+    "lessThan": "Less than",
+    "lessThanOrEqualTo": "Less than or equal to",
+    "greaterThan": "Greater than",
+    "greaterThanOrEqualTo": "Greater than or equal to",
+    "all": "All",
+    "filter": "Filter",
+    "cancel": "Cancel",
+    "noAspectFound": "No aspect Found."
+  }
+}

@@ -1,17 +1,20 @@
-import {
-  calculateBirthArchArabicPart,
-  calculateLotOfCaptivity,
-  calculateLotOfChildren,
-  calculateLotOfFortune,
-  calculateLotOfLove,
-  calculateLotOfMarriage,
-  calculateLotOfNecessity,
-  calculateLotOfResignation,
-  calculateLotOfSpirit,
-  calculateLotOfValor,
-  calculateLotOfVictory,
-} from "@/app/utils/arabicPartsUtils";
+"use client";
+
+// import {
+//   calculateBirthArchArabicPart,
+//   calculateLotOfCaptivity,
+//   calculateLotOfChildren,
+//   calculateLotOfFortune,
+//   calculateLotOfLove,
+//   calculateLotOfMarriage,
+//   calculateLotOfNecessity,
+//   calculateLotOfResignation,
+//   calculateLotOfSpirit,
+//   calculateLotOfValor,
+//   calculateLotOfVictory,
+// } from "@/hooks/useArabicPartsUtils";
 import { arabicPartKeys } from "@/app/utils/chartUtils";
+import { useArabicPartsUtils } from "@/hooks/useArabicPartsUtils";
 import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import { ArabicPartType, BirthChart } from "@/interfaces/BirthChartInterfaces";
 
@@ -72,6 +75,12 @@ export const ArabicPartsContextProvider: React.FC<{ children: ReactNode }> = ({
   const [sinastryParts, setSinastryParts] = useState<
     ArabicPartsType | undefined
   >();
+
+  const { calculateLotOfFortune, calculateLotOfSpirit, calculateLotOfNecessity,
+      calculateLotOfLove, calculateLotOfValor, calculateLotOfVictory, calculateLotOfCaptivity,
+      calculateLotOfMarriage, calculateLotOfResignation, calculateLotOfChildren,
+      calculateBirthArchArabicPart
+   } = useArabicPartsUtils();
 
   function calculateArabicParts(
     birthChart: BirthChart,

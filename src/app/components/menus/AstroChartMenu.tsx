@@ -3,6 +3,7 @@ import { useChartMenu } from "@/contexts/ChartMenuContext";
 import React, { useEffect, useState } from "react";
 import LunarDerivedModal from "../modals/LunarDerivedModal";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 interface AstroChartMenuProps {
   toggleCombineWithBirthChart?: boolean;
@@ -25,6 +26,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
   const [arabicParts, setArabicParts] = useState(false);
   const [arabicPartsAntiscia, setArabicPartsAntiscia] = useState(false);
   const [lunarDerivedModal, setLunarDerivedModal] = useState(false);
+  const t = useTranslations();
 
   const {
     birthChart,
@@ -68,7 +70,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
               togglePlanetsAntiscia?.();
             }}
           >
-            <span className="w-min md:w-auto">Antiscion Planetas</span>
+            <span className="w-min md:w-auto">{t("birthChart.planetsAntiscion")}</span>
             {planetsAntiscia && (
               <Image
                 alt="check"
@@ -87,7 +89,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
               toggleArabicParts?.();
             }}
           >
-            <span className="w-min md:w-auto">Partes Árabes</span>
+            <span className="w-min md:w-auto">{t("birthChart.arabicParts")}</span>
             {arabicParts && (
               <Image
                 alt="check"
@@ -106,7 +108,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
               toggleArabicPartsAntiscia?.();
             }}
           >
-            <span className="w-min md:w-auto">Antiscion Partes Árabes</span>
+            <span className="w-min md:w-auto">{t("birthChart.arabicPartsAntiscion")}</span>
             {arabicPartsAntiscia && (
               <Image
                 alt="check"
@@ -128,7 +130,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
                 updateIsMountingChart(true);
               }}
             >
-              Combinar com Mapa Natal
+              {t("returnChart.combineWithBirthChart")}
               {isCombinedWithBirthChart && (
                 <Image
                   alt="check"
@@ -149,7 +151,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
                 updateIsMountingChart(true);
               }}
             >
-              Combinar com Retorno Solar
+              {t("returnChart.combineWithSolarReturnChart")}
               {isCombinedWithReturnChart && (
                 <Image
                   alt="check"
@@ -169,7 +171,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
                 setLunarDerivedModal(true);
               }}
             >
-              Retorno Lunar Derivado
+              {t("returnChart.lunarDerivedReturn")}
             </button>
           )}
         </div>

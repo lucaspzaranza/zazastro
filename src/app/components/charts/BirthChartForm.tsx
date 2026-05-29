@@ -15,6 +15,7 @@ import { useProfiles } from "@/contexts/ProfilesContext";
 import { useBirthChart } from "@/contexts/BirthChartContext";
 import Image from "next/image";
 import HouseSystemDropdown from "../HouseSystemDropdown";
+import { useTranslations } from "next-intl";
 
 interface BirthChartFormProps {
   currentBirthDate?: BirthDate;
@@ -23,6 +24,7 @@ interface BirthChartFormProps {
 
 export default function BirthChartForm(props: BirthChartFormProps) {
   const { onSubmit } = props;
+  const t = useTranslations();
 
   const { profiles, createProfile, updateProfile, deleteProfile } =
     useProfiles();
@@ -133,7 +135,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
               disabled={profiles.length === 0}
               onChange={() => setMenu(0)}
             />
-            Carregar mapa
+            {t("birthChart.load")}
           </label>
 
           <label
@@ -148,7 +150,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
               defaultChecked={profiles.length === 0}
               onChange={() => setMenu(1)}
             />
-            Gerar novo mapa
+            {t("birthChart.create")}
           </label>
         </div>
       )}
@@ -169,11 +171,11 @@ export default function BirthChartForm(props: BirthChartFormProps) {
       {((menu === 1 && !editProfile) || (menu === 0 && editProfile)) && (
         <>
           {editProfile && (
-            <h1 className="w-full text-center font-bold">Editar Perfil</h1>
+            <h1 className="w-full text-center font-bold">{t("form.editProfile")}</h1>
           )}
           <input
             required
-            placeholder="Nome"
+            placeholder={t("form.name")}
             className="border-2 p-1 rounded-sm"
             value={name}
             onChange={(e) => {
@@ -184,7 +186,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
             <input
               required
               className="border-2 rounded-sm w-1/3 px-1"
-              placeholder="Dia"
+              placeholder={t("form.day")}
               type="number"
               value={day ?? ""}
               onChange={(e) => {
@@ -208,7 +210,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
             >
               {monthsNames.map((month, index) => (
                 <option key={index} value={index + 1}>
-                  {month}
+                  {t(`months.${index + 1}`)}
                 </option>
               ))}
             </select>
@@ -217,7 +219,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
               type="number"
               className="border-2 w-20 p-1 rounded-sm"
               value={year ?? ""}
-              placeholder="Ano"
+              placeholder={t("form.year")}
               onChange={(e) => {
                 const parsed = Number.parseInt(e.target.value);
                 if (Number.isNaN(parsed)) {
@@ -293,7 +295,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
             }}
             className="w-full bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 flex flex-row items-center justify-center gap-2"
           >
-            Editar
+            {t("form.edit")}
             <Image alt="edit" src="/edit.png" width={16} height={16} />
           </button>
 
@@ -307,7 +309,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
             }}
             className="w-full bg-red-700 text-white px-4 py-2 rounded hover:bg-red-800 flex flex-row items-center justify-center gap-2"
           >
-            Deletar
+            {t("form.delete")}
             <Image alt="delete" src="/trash-white.png" width={17} height={17} />
           </button>
         </div>
@@ -325,7 +327,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
           }}
           className="default-btn"
         >
-          <span>Gerar Mapa Natal</span>
+          <span>{t("birthChart.create")}</span>
         </button>
       )}
 
@@ -338,14 +340,14 @@ export default function BirthChartForm(props: BirthChartFormProps) {
           }}
           className="bg-green-700 w-full text-white px-4 py-2 rounded hover:bg-green-800"
         >
-          Salvar edições e gerar Mapa Natal
+          {t("form.saveEditAndMakeChart")}
         </button>
       )}
 
       {menu === 0 && showDeleteProfileMenu && profile && (
         <>
           <h1>
-            Tem certeza que deseja deletar o perfil de{" "}
+            {t("form.areYouSureYouWantToDelete")}
             <strong>{profile.name}</strong>?
           </h1>
           <div className="w-full flex flex-row items-center justify-between gap-2">
@@ -356,7 +358,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
               }}
               className="bg-green-700 w-full text-white px-4 py-2 rounded hover:bg-green-800"
             >
-              Não
+              {t("form.no")}
             </button>
 
             <button
@@ -365,7 +367,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
                 if (profile?.id && deleteProfile(profile.id)) {
                   setProfile(undefined);
                   selectCity({ latitude: 0, longitude: 0 });
-                  alert("Perfil deletado com sucesso.");
+                  alert(t("form.deletedSuccessfully"));
                   if (profiles.length === 0) {
                     setMenu(1);
                   }
@@ -374,7 +376,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
               }}
               className="bg-red-700 w-full text-white px-4 py-2 rounded hover:bg-red-700"
             >
-              Sim
+              {t("form.yes")}
             </button>
           </div>
         </>

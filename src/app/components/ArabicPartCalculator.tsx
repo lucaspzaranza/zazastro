@@ -16,6 +16,7 @@ import {
   mod360,
 } from "@/app/utils/chartUtils";
 import { useChartMenu } from "@/contexts/ChartMenuContext";
+import { useTranslations } from "next-intl";
 
 export default function ArabicPartCalculator(
 
@@ -35,11 +36,14 @@ export default function ArabicPartCalculator(
   const [lotCalculationHTML, setLotCalculationHTML] =
     useState<React.ReactNode>();
 
+  const t = useTranslations();
+
   useEffect(() => {
     if (!birthChart) return;
 
     const acElement: ChartElementForArabicPartCalculation = {
-      name: "AC",
+      name: "Ascendente",
+      key: "1",
       elementType: "house",
       longitude: birthChart?.housesData.house[0],
     };
@@ -48,6 +52,12 @@ export default function ArabicPartCalculator(
     setSignificator(acElement);
     setTrigger(acElement);
   }, [birthChart]);
+
+  useEffect(() => {
+    if (showLotCalculation) {
+      calculateLot();
+    }
+  }, [t]);
 
   function getElementFromChart(
     element: ArabicPartCalculatorDropdownItem
@@ -58,7 +68,8 @@ export default function ArabicPartCalculator(
       const planet = birthChart?.planets.find((p) => p.type === element.key);
       if (planet) {
         chartElement = {
-          name: planet.name,
+          name: planet.type,
+          key: "planets",
           elementType: "planet",
           longitude: planet.longitudeRaw,
         };
@@ -70,9 +81,10 @@ export default function ArabicPartCalculator(
         if (!house) return undefined;
 
         chartElement = {
+          name: element.name,
+          key: (houseNumber + 1).toString(),
           elementType: "house",
           longitude: house,
-          name: element.name,
         };
       }
     } else if (element.type === "arabicPart") {
@@ -83,13 +95,30 @@ export default function ArabicPartCalculator(
       if (!lot) return undefined;
 
       chartElement = {
+        name: element.name,
+        key,
         elementType: "arabicPart",
         longitude: lot.longitudeRaw,
-        name: element.name,
       };
     }
 
     return chartElement;
+  }
+
+  function getLabel(item: ChartElementForArabicPartCalculation) {
+    if (item.elementType === "planet") {
+      return t(`planets.${item.name}`);
+    }
+
+    if (item.elementType === "house") {
+      return t(`birthChart.house`) + " " + item.key;
+    }
+
+    if (item.elementType === "arabicPart") {
+      return t(`arabicParts.${item.key}.short`);
+    }
+
+    return item.key;
   }
 
   function selectItem(
@@ -155,17 +184,15 @@ export default function ArabicPartCalculator(
 
     setLotCalculationHTML(
       <div className="w-full text-center mt-2">
-        {/* <strong> */}
-        Parte Árabe está em{" "}
+        {t("arabicParts.lotIsIn")}
         {formatSignColor(getDegreeAndSign(projectedLongitude, true))}.
-        {/* </strong> */}
         <div className="w-full flex flex-col mt-2">
-          <strong>Detalhes do cálculo:</strong>
+          <strong>{t("arabicParts.calculationDetails")}:</strong>
           <div className="flex flex-col text-start text-sm">
             <span>
-              Significador <strong>(B)</strong>:{" "}
-              <strong>{significator.name}</strong>
-              {" em "}
+              {t("arabicParts.significator")} <strong>(B)</strong>:{" "}
+              <strong>{getLabel(significator)}</strong>
+              {" "}{t("arabicParts.in")}{" "}
               {formatSignColor(
                 getDegreeAndSign(
                   decimalToDegreesMinutes(significator.longitude),
@@ -176,8 +203,8 @@ export default function ArabicPartCalculator(
             </span>
 
             <span>
-              Gatilho <strong>(C)</strong>: <strong>{trigger.name}</strong>
-              {" em "}
+              {t("arabicParts.trigger")} <strong>(C)</strong>: <strong>{getLabel(trigger)}</strong>
+              {" "}{t("arabicParts.in")}{" "}
               {formatSignColor(
                 getDegreeAndSign(
                   decimalToDegreesMinutes(trigger.longitude),
@@ -188,12 +215,12 @@ export default function ArabicPartCalculator(
             </span>
 
             <span>
-              Distância <strong>(B - C)</strong>: {distanceString}.
+              {t("arabicParts.distance")} <strong>(B - C)</strong>: {distanceString}.
             </span>
             <span>
-              Projetado em{" "}
+              {t("arabicParts.projectedIn")}{" "}
               <strong>
-                (A) {projectionPoint.name}: A + B - C{" = "}
+                (A) {getLabel(projectionPoint)}: A + B - C{" = "}
               </strong>
               <br />
               {convertDecimalIntoDegMinString(
@@ -216,19 +243,18 @@ export default function ArabicPartCalculator(
               {convertDecimalIntoDegMinString(
                 Number.parseFloat(projectedLongitude.toFixed(2))
               )}
-              {/* {convertDecimalIntoDegMinString(333.05)} */}
               {" = "}
               {formatSignColor(getDegreeAndSign(projectedLongitude, true))}.
             </span>
-            <span>Distância pro Ascendente: {distanceString}.</span>
+            <span>{t("arabicParts.distanceFromASC")}: {distanceString}.</span>
 
-            {chartMenu !== "birth" && (
+            {chartMenu !== "birth" && chartMenu !== "moment" && (
               <div className="w-full mt-1 flex flex-col">
                 <h3 className="text-center text-[1rem]">
-                  <strong>Parte Árabe projetada no Arco Natal:</strong>
+                  <strong>{t("arabicParts.projectedInBirthArch")}:</strong>
                 </h3>
                 <span>
-                  Ascendente: {archACString}
+                  {t("arabicParts.asc")}: {archACString}
                   {" = "}
                   {formatSignColor(
                     getDegreeAndSign(decimalToDegreesMinutes(archACRaw), true)
@@ -236,8 +262,7 @@ export default function ArabicPartCalculator(
                   .
                 </span>
                 <span>
-                  Parte projetada no Arco do Ascendente (AC do Arco + Distância
-                  pro AC Natal) ={" "}
+                  {t("arabicParts.projectedLotInBirthArch")}{" "}
                   {showArchLotLongMod360Transformation && (
                     <>
                       {convertDecimalIntoDegMinString(archLotLongitudeRaw)} -
@@ -250,7 +275,7 @@ export default function ArabicPartCalculator(
                 </span>
 
                 <span className="w-full text-center text-[1rem] mt-1">
-                  Parte Árabe do arco está em{" "}
+                  {t("arabicParts.projectedLotInBirthArch")}{" "}
                   {formatSignColor(getDegreeAndSign(archLotLongitudeRaw, true))}
                   .
                 </span>
@@ -265,26 +290,26 @@ export default function ArabicPartCalculator(
   return (
     <div className="w-full md:min-h-[24.8rem] flex flex-col items-center justify-start text-sm md:text-[1rem] mb-3 md:mb-0">
       <h2 className="w-full text-center">
-        Escolha os pontos para o cálculo da parte.
+        {t("arabicParts.choosePoints")}:
       </h2>
       <h3 className="w-full italic text-[0.8rem] text-center mb-1">
-        (Valores captados do mapa natal)
+        {t("arabicParts.valuesFromBirthChart")}
       </h3>
 
       <div className="w-full flex flex-col items-center justify-center gap-4">
         <div className="w-full flex flex-row items-center justify-center gap-2">
           <ArabicPartCalculatorDropdown
-            label="(A) Origem:"
+            label={t("arabicParts.origin")}
             onSelect={(el) => selectItem(el, 0)}
           />
           +
           <ArabicPartCalculatorDropdown
-            label="(B) Até:"
+            label={t("arabicParts.until")}
             onSelect={(el) => selectItem(el, 1)}
           />
           -
           <ArabicPartCalculatorDropdown
-            label="(C) De:"
+            label={t("arabicParts.from")}
             onSelect={(el) => selectItem(el, 2)}
           />
         </div>
@@ -296,7 +321,8 @@ export default function ArabicPartCalculator(
             setShowLotCalculation(true);
           }}
         >
-          Calcular
+          {/* Calcular */}
+          {t("arabicParts.calculate")}
         </button>
       </div>
 

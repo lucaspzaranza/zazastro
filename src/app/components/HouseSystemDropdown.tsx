@@ -3,13 +3,15 @@
 import { useBirthChart } from "@/contexts/BirthChartContext";
 import { getHouseSystemLabel, HOUSE_SYSTEMS } from "../utils/chartUtils";
 import { HouseSystem } from "@/types/HouseSystem";
+import { useTranslations } from "next-intl";
 
 const HouseSystemDropdown = () => {
   const { updateHouseSystem, houseSystem } = useBirthChart();
+  const t = useTranslations();
 
   return (
     <>
-      <label className="mb-[-8px]">Sistema de Casas</label>
+      <label className="mb-[-8px]">{t("form.houseSystem")}</label>
       <select
         required
         className="p-1 border-2 w-full rounded-sm"
@@ -18,7 +20,7 @@ const HouseSystemDropdown = () => {
       >
         {Object.entries(HOUSE_SYSTEMS).map(([key, label]) => (
           <option key={key} value={key}>
-            {getHouseSystemLabel(key as HouseSystem)}
+            {t(`houseSystems.${key}`)}
           </option>
         ))}
       </select>

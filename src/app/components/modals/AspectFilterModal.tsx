@@ -16,6 +16,7 @@ import {
   FilterModalImperativeHandle,
 } from "@/interfaces/AspectTableInterfaces";
 import AspectTableFilterModalLayout from "./AspectTableFilterModalLayout";
+import { useTranslations } from "next-intl";
 
 const aspects: AspectType[] = [
   "sextile",
@@ -39,6 +40,8 @@ function AspectFilterModalFn(
     applyFilterIsActiveClasses,
     clearSignal,
   } = props;
+
+  const t = useTranslations();
 
   // default (imutável) — sempre criar fora do estado
   const defaultCheckboxes = useMemo<AspectFilterModalCheckboxState[]>(
@@ -170,7 +173,7 @@ function AspectFilterModalFn(
   return (
     <AspectTableFilterModalLayout
       isVisible={isVisible}
-      title="Filtrar por Aspecto"
+      title={t("aspects.filterByAspect")}
       onCancel={cancelAndResetState}
       onConfirm={confirmWithAspectesChecked}
       className={`w-[190px] ${className}`}
@@ -199,7 +202,7 @@ function AspectFilterModalFn(
               checked={allCheckboxesChecked}
               onChange={toggleAllCheckboxes}
             />
-            <label htmlFor="aspect-all">Todos</label>
+            <label htmlFor="aspect-all">{t("aspects.all")}</label>
           </div>
         </div>
       )}

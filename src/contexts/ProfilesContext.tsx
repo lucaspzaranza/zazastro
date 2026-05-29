@@ -1,3 +1,5 @@
+"use client";
+
 import { BirthChartProfile } from "@/interfaces/BirthChartInterfaces";
 
 import React, {

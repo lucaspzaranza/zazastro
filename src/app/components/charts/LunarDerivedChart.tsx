@@ -8,6 +8,7 @@ import { useBirthChart } from "@/contexts/BirthChartContext";
 import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT } from "@/app/utils/constants";
 import { BirthChart } from "@/interfaces/BirthChartInterfaces";
 import { ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
+import { useTranslations } from "next-intl";
 
 export default function LunarDerivedChart() {
   const [returnTime, setReturnTime] = useState("");
@@ -18,6 +19,7 @@ export default function LunarDerivedChart() {
   );
   const { birthChart, returnChart, lunarDerivedChart,
     isCombinedWithBirthChart, isCombinedWithReturnChart } = useBirthChart();
+    const t = useTranslations();
 
   useEffect(() => {
     if (lunarDerivedChart && lunarDerivedChart.returnTime) {
@@ -31,7 +33,7 @@ export default function LunarDerivedChart() {
   }
 
   function getTitle() {
-    return `Retorno Lunar Derivado para 
+    return `${t("returnChart.lunarDerivedReturnFor")} 
               ${getReturnDateRangeString(
       returnTime ?? "0000-00-00 00:00:00",
       "lunar"
