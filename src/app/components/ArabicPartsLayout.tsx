@@ -74,7 +74,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
   function renderMenuButtons(): JSX.Element {
     return <>
       <button
-        title="Partes Árabes"
+        title={t("arabicParts.title")}
         className={`rounded-sm hover:outline-2 hover:scale-110 outline-offset-4 ${menu === "default" ? "outline-2 scale-110" : ""
           }`}
         onClick={() => {
@@ -91,7 +91,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
       </button>
 
       <button
-        title="Calcular Parte Árabe"
+        title={t("arabicParts.lotCalculator")}
         className={`rounded-sm hover:outline-2 hover:scale-110 outline-offset-4 ${menu === "lotCalculator" ? "outline-2 scale-110" : ""
           }`}
         onClick={() => {
@@ -108,7 +108,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
       </button>
 
       <button
-        title="Personalizar Ascendente"
+        title={t("arabicParts.customizeASC")}
         className={`rounded-sm hover:outline-2 hover:scale-110 outline-offset-4 ${menu === "customizeASC" ? "outline-2 scale-110" : ""
           }`}
         onClick={() => {
@@ -124,7 +124,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
         />
       </button>
       <button
-        title="Ver mais"
+        title={t("arabicParts.seeMore")}
         className="rounded-sm hover:outline-2 hover:scale-110 outline-offset-4"
         onClick={() => {
           setModalIsOpen(true);
@@ -144,7 +144,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
   function renderMenuButtonsForMobile(): JSX.Element {
     return <>
       <button
-        title="Partes Árabes"
+        title={t("arabicParts.title")}
         className="w-full flex gap-2 p-2 pl-1 flex-row items-center active:bg-blue-100"
         onClick={() => {
           setMenu("default");
@@ -158,11 +158,11 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
           height={20}
           unoptimized
         />
-        <span className="text-sm font-normal">Partes Árabes</span>
+        <span className="text-sm font-normal">{t("arabicParts.title")}</span>
       </button >
 
       <button
-        title="Calcular Parte Árabe"
+        title={t("arabicParts.lotCalculator")}
         className="w-full flex gap-2 p-2 pl-1 flex-row items-center active:bg-blue-100"
         onClick={() => {
           setMenu("lotCalculator");
@@ -180,7 +180,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
       </button>
 
       <button
-        title="Personalizar Ascendente"
+        title={t("arabicParts.customizeASC")}
         className="w-full flex gap-2 p-2 pl-1 flex-row items-center active:bg-blue-100"
         onClick={() => {
           setMenu("customizeASC");
@@ -197,7 +197,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
         <span className="text-sm font-normal">{t("arabicParts.customizeASC")}</span>
       </button>
       <button
-        title="Ver mais"
+        title={t("arabicParts.seeMore")}
         className="w-full flex gap-2 p-2 pl-1 flex-row items-center active:bg-blue-100"
         onClick={() => {
           setModalIsOpen(true);
@@ -223,7 +223,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
         {showSwitchPartsButton() && (
           <>
             <button
-              title="Alterar entre partes internas e externas"
+              title={t("arabicParts.switchParts")}
               className="rounded-sm hover:outline-2 outline-offset-4 hover:cursor-pointer active:bg-gray-300"
               onClick={() => {
                 toggleInnerPartsVisualization();
@@ -237,7 +237,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
                 unoptimized
               />
             </button>
-            {!showInnerParts && "(E)"}
+            {!showInnerParts && `(${t("aspects.outerInitial")})`}
           </>
         )}
       </span>

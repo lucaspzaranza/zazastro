@@ -148,8 +148,7 @@ export default function ArabicPartCalculator(
     if (!projectionPoint || !significator || !trigger) {
       setLotCalculationHTML(
         <div className="w-full text-sm text-center mt-2">
-          Algum dos campos está vazio, por favor selecione os elementos para o
-          cálculo.
+          {t("arabicParts.someFieldsAreEmpty")}
         </div>
       );
       return;
