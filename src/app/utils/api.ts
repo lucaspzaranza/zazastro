@@ -21,8 +21,10 @@ export const API_BASE = (() => {
   }
 })();
 
+export const API_BASE_DEBUG = (() => "http://localhost:3001")();
+
 export async function apiFetch(path: string, init?: RequestInit) {
-  const url = `${API_BASE.replace(/\/$/, "")}/${path.replace(/^\//, "")}`;
+  const url = `${API_BASE_DEBUG.replace(/\/$/, "")}/${path.replace(/^\//, "")}`;
   const res = await fetch(url, init);
   if (!res.ok) {
     const text = await res.text().catch(() => "");
