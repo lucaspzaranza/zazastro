@@ -15,6 +15,7 @@ export default function ReturnChart() {
   const { birthChart, returnChart, isCombinedWithBirthChart } = useBirthChart();
   const { arabicParts, archArabicParts } = useArabicParts();
   const [isSolarReturn, setIsSolarReturn] = useState(true);
+  const [isSolarReturnSet, setIsSolarReturnSet] = useState(false);
   const [tableItemsPerPage, setTableItemsPerPage] = useState(
     ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT
   );
@@ -23,6 +24,7 @@ export default function ReturnChart() {
 
   useEffect(() => {
     setIsSolarReturn(returnChart?.returnType === "solar");
+    setIsSolarReturnSet(true);
   }, [returnChart, isCombinedWithBirthChart]);
 
   function handleOnItemsPerPagechanged(newItemsPerPage: number) {
@@ -46,7 +48,7 @@ export default function ReturnChart() {
 
   return (
     <div className="w-full flex flex-col items-center justify-center gap-3 mb-4">
-      {returnChart && returnChart.timezone && (
+      {isSolarReturnSet && returnChart && returnChart.timezone && (
         <div className="w-full text-left flex flex-col items-center">
           <ChartAndData
             innerChart={getInnerChart()}

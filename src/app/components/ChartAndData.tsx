@@ -393,7 +393,7 @@ export default function ChartAndData(props: Props) {
                       unoptimized
                     />
                   </button>
-                  {!useInnerPlanets && "(E)"}
+                  {!useInnerPlanets && `(${t("aspects.outerInitial")})`}
                 </>
               )}
             </span>
@@ -493,7 +493,7 @@ export default function ChartAndData(props: Props) {
                       unoptimized
                     />
                   </button>
-                  {!useInnerHouses && "(E)"}
+                  {!useInnerHouses && `(${t("aspects.outerInitial")})`}
                 </>
               )}
             </span>

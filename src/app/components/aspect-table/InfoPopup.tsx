@@ -56,7 +56,7 @@ export default function InfoPopup() {
             <span className="pl-2">{t("aspects.opposition")}</span>
           </div>
 
-          <div className="flex flex-row items-center justify-start">
+          <div className="ml-4 sm:ml-0 flex flex-row items-center justify-start">
             <Image
               alt="sextile"
               src="/aspects/conjunction.png"
