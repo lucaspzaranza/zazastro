@@ -11,6 +11,7 @@ interface AstroChartMenuProps {
   togglePlanetsAntiscia?: () => void;
   toggleArabicParts?: () => void;
   toggleArabicPartsAntiscia?: () => void;
+  toggleDegrees?: () => void;
 }
 
 export default function AstroChartMenu(props: AstroChartMenuProps) {
@@ -20,11 +21,13 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
     toggleCombineWithBirthChart,
     toggleCombineWithReturnChart,
     togglePlanetsAntiscia,
+    toggleDegrees
   } = props;
 
   const [planetsAntiscia, setPlanetsAntiscia] = useState(false);
   const [arabicParts, setArabicParts] = useState(false);
   const [arabicPartsAntiscia, setArabicPartsAntiscia] = useState(false);
+  const [showDegrees, setShowDegrees] = useState(true);
   const [lunarDerivedModal, setLunarDerivedModal] = useState(false);
   const t = useTranslations();
 
@@ -59,119 +62,116 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
   const className =
     "default-btn flex flex-row gap-1 items-center justify-center text-[0.65rem] md:text-[0.75rem] w-full text-white px-0 py-2 rounded";
 
+    const pillBase =
+    "flex items-center justify-center text-[0.7rem] md:text-[0.75rem] px-3 py-2 rounded-full border-2 transition-all cursor-pointer whitespace-nowrap";
+  const pillActive =
+    `${pillBase} default-bg border-blue-700 text-white`;
+  const pillInactive =
+    `${pillBase} bg-transparent border-zinc-300 dark:border-zinc-600 text-black dark:text-zinc-400 hover:border-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200`;
+
   return (
     <>
-      <div className="w-full flex flex-col gap-1">
-        <div className="w-full flex flex-row gap-1">
+      <div className="w-full flex flex-col gap-2">
+        <div className="w-full flex flex-row items-center justify-center gap-1">
           <button
-            className={className}
+            className={planetsAntiscia ? pillActive : pillInactive}
             onClick={() => {
               setPlanetsAntiscia((prev) => !prev);
               togglePlanetsAntiscia?.();
             }}
           >
-            <span className="w-min md:w-auto">{t("birthChart.planetsAntiscion")}</span>
-            {planetsAntiscia && (
-              <Image
-                alt="check"
-                src={checkSrc}
-                width={checkSize}
-                height={checkSize}
-                unoptimized
-              />
-            )}
+            <span className="w-min block md:hidden">{t("birthChart.antiscion")}</span>
+            <span className="w-min hidden md:block">{t("birthChart.planetsAntiscion")}</span>
           </button>
 
           <button
-            className={className}
+            className={arabicParts ? pillActive : pillInactive}
             onClick={() => {
               setArabicParts((prev) => !prev);
               toggleArabicParts?.();
             }}
           >
-            <span className="w-min md:w-auto">{t("birthChart.arabicParts")}</span>
-            {arabicParts && (
-              <Image
-                alt="check"
-                src={checkSrc}
-                width={checkSize}
-                height={checkSize}
-                unoptimized
-              />
-            )}
+            <span className="w-min hidden md:block">{t("birthChart.arabicParts")}</span>
+            <span className="w-min block md:hidden">{t("birthChart.arabicPartsMobile")}</span>
           </button>
+          
+            <button
+              className={arabicPartsAntiscia ? pillActive : pillInactive}
+              onClick={() => {
+                setArabicPartsAntiscia((prev) => !prev);
+                toggleArabicPartsAntiscia?.();
+              }}
+            >
+              <span className="w-min hidden md:block">{t("birthChart.arabicPartsAntiscion")}</span>
+              <span className="w-min block md:hidden">{t("birthChart.arabicPartsAntiscionMobile")}</span>
+            </button>    
 
-          <button
-            className={className}
-            onClick={() => {
-              setArabicPartsAntiscia((prev) => !prev);
-              toggleArabicPartsAntiscia?.();
-            }}
-          >
-            <span className="w-min md:w-auto">{t("birthChart.arabicPartsAntiscion")}</span>
-            {arabicPartsAntiscia && (
-              <Image
-                alt="check"
-                src={checkSrc}
-                width={checkSize}
-                height={checkSize}
-                unoptimized
-              />
-            )}
-          </button>
+          {
+            toggleCombineWithBirthChart === false && 
+            <button
+              className={showDegrees ? pillActive : pillInactive}
+              onClick={() => {
+                setShowDegrees((prev) => !prev);
+                toggleDegrees?.();
+              }}
+            >
+              <span className="w-min hidden md:block">{t("birthChart.showDegrees")}</span>
+              <span className="w-min block md:hidden">{t("birthChart.showDegreesMobile")}</span>
+            </button>      
+          }
         </div>
 
         <div className="w-full flex flex-row justify-center gap-1">
+          {
+            toggleCombineWithBirthChart &&
+            <button
+              className={showDegrees ? pillActive : pillInactive}
+              onClick={() => {
+                setShowDegrees((prev) => !prev);
+                toggleDegrees?.();
+              }}
+            >
+              <span className="w-min hidden md:block">{t("birthChart.showDegrees")}</span>
+              <span className="w-min block md:hidden">{t("birthChart.showDegreesMobile")}</span>
+            </button>
+          }
+
           {toggleCombineWithBirthChart && !isCombinedWithReturnChart && (
             <button
-              className={className}
+              className={isCombinedWithBirthChart ? pillActive : pillInactive}
               onClick={() => {
                 updateIsCombinedWithBirthChart(!isCombinedWithBirthChart);
                 updateIsMountingChart(true);
               }}
             >
-              {t("returnChart.combineWithBirthChart")}
-              {isCombinedWithBirthChart && (
-                <Image
-                  alt="check"
-                  src={checkSrc}
-                  width={checkSize}
-                  height={checkSize}
-                  unoptimized
-                />
-              )}
+              <span className="w-min hidden md:block">{t("returnChart.combineWithBirthChart")}</span>
+              <span className="w-min block md:hidden">{t("returnChart.combineWithBirthChartMobile")}</span>
             </button>
           )}
 
           {toggleCombineWithReturnChart && !isCombinedWithBirthChart && (
             <button
-              className={className}
+              className={isCombinedWithReturnChart ? pillActive : pillInactive}
               onClick={() => {
                 updateIsCombinedWithReturnChart(!isCombinedWithReturnChart);
                 updateIsMountingChart(true);
               }}
             >
-              {t("returnChart.combineWithSolarReturnChart")}
-              {isCombinedWithReturnChart && (
-                <Image
-                  alt="check"
-                  src={checkSrc}
-                  width={checkSize}
-                  height={checkSize}
-                  unoptimized
-                />
-              )}
+              <span className="w-min hidden md:block">{t("returnChart.combineWithSolarReturnChart")}</span>
+              <span className="w-min block md:hidden">{t("returnChart.combineWithSolarReturnChartMobile")}</span>
             </button>
           )}
 
           {chartMenu === "solarReturn" && (
             <button
-              className={className}
+              className={lunarDerivedModal ? pillActive : pillInactive}
               onClick={() => {
                 setLunarDerivedModal(true);
               }}
             >
-              {t("returnChart.lunarDerivedReturn")}
+              {/* {t("returnChart.lunarDerivedReturn")} */}
+              <span className="w-min hidden md:block">{t("returnChart.lunarDerivedReturn")}</span>
+              <span className="w-min block md:hidden">{t("returnChart.lunarDerivedReturnMobile")}</span>
             </button>
           )}
         </div>

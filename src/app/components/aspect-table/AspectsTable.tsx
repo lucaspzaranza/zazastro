@@ -37,6 +37,7 @@ import { SkeletonTable } from "../skeletons";
 import { SKELETON_LOADER_TIME } from "@/app/utils/constants";
 import { useBirthChart } from "@/contexts/BirthChartContext";
 import { useTranslations } from "next-intl";
+import { useAspectsData } from "@/contexts/AspectsContext";
 
 export default function AspectsTable({
   aspects,
@@ -74,6 +75,8 @@ export default function AspectsTable({
     useRef<AspectFilterButtonImperativeHandle | null>(null);
 
   const backupValue = useRef(0);
+
+  const {updateAspectsData} = useAspectsData();
 
   const t = useTranslations();
   const houseInitial = t("aspects.houseInitial");
@@ -125,6 +128,7 @@ export default function AspectsTable({
   useEffect(() => {
     if (filteredAspects.length > 0) {
       updateTablePaginationAndPageCount();
+      getAspectData();
     }
   }, [filteredAspects]);
 
@@ -139,6 +143,22 @@ export default function AspectsTable({
     }
 
     return `${houseInitial}${houseNumber}${element.isFromOuterChart ? `(${outerInitial})` : ""}`;
+  }
+
+  const getAspectData = () => {
+    let res: PlanetAspectData[] = [];
+
+    res = filteredAspects.map(aspect => ({
+      ...aspect,
+      elementImg: getElementImage(aspect.element),
+      aspectImg: getAspectImage(aspect.aspectType),
+      aspectedElementImg: aspect.aspectedElement.elementType !== "fixedStar" ?
+        getElementImage(aspect.aspectedElement) : undefined,
+      distance: getAspectDistance(aspect),
+      distanceType: getAspectDistanceType(aspect)
+    }));
+
+    updateAspectsData(res);
   }
 
   function getPlanetInfo(element: AspectedElement): Planet | undefined {
@@ -164,7 +184,7 @@ export default function AspectsTable({
   function getElementImage(element: AspectedElement): React.ReactNode {
     if (element.elementType === "planet") {
       return (
-        <div className="w-full flex flex-row items-center justify-center">
+        <div className="shrink-0 flex flex-row items-center gap-0.5">
           {getPlanetImage(element.name as PlanetType, {
             isAntiscion: element.isAntiscion,
             isRetrograde: element.isRetrograde,
@@ -179,7 +199,7 @@ export default function AspectsTable({
       const arabicPart = arabicParts[key];
       if (arabicPart) {
         return (
-          <div className="w-full flex flex-row items-center justify-center">
+          <div className="shrink-0 flex flex-row items-center gap-0.5">
             {getArabicPartImage(arabicPart, {
               isAntiscion: element.isAntiscion,
             })}

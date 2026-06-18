@@ -7,12 +7,16 @@ import {
   arabicPartKeys,
   decimalToDegreesMinutes,
   fixedNames,
+  formatSignColor,
+  getArabicPartImage,
+  getDegreeAndSign,
   getDegreesInsideASign,
+  getPlanetImage,
   getSign,
   mod360,
   signsGlpyphs,
-} from "../../utils/chartUtils";
-import { FixedStar } from "@/interfaces/BirthChartInterfaces";
+} from "@/utils/chartUtils";
+import { FixedStar, PlanetType } from "@/interfaces/BirthChartInterfaces";
 import {
   Aspect,
   AspectedElement,
@@ -29,6 +33,15 @@ import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 import ReturnSelectorArrows from "../ReturnSelectorArrows";
 import { useChartMenu } from "@/contexts/ChartMenuContext";
 import { useBirthChart } from "@/contexts/BirthChartContext";
+import { useTranslations } from "next-intl";
+import { ArabicPart } from "@/interfaces/ArabicPartInterfaces";
+import { useAspectsData } from "@/contexts/AspectsContext";
+
+interface TooltipData {
+  x: number;
+  y: number;
+  content: React.ReactNode;
+}
 
 const ASPECTS: Aspect[] = [
   { type: "conjunction", angle: 0 },
@@ -52,6 +65,12 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   } = { ...props };
 
   const ref = useRef<SVGSVGElement>(null);
+
+  const [tooltip, setTooltip] = useState<TooltipData | null>(null);
+  const tooltipRef = useRef<TooltipData | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const aspectStrokeCoords = useRef<Map<string, { x1: number; y1: number; x2: number; y2: number }>>(new Map());
+
   const { isMobileBreakPoint } = useScreenDimensions();
   const { isReturnChart, isLunarDerivedReturnChart, isSinastryChart, isProgressionChart, isProfectionChart } = useChartMenu();
   const { isMountingChart, updateIsMountingChart, isCombinedWithBirthChart, isCombinedWithReturnChart } = useBirthChart();
@@ -62,11 +81,20 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   const [showOuterChart, setShowOuterChart] = useState(
     outerPlanets !== undefined && outerHouses !== undefined
   );
+  const [showDegrees, setShowDegrees] = useState(true);
+
+  const { aspects, updateAspectsData } = useAspectsData();
+  const [selectedAspect, setSelectedAspect] = useState<PlanetAspectData | null>(null);
+  const selectedAspectRef = useRef<PlanetAspectData | null>(null);
+  
+  const t = useTranslations();
+  const outerInitial = t("aspects.outerInitial");
 
   const [fixedStarsAspects, setFixedStarAspects] = useState<PlanetAspectData[]>(
     []
   );
   const symbolOffset = 16;
+  const lineStartOffset = 6; // quão “para dentro” a linha de um aspecto começa
 
   /**
    * Range for limit detection at overlap functions.
@@ -81,7 +109,8 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   const chartElementsForAspect = useRef<ChartElement[]>([]);
   let overlapElements: ChartElementOverlap[] = [];
 
-  const size = !isMobileBreakPoint() ? 400 : 370;
+  const isMobile = isMobileBreakPoint();
+  const size = !isMobile ? 400 : 370;
   const scaleFactor = !isMobileBreakPoint()
     ? showOuterChart
       ? 1.25
@@ -101,6 +130,107 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   const getHouseDataAscendant = () => housesData?.ascendant ?? 0;
 
   const zodiacRotation = 270 - getHouseDataAscendant();
+
+  const zodiacRotationRef = useRef(zodiacRotation);
+  const radiusRef = useRef(radius);
+  const lineStartOffsetRef = useRef(lineStartOffset);
+
+  function showTooltip(event: MouseEvent, content: React.ReactNode) {
+    const container = containerRef.current;
+    if (!container) return;
+    const rect = container.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    const tooltipWidth = 200; // max-w do tooltip
+    const adjustedX = x + tooltipWidth > rect.width ? x - tooltipWidth - 10 : x + 10;
+
+    setTooltip({ x: adjustedX, y, content });
+  }
+
+  function hideTooltip() {
+    if(!showDegrees) return;
+
+    setTooltip(null);
+  }
+
+  function makePlanetTooltip(
+    label: string,
+    longitude: number,
+    planetType?: PlanetType,
+    isAntiscion?: boolean,
+    isRetrograde?: boolean
+  ): React.ReactNode {
+    const degree = getDegreeAndSign(longitude, true);
+    return (
+      <div className="flex flex-row items-center gap-1">
+        {planetType && getPlanetImage(planetType, { isAntiscion, isRetrograde, size: 15 })}
+        <span>{label}: {formatSignColor(degree)}</span>
+      </div>
+    );
+  }
+
+  function makeHouseTooltip(houseIndex: number, longitude: number): React.ReactNode {
+    const degree = getDegreeAndSign(longitude, true);
+    return (
+      <div className="flex items-center gap-1">
+        <span>Casa {houseIndex + 1}: </span>
+        {formatSignColor(degree)}
+      </div>
+    );
+  }
+
+  function makeArabicPartTooltip(
+    lot: ArabicPart,
+    options: {
+      isAntiscion: boolean,
+      isOuterChart?: boolean
+    } = {
+      isAntiscion: false,
+      isOuterChart: false
+    }
+  ): React.ReactNode {
+    const label = `${t(`arabicParts.${lot.partKey}.short`)}${options.isOuterChart ? ` (${t("aspects.outerInitial")})` : ``}`;
+    const degree = options.isAntiscion
+      ? getDegreeAndSign(lot.antiscion, true)
+      : lot.longitudeSign;
+
+    return (
+      <div className="flex flex-row items-center gap-1">
+        {getArabicPartImage(lot, { isAntiscion: options.isAntiscion, size: 17 })}
+        <span>{label}{options.isAntiscion ? ` Antiscion` : ""}: {formatSignColor(degree)}</span>
+      </div>
+    );
+  }
+
+  function makeFixedStarTooltip(star: AspectedElement): React.ReactNode {
+    const degree = getDegreeAndSign(decimalToDegreesMinutes(star.longitude), true);
+    const iconSrc = star.isRelevant ? "relevant-star.png" : "star-1.png";
+
+    return (
+      <div className="flex flex-row items-center gap-1">
+        <img src={iconSrc} width={14} height={14} alt="star" />
+        <span
+          style={{ color: star.isRelevant ? "#4015fa" : undefined }}
+        >
+          {star.name}:
+        </span>
+        <span>{formatSignColor(degree)}</span>
+      </div>
+    );
+  }
+
+  function makeAspectTooltip(aspect: PlanetAspectData): React.ReactNode {
+    return (
+      <div className="flex flex-row items-center gap-1.5">
+        {aspect.elementImg}
+        {aspect.aspectImg}
+        {aspect.aspectedElementImg}
+        <span className="text-sm">{aspect.distance}</span>
+        <span className="font-semibold">{aspect.distanceType}</span>
+      </div>
+    );
+  }
 
   function getOverlapElement(chartElement: ChartElement): ChartElementOverlap {
     return overlapElements.find(
@@ -476,10 +606,10 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     aspect: Aspect
   ): string {
     const elementKey: string =
-      (element.isFromOuterChart ? `${fixedNames.outerKeyPrefix}-` : "") +
-      (element.planetType ?? element.name)
+      ((element.isFromOuterChart && !element.name.includes(fixedNames.outerKeyPrefix)) ?
+      `${fixedNames.outerKeyPrefix}-` : "") + (element.planetType ?? element.name)
         .replace(fixedNames.antiscionName, "")
-        .replace("-", "");
+        // .replace("-", "");
 
     const aspectedName =
       aspectedElement.elementType === "fixedStar"
@@ -487,17 +617,17 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         : aspectedElement.name;
 
     let aspectedElementKey: string =
-      (element.isFromOuterChart ? `${fixedNames.outerKeyPrefix}-` : "") +
-      (aspectedElement.planetType ?? aspectedName).replace(
-        fixedNames.antiscionName,
-        ""
-      );
+      ((aspectedElement.isFromOuterChart && !aspectedElement.name.includes(fixedNames.outerKeyPrefix)) ? 
+      `${fixedNames.outerKeyPrefix}-` : "") + (aspectedElement.planetType ?? aspectedName)
+      .replace(fixedNames.antiscionName,"");
 
-    if (aspectedElement.elementType !== "fixedStar") {
-      aspectedElementKey = aspectedElementKey.replace("-", "");
-    }
+    // if (aspectedElement.elementType !== "fixedStar") {
+    //   aspectedElementKey = aspectedElementKey.replace("-", "");
+    // }
 
-    return `${elementKey}-${aspect.type}-${aspectedElementKey}`;
+    const result = `${elementKey}-${aspect.type}-${aspectedElementKey}`;
+
+    return result;
   }
 
   function aspectAlreadyRegistered(
@@ -554,8 +684,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         aspectedElement.elementType === "arabicPart")
     )
       // some of them is arabic part and the other isn't house, so may be arabicPart or a planet,
-      // so the orb will be only 1.1 degree
-      return 1.1;
+      return 3;
     else if (
       (element.elementType === "house" ||
         aspectedElement.elementType === "house") &&
@@ -941,8 +1070,10 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       .attr("stroke", getAspectColor(aspect))
       .attr("stroke-width", getAspectStrokeWidth(aspect));
 
+    aspectStrokeCoords.current.set(aspect.key, { x1, y1, x2, y2 });
+
     // se quiser ver o ângulo no console pra debug:
-    // console.log('aspect', aspect.element.name, 'angleDeg', angleLineDeg);
+    // console.log('aspect', aspect.element.name, 'angleDeg', angleLineDeg);    
   }
 
   function isAspectWithHouse(aspect: PlanetAspectData): boolean {
@@ -999,6 +1130,10 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     const svg = d3.select(ref.current);
     svg.selectAll("*").remove();
     chartElementsForAspect.current = [];
+
+    zodiacRotationRef.current = zodiacRotation;
+    radiusRef.current = radius;
+    lineStartOffsetRef.current = lineStartOffset;
 
     const zodiacSigns = [
       { glyph: "♈︎", radius: radius + 15 },
@@ -1111,7 +1246,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         .attr("stroke-width", 1);
     }
 
-    //Glifos dos signos centralizados nas fatias com cor por elemento
+    // Glifos dos signos centralizados nas fatias com cor por elemento
     zodiacSigns.forEach((sign, i) => {
       const middleAngle = 360 - ((i * 30 + 15 + 180) % 360) - 90;
       const angleRad = (middleAngle * Math.PI) / 180;
@@ -1195,11 +1330,51 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       const x = midRadius * Math.cos(angleRad);
       const y = midRadius * Math.sin(angleRad);
 
+      // Hit area + tooltip da casa
+      const houseContent = makeHouseTooltip(j, decimalToDegreesMinutes(cusps[j]));
+      const startRad = Math.PI - ((cusps[j] - asc + 360) % 360 * Math.PI / 180);
+      const endRad = Math.PI - ((cusps[(j + 1) % 12] - asc + 360) % 360 * Math.PI / 180);
+
+      const r1 = smallInnerRadius;
+      const r2 = smallOuterRadius;
+      // const r2 = radius;
+
+      // 4 pontos do arco
+      const x1 = r1 * Math.cos(startRad);
+      const y1 = r1 * Math.sin(startRad);
+      const x2 = r2 * Math.cos(startRad);
+      const y2 = r2 * Math.sin(startRad);
+      const x3 = r2 * Math.cos(endRad);
+      const y3 = r2 * Math.sin(endRad);
+      const x4 = r1 * Math.cos(endRad);
+      const y4 = r1 * Math.sin(endRad);
+
+      // span para saber se o arco é maior que 180°
+      const spanDeg = ((cusps[(j + 1) % 12] - cusps[j] + 360) % 360);
+      const largeArc = spanDeg > 180 ? 1 : 0;
+
+      const pathD = [
+        `M ${x1} ${y1}`,
+        `L ${x2} ${y2}`,
+        `A ${r2} ${r2} 0 ${largeArc} 0 ${x3} ${y3}`,
+        `L ${x4} ${y4}`,
+        `A ${r1} ${r1} 0 ${largeArc} 1 ${x1} ${y1}`,
+        "Z"
+      ].join(" ");
+
+      centerCircles
+        .append("path")
+        .attr("d", pathD)
+        .attr("fill", "transparent")
+        .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
+          showTooltip(event, houseContent);
+        })
+        .on("mouseout", () => {
+          if (!isMobile) hideTooltip();
+        });
+
       let txt = (j + 1).toString();
-      if (showOuterChart && j % 3 === 0) {
-        // angular house
-        txt = angularLabels[j];
-      }
+      if (showOuterChart && j % 3 === 0) txt = angularLabels[j];
 
       centerCircles
         .append("text")
@@ -1209,7 +1384,13 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         .attr("text-anchor", "middle")
         .attr("font-weight", showOuterChart && j % 3 === 0 ? "bold" : "plain")
         .attr("alignment-baseline", "middle")
-        .text(txt);
+        .text(txt)
+        .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
+          showTooltip(event, houseContent);
+        })
+        .on("mouseout", () => {
+          if (!isMobile) hideTooltip();
+        });
     }
 
     const innerCircleRadius = smallInnerRadius; // ou o valor que você estiver usando
@@ -1268,7 +1449,6 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     }
 
     // Desenha os planetas
-    const lineStartOffset = 6; // quão “para dentro” a linha começa
     planets?.forEach((planet) => {
       const chartElement: ChartElement = {
         id: chartElementsForAspect.current.length,
@@ -1334,6 +1514,29 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         .attr("height", iconSize)
         .attr("x", xs - iconSize / 2)
         .attr("y", ys - iconSize / 2);
+
+        const planetName = t(`planets.${planet.type}`);
+        const content = makePlanetTooltip(
+          planetName,
+          planet.longitude,
+          planet.type,
+          false,
+          planet.isRetrograde
+        );
+
+        baseGroup
+          .append("rect") // área de hit invisível, mais fácil de clicar que image
+          .attr("x", xs - iconSize / 2 - 4)
+          .attr("y", ys - iconSize / 2 - 4)
+          .attr("width", iconSize + 8)
+          .attr("height", iconSize + 8)
+          .attr("fill", "transparent")
+          .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
+            showTooltip(event, content);
+          })
+          .on("mouseout", () => {
+            if (!isMobile) hideTooltip();
+          });
 
       // chartElementsForAspect.current.push(chartElement);
       chartElementsForAspect.current = [
@@ -1406,6 +1609,29 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             // centraliza o ícone em (xs, ys)
             .attr("x", xAnts - iconAntSize / 2)
             .attr("y", yAnts - iconAntSize / 2);
+
+            const planetName = t(`planets.${planet.type}`);
+            const content = makePlanetTooltip(
+              `${planetName} Antiscion`,
+              planet.antiscion,
+              planet.type,
+              true,
+              planet.isRetrograde
+            );
+
+            baseGroup
+              .append("rect") // área de hit invisível, mais fácil de clicar que image
+              .attr("x", xAnts - iconSize / 2 - 4)
+              .attr("y", yAnts - iconSize / 2 - 4)
+              .attr("width", iconSize + 8)
+              .attr("height", iconSize + 8)
+              .attr("fill", "transparent")
+              .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
+                showTooltip(event, content);
+              })
+              .on("mouseout", () => {
+                if (!isMobile) hideTooltip();
+              });
 
           // chartElementsForAspect.current.push(antiscionElement);
           chartElementsForAspect.current = [
@@ -1482,6 +1708,22 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             .attr("x", xs - iconSize / 2)
             .attr("y", ys - iconSize / 2);
 
+          const content = makeArabicPartTooltip(lot, {isAntiscion: false});
+
+          baseGroup
+            .append("rect")
+            .attr("x", xs - iconSize / 2 - 4)
+            .attr("y", ys - iconSize / 2 - 4)
+            .attr("width", iconSize + 8)
+            .attr("height", iconSize + 8)
+            .attr("fill", "transparent")
+            .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
+              showTooltip(event, content);
+            })
+            .on("mouseout", () => {
+              if (!isMobile) hideTooltip();
+            });
+
           // chartElementsForAspect.current.push(lotChartElement);
           chartElementsForAspect.current = [
             ...chartElementsForAspect.current,
@@ -1557,6 +1799,37 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             // centraliza o ícone em (xs, ys)
             .attr("x", xs - iconSize / 2)
             .attr("y", ys - iconSize / 2);
+
+          
+          const content = makeArabicPartTooltip(lot, {isAntiscion: true});
+
+          baseGroup
+            .append("rect")
+            .attr("x", xs - iconSize / 2 - 4)
+            .attr("y", ys - iconSize / 2 - 4)
+            .attr("width", iconSize + 8)
+            .attr("height", iconSize + 8)
+            .attr("fill", "transparent")
+            .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
+              showTooltip(event, content);
+            })
+            .on("mouseout", () => {
+              if (!isMobile) hideTooltip();
+            });
+
+          baseGroup
+            .append("rect")
+            .attr("x", xs - iconSize / 2 - 4)
+            .attr("y", ys - iconSize / 2 - 4)
+            .attr("width", iconSize + 8)
+            .attr("height", iconSize + 8)
+            .attr("fill", "transparent")
+            .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
+              showTooltip(event, content);
+            })
+            .on("mouseout", () => {
+              if (!isMobile) hideTooltip();
+            });
 
           // chartElementsForAspect.current.push(lotAntiscionChartElement);
           chartElementsForAspect.current = [
@@ -1700,6 +1973,29 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
           .attr("x", xs - iconSize / 2)
           .attr("y", ys - iconSize / 2);
 
+        const planetName = t(`planets.${planet.type}`);
+        const content = makePlanetTooltip(
+          `${planetName} (${outerInitial})`,
+          planet.longitude,
+          planet.type,
+          false,
+          planet.isRetrograde
+        );
+
+        baseGroup
+          .append("rect") // área de hit invisível, mais fácil de clicar que image
+          .attr("x", xs - iconSize / 2 - 4)
+          .attr("y", ys - iconSize / 2 - 4)
+          .attr("width", iconSize + 8)
+          .attr("height", iconSize + 8)
+          .attr("fill", "transparent")
+          .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
+            showTooltip(event, content);
+          })
+          .on("mouseout", () => {
+            if (!isMobile) hideTooltip();
+          });
+
         // chartElementsForAspect.current.push(chartElement);
         chartElementsForAspect.current = [
           ...chartElementsForAspect.current,
@@ -1770,6 +2066,29 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
               .attr("height", iconSize)
               .attr("x", xAnts - iconSize / 2)
               .attr("y", yAnts - iconSize / 2);
+
+            const planetName = t(`planets.${planet.type}`);
+            const content = makePlanetTooltip(
+              `${planetName} (${outerInitial}) Antiscion`,
+              planet.antiscion,
+              planet.type,
+              true,
+              planet.isRetrograde
+            );
+
+            baseGroup
+              .append("rect") // área de hit invisível, mais fácil de clicar que image
+              .attr("x", xAnts - iconSize / 2 - 4)
+              .attr("y", yAnts - iconSize / 2 - 4)
+              .attr("width", iconSize + 8)
+              .attr("height", iconSize + 8)
+              .attr("fill", "transparent")
+              .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
+                showTooltip(event, content);
+              })
+              .on("mouseout", () => {
+                if (!isMobile) hideTooltip();
+              });
 
             // chartElementsForAspect.current.push(chartElementAntiscion);
             chartElementsForAspect.current = [
@@ -1848,6 +2167,22 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             .attr("x", xs - iconSize / 2)
             .attr("y", ys - iconSize / 2);
 
+          const content = makeArabicPartTooltip(lot, {isAntiscion: false, isOuterChart: true});
+
+          baseGroup
+            .append("rect")
+            .attr("x", xs - iconSize / 2 - 4)
+            .attr("y", ys - iconSize / 2 - 4)
+            .attr("width", iconSize + 8)
+            .attr("height", iconSize + 8)
+            .attr("fill", "transparent")
+            .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
+              showTooltip(event, content);
+            })
+            .on("mouseout", () => {
+              if (!isMobile) hideTooltip();
+            });
+
           // chartElementsForAspect.current.push(outerLotChartElement);
           chartElementsForAspect.current = [
             ...chartElementsForAspect.current,
@@ -1924,6 +2259,22 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             .attr("x", xs - iconSize / 2)
             .attr("y", ys - iconSize / 2);
 
+          const content = makeArabicPartTooltip(lot, {isAntiscion: true, isOuterChart: true});
+
+          baseGroup
+            .append("rect")
+            .attr("x", xs - iconSize / 2 - 4)
+            .attr("y", ys - iconSize / 2 - 4)
+            .attr("width", iconSize + 8)
+            .attr("height", iconSize + 8)
+            .attr("fill", "transparent")
+            .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
+              showTooltip(event, content);
+            })
+            .on("mouseout", () => {
+              if (!isMobile) hideTooltip();
+            });
+
           // chartElementsForAspect.current.push(outerLotChartElementAntiscion);
           chartElementsForAspect.current = [
             ...chartElementsForAspect.current,
@@ -1995,6 +2346,38 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
           .attr("alignment-baseline", "middle")
           .text(txt);
 
+        // Hit area + tooltip da casa
+        const houseContent = makeHouseTooltip(j, decimalToDegreesMinutes(cuspsOuter[j]));
+        centerCircles
+          .append("rect")
+          .attr("x", x - 12)
+          .attr("y", y - 12)
+          .attr("width", 24)
+          .attr("height", 24)
+          .attr("fill", "transparent")
+          .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
+            showTooltip(event, houseContent);
+          })
+          .on("mouseout", () => {
+            if (!isMobile) hideTooltip();
+          });
+
+        centerCircles
+          .append("text")
+          .attr("x", x)
+          .attr("y", y)
+          .attr("font-size", 10)
+          .attr("text-anchor", "middle")
+          .attr("font-weight", showOuterChart && j % 3 === 0 ? "bold" : "plain")
+          .attr("alignment-baseline", "middle")
+          .text(txt)
+          .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
+            showTooltip(event, houseContent);
+          })
+          .on("mouseout", () => {
+            if (!isMobile) hideTooltip();
+          });
+
         chartElementsForAspect.current.push({
           id: chartElementsForAspect.current.length,
           isAntiscion: false,
@@ -2011,7 +2394,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       baseGroup,
       radius: smallInnerRadius,
       lineStartOffset,
-    });
+    });    
 
     setTimeout(() => {
       updateIsMountingChart(false);
@@ -2023,8 +2406,19 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     showPlanetsAntiscia,
     showArabicPartsAntiscia,
     testValue,
-    showOuterChart
+    showOuterChart,
+    showDegrees,
   ]);
+
+  useEffect(() => {
+    function handleOutsideClick(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        hideTooltip();
+      }
+    }
+    document.addEventListener("click", handleOutsideClick);
+    return () => document.removeEventListener("click", handleOutsideClick);
+  }, []);
 
   useEffect(() => {
     // console.log(fixedStarsAspects);
@@ -2058,6 +2452,22 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         .attr("x", xs - iconSize / 2)
         .attr("y", ys - iconSize / 2)
         .attr("opacity", opacity);
+
+        const starContent = makeFixedStarTooltip(asp.aspectedElement);
+
+      baseGroupRef.current
+        ?.append("rect")
+        .attr("x", xs - iconSize / 2 - 4)
+        .attr("y", ys - iconSize / 2 - 4)
+        .attr("width", iconSize + 8)
+        .attr("height", iconSize + 8)
+        .attr("fill", "transparent")
+        .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
+          showTooltip(event, starContent);
+        })
+        .on("mouseout", () => {
+          if (!isMobile) hideTooltip();
+        });
     });
   }, [fixedStarsAspects]);
 
@@ -2074,12 +2484,83 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     fixedStars,
     useReturnSelectorArrows]);
 
+  useEffect(() => {
+    if (!aspects || !aspects.every(a => a.aspectImg !== undefined)) return;
+    if (!baseGroupRef.current) return;
+
+    baseGroupRef.current.selectAll(".aspect-hit").remove();
+
+    aspects.forEach(aspect => {
+      const coords = aspectStrokeCoords.current.get(aspect.key);
+      if (!coords) return; // linha não foi desenhada (ex: aspecto com casa)
+
+      const { x1, y1, x2, y2 } = coords;
+      const tooltipContent = makeAspectTooltip(aspect);
+
+      if (isMobile) {
+        // Mobile: tap abre tooltip; segundo tap no mesmo aspecto isola
+        baseGroupRef.current!
+          .append("line")
+          .attr("class", `aspect-hit aspect-hit-${aspect.key}`)
+          .attr("data-aspect-key", aspect.key)
+          .attr("x1", x1).attr("y1", y1)
+          .attr("x2", x2).attr("y2", y2)
+          .attr("stroke", "transparent")
+          .attr("stroke-width", 10)
+          .style("cursor", "pointer")
+          .on("click", (event: MouseEvent) => {
+            event.stopPropagation();
+            const isAlreadySelected = selectedAspectRef.current?.key === aspect.key;
+            if (isAlreadySelected) {
+              // segundo tap: isola
+              selectedAspectRef.current = null;
+              setSelectedAspect(null);
+              hideTooltip();
+            } else {
+              // primeiro tap: mostra tooltip e marca como selecionado
+              selectedAspectRef.current = aspect;
+              setSelectedAspect(aspect);
+              showTooltip(event, tooltipContent);
+            }
+          });
+      } else {
+        // Desktop: hover para tooltip, click para isolar
+        baseGroupRef.current!
+          .append("line")
+          .attr("class", `aspect-hit aspect-hit-${aspect.key}`)
+          .attr("data-aspect-key", aspect.key)
+          .attr("x1", x1).attr("y1", y1)
+          .attr("x2", x2).attr("y2", y2)
+          .attr("stroke", "transparent")
+          .attr("stroke-width", 10)
+          .style("cursor", "pointer")
+          .on("mouseover", (event: MouseEvent) => {
+            showTooltip(event, tooltipContent);
+          })
+          .on("mouseout", () => {
+            hideTooltip();
+          })
+          .on("click", (event: MouseEvent) => {
+            event.stopPropagation();
+            const isAlreadySelected = selectedAspectRef.current?.key === aspect.key;
+            const next = isAlreadySelected ? null : aspect;
+            selectedAspectRef.current = next;
+            setSelectedAspect(next);
+          });
+      }
+    });
+  }, [aspects]);
+  
   const toggleArabicParts = () => {
     setShowArabicParts((prev) => !prev);
   };
 
   const toggleAntiscia = () => {
     setShowPlanetsAntiscia((prev) => !prev);
+  };
+
+  const toggleDegrees = () => {
+    setShowDegrees((prev) => !prev)
   };
 
   const toggleArabicPartsAntiscia = () => {
@@ -2124,16 +2605,34 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
           toggleArabicPartsAntiscia={toggleArabicPartsAntiscia}
           toggleCombineWithBirthChart={isReturnChart() || isProgressionChart() || isProfectionChart()}
           toggleCombineWithReturnChart={isLunarDerivedReturnChart()}
+          toggleDegrees={toggleDegrees}
         />
       </div>
 
-      <div className={`relative w-full h-[20rem] md:h-[38rem] ${(isMountingChart ? "opacity-0" : "")}`}>
+      {/* <div className={`relative w-full h-[20rem] md:h-[38rem] ${(isMountingChart ? "opacity-0" : "")}`}> */}
+      <div 
+        ref={containerRef} 
+        className={`relative w-full h-[20rem] md:h-[38rem] ${(isMountingChart ? "opacity-0" : "")}`}
+        onClick={(e) => {
+          // fecha tooltip se clicar fora do SVG
+          if (e.target === containerRef.current) hideTooltip();
+        }}
+      >
         {useReturnSelectorArrows ? (
           <ReturnSelectorArrows>
             <svg className={className} ref={ref}></svg>
           </ReturnSelectorArrows>
         ) :
           <svg className={className} ref={ref}></svg>}
+
+          {tooltip && (
+            <div
+              className="absolute z-50 pointer-events-none px-2 py-1 rounded text-sm bg-white border border-zinc-200 shadow-md w-max max-w-[350px]"
+              style={{ left: tooltip.x + 10, top: tooltip.y - 28 }}
+            >
+              {tooltip.content}
+            </div>
+          )}
       </div>
     </div>
   );

@@ -74,6 +74,12 @@ export interface PlanetAspectData {
   key: string;
   element: AspectedElement;
   aspectedElement: AspectedElement;
+
+  elementImg?: React.ReactNode;
+  aspectImg?: React.ReactNode;
+  aspectedElementImg?: React.ReactNode;
+  distance?: string;
+  distanceType?: string;
 }
 
 export interface ElementOverlapLongitudeAndOffset {

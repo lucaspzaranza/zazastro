@@ -17,6 +17,9 @@ export const AspectsContextProvider: React.FC<{ children: ReactNode }> = ({
   const [aspects, setAspects] = useState<PlanetAspectData[]>([]);
 
   const updateAspectsData = (aspects: PlanetAspectData[]) => {
+    // console.log('updating aspects...');
+    // console.log(aspects);
+    
     setAspects(aspects);
   };
 

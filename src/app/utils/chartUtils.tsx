@@ -248,7 +248,9 @@ export function getAspectImage(
   const path = `/${folder}/${aspectType}.png`;
 
   return (
-    <Image alt="aspect" src={path} width={size} height={size} unoptimized />
+    <span className="shrink-0 flex items-center justify-center">
+      <Image alt="aspect" src={path} width={size} height={size} unoptimized />
+    </span>
   );
 }
 

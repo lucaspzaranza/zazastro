@@ -93,6 +93,7 @@ export default function ChartAndData(props: Props) {
   const [nextChartContentLoaded, setNextChartContentLoaded] = useState(false);
   const t = useTranslations();
   const [translatedTitle, setTranslatedTitle] = useState(title);
+  // const { updateAspectsData } = useAspectsData();
 
   const [planetsAntiscion, setPlanetsAntiscion] = useState<
     Record<PlanetType, boolean>
@@ -244,9 +245,9 @@ export default function ChartAndData(props: Props) {
         }
 
         <>
-          <ChartSelectorArrows className="w-full mb-2 md:px-6">
+          <ChartSelectorArrows className="w-full mb-0 md:px-6">
             {title && (
-              <h1 className="text-lg md:text-2xl font-bold text-center">
+              <h1 className="text-lg md:text-xl font-bold text-center">
                 {/* {title} */}
                 {translatedTitle}
               </h1>
