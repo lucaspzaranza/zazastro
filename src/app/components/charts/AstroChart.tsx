@@ -86,6 +86,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   const { aspects, updateAspectsData } = useAspectsData();
   const [selectedAspect, setSelectedAspect] = useState<PlanetAspectData | null>(null);
   const selectedAspectRef = useRef<PlanetAspectData | null>(null);
+  const [hasIsolatedAspect, setHasIsolatedAspect] = useState(false);
   
   const t = useTranslations();
   const outerInitial = t("aspects.outerInitial");
@@ -126,6 +127,45 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   const outerChartBorderRadius = outerZodiacRadius + 60;
   const baseGroupRef =
     useRef<d3.Selection<SVGGElement, unknown, null, undefined>>(undefined);
+
+  const iconSize = 13; // px
+
+  const zodiacSigns = [
+    { glyph: "♈︎", radius: radius + 15 },
+    { glyph: "♉︎", radius: radius + 15 },
+    { glyph: "♊︎", radius: radius + 15 },
+    { glyph: "♋︎", radius: radius + 15 },
+    { glyph: "♌︎", radius: radius + 15 },
+    { glyph: "♍︎", radius: radius + 14 },
+    { glyph: "♎︎", radius: radius + 13 },
+    { glyph: "♏︎", radius: radius + 15 },
+    { glyph: "♐︎", radius: radius + 14 },
+    { glyph: "♑︎", radius: radius + 15 },
+    { glyph: "♒︎", radius: radius + 16 },
+    { glyph: "♓︎", radius: radius + 15 },
+  ];
+
+  const signElements: Record<string, string> = {
+    "♈︎": "Fogo",
+    "♉︎": "Terra",
+    "♊︎": "Ar",
+    "♋︎": "Água",
+    "♌︎": "Fogo",
+    "♍︎": "Terra",
+    "♎︎": "Ar",
+    "♏︎": "Água",
+    "♐︎": "Fogo",
+    "♑︎": "Terra",
+    "♒︎": "Ar",
+    "♓︎": "Água",
+  };
+
+  const elementColors: Record<string, string> = {
+    Fogo: "red",
+    Terra: "green",
+    Ar: "orange",
+    Água: "blue",
+  };
 
   const getHouseDataAscendant = () => housesData?.ascendant ?? 0;
 
@@ -564,6 +604,41 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       element.planetType !== "southNode";
   }
 
+  function elementIsInIsolatedAspect (element: ChartElement): boolean {
+    const el = selectedAspectRef.current!.element;
+    const aspEl = selectedAspectRef.current!.aspectedElement;
+
+    if(element.elementType === "planet") {
+      const elIsAspect = el.name === element.planetType && el.elementType === element.elementType && 
+        el.isAntiscion === element.isAntiscion && el.isFromOuterChart === element.isFromOuterChart 
+        && el.longitude === element.longitude;
+  
+      const elIsAspected = aspEl.name === element.planetType && aspEl.elementType === element.elementType && 
+        aspEl.isAntiscion === element.isAntiscion && aspEl.isFromOuterChart === element.isFromOuterChart 
+        && aspEl.longitude === element.longitude;
+  
+      return elIsAspect || elIsAspected;
+    }
+
+    if(element.elementType === "arabicPart") {
+      if(element.name === "love") {
+        console.log(selectedAspectRef.current);
+      }
+
+      const elIsAspect = el.name === element.name && el.elementType === element.elementType && 
+        el.isAntiscion === element.isAntiscion && el.isFromOuterChart === element.isFromOuterChart 
+        && el.longitude === element.longitude;
+  
+      const elIsAspected = aspEl.name === element.name && aspEl.elementType === element.elementType && 
+        aspEl.isAntiscion === element.isAntiscion && aspEl.isFromOuterChart === element.isFromOuterChart 
+        && aspEl.longitude === element.longitude;
+  
+      return elIsAspect || elIsAspected;
+    }
+
+    return false;
+  }
+
   function isAspectableElement(
     element: ChartElement,
     fixedStarAspect: boolean = false
@@ -621,9 +696,9 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       `${fixedNames.outerKeyPrefix}-` : "") + (aspectedElement.planetType ?? aspectedName)
       .replace(fixedNames.antiscionName,"");
 
-    // if (aspectedElement.elementType !== "fixedStar") {
-    //   aspectedElementKey = aspectedElementKey.replace("-", "");
-    // }
+    if (aspectedElement.elementType !== "fixedStar" && aspectedElementKey.endsWith("-")) {
+      aspectedElementKey = aspectedElementKey.substring(0, aspectedElementKey.length - 1);
+    }
 
     const result = `${elementKey}-${aspect.type}-${aspectedElementKey}`;
 
@@ -1125,6 +1200,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     setShowOuterChart(outerPlanets !== undefined && outerHouses !== undefined);
   }, [outerPlanets, outerHouses]);
 
+  // Main useEffect
   useEffect(() => {
     if (!ref.current) return;
     const svg = d3.select(ref.current);
@@ -1134,44 +1210,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     zodiacRotationRef.current = zodiacRotation;
     radiusRef.current = radius;
     lineStartOffsetRef.current = lineStartOffset;
-
-    const zodiacSigns = [
-      { glyph: "♈︎", radius: radius + 15 },
-      { glyph: "♉︎", radius: radius + 15 },
-      { glyph: "♊︎", radius: radius + 15 },
-      { glyph: "♋︎", radius: radius + 15 },
-      { glyph: "♌︎", radius: radius + 15 },
-      { glyph: "♍︎", radius: radius + 14 },
-      { glyph: "♎︎", radius: radius + 13 },
-      { glyph: "♏︎", radius: radius + 15 },
-      { glyph: "♐︎", radius: radius + 14 },
-      { glyph: "♑︎", radius: radius + 15 },
-      { glyph: "♒︎", radius: radius + 16 },
-      { glyph: "♓︎", radius: radius + 15 },
-    ];
-
-    const signElements: Record<string, string> = {
-      "♈︎": "Fogo",
-      "♉︎": "Terra",
-      "♊︎": "Ar",
-      "♋︎": "Água",
-      "♌︎": "Fogo",
-      "♍︎": "Terra",
-      "♎︎": "Ar",
-      "♏︎": "Água",
-      "♐︎": "Fogo",
-      "♑︎": "Terra",
-      "♒︎": "Ar",
-      "♓︎": "Água",
-    };
-
-    const elementColors: Record<string, string> = {
-      Fogo: "red",
-      Terra: "green",
-      Ar: "orange",
-      Água: "blue",
-    };
-
+   
     const baseGroup = svg
       .attr("width", scaledSize)
       .attr("height", scaledSize)
@@ -1461,88 +1500,92 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         isRetrograde: planet.isRetrograde,
       };
 
-      let overlapData = getElementOverlapLongitudeAndOffset(chartElement);
+      let canDrawPlanet = true;
+      if(hasIsolatedAspect)
+        canDrawPlanet = elementIsInIsolatedAspect(chartElement);
 
-      // 1) ângulo zodiacal original (graus → rad)
-      const rawDegOriginal = 180 - (planet.longitude % 360) - 90;
-      const rawDegOverlapped = 180 - (overlapData.longitude % 360) - 90;
-      const rawRadOriginal = (rawDegOriginal * Math.PI) / 180;
-      const rawRadOverlapped = (rawDegOverlapped * Math.PI) / 180;
-
-      // 2) compensa a rotação do zodíaco (transforma em ângulo final)
-      const rotRad = (zodiacRotation * Math.PI) / 180;
-      const angleRadOriginal = rawRadOriginal - rotRad;
-      const angleRadOverlapped = rawRadOverlapped - rotRad;
-
-      // 3) offsets de sobreposição
-      // const rSymbol = radius - symbolOffset;
-      const rSymbol = radius - overlapData.offset;
-      const rLineStart = radius - lineStartOffset;
-      const rLineEnd = radius;
-
-      // 4) cálculos das coordenadas
-      const xs = rSymbol * Math.cos(angleRadOverlapped);
-      const ys = rSymbol * Math.sin(angleRadOverlapped);
-
-      const x1 = rLineStart * Math.cos(angleRadOriginal);
-      const y1 = rLineStart * Math.sin(angleRadOriginal);
-      const x2 = rLineEnd * Math.cos(angleRadOriginal);
-      const y2 = rLineEnd * Math.sin(angleRadOriginal);
-
-      const iconSize = 13; // px
-
-      // 5) desenha a linha
-      baseGroup
-        .attr("data-name", planet.type)
-        .append("line")
-        .attr("x1", x1)
-        .attr("y1", y1)
-        .attr("x2", x2)
-        .attr("y2", y2)
-        .attr("stroke", "black")
-        .attr("stroke-width", 1);
-
-      // 6) desenha o ícone do planeta
-      const iconSrc = `/planets/${planet.type}${planet.isRetrograde ? "-rx" : ""
-        }.png`;
-
-      baseGroup
-        .attr("data-name", planet.type)
-        .append("image")
-        .attr("href", iconSrc) // no D3 v6+ use 'href'
-        .attr("width", iconSize)
-        .attr("height", iconSize)
-        .attr("x", xs - iconSize / 2)
-        .attr("y", ys - iconSize / 2);
-
-        const planetName = t(`planets.${planet.type}`);
-        const content = makePlanetTooltip(
-          planetName,
-          planet.longitude,
-          planet.type,
-          false,
-          planet.isRetrograde
-        );
-
+      if(canDrawPlanet) {
+        let overlapData = getElementOverlapLongitudeAndOffset(chartElement);
+  
+        // 1) ângulo zodiacal original (graus → rad)
+        const rawDegOriginal = 180 - (planet.longitude % 360) - 90;
+        const rawDegOverlapped = 180 - (overlapData.longitude % 360) - 90;
+        const rawRadOriginal = (rawDegOriginal * Math.PI) / 180;
+        const rawRadOverlapped = (rawDegOverlapped * Math.PI) / 180;
+  
+        // 2) compensa a rotação do zodíaco (transforma em ângulo final)
+        const rotRad = (zodiacRotation * Math.PI) / 180;
+        const angleRadOriginal = rawRadOriginal - rotRad;
+        const angleRadOverlapped = rawRadOverlapped - rotRad;
+  
+        // 3) offsets de sobreposição
+        // const rSymbol = radius - symbolOffset;
+        const rSymbol = radius - overlapData.offset;
+        const rLineStart = radius - lineStartOffset;
+        const rLineEnd = radius;
+  
+        // 4) cálculos das coordenadas
+        const xs = rSymbol * Math.cos(angleRadOverlapped);
+        const ys = rSymbol * Math.sin(angleRadOverlapped);
+  
+        const x1 = rLineStart * Math.cos(angleRadOriginal);
+        const y1 = rLineStart * Math.sin(angleRadOriginal);
+        const x2 = rLineEnd * Math.cos(angleRadOriginal);
+        const y2 = rLineEnd * Math.sin(angleRadOriginal);          
+  
+        // 5) desenha a linha
         baseGroup
-          .append("rect") // área de hit invisível, mais fácil de clicar que image
-          .attr("x", xs - iconSize / 2 - 4)
-          .attr("y", ys - iconSize / 2 - 4)
-          .attr("width", iconSize + 8)
-          .attr("height", iconSize + 8)
-          .attr("fill", "transparent")
-          .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
-            showTooltip(event, content);
-          })
-          .on("mouseout", () => {
-            if (!isMobile) hideTooltip();
-          });
-
-      // chartElementsForAspect.current.push(chartElement);
-      chartElementsForAspect.current = [
-        ...chartElementsForAspect.current,
-        chartElement,
-      ];
+          .attr("data-name", planet.type)
+          .append("line")
+          .attr("x1", x1)
+          .attr("y1", y1)
+          .attr("x2", x2)
+          .attr("y2", y2)
+          .attr("stroke", "black")
+          .attr("stroke-width", 1);
+  
+        // 6) desenha o ícone do planeta
+        const iconSrc = `/planets/${planet.type}${planet.isRetrograde ? "-rx" : ""
+          }.png`;
+  
+        baseGroup
+          .attr("data-name", planet.type)
+          .append("image")
+          .attr("href", iconSrc) // no D3 v6+ use 'href'
+          .attr("width", iconSize)
+          .attr("height", iconSize)
+          .attr("x", xs - iconSize / 2)
+          .attr("y", ys - iconSize / 2);
+  
+          const planetName = t(`planets.${planet.type}`);
+          const content = makePlanetTooltip(
+            planetName,
+            planet.longitude,
+            planet.type,
+            false,
+            planet.isRetrograde
+          );
+  
+          baseGroup
+            .append("rect") // área de hit invisível, mais fácil de clicar que image
+            .attr("x", xs - iconSize / 2 - 4)
+            .attr("y", ys - iconSize / 2 - 4)
+            .attr("width", iconSize + 8)
+            .attr("height", iconSize + 8)
+            .attr("fill", "transparent")
+            .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
+              showTooltip(event, content);
+            })
+            .on("mouseout", () => {
+              if (!isMobile) hideTooltip();
+            });
+  
+        // chartElementsForAspect.current.push(chartElement);
+        chartElementsForAspect.current = [
+          ...chartElementsForAspect.current,
+          chartElement,
+        ];
+      }
 
       if (showPlanetsAntiscia) {
         const antiscionElement: ChartElement = {
@@ -1556,9 +1599,12 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
           isRetrograde: planet.isRetrograde,
         };
 
-        if (isTraditionalPlanet(antiscionElement)) {
+        canDrawPlanet = true;
+        if(hasIsolatedAspect)
+          canDrawPlanet = elementIsInIsolatedAspect(antiscionElement);
 
-          overlapData = getElementOverlapLongitudeAndOffset(antiscionElement);
+        if(canDrawPlanet && isTraditionalPlanet(antiscionElement)) {
+          const overlapData = getElementOverlapLongitudeAndOffset(antiscionElement);
 
           // 1) ângulo zodiacal original (graus → rad)
           const rawAntDegOriginal = 180 - (planet.antiscion % 360) - 90;
@@ -1610,28 +1656,28 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             .attr("x", xAnts - iconAntSize / 2)
             .attr("y", yAnts - iconAntSize / 2);
 
-            const planetName = t(`planets.${planet.type}`);
-            const content = makePlanetTooltip(
-              `${planetName} Antiscion`,
-              planet.antiscion,
-              planet.type,
-              true,
-              planet.isRetrograde
-            );
+          const planetName = t(`planets.${planet.type}`);
+          const content = makePlanetTooltip(
+            `${planetName} Antiscion`,
+            planet.antiscion,
+            planet.type,
+            true,
+            planet.isRetrograde
+          );
 
-            baseGroup
-              .append("rect") // área de hit invisível, mais fácil de clicar que image
-              .attr("x", xAnts - iconSize / 2 - 4)
-              .attr("y", yAnts - iconSize / 2 - 4)
-              .attr("width", iconSize + 8)
-              .attr("height", iconSize + 8)
-              .attr("fill", "transparent")
-              .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
-                showTooltip(event, content);
-              })
-              .on("mouseout", () => {
-                if (!isMobile) hideTooltip();
-              });
+          baseGroup
+            .append("rect") // área de hit invisível, mais fácil de clicar que image
+            .attr("x", xAnts - iconSize / 2 - 4)
+            .attr("y", yAnts - iconSize / 2 - 4)
+            .attr("width", iconSize + 8)
+            .attr("height", iconSize + 8)
+            .attr("fill", "transparent")
+            .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
+              showTooltip(event, content);
+            })
+            .on("mouseout", () => {
+              if (!isMobile) hideTooltip();
+            });
 
           // chartElementsForAspect.current.push(antiscionElement);
           chartElementsForAspect.current = [
@@ -1657,78 +1703,84 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             isRetrograde: false,
           };
 
-          const overlapData =
-            getElementOverlapLongitudeAndOffset(lotChartElement);
+          let canDrawArabicPart = true;
+          if(hasIsolatedAspect)
+            canDrawArabicPart = elementIsInIsolatedAspect(lotChartElement);
 
-          // 1) ângulo zodiacal original (graus → rad)
-          const rawDegOriginal = 180 - (lot.longitude % 360) - 90;
-          const rawDegOverlapped = 180 - (overlapData.longitude % 360) - 90;
-          const rawRadOriginal = (rawDegOriginal * Math.PI) / 180;
-          const rawRadOverlapped = (rawDegOverlapped * Math.PI) / 180;
-
-          // 2) compensa a rotação do zodíaco (transforma em ângulo final)
-          const rotRad = (zodiacRotation * Math.PI) / 180;
-          const angleRadOriginal = rawRadOriginal - rotRad;
-          const angleRadOverlapped = rawRadOverlapped - rotRad;
-
-          // 3) offsets de sobreposição
-          const rSymbol = radius - overlapData.offset;
-          const rLineStart = radius - lineStartOffset;
-          const rLineEnd = radius;
-
-          // 4) cálculos das coordenadas
-          const xs = rSymbol * Math.cos(angleRadOverlapped);
-          const ys = rSymbol * Math.sin(angleRadOverlapped);
-
-          const x1 = rLineStart * Math.cos(angleRadOriginal);
-          const y1 = rLineStart * Math.sin(angleRadOriginal);
-          const x2 = rLineEnd * Math.cos(angleRadOriginal);
-          const y2 = rLineEnd * Math.sin(angleRadOriginal);
-
-          // 5) desenha a linha
-          baseGroup
-            .append("line")
-            .attr("x1", x1)
-            .attr("y1", y1)
-            .attr("x2", x2)
-            .attr("y2", y2)
-            .attr("stroke", "black")
-            .attr("stroke-width", 1);
-
-          // 6) desenha o ícone do planeta
-          const iconSize = 13; // px
-          const iconSrc = `/planets/${key}.png`;
-
-          baseGroup
-            .append("image")
-            .attr("href", iconSrc) // no D3 v6+ use 'href'
-            .attr("width", iconSize)
-            .attr("height", iconSize)
-            // centraliza o ícone em (xs, ys)
-            .attr("x", xs - iconSize / 2)
-            .attr("y", ys - iconSize / 2);
-
-          const content = makeArabicPartTooltip(lot, {isAntiscion: false});
-
-          baseGroup
-            .append("rect")
-            .attr("x", xs - iconSize / 2 - 4)
-            .attr("y", ys - iconSize / 2 - 4)
-            .attr("width", iconSize + 8)
-            .attr("height", iconSize + 8)
-            .attr("fill", "transparent")
-            .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
-              showTooltip(event, content);
-            })
-            .on("mouseout", () => {
-              if (!isMobile) hideTooltip();
-            });
-
-          // chartElementsForAspect.current.push(lotChartElement);
-          chartElementsForAspect.current = [
-            ...chartElementsForAspect.current,
-            lotChartElement,
-          ];
+          if(canDrawArabicPart) {
+            const overlapData =
+              getElementOverlapLongitudeAndOffset(lotChartElement);
+  
+            // 1) ângulo zodiacal original (graus → rad)
+            const rawDegOriginal = 180 - (lot.longitude % 360) - 90;
+            const rawDegOverlapped = 180 - (overlapData.longitude % 360) - 90;
+            const rawRadOriginal = (rawDegOriginal * Math.PI) / 180;
+            const rawRadOverlapped = (rawDegOverlapped * Math.PI) / 180;
+  
+            // 2) compensa a rotação do zodíaco (transforma em ângulo final)
+            const rotRad = (zodiacRotation * Math.PI) / 180;
+            const angleRadOriginal = rawRadOriginal - rotRad;
+            const angleRadOverlapped = rawRadOverlapped - rotRad;
+  
+            // 3) offsets de sobreposição
+            const rSymbol = radius - overlapData.offset;
+            const rLineStart = radius - lineStartOffset;
+            const rLineEnd = radius;
+  
+            // 4) cálculos das coordenadas
+            const xs = rSymbol * Math.cos(angleRadOverlapped);
+            const ys = rSymbol * Math.sin(angleRadOverlapped);
+  
+            const x1 = rLineStart * Math.cos(angleRadOriginal);
+            const y1 = rLineStart * Math.sin(angleRadOriginal);
+            const x2 = rLineEnd * Math.cos(angleRadOriginal);
+            const y2 = rLineEnd * Math.sin(angleRadOriginal);
+  
+            // 5) desenha a linha
+            baseGroup
+              .append("line")
+              .attr("x1", x1)
+              .attr("y1", y1)
+              .attr("x2", x2)
+              .attr("y2", y2)
+              .attr("stroke", "black")
+              .attr("stroke-width", 1);
+  
+            // 6) desenha o ícone do planeta
+            const iconSize = 13; // px
+            const iconSrc = `/planets/${key}.png`;
+  
+            baseGroup
+              .append("image")
+              .attr("href", iconSrc) // no D3 v6+ use 'href'
+              .attr("width", iconSize)
+              .attr("height", iconSize)
+              // centraliza o ícone em (xs, ys)
+              .attr("x", xs - iconSize / 2)
+              .attr("y", ys - iconSize / 2);
+  
+            const content = makeArabicPartTooltip(lot, {isAntiscion: false});
+  
+            baseGroup
+              .append("rect")
+              .attr("x", xs - iconSize / 2 - 4)
+              .attr("y", ys - iconSize / 2 - 4)
+              .attr("width", iconSize + 8)
+              .attr("height", iconSize + 8)
+              .attr("fill", "transparent")
+              .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
+                showTooltip(event, content);
+              })
+              .on("mouseout", () => {
+                if (!isMobile) hideTooltip();
+              });
+  
+            // chartElementsForAspect.current.push(lotChartElement);
+            chartElementsForAspect.current = [
+              ...chartElementsForAspect.current,
+              lotChartElement,
+            ];
+          }
         }
       });
     }
@@ -1748,94 +1800,101 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             isRetrograde: false,
           };
 
-          const overlapData = getElementOverlapLongitudeAndOffset(
-            lotAntiscionChartElement
-          );
+          let canDrawArabicPart = true;
+          if(hasIsolatedAspect)
+            canDrawArabicPart = elementIsInIsolatedAspect(lotAntiscionChartElement);
 
-          // 1) ângulo zodiacal original (graus → rad)
-          const rawDegOriginal = 180 - (lot.antiscion % 360) - 90;
-          const rawDegOverlapped = 180 - (overlapData.longitude % 360) - 90;
-          const rawRadOriginal = (rawDegOriginal * Math.PI) / 180;
-          const rawRadOverlapped = (rawDegOverlapped * Math.PI) / 180;
+          if(canDrawArabicPart) {
 
-          // 2) compensa a rotação do zodíaco (transforma em ângulo final)
-          const rotRad = (zodiacRotation * Math.PI) / 180;
-          const angleRadOriginal = rawRadOriginal - rotRad;
-          const angleRadOverlapped = rawRadOverlapped - rotRad;
-
-          // 3) offsets de sobreposição
-          const rSymbol = radius - overlapData.offset;
-          const rLineStart = radius - lineStartOffset;
-          const rLineEnd = radius;
-
-          // 4) cálculos das coordenadas
-          const xs = rSymbol * Math.cos(angleRadOverlapped);
-          const ys = rSymbol * Math.sin(angleRadOverlapped);
-
-          const x1 = rLineStart * Math.cos(angleRadOriginal);
-          const y1 = rLineStart * Math.sin(angleRadOriginal);
-          const x2 = rLineEnd * Math.cos(angleRadOriginal);
-          const y2 = rLineEnd * Math.sin(angleRadOriginal);
-
-          // 5) desenha a linha
-          baseGroup
-            .append("line")
-            .attr("x1", x1)
-            .attr("y1", y1)
-            .attr("x2", x2)
-            .attr("y2", y2)
-            .attr("stroke", "#ff914d") // antiscion color
-            .attr("stroke-width", 1);
-
-          // 6) desenha o ícone do planeta
-          const iconSize = 13; // px
-          const iconSrc = `/planets/antiscion/${key}.png`;
-
-          baseGroup
-            .append("image")
-            .attr("href", iconSrc) // no D3 v6+ use 'href'
-            .attr("width", iconSize)
-            .attr("height", iconSize)
-            // centraliza o ícone em (xs, ys)
-            .attr("x", xs - iconSize / 2)
-            .attr("y", ys - iconSize / 2);
-
-          
-          const content = makeArabicPartTooltip(lot, {isAntiscion: true});
-
-          baseGroup
-            .append("rect")
-            .attr("x", xs - iconSize / 2 - 4)
-            .attr("y", ys - iconSize / 2 - 4)
-            .attr("width", iconSize + 8)
-            .attr("height", iconSize + 8)
-            .attr("fill", "transparent")
-            .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
-              showTooltip(event, content);
-            })
-            .on("mouseout", () => {
-              if (!isMobile) hideTooltip();
-            });
-
-          baseGroup
-            .append("rect")
-            .attr("x", xs - iconSize / 2 - 4)
-            .attr("y", ys - iconSize / 2 - 4)
-            .attr("width", iconSize + 8)
-            .attr("height", iconSize + 8)
-            .attr("fill", "transparent")
-            .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
-              showTooltip(event, content);
-            })
-            .on("mouseout", () => {
-              if (!isMobile) hideTooltip();
-            });
-
-          // chartElementsForAspect.current.push(lotAntiscionChartElement);
-          chartElementsForAspect.current = [
-            ...chartElementsForAspect.current,
-            lotAntiscionChartElement,
-          ];
+            const overlapData = getElementOverlapLongitudeAndOffset(
+              lotAntiscionChartElement
+            );
+  
+            // 1) ângulo zodiacal original (graus → rad)
+            const rawDegOriginal = 180 - (lot.antiscion % 360) - 90;
+            const rawDegOverlapped = 180 - (overlapData.longitude % 360) - 90;
+            const rawRadOriginal = (rawDegOriginal * Math.PI) / 180;
+            const rawRadOverlapped = (rawDegOverlapped * Math.PI) / 180;
+  
+            // 2) compensa a rotação do zodíaco (transforma em ângulo final)
+            const rotRad = (zodiacRotation * Math.PI) / 180;
+            const angleRadOriginal = rawRadOriginal - rotRad;
+            const angleRadOverlapped = rawRadOverlapped - rotRad;
+  
+            // 3) offsets de sobreposição
+            const rSymbol = radius - overlapData.offset;
+            const rLineStart = radius - lineStartOffset;
+            const rLineEnd = radius;
+  
+            // 4) cálculos das coordenadas
+            const xs = rSymbol * Math.cos(angleRadOverlapped);
+            const ys = rSymbol * Math.sin(angleRadOverlapped);
+  
+            const x1 = rLineStart * Math.cos(angleRadOriginal);
+            const y1 = rLineStart * Math.sin(angleRadOriginal);
+            const x2 = rLineEnd * Math.cos(angleRadOriginal);
+            const y2 = rLineEnd * Math.sin(angleRadOriginal);
+  
+            // 5) desenha a linha
+            baseGroup
+              .append("line")
+              .attr("x1", x1)
+              .attr("y1", y1)
+              .attr("x2", x2)
+              .attr("y2", y2)
+              .attr("stroke", "#ff914d") // antiscion color
+              .attr("stroke-width", 1);
+  
+            // 6) desenha o ícone do planeta
+            const iconSize = 13; // px
+            const iconSrc = `/planets/antiscion/${key}.png`;
+  
+            baseGroup
+              .append("image")
+              .attr("href", iconSrc) // no D3 v6+ use 'href'
+              .attr("width", iconSize)
+              .attr("height", iconSize)
+              // centraliza o ícone em (xs, ys)
+              .attr("x", xs - iconSize / 2)
+              .attr("y", ys - iconSize / 2);
+  
+            
+            const content = makeArabicPartTooltip(lot, {isAntiscion: true});
+  
+            baseGroup
+              .append("rect")
+              .attr("x", xs - iconSize / 2 - 4)
+              .attr("y", ys - iconSize / 2 - 4)
+              .attr("width", iconSize + 8)
+              .attr("height", iconSize + 8)
+              .attr("fill", "transparent")
+              .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
+                showTooltip(event, content);
+              })
+              .on("mouseout", () => {
+                if (!isMobile) hideTooltip();
+              });
+  
+            baseGroup
+              .append("rect")
+              .attr("x", xs - iconSize / 2 - 4)
+              .attr("y", ys - iconSize / 2 - 4)
+              .attr("width", iconSize + 8)
+              .attr("height", iconSize + 8)
+              .attr("fill", "transparent")
+              .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
+                showTooltip(event, content);
+              })
+              .on("mouseout", () => {
+                if (!isMobile) hideTooltip();
+              });
+  
+            // chartElementsForAspect.current.push(lotAntiscionChartElement);
+            chartElementsForAspect.current = [
+              ...chartElementsForAspect.current,
+              lotAntiscionChartElement,
+            ];
+          }
         }
       });
     }
@@ -1922,85 +1981,91 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
           isRetrograde: planet.isRetrograde,
         };
 
-        let overlapData = getElementOverlapLongitudeAndOffset(chartElement);
+        let canDrawPlanet = true;
+        if(hasIsolatedAspect)
+          canDrawPlanet = elementIsInIsolatedAspect(chartElement);
 
-        // 1) ângulo zodiacal original (graus → rad)
-        const rawDegOriginal = 180 - (planet.longitude % 360) - 90;
-        const rawDegOverlapped = 180 - (overlapData.longitude % 360) - 90;
-        const rawRadOriginal = (rawDegOriginal * Math.PI) / 180;
-        const rawRadOverlapped = (rawDegOverlapped * Math.PI) / 180;
-
-        // 2) compensa a rotação do zodíaco (transforma em ângulo final)
-        const rotRad = (zodiacRotation * Math.PI) / 180;
-        const angleRadOriginal = rawRadOriginal - rotRad;
-        const angleRadOverlapped = rawRadOverlapped - rotRad;
-
-        // 3) offsets de sobreposição
-        // const rSymbol = radius - symbolOffset;
-        const rSymbol = outerZodiacRadius + overlapData.offset;
-        const rLineStart = outerZodiacRadius + lineStartOffset;
-        const rLineEnd = outerZodiacRadius;
-
-        // 4) cálculos das coordenadas
-        const xs = rSymbol * Math.cos(angleRadOverlapped);
-        const ys = rSymbol * Math.sin(angleRadOverlapped);
-
-        const x1 = rLineStart * Math.cos(angleRadOriginal);
-        const y1 = rLineStart * Math.sin(angleRadOriginal);
-        const x2 = rLineEnd * Math.cos(angleRadOriginal);
-        const y2 = rLineEnd * Math.sin(angleRadOriginal);
-
-        // 5) desenha a linha
-        baseGroup
-          .append("line")
-          .attr("x1", x1)
-          .attr("y1", y1)
-          .attr("x2", x2)
-          .attr("y2", y2)
-          .attr("stroke", "black")
-          .attr("stroke-width", 1);
-
-        // 6) desenha o ícone do planeta
-        const iconSize = 13; // px
-        const iconSrc = `/planets/${planet.type}${planet.isRetrograde ? "-rx" : ""
-          }.png`;
-
-        baseGroup
-          .append("image")
-          .attr("href", iconSrc) // no D3 v6+ use 'href'
-          .attr("width", iconSize)
-          .attr("height", iconSize)
-          .attr("x", xs - iconSize / 2)
-          .attr("y", ys - iconSize / 2);
-
-        const planetName = t(`planets.${planet.type}`);
-        const content = makePlanetTooltip(
-          `${planetName} (${outerInitial})`,
-          planet.longitude,
-          planet.type,
-          false,
-          planet.isRetrograde
-        );
-
-        baseGroup
-          .append("rect") // área de hit invisível, mais fácil de clicar que image
-          .attr("x", xs - iconSize / 2 - 4)
-          .attr("y", ys - iconSize / 2 - 4)
-          .attr("width", iconSize + 8)
-          .attr("height", iconSize + 8)
-          .attr("fill", "transparent")
-          .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
-            showTooltip(event, content);
-          })
-          .on("mouseout", () => {
-            if (!isMobile) hideTooltip();
-          });
-
-        // chartElementsForAspect.current.push(chartElement);
-        chartElementsForAspect.current = [
-          ...chartElementsForAspect.current,
-          chartElement,
-        ];
+        if(canDrawPlanet) {
+          let overlapData = getElementOverlapLongitudeAndOffset(chartElement);
+  
+          // 1) ângulo zodiacal original (graus → rad)
+          const rawDegOriginal = 180 - (planet.longitude % 360) - 90;
+          const rawDegOverlapped = 180 - (overlapData.longitude % 360) - 90;
+          const rawRadOriginal = (rawDegOriginal * Math.PI) / 180;
+          const rawRadOverlapped = (rawDegOverlapped * Math.PI) / 180;
+  
+          // 2) compensa a rotação do zodíaco (transforma em ângulo final)
+          const rotRad = (zodiacRotation * Math.PI) / 180;
+          const angleRadOriginal = rawRadOriginal - rotRad;
+          const angleRadOverlapped = rawRadOverlapped - rotRad;
+  
+          // 3) offsets de sobreposição
+          // const rSymbol = radius - symbolOffset;
+          const rSymbol = outerZodiacRadius + overlapData.offset;
+          const rLineStart = outerZodiacRadius + lineStartOffset;
+          const rLineEnd = outerZodiacRadius;
+  
+          // 4) cálculos das coordenadas
+          const xs = rSymbol * Math.cos(angleRadOverlapped);
+          const ys = rSymbol * Math.sin(angleRadOverlapped);
+  
+          const x1 = rLineStart * Math.cos(angleRadOriginal);
+          const y1 = rLineStart * Math.sin(angleRadOriginal);
+          const x2 = rLineEnd * Math.cos(angleRadOriginal);
+          const y2 = rLineEnd * Math.sin(angleRadOriginal);
+  
+          // 5) desenha a linha
+          baseGroup
+            .append("line")
+            .attr("x1", x1)
+            .attr("y1", y1)
+            .attr("x2", x2)
+            .attr("y2", y2)
+            .attr("stroke", "black")
+            .attr("stroke-width", 1);
+  
+          // 6) desenha o ícone do planeta
+          const iconSize = 13; // px
+          const iconSrc = `/planets/${planet.type}${planet.isRetrograde ? "-rx" : ""
+            }.png`;
+  
+          baseGroup
+            .append("image")
+            .attr("href", iconSrc) // no D3 v6+ use 'href'
+            .attr("width", iconSize)
+            .attr("height", iconSize)
+            .attr("x", xs - iconSize / 2)
+            .attr("y", ys - iconSize / 2);
+  
+          const planetName = t(`planets.${planet.type}`);
+          const content = makePlanetTooltip(
+            `${planetName} (${outerInitial})`,
+            planet.longitude,
+            planet.type,
+            false,
+            planet.isRetrograde
+          );
+  
+          baseGroup
+            .append("rect") // área de hit invisível, mais fácil de clicar que image
+            .attr("x", xs - iconSize / 2 - 4)
+            .attr("y", ys - iconSize / 2 - 4)
+            .attr("width", iconSize + 8)
+            .attr("height", iconSize + 8)
+            .attr("fill", "transparent")
+            .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
+              showTooltip(event, content);
+            })
+            .on("mouseout", () => {
+              if (!isMobile) hideTooltip();
+            });
+  
+          // chartElementsForAspect.current.push(chartElement);
+          chartElementsForAspect.current = [
+            ...chartElementsForAspect.current,
+            chartElement,
+          ];
+        }
 
         if (showPlanetsAntiscia) {
           const chartElementAntiscion: ChartElement = {
@@ -2014,8 +2079,12 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             isRetrograde: planet.isRetrograde,
           };
 
-          if (isTraditionalPlanet(chartElementAntiscion)) {
-            overlapData = getElementOverlapLongitudeAndOffset(
+          let canDrawPlanet = true;
+          if(hasIsolatedAspect)
+            canDrawPlanet = elementIsInIsolatedAspect(chartElementAntiscion);
+
+          if (canDrawPlanet && isTraditionalPlanet(chartElementAntiscion)) {
+            let overlapData = getElementOverlapLongitudeAndOffset(
               chartElementAntiscion
             );
 
@@ -2115,79 +2184,85 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             isRetrograde: false,
           };
 
-          const overlapData =
-            getElementOverlapLongitudeAndOffset(outerLotChartElement);
+          let canDrawArabicPart = true;
+          if(hasIsolatedAspect)
+            canDrawArabicPart = elementIsInIsolatedAspect(outerLotChartElement);
 
-          // 1) ângulo zodiacal original (graus → rad)
-          const rawDegOriginal = 180 - (lot.longitude % 360) - 90;
-          const rawDegOverlapped = 180 - (overlapData.longitude % 360) - 90;
-          const rawRadOriginal = (rawDegOriginal * Math.PI) / 180;
-          const rawRadOverlapped = (rawDegOverlapped * Math.PI) / 180;
-
-          // 2) compensa a rotação do zodíaco (transforma em ângulo final)
-          const rotRad = (zodiacRotation * Math.PI) / 180;
-          const angleRadOriginal = rawRadOriginal - rotRad;
-          const angleRadOverlapped = rawRadOverlapped - rotRad;
-
-          // 3) offsets de sobreposição
-          // const rSymbol = outerZodiacRadius - symbolOffset;
-          const rSymbol = outerZodiacRadius + overlapData.offset;
-          const rLineStart = outerZodiacRadius + lineStartOffset;
-          const rLineEnd = outerZodiacRadius;
-
-          // 4) cálculos das coordenadas
-          const xs = rSymbol * Math.cos(angleRadOverlapped);
-          const ys = rSymbol * Math.sin(angleRadOverlapped);
-
-          const x1 = rLineStart * Math.cos(angleRadOriginal);
-          const y1 = rLineStart * Math.sin(angleRadOriginal);
-          const x2 = rLineEnd * Math.cos(angleRadOriginal);
-          const y2 = rLineEnd * Math.sin(angleRadOriginal);
-
-          // 5) desenha a linha
-          baseGroup
-            .append("line")
-            .attr("x1", x1)
-            .attr("y1", y1)
-            .attr("x2", x2)
-            .attr("y2", y2)
-            .attr("stroke", "black")
-            .attr("stroke-width", 1);
-
-          // 6) desenha o ícone do planeta
-          const iconSize = 13; // px
-          const iconSrc = `/planets/${key}.png`;
-
-          baseGroup
-            .append("image")
-            .attr("href", iconSrc) // no D3 v6+ use 'href'
-            .attr("width", iconSize)
-            .attr("height", iconSize)
-            // centraliza o ícone em (xs, ys)
-            .attr("x", xs - iconSize / 2)
-            .attr("y", ys - iconSize / 2);
-
-          const content = makeArabicPartTooltip(lot, {isAntiscion: false, isOuterChart: true});
-
-          baseGroup
-            .append("rect")
-            .attr("x", xs - iconSize / 2 - 4)
-            .attr("y", ys - iconSize / 2 - 4)
-            .attr("width", iconSize + 8)
-            .attr("height", iconSize + 8)
-            .attr("fill", "transparent")
-            .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
-              showTooltip(event, content);
-            })
-            .on("mouseout", () => {
-              if (!isMobile) hideTooltip();
-            });
-
-          // chartElementsForAspect.current.push(outerLotChartElement);
-          chartElementsForAspect.current = [
-            ...chartElementsForAspect.current,
-            outerLotChartElement,
-          ];
+          if(canDrawArabicPart) {
+            const overlapData =
+              getElementOverlapLongitudeAndOffset(outerLotChartElement);
+  
+            // 1) ângulo zodiacal original (graus → rad)
+            const rawDegOriginal = 180 - (lot.longitude % 360) - 90;
+            const rawDegOverlapped = 180 - (overlapData.longitude % 360) - 90;
+            const rawRadOriginal = (rawDegOriginal * Math.PI) / 180;
+            const rawRadOverlapped = (rawDegOverlapped * Math.PI) / 180;
+  
+            // 2) compensa a rotação do zodíaco (transforma em ângulo final)
+            const rotRad = (zodiacRotation * Math.PI) / 180;
+            const angleRadOriginal = rawRadOriginal - rotRad;
+            const angleRadOverlapped = rawRadOverlapped - rotRad;
+  
+            // 3) offsets de sobreposição
+            // const rSymbol = outerZodiacRadius - symbolOffset;
+            const rSymbol = outerZodiacRadius + overlapData.offset;
+            const rLineStart = outerZodiacRadius + lineStartOffset;
+            const rLineEnd = outerZodiacRadius;
+  
+            // 4) cálculos das coordenadas
+            const xs = rSymbol * Math.cos(angleRadOverlapped);
+            const ys = rSymbol * Math.sin(angleRadOverlapped);
+  
+            const x1 = rLineStart * Math.cos(angleRadOriginal);
+            const y1 = rLineStart * Math.sin(angleRadOriginal);
+            const x2 = rLineEnd * Math.cos(angleRadOriginal);
+            const y2 = rLineEnd * Math.sin(angleRadOriginal);
+  
+            // 5) desenha a linha
+            baseGroup
+              .append("line")
+              .attr("x1", x1)
+              .attr("y1", y1)
+              .attr("x2", x2)
+              .attr("y2", y2)
+              .attr("stroke", "black")
+              .attr("stroke-width", 1);
+  
+            // 6) desenha o ícone do planeta
+            const iconSize = 13; // px
+            const iconSrc = `/planets/${key}.png`;
+  
+            baseGroup
+              .append("image")
+              .attr("href", iconSrc) // no D3 v6+ use 'href'
+              .attr("width", iconSize)
+              .attr("height", iconSize)
+              // centraliza o ícone em (xs, ys)
+              .attr("x", xs - iconSize / 2)
+              .attr("y", ys - iconSize / 2);
+  
+            const content = makeArabicPartTooltip(lot, {isAntiscion: false, isOuterChart: true});
+  
+            baseGroup
+              .append("rect")
+              .attr("x", xs - iconSize / 2 - 4)
+              .attr("y", ys - iconSize / 2 - 4)
+              .attr("width", iconSize + 8)
+              .attr("height", iconSize + 8)
+              .attr("fill", "transparent")
+              .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
+                showTooltip(event, content);
+              })
+              .on("mouseout", () => {
+                if (!isMobile) hideTooltip();
+              });
+  
+            // chartElementsForAspect.current.push(outerLotChartElement);
+            chartElementsForAspect.current = [
+              ...chartElementsForAspect.current,
+              outerLotChartElement,
+            ];
+          }
         }
       });
     }
@@ -2206,80 +2281,87 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             isRetrograde: false,
           };
 
-          const overlapData = getElementOverlapLongitudeAndOffset(
-            outerLotChartElementAntiscion
-          );
+          let canDrawArabicPart = true;
+          if(hasIsolatedAspect)
+            canDrawArabicPart = elementIsInIsolatedAspect(outerLotChartElementAntiscion);
 
-          // 1) ângulo zodiacal original (graus → rad)
-          const rawDegOriginal = 180 - (lot.antiscion % 360) - 90;
-          const rawDegOverlapped = 180 - (overlapData.longitude % 360) - 90;
-          const rawRadOriginal = (rawDegOriginal * Math.PI) / 180;
-          const rawRadOverlapped = (rawDegOverlapped * Math.PI) / 180;
+          if(canDrawArabicPart) {
 
-          // 2) compensa a rotação do zodíaco (transforma em ângulo final)
-          const rotRad = (zodiacRotation * Math.PI) / 180;
-          const angleRadOriginal = rawRadOriginal - rotRad;
-          const angleRadOverlapped = rawRadOverlapped - rotRad;
-
-          // 3) offsets de sobreposição
-          // const rSymbol = radius - symbolOffset;
-          const rSymbol = outerZodiacRadius + overlapData.offset;
-          const rLineStart = outerZodiacRadius + lineStartOffset;
-          const rLineEnd = outerZodiacRadius;
-
-          // 4) cálculos das coordenadas
-          const xs = rSymbol * Math.cos(angleRadOverlapped);
-          const ys = rSymbol * Math.sin(angleRadOverlapped);
-
-          const x1 = rLineStart * Math.cos(angleRadOriginal);
-          const y1 = rLineStart * Math.sin(angleRadOriginal);
-          const x2 = rLineEnd * Math.cos(angleRadOriginal);
-          const y2 = rLineEnd * Math.sin(angleRadOriginal);
-
-          // 5) desenha a linha
-          baseGroup
-            .append("line")
-            .attr("x1", x1)
-            .attr("y1", y1)
-            .attr("x2", x2)
-            .attr("y2", y2)
-            .attr("stroke", "#ff914d") // antiscion color
-            .attr("stroke-width", 1);
-
-          // 6) desenha o ícone do planeta
-          const iconSize = 13; // px
-          const iconSrc = `/planets/antiscion/${key}.png`;
-
-          baseGroup
-            .append("image")
-            .attr("href", iconSrc) // no D3 v6+ use 'href'
-            .attr("width", iconSize)
-            .attr("height", iconSize)
-            // centraliza o ícone em (xs, ys)
-            .attr("x", xs - iconSize / 2)
-            .attr("y", ys - iconSize / 2);
-
-          const content = makeArabicPartTooltip(lot, {isAntiscion: true, isOuterChart: true});
-
-          baseGroup
-            .append("rect")
-            .attr("x", xs - iconSize / 2 - 4)
-            .attr("y", ys - iconSize / 2 - 4)
-            .attr("width", iconSize + 8)
-            .attr("height", iconSize + 8)
-            .attr("fill", "transparent")
-            .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
-              showTooltip(event, content);
-            })
-            .on("mouseout", () => {
-              if (!isMobile) hideTooltip();
-            });
-
-          // chartElementsForAspect.current.push(outerLotChartElementAntiscion);
-          chartElementsForAspect.current = [
-            ...chartElementsForAspect.current,
-            outerLotChartElementAntiscion,
-          ];
+            const overlapData = getElementOverlapLongitudeAndOffset(
+              outerLotChartElementAntiscion
+            );
+  
+            // 1) ângulo zodiacal original (graus → rad)
+            const rawDegOriginal = 180 - (lot.antiscion % 360) - 90;
+            const rawDegOverlapped = 180 - (overlapData.longitude % 360) - 90;
+            const rawRadOriginal = (rawDegOriginal * Math.PI) / 180;
+            const rawRadOverlapped = (rawDegOverlapped * Math.PI) / 180;
+  
+            // 2) compensa a rotação do zodíaco (transforma em ângulo final)
+            const rotRad = (zodiacRotation * Math.PI) / 180;
+            const angleRadOriginal = rawRadOriginal - rotRad;
+            const angleRadOverlapped = rawRadOverlapped - rotRad;
+  
+            // 3) offsets de sobreposição
+            // const rSymbol = radius - symbolOffset;
+            const rSymbol = outerZodiacRadius + overlapData.offset;
+            const rLineStart = outerZodiacRadius + lineStartOffset;
+            const rLineEnd = outerZodiacRadius;
+  
+            // 4) cálculos das coordenadas
+            const xs = rSymbol * Math.cos(angleRadOverlapped);
+            const ys = rSymbol * Math.sin(angleRadOverlapped);
+  
+            const x1 = rLineStart * Math.cos(angleRadOriginal);
+            const y1 = rLineStart * Math.sin(angleRadOriginal);
+            const x2 = rLineEnd * Math.cos(angleRadOriginal);
+            const y2 = rLineEnd * Math.sin(angleRadOriginal);
+  
+            // 5) desenha a linha
+            baseGroup
+              .append("line")
+              .attr("x1", x1)
+              .attr("y1", y1)
+              .attr("x2", x2)
+              .attr("y2", y2)
+              .attr("stroke", "#ff914d") // antiscion color
+              .attr("stroke-width", 1);
+  
+            // 6) desenha o ícone do planeta
+            const iconSize = 13; // px
+            const iconSrc = `/planets/antiscion/${key}.png`;
+  
+            baseGroup
+              .append("image")
+              .attr("href", iconSrc) // no D3 v6+ use 'href'
+              .attr("width", iconSize)
+              .attr("height", iconSize)
+              // centraliza o ícone em (xs, ys)
+              .attr("x", xs - iconSize / 2)
+              .attr("y", ys - iconSize / 2);
+  
+            const content = makeArabicPartTooltip(lot, {isAntiscion: true, isOuterChart: true});
+  
+            baseGroup
+              .append("rect")
+              .attr("x", xs - iconSize / 2 - 4)
+              .attr("y", ys - iconSize / 2 - 4)
+              .attr("width", iconSize + 8)
+              .attr("height", iconSize + 8)
+              .attr("fill", "transparent")
+              .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
+                showTooltip(event, content);
+              })
+              .on("mouseout", () => {
+                if (!isMobile) hideTooltip();
+              });
+  
+            // chartElementsForAspect.current.push(outerLotChartElementAntiscion);
+            chartElementsForAspect.current = [
+              ...chartElementsForAspect.current,
+              outerLotChartElementAntiscion,
+            ];
+          }
         }
       });
     }
@@ -2408,6 +2490,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     testValue,
     showOuterChart,
     showDegrees,
+    hasIsolatedAspect
   ]);
 
   useEffect(() => {
@@ -2507,7 +2590,6 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
           .attr("x2", x2).attr("y2", y2)
           .attr("stroke", "transparent")
           .attr("stroke-width", 10)
-          .style("cursor", "pointer")
           .on("click", (event: MouseEvent) => {
             event.stopPropagation();
             const isAlreadySelected = selectedAspectRef.current?.key === aspect.key;
@@ -2533,7 +2615,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
           .attr("x2", x2).attr("y2", y2)
           .attr("stroke", "transparent")
           .attr("stroke-width", 10)
-          .style("cursor", "pointer")
+          .attr("cursor", "pointer")
           .on("mouseover", (event: MouseEvent) => {
             showTooltip(event, tooltipContent);
           })
@@ -2546,11 +2628,15 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             const next = isAlreadySelected ? null : aspect;
             selectedAspectRef.current = next;
             setSelectedAspect(next);
+            setHasIsolatedAspect(next !== null);
+            // console.log(`isolated aspect: ${(next !== null).toString()}`);
+            // console.log(`aspect is`);
+            // console.log(selectedAspectRef.current);
           });
       }
     });
-  }, [aspects]);
-  
+  }, [aspects]);  
+
   const toggleArabicParts = () => {
     setShowArabicParts((prev) => !prev);
   };
@@ -2625,7 +2711,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         ) :
           <svg className={className} ref={ref}></svg>}
 
-          {tooltip && (
+          {tooltip && showDegrees &&(
             <div
               className="absolute z-50 pointer-events-none px-2 py-1 rounded text-sm bg-white border border-zinc-200 shadow-md w-max max-w-[350px]"
               style={{ left: tooltip.x + 10, top: tooltip.y - 28 }}
