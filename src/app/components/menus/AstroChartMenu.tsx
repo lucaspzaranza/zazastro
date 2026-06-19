@@ -72,7 +72,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
   return (
     <>
       <div className="w-full flex flex-col gap-2">
-        <div className="w-full flex flex-row items-center justify-center gap-1">
+        <div className="w-full flex flex-row items-center justify-center gap-0 md:gap-1">
           <button
             className={planetsAntiscia ? pillActive : pillInactive}
             onClick={() => {
@@ -121,7 +121,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
           }
         </div>
 
-        <div className="w-full flex flex-row justify-center gap-1">
+        <div className="w-full flex flex-row justify-center gap-0 md:gap-1">
           {
             toggleCombineWithBirthChart &&
             <button

@@ -83,10 +83,12 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   );
   const [showDegrees, setShowDegrees] = useState(true);
 
-  const { aspects, updateAspectsData } = useAspectsData();
-  const [selectedAspect, setSelectedAspect] = useState<PlanetAspectData | null>(null);
-  const selectedAspectRef = useRef<PlanetAspectData | null>(null);
-  const [hasIsolatedAspect, setHasIsolatedAspect] = useState(false);
+  const { aspects, updateAspectsData, selectedAspect, setSelectedAspect, 
+    hasIsolatedAspect, setHasIsolatedAspect } = useAspectsData();
+
+  // const [selectedAspect, setSelectedAspect] = useState<PlanetAspectData | null>(null);
+  // const selectedAspectRef = useRef<PlanetAspectData | null>(null);
+  // const [hasIsolatedAspect, setHasIsolatedAspect] = useState(false);
   
   const t = useTranslations();
   const outerInitial = t("aspects.outerInitial");
@@ -605,8 +607,11 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   }
 
   function elementIsInIsolatedAspect (element: ChartElement): boolean {
-    const el = selectedAspectRef.current!.element;
-    const aspEl = selectedAspectRef.current!.aspectedElement;
+    // const el = selectedAspectRef.current!.element;
+    // const aspEl = selectedAspectRef.current!.aspectedElement;
+
+    const el = selectedAspect!.element;
+    const aspEl = selectedAspect!.aspectedElement;
 
     if(element.elementType === "planet") {
       const elIsAspect = el.name === element.planetType && el.elementType === element.elementType && 
@@ -621,9 +626,9 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     }
 
     if(element.elementType === "arabicPart") {
-      if(element.name === "love") {
-        console.log(selectedAspectRef.current);
-      }
+      // if(element.name === "love") {
+      //   console.log(selectedAspectRef.current);
+      // }
 
       const elIsAspect = el.name === element.name && el.elementType === element.elementType && 
         el.isAntiscion === element.isAntiscion && el.isFromOuterChart === element.isFromOuterChart 
@@ -1167,15 +1172,18 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       lineStartOffset: number;
     }
   ) {
-    const aspectsData = getAspects(elements);
+    const aspectsData: PlanetAspectData[] = !hasIsolatedAspect ? getAspects(elements) : [selectedAspect!];
     const aspectsWithFixedStars = getAspectsWithFixedStars(elements);
     setFixedStarAspects(aspectsWithFixedStars);
     // console.log(aspectsData);
 
-    onUpdateAspectsData?.([...aspectsData, ...aspectsWithFixedStars]);
+    if(!hasIsolatedAspect)
+      onUpdateAspectsData?.([...aspectsData, ...aspectsWithFixedStars]);
+    else
+      onUpdateAspectsData?.([...aspectsData]);
 
     aspectsData.forEach((aspect) => {
-      if (!isAspectWithHouse(aspect)) {
+      if (!isAspectWithHouse(aspect) || hasIsolatedAspect) {
         drawAspectElementTrace({
           ...options,
           element: aspect.element,
@@ -2573,7 +2581,9 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
 
     baseGroupRef.current.selectAll(".aspect-hit").remove();
 
-    aspects.forEach(aspect => {
+    const aspectsData: PlanetAspectData[] = !hasIsolatedAspect ? aspects : [...aspects.filter(asp => asp.key === selectedAspect!.key)];
+
+    aspectsData.forEach(aspect => {
       const coords = aspectStrokeCoords.current.get(aspect.key);
       if (!coords) return; // linha não foi desenhada (ex: aspecto com casa)
 
@@ -2592,16 +2602,19 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
           .attr("stroke-width", 10)
           .on("click", (event: MouseEvent) => {
             event.stopPropagation();
-            const isAlreadySelected = selectedAspectRef.current?.key === aspect.key;
+            // const isAlreadySelected = selectedAspectRef.current?.key === aspect.key;
+            const isAlreadySelected = selectedAspect?.key === aspect.key;
             if (isAlreadySelected) {
               // segundo tap: isola
-              selectedAspectRef.current = null;
+              // selectedAspectRef.current = null;
               setSelectedAspect(null);
+              setHasIsolatedAspect(false);
               hideTooltip();
             } else {
               // primeiro tap: mostra tooltip e marca como selecionado
-              selectedAspectRef.current = aspect;
+              // selectedAspectRef.current = aspect;
               setSelectedAspect(aspect);
+              setHasIsolatedAspect(true);
               showTooltip(event, tooltipContent);
             }
           });
@@ -2624,9 +2637,10 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
           })
           .on("click", (event: MouseEvent) => {
             event.stopPropagation();
-            const isAlreadySelected = selectedAspectRef.current?.key === aspect.key;
+            // const isAlreadySelected = selectedAspectRef.current?.key === aspect.key;
+            const isAlreadySelected = selectedAspect?.key === aspect.key;
             const next = isAlreadySelected ? null : aspect;
-            selectedAspectRef.current = next;
+            // selectedAspectRef.current = next;
             setSelectedAspect(next);
             setHasIsolatedAspect(next !== null);
             // console.log(`isolated aspect: ${(next !== null).toString()}`);
@@ -2635,7 +2649,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
           });
       }
     });
-  }, [aspects]);  
+  }, [aspects, hasIsolatedAspect]);  
 
   const toggleArabicParts = () => {
     setShowArabicParts((prev) => !prev);

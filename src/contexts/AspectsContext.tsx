@@ -6,7 +6,11 @@ import React, { createContext, useState, useContext, ReactNode } from "react";
 
 interface AspectsContextType {
   aspects: PlanetAspectData[] | undefined;
+  selectedAspect: PlanetAspectData | null;
+  setSelectedAspect: (newSelectedAspectData: PlanetAspectData | null) => void;
   updateAspectsData: (newAspectsData: PlanetAspectData[]) => void;
+  hasIsolatedAspect: boolean;
+  setHasIsolatedAspect: (val: boolean) => void;
 }
 
 const AspectsContext = createContext<AspectsContextType | undefined>(undefined);
@@ -15,11 +19,10 @@ export const AspectsContextProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [aspects, setAspects] = useState<PlanetAspectData[]>([]);
+  const [selectedAspect, setSelectedAspect] = useState<PlanetAspectData | null>(null);
+  const [hasIsolatedAspect, setHasIsolatedAspect] = useState(false);
 
   const updateAspectsData = (aspects: PlanetAspectData[]) => {
-    // console.log('updating aspects...');
-    // console.log(aspects);
-    
     setAspects(aspects);
   };
 
@@ -28,6 +31,10 @@ export const AspectsContextProvider: React.FC<{ children: ReactNode }> = ({
       value={{
         aspects,
         updateAspectsData,
+        selectedAspect,
+        setSelectedAspect,
+        hasIsolatedAspect,
+        setHasIsolatedAspect
       }}
     >
       {children}

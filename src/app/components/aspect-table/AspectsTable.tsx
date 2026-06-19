@@ -76,7 +76,8 @@ export default function AspectsTable({
 
   const backupValue = useRef(0);
 
-  const {updateAspectsData} = useAspectsData();
+  const { updateAspectsData, selectedAspect, setSelectedAspect, 
+    hasIsolatedAspect, setHasIsolatedAspect} = useAspectsData();
 
   const t = useTranslations();
   const houseInitial = t("aspects.houseInitial");
@@ -126,11 +127,20 @@ export default function AspectsTable({
   }, [aspects]);
 
   useEffect(() => {
-    if (filteredAspects.length > 0) {
+    if (filteredAspects.length > 0 && selectedAspect === null) {
       updateTablePaginationAndPageCount();
       getAspectData();
     }
   }, [filteredAspects]);
+
+  useEffect(() => {
+    setTableCurrentPage(1);
+  }, [hasIsolatedAspect]);
+
+  function toggleSelectAspect(val: boolean, aspect: PlanetAspectData) {
+    setSelectedAspect(val ? aspect : null);
+    setHasIsolatedAspect(val);
+  }
 
   function getHouseName(element: AspectedElement): string {
     // console.log('getHouseName');
@@ -407,8 +417,9 @@ export default function AspectsTable({
 
     const newCurrentPage =
       newPageCount > tablePageCount ? tablePageCount : newPageCount;
+
     setTablePageCount(newPageCount);
-    setTableCurrentPage(newCurrentPage);
+    // setTableCurrentPage(newCurrentPage);
   }
 
   function updateTablePageCount(newItemsPerPage: number) {
@@ -765,7 +776,11 @@ export default function AspectsTable({
                 )
                 .map((aspect, index) => {
                   return (
-                    <tr className="flex flex-row border-t-2" key={index}>
+                    <tr className="flex flex-row border-t-2 hover:bg-gray-200 active:bg-gray-300" key={index}
+                      onClick={() => {
+                          toggleSelectAspect(!hasIsolatedAspect, aspect); 
+                        }}
+                      >
                       <td className={tdClasses3W4}>
                         {getElementImage(aspect.element)}
                       </td>
