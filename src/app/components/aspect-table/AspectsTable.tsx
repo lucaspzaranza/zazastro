@@ -673,6 +673,9 @@ export default function AspectsTable({
     setCumulatedOptions(undefined);
   }
 
+  const tableNavBtnsClasses: string = 
+    "border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300 disabled:opacity-50 disabled:bg-transparent disabled:hover:bg-transparent";
+
   return (
     (loading || loadingNextChart || isMountingChart) ? (
       <div className="w-full">
@@ -843,7 +846,8 @@ export default function AspectsTable({
 
                 <select
                   value={itemsPerPage}
-                  className="border-2 ml-1"
+                  disabled={hasIsolatedAspect}
+                  className="border-2 ml-1 disabled:opacity-50"
                   onChange={(e) => {
                     updateTableItemsPerPage(Number.parseInt(e.target.value));
                   }}
@@ -858,7 +862,8 @@ export default function AspectsTable({
               <td className="w-full flex flex-row items-center justify-end gap-1">
                 <div className="w-full flex flex-row items-center">
                   <button
-                    className="hover:outline-2 outline-offset-[-2px] p-1 active:bg-gray-200"
+                    disabled={hasIsolatedAspect}
+                    className="hover:outline-2 outline-offset-[-2px] p-1 active:bg-gray-200 disabled:opacity-50 disabled:bg-transparent disabled:hover:bg-transparent disabled:hover:outline-0"
                     onClick={() => clearFilters()}
                     title="Limpar Filtros"
                   >
@@ -878,25 +883,29 @@ export default function AspectsTable({
 
                 <div className="w-fit flex flex-row items-center justify-between gap-2">
                   <button
-                    className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
+                    disabled={hasIsolatedAspect}
+                    className={tableNavBtnsClasses}
                     onClick={() => updateTableCurrentPage(-999)}
                   >
                     |◀
                   </button>
                   <button
-                    className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
+                    disabled={hasIsolatedAspect}
+                    className={tableNavBtnsClasses}
                     onClick={() => updateTableCurrentPage(-1)}
                   >
                     ◀
                   </button>
                   <button
-                    className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
+                    disabled={hasIsolatedAspect}
+                    className={tableNavBtnsClasses}
                     onClick={() => updateTableCurrentPage(1)}
                   >
                     ▶
                   </button>
                   <button
-                    className="border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300"
+                    disabled={hasIsolatedAspect}
+                    className={tableNavBtnsClasses}
                     onClick={() => updateTableCurrentPage(999)}
                   >
                     ▶|

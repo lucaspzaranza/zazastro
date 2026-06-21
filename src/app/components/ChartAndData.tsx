@@ -30,6 +30,7 @@ import { SkeletonLine, SkeletonTable } from "./skeletons";
 import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT, SKELETON_LOADER_TIME } from "../utils/constants";
 import Spinner from "./Spinner";
 import { useTranslations } from "next-intl";
+import { useAspectsData } from "@/contexts/AspectsContext";
 
 interface Props {
   innerChart: BirthChart;
@@ -93,7 +94,9 @@ export default function ChartAndData(props: Props) {
   const [nextChartContentLoaded, setNextChartContentLoaded] = useState(false);
   const t = useTranslations();
   const [translatedTitle, setTranslatedTitle] = useState(title);
-  // const { updateAspectsData } = useAspectsData();
+  
+  const { updateAspectsData, selectedAspect, setSelectedAspect, 
+      hasIsolatedAspect, setHasIsolatedAspect} = useAspectsData();
 
   const [planetsAntiscion, setPlanetsAntiscion] = useState<
     Record<PlanetType, boolean>
@@ -213,6 +216,8 @@ export default function ChartAndData(props: Props) {
     updateSolarReturnParts(undefined);
     updateIsCombinedWithBirthChart(false);
     updateIsCombinedWithReturnChart(false);
+    setHasIsolatedAspect(false);
+    setSelectedAspect(null);
     resetChartMenus();
   }, []);
 

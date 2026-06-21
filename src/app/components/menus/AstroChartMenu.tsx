@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import LunarDerivedModal from "../modals/LunarDerivedModal";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { useAspectsData } from "@/contexts/AspectsContext";
 
 interface AstroChartMenuProps {
   toggleCombineWithBirthChart?: boolean;
@@ -46,6 +47,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
   } = useBirthChart();
 
   const { chartMenu } = useChartMenu();
+  const { hasIsolatedAspect } = useAspectsData();
 
   useEffect(() => {
     setPlanetsAntiscia(false);
@@ -63,17 +65,18 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
     "default-btn flex flex-row gap-1 items-center justify-center text-[0.65rem] md:text-[0.75rem] w-full text-white px-0 py-2 rounded";
 
     const pillBase =
-    "flex items-center justify-center text-[0.7rem] md:text-[0.75rem] px-3 py-2 rounded-full border-2 transition-all cursor-pointer whitespace-nowrap";
+    "flex items-center justify-center text-[0.7rem] md:text-[0.75rem] px-3 py-2 rounded-full border-2 transition-all cursor-pointer whitespace-nowrap disabled:opacity-50";
   const pillActive =
     `${pillBase} default-bg border-blue-700 text-white`;
   const pillInactive =
-    `${pillBase} bg-transparent border-zinc-300 dark:border-zinc-600 text-black dark:text-zinc-400 hover:border-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200`;
+    `${pillBase} bg-transparent border-zinc-300 dark:border-zinc-600 text-black dark:text-zinc-400 hover:border-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 disabled:border-zinc-300 disabled:hover:text-black`;
 
   return (
     <>
       <div className="w-full flex flex-col gap-2">
         <div className="w-full flex flex-row items-center justify-center gap-0 md:gap-1">
           <button
+            disabled={hasIsolatedAspect}
             className={planetsAntiscia ? pillActive : pillInactive}
             onClick={() => {
               setPlanetsAntiscia((prev) => !prev);
@@ -85,6 +88,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
           </button>
 
           <button
+            disabled={hasIsolatedAspect}
             className={arabicParts ? pillActive : pillInactive}
             onClick={() => {
               setArabicParts((prev) => !prev);
@@ -96,6 +100,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
           </button>
           
             <button
+              disabled={hasIsolatedAspect}
               className={arabicPartsAntiscia ? pillActive : pillInactive}
               onClick={() => {
                 setArabicPartsAntiscia((prev) => !prev);
@@ -109,14 +114,15 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
           {
             toggleCombineWithBirthChart === false && 
             <button
+              disabled={hasIsolatedAspect}
               className={showDegrees ? pillActive : pillInactive}
               onClick={() => {
                 setShowDegrees((prev) => !prev);
                 toggleDegrees?.();
               }}
             >
-              <span className="w-min hidden md:block">{t("birthChart.showDegrees")}</span>
-              <span className="w-min block md:hidden">{t("birthChart.showDegreesMobile")}</span>
+              <span className="w-min hidden md:block">{t("birthChart.showInfo")}</span>
+              <span className="w-min block md:hidden">{t("birthChart.showInfo")}</span>
             </button>      
           }
         </div>
@@ -125,19 +131,21 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
           {
             toggleCombineWithBirthChart &&
             <button
+              disabled={hasIsolatedAspect}
               className={showDegrees ? pillActive : pillInactive}
               onClick={() => {
                 setShowDegrees((prev) => !prev);
                 toggleDegrees?.();
               }}
             >
-              <span className="w-min hidden md:block">{t("birthChart.showDegrees")}</span>
-              <span className="w-min block md:hidden">{t("birthChart.showDegreesMobile")}</span>
+              <span className="w-min hidden md:block">{t("birthChart.showInfo")}</span>
+              <span className="w-min block md:hidden">{t("birthChart.showInfo")}</span>
             </button>
           }
 
           {toggleCombineWithBirthChart && !isCombinedWithReturnChart && (
             <button
+              disabled={hasIsolatedAspect}
               className={isCombinedWithBirthChart ? pillActive : pillInactive}
               onClick={() => {
                 updateIsCombinedWithBirthChart(!isCombinedWithBirthChart);
@@ -151,6 +159,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
 
           {toggleCombineWithReturnChart && !isCombinedWithBirthChart && (
             <button
+              disabled={hasIsolatedAspect}
               className={isCombinedWithReturnChart ? pillActive : pillInactive}
               onClick={() => {
                 updateIsCombinedWithReturnChart(!isCombinedWithReturnChart);
@@ -164,6 +173,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
 
           {chartMenu === "solarReturn" && (
             <button
+              disabled={hasIsolatedAspect}
               className={lunarDerivedModal ? pillActive : pillInactive}
               onClick={() => {
                 setLunarDerivedModal(true);

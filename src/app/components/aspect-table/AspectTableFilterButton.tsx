@@ -20,6 +20,7 @@ import DistanceTypeFilterModal from "../modals/DistanceTypeFilterModal";
 import DistanceFilterModal from "../modals/DistanceFilterModal";
 import ElementFilterModal from "../modals/ElementFilterModal";
 import Image from "next/image";
+import { useAspectsData } from "@/contexts/AspectsContext";
 
 export type AspectFilterButtonImperativeHandle = {
   clearFilter: () => void;
@@ -67,8 +68,9 @@ function AspectTableFilterButtonFn(
   const [memorizedOptions, setMemorizedOptions] = useState<any>(undefined);
   const optionsInitialState = useRef<any>(undefined);
   const [filterIsActive, setFilterIsActive] = useState(false);
-  // const [shouldClear, setShouldClear] = useState(false);
   const [clearSignal, setClearSignal] = useState(0);
+  
+  const { hasIsolatedAspect } = useAspectsData();
 
   useEffect(() => {
     setModalIsOpen(openModal);
@@ -108,7 +110,7 @@ function AspectTableFilterButtonFn(
   return (
     <div className="w-full relative">
       <button
-        disabled={disableFilterBtn}
+        disabled={disableFilterBtn || hasIsolatedAspect}
         className="w-full disabled:bg-white h-5 flex flex-row text-[0.7rem] pt-px items-center justify-center bg-gray-200 hover:bg-gray-300 active:bg-gray-400"
         onClick={() =>
           /* Toggle Filter Modal On/Off */
