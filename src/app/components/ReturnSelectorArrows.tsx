@@ -7,6 +7,7 @@ import { apiFetch } from "../utils/api";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import { getProfectionChart, makeLunarDerivedChart } from "../utils/chartUtils";
 import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
+import { useAspectsData } from "@/contexts/AspectsContext";
 
 interface ChartSelectorProps {
   children: React.ReactNode;
@@ -24,6 +25,7 @@ export default function ReturnSelectorArrows(props: ChartSelectorProps) {
   const { isMobileBreakPoint } = useScreenDimensions();
   const { chartMenu } = useChartMenu();
   const { archArabicParts, updateSolarReturnParts } = useArabicParts();
+  const { hasIsolatedAspect } = useAspectsData();
 
   useEffect(() => {
     if (chartMenu === "lunarDerivedReturn")
@@ -185,10 +187,11 @@ export default function ReturnSelectorArrows(props: ChartSelectorProps) {
   return (
     <div className="relative w-full h-full flex flex-row items-center justify-between">
       <button
+        disabled={hasIsolatedAspect}
         onClick={() => getChart("previous")}
         className={`absolute ${getMobileTopValue()} md:top-auto outline-2 md:outline-0 left-2 
           w-[5rem] md:w-[2rem] h-[2rem] mb-3 mr-2 flex flex-row items-center justify-center md:justify-start 
-          text-xl hover:outline-2 active:bg-gray-300 rounded-md`}
+          text-xl hover:outline-2 active:bg-gray-300 rounded-md disabled:opacity-50 disabled:hover:outline-0 disabled:active:bg-transparent`}
         title="Retorno anterior"
       >
         <MdKeyboardDoubleArrowLeft size={30} />
@@ -199,10 +202,11 @@ export default function ReturnSelectorArrows(props: ChartSelectorProps) {
       </div>
 
       <button
+        disabled={hasIsolatedAspect}
         onClick={() => getChart("next")}
         className={`absolute ${getMobileTopValue()} md:top-auto outline-2 md:outline-0 right-2
           w-[5rem] md:w-[2rem] h-[2rem] mb-3 ml-2 flex flex-row items-center justify-center md:justify-end 
-          text-xl hover:outline-2 active:bg-gray-300 rounded-md`}
+          text-xl hover:outline-2 active:bg-gray-300 rounded-md disabled:opacity-50 disabled:hover:outline-0 disabled:active:bg-transparent`}
         title="Próximo retorno"
       >
         <MdKeyboardDoubleArrowRight size={30} />

@@ -74,7 +74,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
   return (
     <>
       <div className="w-full flex flex-col gap-2">
-        <div className="w-full flex flex-row items-center justify-center gap-0 md:gap-1">
+        <div className="w-full flex flex-row items-center justify-center gap-0.5 md:gap-1">
           <button
             disabled={hasIsolatedAspect}
             className={planetsAntiscia ? pillActive : pillInactive}
@@ -127,22 +127,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
           }
         </div>
 
-        <div className="w-full flex flex-row justify-center gap-0 md:gap-1">
-          {
-            toggleCombineWithBirthChart &&
-            <button
-              disabled={hasIsolatedAspect}
-              className={showDegrees ? pillActive : pillInactive}
-              onClick={() => {
-                setShowDegrees((prev) => !prev);
-                toggleDegrees?.();
-              }}
-            >
-              <span className="w-min hidden md:block">{t("birthChart.showInfo")}</span>
-              <span className="w-min block md:hidden">{t("birthChart.showInfo")}</span>
-            </button>
-          }
-
+        <div className="w-full flex flex-row justify-center gap-0.5 md:gap-1">          
           {toggleCombineWithBirthChart && !isCombinedWithReturnChart && (
             <button
               disabled={hasIsolatedAspect}
@@ -184,6 +169,21 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
               <span className="w-min block md:hidden">{t("returnChart.lunarDerivedReturnMobile")}</span>
             </button>
           )}
+
+          {
+            toggleCombineWithBirthChart &&
+            <button
+              disabled={hasIsolatedAspect}
+              className={showDegrees ? pillActive : pillInactive}
+              onClick={() => {
+                setShowDegrees((prev) => !prev);
+                toggleDegrees?.();
+              }}
+            >
+              <span className="w-min hidden md:block">{t("birthChart.showInfo")}</span>
+              <span className="w-min block md:hidden">{t("birthChart.showInfo")}</span>
+            </button>
+          }
         </div>
       </div>
 

@@ -95,8 +95,7 @@ export default function ChartAndData(props: Props) {
   const t = useTranslations();
   const [translatedTitle, setTranslatedTitle] = useState(title);
   
-  const { updateAspectsData, selectedAspect, setSelectedAspect, 
-      hasIsolatedAspect, setHasIsolatedAspect} = useAspectsData();
+  const { setHasIsolatedAspect, setSelectedAspect } = useAspectsData();
 
   const [planetsAntiscion, setPlanetsAntiscion] = useState<
     Record<PlanetType, boolean>
