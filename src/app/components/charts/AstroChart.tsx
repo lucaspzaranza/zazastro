@@ -2670,27 +2670,62 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   let className = `absolute
     xl:right-[4.5rem] 2xl:left-[4.25rem] 3xl:left-5-5rem`;
 
+  // if (!isMobileBreakPoint()) {
+  //   if (isReturnChart())
+  //     className = "absolute " + showOuterChart ? "right-28" : "right-20";
+
+  //   if (isSinastryChart())
+  //     className = "absolute right-[6.8rem] top-12"
+
+  //   if (isProgressionChart() || isProfectionChart())
+  //     className = "";
+  // } else {
+  //   className = showOuterChart ? "mb-8" : "mb-6";
+  //   className += " absolute left-3";
+
+  //   if (isCombinedWithBirthChart || isCombinedWithReturnChart)
+  //     className = "absolute left-10 top-4"
+
+  //   if (isSinastryChart())
+  //     className = "absolute right-10 top-6"
+
+  //   if (isProgressionChart())
+  //     className = "absolute " + (!isCombinedWithBirthChart ? "left-3 top-[-0.75rem]" : "left-9 top-4");
+  // }
+
+  // Define o deslocamento extra a partir do centro (em px), por contexto
+  let offsetX = 0;
+  let offsetY = 0;
+
   if (!isMobileBreakPoint()) {
-    if (isReturnChart())
-      className = "absolute " + showOuterChart ? "right-28" : "right-20";
-
-    if (isSinastryChart())
-      className = "absolute right-[6.8rem] top-12"
-
-    if (isProgressionChart() || isProfectionChart())
-      className = "";
+    if (isReturnChart()) {
+      offsetX = 0; // ajustar
+      offsetY = 0;
+    }
+    if (isSinastryChart()) {
+      offsetX = 0;
+      offsetY = 0;
+    }
+    if (isProgressionChart() || isProfectionChart()) {
+      offsetX = 0;
+      offsetY = 0;
+    }
   } else {
-    className = showOuterChart ? "mb-8" : "mb-6";
-    className += " absolute left-3";
+    offsetX = 0; // ajustar
+    offsetY = 0;
 
-    if (isCombinedWithBirthChart || isCombinedWithReturnChart)
-      className = "absolute left-10 top-4"
-
-    if (isSinastryChart())
-      className = "absolute right-10 top-6"
-
-    if (isProgressionChart())
-      className = "absolute " + (!isCombinedWithBirthChart ? "left-3 top-[-0.75rem]" : "left-9 top-4");
+    if (isCombinedWithBirthChart || isCombinedWithReturnChart) {
+      offsetX = 0;
+      offsetY = 0;
+    }
+    if (isSinastryChart()) {
+      offsetX = 0;
+      offsetY = 0;
+    }
+    if (isProgressionChart()) {
+      offsetX = 0;
+      offsetY = 0;
+    }
   }
 
   return (
@@ -2698,7 +2733,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       className={`w-full flex flex-col justify-center items-center gap-8
         ${useReturnSelectorArrows ? 'mx-14' : 'mx-10'}`}
     >
-      <div className="w-full md:px-4">
+      <div className="w-full mb-[-25px] md:mb-[-8px] md:px-4 z-10">
         <AstroChartMenu
           togglePlanetsAntiscia={toggleAntiscia}
           toggleArabicParts={toggleArabicParts}
@@ -2709,7 +2744,6 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         />
       </div>
 
-      {/* <div className={`relative w-full h-[20rem] md:h-[38rem] ${(isMountingChart ? "opacity-0" : "")}`}> */}
       <div 
         ref={containerRef} 
         className={`relative w-full h-[20rem] md:h-[38rem] ${(isMountingChart ? "opacity-0" : "")}`}
@@ -2720,10 +2754,29 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       >
         {useReturnSelectorArrows ? (
           <ReturnSelectorArrows>
-            <svg className={className} ref={ref}></svg>
+            {/* <svg className={className} ref={ref}></svg> */}
+            <svg
+              ref={ref}
+              style={{
+                position: "absolute",
+                left: `calc(50% + ${offsetX}px)`,
+                top: `calc(50% + ${offsetY}px)`,
+                transform: "translate(-50%, -50%)",
+              }}
+            />
           </ReturnSelectorArrows>
         ) :
-          <svg className={className} ref={ref}></svg>}
+          // <svg className={className} ref={ref}></svg>
+          <svg
+            ref={ref}
+            style={{
+              position: "absolute",
+              left: `calc(50% + ${offsetX}px)`,
+              top: `calc(50% + ${offsetY}px)`,
+              transform: "translate(-50%, -50%)",
+            }}
+          />
+        }
 
           {tooltip && showDegrees &&(
             <div

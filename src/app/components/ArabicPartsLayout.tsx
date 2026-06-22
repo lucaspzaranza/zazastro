@@ -1,5 +1,5 @@
 import { ArabicPart } from "@/interfaces/ArabicPartInterfaces";
-import React, { JSX, useState } from "react";
+import React, { JSX, useEffect, useRef, useState } from "react";
 import { formatSignColor, getArabicPartImage } from "../utils/chartUtils";
 import ArabicPartsModal from "./modals/ArabicPartsModal";
 import CustomizeASC from "./CustomizeASC";
@@ -39,6 +39,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
   const [showInnerParts, setShowInnerParts] = useState(true);
   const [menu, setMenu] = useState<ArabicPartsMenu>("default");
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
+  const contextMenuRef = useRef<HTMLDivElement>(null);
 
   const { isCombinedWithBirthChart, isCombinedWithReturnChart } =
     useBirthChart();
@@ -47,6 +48,16 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
   const { chartMenu } = useChartMenu();
 
   const t = useTranslations();
+
+  useEffect(() => {
+    function handleOutsideClick(e: MouseEvent) {
+      if (contextMenuRef.current && !contextMenuRef.current.contains(e.target as Node)) {
+        setContextMenuOpen(false);
+      }
+    }
+    document.addEventListener("click", handleOutsideClick);
+    return () => document.removeEventListener("click", handleOutsideClick);
+  }, []);
 
   function toggleInnerPartsVisualization() {
     setShowInnerParts((prev) => !prev);
@@ -243,7 +254,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
       </span>
       {showMenuButtons && (
         <>
-          <div className="md:hidden relative">
+          <div className="md:hidden relative" ref={contextMenuRef}>
             <BsThreeDots size={20} onClick={() => {
               setContextMenuOpen(prev => !prev);
             }} />
