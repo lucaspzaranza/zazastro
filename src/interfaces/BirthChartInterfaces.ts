@@ -16,8 +16,8 @@ export type PlanetType =
   | "southNode";
 
 export type ReturnChartType = "solar" | "lunar";
-export type ChartType = "birth" | "return" | "sinastry" | "progression" | "lunarDerived" | "profection";
-export type ArabicPartType = "birth" | "arch" | "solarReturn" | "sinastry";
+export type ChartType = "birth" | "return" | "sinastry" | "progression" | "lunarDerived" | "profection" | "transits";
+export type ArabicPartType = "birth" | "arch" | "solarReturn" | "sinastry" | "custom";
 
 export const planetTypes: PlanetType[] = [
   "sun",
@@ -48,6 +48,12 @@ export interface BirthChartProfile {
   id?: string;
   birthDate?: BirthDate;
   chartMenu?: ChartMenuType
+  transitsDate?: BirthDate;
+}
+
+export interface TransitsChartFormData {
+  profile: BirthChartProfile
+  transitsDate: BirthDate;
 }
 
 export interface PlanetWithSign {
@@ -67,6 +73,13 @@ export interface BirthChart {
   targetDate?: BirthDate;
   returnTime?: string;
   timezone?: string;
+  transits?: Transits;
+}
+
+export interface Transits {
+  planets: Planet[];
+  planetsWithSigns?: PlanetWithSign[];
+  date: BirthDate;
 }
 
 export interface Planet {
@@ -79,6 +92,7 @@ export interface Planet {
   antiscion: number;
   antiscionRaw: number;
   isRetrograde: boolean;
+  isTransit: boolean;
 }
 
 export interface HousesData {

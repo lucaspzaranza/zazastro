@@ -13,7 +13,8 @@ import {
   BirthChartProfile,
   BirthDate,
   ReturnChartType,
-  BirthChart as BirthChartType
+  BirthChart as BirthChartType,
+  TransitsChartFormData
 } from "@/interfaces/BirthChartInterfaces";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import ChartAndData from ".././ChartAndData";
@@ -34,6 +35,7 @@ import CitySearch from "../CitySearch";
 import HouseSystemDropdown from "../HouseSystemDropdown";
 import { HouseSystem } from "@/types/HouseSystem";
 import { useTranslations } from "next-intl";
+import TransitsChartForm from "./TransitsChartForm";
 
 type MenuButtonChoice =
   | "home"
@@ -44,6 +46,7 @@ type MenuButtonChoice =
   | "sinastry"
   | "secondaryProgressions"
   | "profection"
+  | "transits"
   | "momentMap";
 
 export default function BirthChart() {
@@ -92,6 +95,7 @@ export default function BirthChart() {
   const { screenDimensions } = useScreenDimensions();
 
   const [menu, setMenu] = useState<MenuButtonChoice>("home");
+  const [transitsMenu, setTransitsMenu] = useState(0);
   const [isClientReady, setIsClientReady] = useState(false);
   const [activeChart, setActiveChart] = useState(chartMenu);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -212,6 +216,8 @@ export default function BirthChart() {
         }),
       });
 
+      // console.log(data);
+
       updateBirthChart({
         profileName: chartProfileToOverwrite?.name ?? chartProfile?.name,
         chartData: {
@@ -314,6 +320,66 @@ export default function BirthChart() {
     });
   };
 
+  const getChartWithTransits = async (transitsFormData?: TransitsChartFormData) => {
+    setLoading(true);
+
+    const now = new Date();
+    const hourString = convertDegMinToDecimal(
+      now.getHours(),
+      now.getMinutes()
+    ).toString();
+
+    const transitsDate: BirthDate = (transitsMenu === 1 && transitsFormData) ? transitsFormData.transitsDate : {
+      day: now.getDate(),
+      month: now.getMonth() + 1,
+      year: now.getFullYear(),
+      time: hourString,
+      coordinates: chartProfile?.birthDate?.coordinates ?? {
+        latitude: 0,
+        longitude: 0
+      },
+    };
+
+    if (!chartProfile || (transitsFormData && transitsFormData.profile === undefined)) return;
+
+    if (chartProfile?.birthDate?.coordinates)
+      selectCity(chartProfile?.birthDate?.coordinates);
+
+    if (transitsFormData?.profile?.birthDate?.coordinates)
+      selectCity(transitsFormData.profile.birthDate.coordinates);
+
+    try {
+      const data = await apiFetch("birth-chart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          birthDate: { ...chartProfile.birthDate, houseSystem },
+          transitsDate,
+        }),
+      });
+
+      console.log(data);
+
+      updateBirthChart({
+        profileName: chartProfile?.name,
+        chartData: {
+          ...data,
+          birthDate:
+            chartProfile?.birthDate,
+        },
+        transits: data.transits,
+        chartType: "transits",
+      });
+    }
+    catch (error) {
+      console.error("Erro ao consultar mapa astral:", error);
+    } finally {
+      addChartMenu("transits");
+      updateChartMenuDirectly("transits");
+      setLoading(false);
+    }
+  };
+
   const makeSinastryCharts = async () => {
     setLoading(true);
 
@@ -382,6 +448,7 @@ export default function BirthChart() {
     else if (menu === "secondaryProgressions") return t("secondaryProgressions.title");
     else if (menu === "profection") return t("profections.title");
     else if (menu === "momentMap") return t("momentChart.title");
+    else if (menu === "transits") return t("transitsChart.title");
 
     return "Sem título";
   }
@@ -510,7 +577,7 @@ export default function BirthChart() {
   }
 
   function canRenderChart(): boolean {
-    if ((menu === "birthChart" || menu === "home") && birthChart) return true;
+    if ((menu === "birthChart" || menu === "home" || menu === "transits") && birthChart) return true;
     if ((menu === "birthChart" || menu === "momentMap") && birthChart) return true;
     if ((menu === "solarReturn" || menu === "lunarReturn") && returnChart) return true;
     if (menu === "sinastry" && sinastryChart) return true;
@@ -552,6 +619,13 @@ export default function BirthChart() {
 
             <button
               className="default-btn"
+              onClick={() => setMenu("transits")}
+            >
+              {t("birthChart.transits")}
+            </button>
+
+            <button
+              className="default-btn"
               onClick={() => setMenu("sinastry")}
             >
               {t("home.sinastry")}
@@ -569,7 +643,7 @@ export default function BirthChart() {
               onClick={() => setMenu("profection")}
             >
               {t("home.profections")}
-            </button>
+            </button>            
           </div>
         )}
 
@@ -862,6 +936,59 @@ export default function BirthChart() {
           </>
         )}
 
+        {
+          menu === "transits" && (
+            <>
+              <div className="w-full flex flex-row gap-2">
+                <label htmlFor="load" className="w-1/2 gap-2 flex flex-row">
+                  <input
+                    type="radio"
+                    id="load"
+                    name="group"
+                    value={0}
+                    defaultChecked={profiles.length > 0}
+                    disabled={profiles.length === 0}
+                    onChange={() => setTransitsMenu(0)}
+                  />
+                  {t("transitsChart.momentTransits")}
+                </label>
+
+                <label
+                  htmlFor="create"
+                  className="w-1/2 gap-2 flex flex-row items-center justify-end"
+                >
+                  <input
+                    type="radio"
+                    id="create"
+                    name="group"
+                    value={1}
+                    defaultChecked={profiles.length === 0}
+                    onChange={() => setTransitsMenu(1)}
+                  />
+                  {t("transitsChart.calculateTransits")}
+                </label>
+              </div>
+
+              {transitsMenu === 0 && 
+                <>
+                  <PresavedChartsDropdown
+                    onChange={(profile) => setChartProfile(profile)}
+                  />
+                  <HouseSystemDropdown />
+                  <button
+                    className="default-btn"
+                    onClick={() => getChartWithTransits()}
+                  >
+                    {t("birthChart.createMomentChart")}
+                  </button>
+                </>
+              }
+              
+              {transitsMenu === 1 && <TransitsChartForm onSubmit={(formData) => getChartWithTransits(formData)}/>}
+            </>
+          )
+        }
+
         {/* Back btn */}
         {menu !== "home" && (
           <button
@@ -890,10 +1017,26 @@ export default function BirthChart() {
           <div className="w-full text-left flex flex-col items-center mb-4">
             <ChartAndData
               arabicParts={arabicParts}
-              title={`${t("birthChart.chartTitle")}${profileName}`}
+              title={chartMenu === "moment" ? t("birthChart.chartTitle") + " " + t("momentChart.title") :
+                `${t("birthChart.chartTitle")}${profileName}`}
               innerChart={birthChart}
               chartDateProps={{
                 chartType: "birth",
+                birthChart,
+              }}
+            />
+          </div>
+        </div> : null;
+
+      case "transits":
+        return birthChart ? <div className="w-full flex flex-col items-center">
+          <div className="w-full text-left flex flex-col items-center mb-4">
+            <ChartAndData
+              arabicParts={arabicParts}
+              title={`${t("birthChart.chartTransitsTitle")}${profileName}`}
+              innerChart={birthChart}
+              chartDateProps={{
+                chartType: "transits",
                 birthChart,
               }}
             />
@@ -930,7 +1073,7 @@ export default function BirthChart() {
   if (!isClientReady) {
     return <Container className="w-[90%] md:w-1/4 h-[416px] md:h-[428px] flex flex-col items-center justify-center space-y-3 ">
       <Spinner size="16" />
-      <span className="pl-5">Carregando...</span>
+      <span className="pl-5">{t("home.loading")}</span>
     </Container>
   }
 
@@ -946,7 +1089,7 @@ export default function BirthChart() {
                   md:rounded-2xl transition-all duration-200 ease-in-out opacity-0 animate-[fadeIn_0.2s_forwards]`}
               >
                 <Spinner size="16" />
-                <h2 className="font-bold text-lg pl-10 mt-3">Carregando...</h2>
+                <h2 className="font-bold text-lg pl-10 mt-3">{t("home.loading")}</h2>
               </div>
             </div>
           )}

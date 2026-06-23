@@ -11,6 +11,7 @@ import {
   ChartType,
   planetTypes,
   SelectedCity,
+  Transits,
 } from "@/interfaces/BirthChartInterfaces";
 import { HouseSystem } from "@/types/HouseSystem";
 
@@ -20,6 +21,7 @@ interface UpdateBirthChartOptions {
   chartData?: BirthChart;
   profileName?: string;
   chartType: ChartType;
+  transits?: Transits;
 }
 
 interface BirthChartContextType {
@@ -133,6 +135,34 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
           },
 
           birthDate: chartData.birthDate,
+          
+          transits: chartData.transits ? {
+            ...chartData.transits,
+              planets: chartData.transits.planets.map((planet) => {
+              return {
+                ...planet,
+                longitude: decimalToDegreesMinutes(planet.longitude),
+                antiscion: getAntiscion(planet.longitude),
+
+                longitudeRaw: planet.longitude,
+                antiscionRaw: getAntiscion(planet.longitude, true),
+                type: planetTypes[planet.id],
+                isTransit: true,
+              };
+            }),
+            planetsWithSigns: chartData.transits.planets.map((planet) => {
+            return {
+              position: getDegreeAndSign(
+                decimalToDegreesMinutes(planet.longitude),
+                getGlyphOnly
+              ),
+              antiscion: getDegreeAndSign(
+                getAntiscion(planet.longitude),
+                getGlyphOnly
+              ),
+              isTransit: true,
+            };
+          })} : undefined,
 
           fixedStars: chartData.fixedStars.map((star) => ({
             ...star,
@@ -150,7 +180,7 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
       setProfileName(chartOptions.profileName);
     }
 
-    if (chartType === "birth") setBirthChart(chartObject);
+    if (chartType === "birth" || chartType === "transits") setBirthChart(chartObject);
     else if (chartType === "return") setReturnChart(chartObject);
     else if (chartType === "sinastry") setSinastryChart(chartObject);
     else if (chartType === "progression") setProgressionChart(chartObject);

@@ -165,11 +165,11 @@ export default function ChartAndData(props: Props) {
     setUseInnerParts(showInnerParts);
   }
 
-  useEffect(() => {
-    if(chartMenu === "moment") {
-      setTranslatedTitle(t("birthChart.chartTitle") + " " + t("momentChart.title"))
-    }
-  }, [title])
+  // useEffect(() => {
+  //   if(chartMenu === "moment") {
+  //     setTranslatedTitle(t("birthChart.chartTitle") + " " + t("momentChart.title"))
+  //   }
+  // }, [title])
 
   useEffect(() => {
     setUseInnerPlanets(outerChart === undefined);
@@ -252,8 +252,8 @@ export default function ChartAndData(props: Props) {
           <ChartSelectorArrows className="w-full mb-0 md:px-6">
             {title && (
               <h1 className="text-lg md:text-xl font-bold text-center">
-                {/* {title} */}
-                {translatedTitle}
+                {title}
+                {/* {translatedTitle} */}
               </h1>
             )}
           </ChartSelectorArrows>
@@ -421,6 +421,7 @@ export default function ChartAndData(props: Props) {
                     <div className="w-[1.5rem] flex flex-row items-center">
                       {getPlanetImage(planet.type, {
                         isRetrograde: planet.isRetrograde,
+                        isTransit: planet.isTransit,
                         size: !isMobileBreakPoint()
                           ? planet.type === "northNode" ||
                             planet.type === "southNode"

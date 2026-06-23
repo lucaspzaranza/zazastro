@@ -31,6 +31,7 @@ export interface ChartElement {
   planetType?: PlanetType;
   isFromOuterChart: boolean;
   isRetrograde: boolean;
+  isTransit?: boolean;
 }
 
 export interface ChartElementForArabicPartCalculation {
@@ -67,6 +68,7 @@ export interface AspectedElement {
   isAntiscion: boolean;
   isRetrograde: boolean;
   isRelevant?: boolean;
+  isTransit?: boolean;
 }
 
 export interface PlanetAspectData {

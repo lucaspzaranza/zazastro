@@ -194,25 +194,35 @@ interface ImgOptions {
   size?: number;
   isAntiscion?: boolean;
   isRetrograde?: boolean;
+  isTransit?: boolean;
 }
 
 export function getPlanetImage(
   planet: PlanetType,
   options: ImgOptions = {
+    size: 15,
     isAntiscion: false,
     isRetrograde: false,
+    isTransit: false
   }
 ): React.ReactNode {
   const folder = "planets";
-  const { isAntiscion, isRetrograde } = options;
-  const path = `/${folder}${isAntiscion ? "/antiscion" : ""}/${planet}${isRetrograde ? "-rx" : ""
-    }.png`;
+  const { size, isAntiscion, isRetrograde, isTransit } = options;
+  let path = folder;
+
+  if(isAntiscion)
+    path += "/antiscion";
+  else if(isTransit)
+    path += "/transits";
+
+  path += `/${planet}${isRetrograde ? "-rx" : ""}.png`
+
   return (
     <Image
       alt="planet"
       src={path}
-      width={options.size ?? 15}
-      height={options.size ?? 15}
+      width={size ?? 15}
+      height={size ?? 15}
       unoptimized
     />
   );

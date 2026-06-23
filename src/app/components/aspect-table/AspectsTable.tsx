@@ -172,11 +172,17 @@ export default function AspectsTable({
   }
 
   function getPlanetInfo(element: AspectedElement): Planet | undefined {
-    const chart = element.isFromOuterChart ? outerChart : birthChart;
-
-    return chart?.planets.find(
-      (planet) => planet.type === (element.name as PlanetType)
-    );
+    if(!element.isTransit) {
+      const chart = element.isFromOuterChart ? outerChart : birthChart;
+  
+      return chart?.planets.find(
+        (planet) => planet.type === (element.name as PlanetType)
+      );
+    } else if(birthChart.transits) {
+      return birthChart?.transits.planets.find(
+        (planet) => planet.type === (element.name as PlanetType)
+      );
+    }
   }
 
   function getArabicPartKeyFromElement(
@@ -192,12 +198,16 @@ export default function AspectsTable({
   }
 
   function getElementImage(element: AspectedElement): React.ReactNode {
+    // if(element.isTransit)
+    //   console.log(element);
+    
     if (element.elementType === "planet") {
       return (
         <div className="shrink-0 flex flex-row items-center gap-0.5">
           {getPlanetImage(element.name as PlanetType, {
             isAntiscion: element.isAntiscion,
             isRetrograde: element.isRetrograde,
+            isTransit: element.isTransit
           })}
           {element.isFromOuterChart ? `(${outerInitial})` : ""}
         </div>
@@ -280,8 +290,22 @@ export default function AspectsTable({
     const _2ndSignLong = getDegreesInsideASign(_2ndElementRawLongitude);
 
     const numericDistance = Number.parseFloat(
+      // decimalToDegreesMinutes(Math.abs(_1stSignLong - _2ndSignLong)).toFixed(2)
       decimalToDegreesMinutes(Math.abs(_1stSignLong - _2ndSignLong)).toFixed(2)
     );
+
+    if(aspect.aspectedElement.name === "northNode" && aspect.aspectedElement.isTransit) {
+      console.log("teste");
+
+      console.log("getDegreesInsideASign 1: ", _1stSignLong);
+      console.log("getDegreesInsideASign 2: ", _2ndSignLong);
+      
+      console.log(aspect.element.longitude);
+      console.log(aspect.aspectedElement.longitude);
+      
+      console.log('diff: ', Math.abs(aspect.element.longitude - aspect.aspectedElement.longitude));
+      console.log('numeric distance: ', numericDistance);
+    }
 
     distanceValues.push({ key: aspect.key, distance: numericDistance });
 
