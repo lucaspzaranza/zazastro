@@ -83,9 +83,10 @@ export default function LunarDerivedChart() {
           tableItemsPerPage={tableItemsPerPage}
           onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
           chartDateProps={{
-            chartType: "return",
+            chartType: "lunarDerived",
             birthChart: lunarDerivedChart,
             label: "Retorno",
+            chartDate: lunarDerivedChart.birthDate
           }}
           title={getTitle()}
         />

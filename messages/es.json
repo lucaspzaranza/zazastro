@@ -54,15 +54,21 @@
     "title": "Elige las cartas que se combinarán en sinastría",
     "firstChart": "Primer mapa",
     "secondChart": "Segundo mapa",
-    "makeSynastry": "Generar Sinastría"
+    "makeSynastry": "Generar Sinastría",
+    "sinastry": "Sinastría"
   },
   "secondaryProgressions": {
     "title": "Progressiones Secundarias",
-    "generateProgression": "Generar Progressione"
+    "generateProgression": "Generar Progressione",
+    "birth": "Natal",
+    "progressed": "Progresado"
   },
   "profections": {
     "title": "Profección Anual",
-    "generateProfection": "Generar Profecciones"
+    "generateProfection": "Generar Profecciones",
+    "yearProfection": "Profección para el año ",
+    "birth": "Natal",
+    "profected": "Profectado"
   },
   "momentChart": {
     "title": "Carta del Momento"

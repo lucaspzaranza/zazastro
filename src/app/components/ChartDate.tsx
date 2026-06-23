@@ -3,28 +3,32 @@ import moment from "moment-timezone";
 import { useEffect, useState } from "react";
 import { getHourAndMinute, getHouseSystemLabel } from "../utils/chartUtils";
 import { useBirthChart } from "@/contexts/BirthChartContext";
+import { useTranslations } from "next-intl";
 
 export const ChartDate = (props: ChatDateProps) => {
-  const { chartType, birthChart, label } = props;
+  const { chartType, birthChart, label, chartDate } = props;
   const [date, setDate] = useState<BirthDate | undefined>();
   const { houseSystem } = useBirthChart();
+  const t = useTranslations();
 
   useEffect(() => {
-    if (birthChart === undefined) return;
+    // if (birthChart === undefined) return;
+    if (chartDate === undefined) return;
 
-    if (chartType === "birth" || chartType === "profection") {
+    // if (chartType === "birth" || chartType === "profection" || chartType === "transits") {
+    if (chartType !== "return" && chartType !== "lunarDerived") {
       const convertedTime = getHourAndMinute(
-        Number.parseFloat(birthChart.birthDate.time)
+        Number.parseFloat(chartDate.time)
       );
 
       const transformedDate: BirthDate = {
-        ...birthChart.birthDate,
+        ...chartDate,
         time: convertedTime,
       };
 
       setDate(transformedDate);
     }
-    else if (birthChart.timezone) {
+    else if ((chartType === "return" || chartType === "lunarDerived") && birthChart && birthChart.timezone) {
       const returnTime = birthChart.returnTime;
       const returnDate = moment.tz(returnTime, birthChart.timezone);
       setDate({
@@ -51,7 +55,8 @@ export const ChartDate = (props: ChatDateProps) => {
   if (chartType === "profection")
     return <div className="text-[0.9rem] text-center md:text-[1rem] font-bold">
       <p>
-        Profecção para o ano {date.year} ({getHouseSystemLabel(houseSystem ?? "placidus")})
+        {/* Profecção para o ano {date.year} ({getHouseSystemLabel(houseSystem ?? "placidus")}) */}
+        {t('profections.yearProfection')} {date.year} ({getHouseSystemLabel(houseSystem ?? "placidus")})
       </p>
     </div>
   else return (

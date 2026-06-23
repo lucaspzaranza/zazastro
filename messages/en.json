@@ -54,15 +54,21 @@
     "title": "Choose charts to combine in sinastry",
     "firstChart": "First Chart",
     "secondChart": "Second Chart",
-    "makeSynastry": "Generate Sinastry"
+    "makeSynastry": "Generate Sinastry",
+    "sinastry": "Sinastry"
   },
   "secondaryProgressions": {
     "title": "Secondary Progressions",
-    "generateProgression": "Generate Progressions"
+    "generateProgression": "Generate Progressions",
+    "birth": "Birth",
+    "progressed": "Progressed"
   },
   "profections": {
     "title": "Yearly Profection",
-    "generateProfection": "Generate Profections"
+    "generateProfection": "Generate Profections",
+    "yearProfection": "Profection to the Year ",
+    "birth": "Birth",
+    "profected": "Profected"
   },
   "momentChart": {
     "title": "Moment Chart"

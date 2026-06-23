@@ -8,6 +8,7 @@ import {
 import React, { JSX, useCallback, useEffect, useState } from "react";
 import {
   angularLabels,
+  convertTransitsToChart,
   formatSignColor,
   getAntiscion,
   getDegreeAndSign,
@@ -165,15 +166,9 @@ export default function ChartAndData(props: Props) {
     setUseInnerParts(showInnerParts);
   }
 
-  // useEffect(() => {
-  //   if(chartMenu === "moment") {
-  //     setTranslatedTitle(t("birthChart.chartTitle") + " " + t("momentChart.title"))
-  //   }
-  // }, [title])
-
   useEffect(() => {
     setUseInnerPlanets(outerChart === undefined);
-    setUseInnerHouses(outerChart === undefined);
+    setUseInnerHouses(outerChart === undefined);    
   }, [innerChart, outerChart]);
 
   useEffect(() => {
@@ -195,7 +190,10 @@ export default function ChartAndData(props: Props) {
   }, [isCombinedWithBirthChart, isCombinedWithReturnChart, chartMenu]);
 
   useEffect(() => {
-    setChartForPlanets(useInnerPlanets ? innerChart : outerChart);
+    if(innerChart.transits)
+      setChartForPlanets(useInnerPlanets? innerChart : convertTransitsToChart(innerChart.transits));
+    else
+      setChartForPlanets(useInnerPlanets ? innerChart : outerChart);
   }, [useInnerPlanets]);
 
   useEffect(() => {
@@ -260,6 +258,7 @@ export default function ChartAndData(props: Props) {
           <div className="mb-2">
             <ChartDate {...chartDateProps} />
             {outerChartDateProps && <ChartDate {...outerChartDateProps} />}
+            {innerChart.transits && <ChartDate chartType="transits" label={t("birthChart.transits")} chartDate={innerChart.transits.date} />}
           </div>
 
           {innerChart && (
@@ -582,6 +581,7 @@ export default function ChartAndData(props: Props) {
     let result = chartMenu !== "birth";
     if (result) result = isCombinedWithBirthChart || isCombinedWithReturnChart;
     if (!result) result = chartMenu === "sinastry";
+    if(!result) result = chartDateProps.birthChart?.transits !== undefined;
 
     return result;
   }

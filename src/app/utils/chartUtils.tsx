@@ -12,6 +12,7 @@ import {
   PlanetType,
   planetTypes,
   ReturnChartType,
+  Transits,
 } from "@/interfaces/BirthChartInterfaces";
 import { HouseSystem } from "@/types/HouseSystem";
 import Image from "next/image";
@@ -435,6 +436,18 @@ export const clampLongitude = (
   return result;
 };
 
+export function toDate(birthDate: BirthDate): Date {
+  const [hours, minutes] = getHourAndMinute(parseFloat(birthDate.time))
+
+  return new Date(
+    birthDate.year,
+    birthDate.month,
+    birthDate.day,
+    parseInt(hours),
+    parseInt(minutes)
+  );
+}
+
 export function getReturnDateRangeString(
   returnTime: string,
   returnType: ReturnChartType
@@ -590,5 +603,24 @@ export const getProfectionChart = (birthChart: BirthChart, profectionYear: numbe
 
   return profectedChart;
 }
+
+export const convertTransitsToChart = (transits: Transits): BirthChart => ({
+  planets: [...transits.planets],
+  planetsWithSigns: transits.planetsWithSigns? [...transits.planetsWithSigns] : undefined,
+  birthDate: {...transits.date},
+  fixedStars: [],
+  housesData: {
+    armc: 0,
+    ascendant: 0,
+    equatorialAscendant: 0,
+    house: [],
+    housesWithSigns: [],
+    kochCoAscendant: 0,
+    mc: 0,
+    munkaseyCoAscendant: 0,
+    munkaseyPolarAscendant: 0,
+    vertex: 0
+  },
+})
 
 export const getHouseSystemLabel = (houseSystem: HouseSystem) => houseSystem.charAt(0).toUpperCase() + houseSystem.slice(1);

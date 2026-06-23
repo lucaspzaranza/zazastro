@@ -5,11 +5,13 @@ import ChartAndData from "../ChartAndData";
 import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT } from "@/app/utils/constants";
 import { BirthChart } from "@/interfaces/BirthChartInterfaces";
 import { ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
+import { useTranslations } from "next-intl";
 
 export default function ProfectionChart() {
   const { profileName } = useBirthChart();
   const { birthChart, profectionChart, isCombinedWithBirthChart } = useBirthChart();
   const { arabicParts, archArabicParts } = useArabicParts();
+  const t = useTranslations();
 
   const [tableItemsPerPage, setTableItemsPerPage] = useState(
     ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT
@@ -33,7 +35,21 @@ export default function ProfectionChart() {
   const getOuterArabicParts = (): ArabicPartsType | undefined =>
     !isCombinedWithBirthChart ? undefined : archArabicParts;
 
-  console.log(arabicParts);
+  function getTitle() {
+    console.log(birthChart);
+    console.log(profectionChart);
+    
+    if(!birthChart?.birthDate || !profectionChart?.birthDate) 
+      return `${t('profections.title')} - ${profileName}`;    
+    
+    const progressedYears = profectionChart!.birthDate.year - birthChart.birthDate.year;
+    const nextYear = progressedYears + 1;
+
+    const targetYear = birthChart.birthDate.year + progressedYears;
+    const targetNextYear = targetYear + 1;
+
+    return `${t('profections.profected')} ${progressedYears}/${nextYear} (${targetYear}/${targetNextYear}) - ${profileName}`;
+  }
 
   return (
     <ChartAndData
@@ -46,14 +62,17 @@ export default function ProfectionChart() {
       chartDateProps={{
         chartType: isCombinedWithBirthChart ? "birth" : "profection",
         birthChart: getInnerChart(),
-        label: isCombinedWithBirthChart ? "Natal" : "Profectado",
+        label: isCombinedWithBirthChart ? t("profections.birth") : t("profections.profected"),
+        chartDate: getInnerChart().birthDate
       }}
       outerChartDateProps={isCombinedWithBirthChart ? {
         chartType: "profection",
         birthChart: profectionChart,
-        label: "Profectado",
+        label: t("profections.profected"),
+        chartDate: profectionChart.birthDate
       } : undefined}
-      title={`Profecção Anual - ${profileName}`}
+      // title={`${t('profections.title')} - ${profileName}`}
+      title={getTitle()}
     />
   );
 }

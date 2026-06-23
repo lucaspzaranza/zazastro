@@ -296,20 +296,24 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     )!;
   }
 
+  function isAngularHouse(element: ChartElement) {
+    return element.name.endsWith("-0") || element.name.endsWith("3") || 
+      element.name.endsWith("6") || element.name.endsWith("9");
+  }
+
   function getOverlappedElementsForChartElement(
     chartElement: ChartElement
   ): ChartElement[] {
-    // if (chartElement.planetType === "neptune" && chartElement.isAntiscion) {
+
+    // if(chartElement.planetType === "northNode" && chartElement.isTransit)
     //   console.log(
     //     "snapshot",
     //     Array.isArray(chartElementsForAspect.current)
     //       ? [...chartElementsForAspect.current]
     //       : JSON.parse(JSON.stringify(chartElementsForAspect.current))
     //   );
-    // }
 
     return chartElementsForAspect.current.filter((e) => {
-      if(chartElement.isTransit && !e.isTransit) return false;
       if (chartElement.isFromOuterChart && !e.isFromOuterChart) return false;
       if (!chartElement.isFromOuterChart && e.isFromOuterChart) return false;
 
@@ -318,6 +322,14 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
 
       let chartElementLong = chartElement.longitude;
       let elementLong = e.longitude;
+
+      if(chartElement.isTransit) {
+        if(e.elementType === "house" && isAngularHouse(e)) {
+          return Math.abs(chartElement.longitude - e.longitude) < 3;
+        }
+
+        if(!e.isTransit) return false;
+      }
 
       if (upperLimit > 360 && elementLong < 30) {
         elementLong = elementLong + 360;
@@ -432,10 +444,10 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     let belowElement: ChartElementOverlap | undefined;
     let inwardIndex = 1;
     let loopCount = 0;
+    let loopTransits = 0;
 
     let overlappedElements = getOverlappedElementsForChartElement(chartElement);
-    // let previousLoopElements = [...overlappedElements];
-
+    
     while (overlappedElements.length > 0) {
       const elementsFurtherBack = overlappedElements.filter(
         (o) => o.longitude <= chartElement.longitude
@@ -450,18 +462,42 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         overlappedElements
       );
 
-      const nearestOverlapData = getOverlapElement(nearestElement);
+      // Conjunction on Transits
+      if(nearestElement.elementType === "house" && chartElement.isTransit) {
+        if(chartElement.longitude > nearestElement.longitude)
+          longitude = mod360(longitude + longitudeOffset);
 
-      if (chartElement.planetType === "saturn" && !chartElement.isAntiscion && loopCount === 0) {
-        console.log(nearestOverlapData);
+        if(chartElement.longitude < nearestElement.longitude)
+          longitude = mod360(longitude - longitudeOffset);
+
+        chartElement = {
+          ...chartElement,
+          longitude
+        }
+
+        const newOverlapElement: ChartElementOverlap = {
+          element: chartElement,
+          inwardIndex,
+          position,
+        };
+
+        updateOverlapElementsArray(newOverlapElement, undefined);
+        overlappedElements = getOverlappedElementsForChartElement(chartElement);
+        loopTransits++;
+        if(loopTransits > 10) {
+          break;
+        }
+        continue;
       }
 
+      const nearestOverlapData = getOverlapElement(nearestElement);
       const nearestElIsBelowCurrentEl = nearestElementIsBelowCurrentElement(
         chartElement,
         nearestOverlapData
-      );
+      );      
 
       belowElement = nearestElIsBelowCurrentEl ? nearestOverlapData : undefined;
+
       if (loopCount === 0) {
         offset = getAboveOverlapElementOffset(belowElement);
       } else {
@@ -469,20 +505,20 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       }
 
       const distance = Math.abs(
-        nearestOverlapData.element.longitude - chartElement.longitude
+        nearestOverlapData?.element.longitude - chartElement.longitude
       );
-
+      
       // has elements on both sides
       if (elementsFurtherBack.length > 0 && elementsFurtherAhead.length > 0) {
         // It advances the offset only if the inward hasn't already been made previously at
         // getAboveOverlapElementOffset function, i.e: the sum will be different the initialOffset.
         // If it's equals, it means the offset was already been altered once.
         if (initialOffset + symbolOffset !== offset) {
-          if (nearestOverlapData.inwardIndex === 1) {
+          if (nearestOverlapData?.inwardIndex === 1) {
             offset = offset + symbolOffset; // advance one step
           } else {
             offset = Math.max(
-              symbolOffset * (nearestOverlapData.inwardIndex - 1),
+              symbolOffset * (nearestOverlapData?.inwardIndex - 1),
               symbolOffset
             );
           }
@@ -500,7 +536,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         // has elements at only one side
 
         let chartElementLong = chartElement.longitude;
-        let nearestElementLong = nearestOverlapData.element.longitude;
+        let nearestElementLong = nearestOverlapData?.element.longitude;
 
         const upperLimit = chartElementLong + overlapRange;
         const lowerLimit = chartElementLong - overlapRange;
@@ -521,7 +557,6 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             offset += symbolOffset;
           }
           inwardIndex = belowElement ? belowElement.inwardIndex + 1 : 1;
-
 
         } else if (
           nearestOverlapData?.position !== "inward" &&
@@ -558,7 +593,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             : 1;
           offset = symbolOffset * inwardIndex;
         }
-      }
+      }      
 
       chartElement = {
         ...chartElement,
@@ -576,7 +611,6 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         overlappedElements = getOverlappedElementsForChartElement(chartElement);
       }
 
-      // previousLoopElements = [...overlappedElements];
       loopCount++;
 
       if (loopCount > 10) {
@@ -605,7 +639,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         ...belowElement,
         aboveElement: newOverlapElement,
       };
-    }
+    }    
 
     updateOverlapElementsArray(newOverlapElement, belowElement);
 
@@ -692,8 +726,8 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       return aspect.type !== "sextile";
     else if (element.elementType === "planet" && !isTraditionalPlanet(element)) {
       return aspect.type === "conjunction";
-    } else if(element.elementType === "planet")
-      return aspect.type === "conjunction" || aspect.type === "opposition" ;
+    } else if(element.isTransit)
+      return aspect.type === "conjunction" || aspect.type === "opposition"; 
 
     return true;
   }
@@ -968,8 +1002,6 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       });
     });
 
-    // console.log(aspectsData);
-
     return aspectsData;
   }
 
@@ -1197,7 +1229,6 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     const aspectsData: PlanetAspectData[] = !hasIsolatedAspect ? getAspects(elements) : [selectedAspect!];
     const aspectsWithFixedStars = getAspectsWithFixedStars(elements);
     setFixedStarAspects(aspectsWithFixedStars);
-    console.log(aspectsData);
 
     if(!hasIsolatedAspect)
       onUpdateAspectsData?.([...aspectsData, ...aspectsWithFixedStars]);
@@ -1729,125 +1760,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
           ];
         }
       }
-    });
-
-    birthChart?.transits?.planets.forEach((planet) => {
-      const chartElement: ChartElement = {
-        id: chartElementsForAspect.current.length,
-        isAntiscion: false,
-        longitude: planet.longitude,
-        name: planet.name,
-        elementType: "planet",
-        planetType: planet.type,
-        isFromOuterChart: false,
-        isRetrograde: planet.isRetrograde,
-        isTransit: true
-      };
-
-      let canDrawPlanet = true;
-      if(hasIsolatedAspect)
-        canDrawPlanet = elementIsInIsolatedAspect(chartElement);
-
-      if(canDrawPlanet) {
-        let overlapData = getElementOverlapLongitudeAndOffset(chartElement);
-  
-        // 1) ângulo zodiacal original (graus → rad)
-        const rawDegOriginal = 180 - (planet.longitude % 360) - 90;
-        const rawDegOverlapped = 180 - (overlapData.longitude % 360) - 90;
-        const rawRadOriginal = (rawDegOriginal * Math.PI) / 180;
-        const rawRadOverlapped = (rawDegOverlapped * Math.PI) / 180;
-  
-        // 2) compensa a rotação do zodíaco (transforma em ângulo final)
-        const rotRad = (zodiacRotation * Math.PI) / 180;
-        const angleRadOriginal = rawRadOriginal - rotRad;
-        const angleRadOverlapped = rawRadOverlapped - rotRad;
-  
-        // 3) offsets de sobreposição
-        const rSymbol = outerChartBorderRadiusTransits - transitsIconsOffset;
-        const rLineStart = radius - lineStartOffset;
-        const rLineEnd = radius;
-  
-        // 4) cálculos das coordenadas
-        const xs = rSymbol * Math.cos(angleRadOverlapped);
-        const ys = rSymbol * Math.sin(angleRadOverlapped);
-  
-        const x1 = rLineStart * Math.cos(angleRadOriginal);
-        const y1 = rLineStart * Math.sin(angleRadOriginal);
-        const x2 = rLineEnd * Math.cos(angleRadOriginal);
-        const y2 = rLineEnd * Math.sin(angleRadOriginal);    
-        
-        const rLineStartOuter = outerZodiacRadius;
-        const rLineEndOuter = outerZodiacRadius + 5;
-        const x1Outer = rLineStartOuter * Math.cos(angleRadOriginal);
-        const y1Outer = rLineStartOuter * Math.sin(angleRadOriginal);
-        const x2Outer = rLineEndOuter * Math.cos(angleRadOriginal);
-        const y2Outer = rLineEndOuter * Math.sin(angleRadOriginal);
-  
-        // 5) desenha a linha interna
-        baseGroup
-          .attr("data-name", planet.type)
-          .append("line")
-          .attr("x1", x1)
-          .attr("y1", y1)
-          .attr("x2", x2)
-          .attr("y2", y2)
-          .attr("stroke", "#00cccc")
-          .attr("stroke-width", 1);
-
-        // 5) desenha a linha externa
-        baseGroup
-          .attr("data-name", planet.type)
-          .append("line")
-          .attr("x1", x1Outer)
-          .attr("y1", y1Outer)
-          .attr("x2", x2Outer)
-          .attr("y2", y2Outer)
-          .attr("stroke", "#00cccc")
-          .attr("stroke-width", 1);
-  
-        // 6) desenha o ícone do planeta
-        const iconSrc = `/planets/transits/${planet.type}${planet.isRetrograde ? "-rx" : ""
-          }.png`;
-  
-        baseGroup
-          .attr("data-name", planet.type)
-          .append("image")
-          .attr("href", iconSrc) // no D3 v6+ use 'href'
-          .attr("width", iconSize)
-          .attr("height", iconSize)
-          .attr("x", xs - iconSize / 2)
-          .attr("y", ys - iconSize / 2);
-  
-          const planetName = t(`planets.${planet.type}`);
-          const content = makePlanetTooltip({
-            label: planetName,
-            longitude: planet.longitude,
-            planetType: planet.type,
-            isAntiscion: false,
-            isRetrograde: planet.isRetrograde,
-            isTransit: true
-          });
-  
-          baseGroup
-            .append("rect") // área de hit invisível, mais fácil de clicar que image
-            .attr("x", xs - iconSize / 2 - 4)
-            .attr("y", ys - iconSize / 2 - 4)
-            .attr("width", iconSize + 8)
-            .attr("height", iconSize + 8)
-            .attr("fill", "transparent")
-            .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
-              showTooltip(event, content);
-            })
-            .on("mouseout", () => {
-              if (!isMobile) hideTooltip();
-            });
-  
-        chartElementsForAspect.current = [
-          ...chartElementsForAspect.current,
-          chartElement,
-        ];
-      }
-    })
+    });    
 
     if (showArabicParts && arabicParts !== undefined) {
       arabicPartKeys.forEach((key) => {
@@ -2090,8 +2003,8 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         const originLineX = outerZodiacRadius * Math.cos(angleRad);
         const originLineY = outerZodiacRadius * Math.sin(angleRad);
 
-        const finalLineX = (outerZodiacRadius + 12) * Math.cos(angleRad);
-        const finalLineY = (outerZodiacRadius + 12) * Math.sin(angleRad);
+        const finalLineX = (outerZodiacRadius + (birthChart?.transits ? 6 : 12)) * Math.cos(angleRad);
+        const finalLineY = (outerZodiacRadius + (birthChart?.transits ? 6 : 12)) * Math.sin(angleRad);
 
         // 2) sigla da casa
         const labelRadius = radius + continuationLength + labelOffset;
@@ -2118,16 +2031,138 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
           .attr("stroke-width", 2);
       }
 
-      chartElementsForAspect.current.push({
+      chartElementsForAspect.current = [
+        ...chartElementsForAspect.current,
+        {
+          id: chartElementsForAspect.current.length,
+          isAntiscion: false,
+          longitude: decimalToDegreesMinutes(start),
+          name: `${fixedNames.houseName}-${i}`,
+          elementType: "house",
+          isFromOuterChart: false,
+          isRetrograde: false,
+          isTransit: false
+        }
+      ];
+    }
+
+    birthChart?.transits?.planets.forEach((planet) => {
+      const chartElement: ChartElement = {
         id: chartElementsForAspect.current.length,
         isAntiscion: false,
-        longitude: decimalToDegreesMinutes(start),
-        name: `${fixedNames.houseName}-${i}`,
-        elementType: "house",
+        longitude: planet.longitude,
+        name: planet.name,
+        elementType: "planet",
+        planetType: planet.type,
         isFromOuterChart: false,
-        isRetrograde: false,
-      });
-    }
+        isRetrograde: planet.isRetrograde,
+        isTransit: true
+      };
+
+      let canDrawPlanet = true;
+      if(hasIsolatedAspect)
+        canDrawPlanet = elementIsInIsolatedAspect(chartElement);
+
+      if(canDrawPlanet) {
+        let overlapData = getElementOverlapLongitudeAndOffset(chartElement);
+  
+        // 1) ângulo zodiacal original (graus → rad)
+        const rawDegOriginal = 180 - (planet.longitude % 360) - 90;
+        const rawDegOverlapped = 180 - (overlapData.longitude % 360) - 90;
+        const rawRadOriginal = (rawDegOriginal * Math.PI) / 180;
+        const rawRadOverlapped = (rawDegOverlapped * Math.PI) / 180;
+  
+        // 2) compensa a rotação do zodíaco (transforma em ângulo final)
+        const rotRad = (zodiacRotation * Math.PI) / 180;
+        const angleRadOriginal = rawRadOriginal - rotRad;
+        const angleRadOverlapped = rawRadOverlapped - rotRad;
+  
+        // 3) offsets de sobreposição
+        const rSymbol = outerZodiacRadius + overlapData.offset;
+        const rLineStart = radius - lineStartOffset;
+        const rLineEnd = radius;
+  
+        // 4) cálculos das coordenadas
+        const xs = rSymbol * Math.cos(angleRadOverlapped);
+        const ys = rSymbol * Math.sin(angleRadOverlapped);
+  
+        const x1 = rLineStart * Math.cos(angleRadOriginal);
+        const y1 = rLineStart * Math.sin(angleRadOriginal);
+        const x2 = rLineEnd * Math.cos(angleRadOriginal);
+        const y2 = rLineEnd * Math.sin(angleRadOriginal);    
+        
+        const rLineStartOuter = outerZodiacRadius;
+        const rLineEndOuter = outerZodiacRadius + 5;
+        const x1Outer = rLineStartOuter * Math.cos(angleRadOriginal);
+        const y1Outer = rLineStartOuter * Math.sin(angleRadOriginal);
+        const x2Outer = rLineEndOuter * Math.cos(angleRadOriginal);
+        const y2Outer = rLineEndOuter * Math.sin(angleRadOriginal);
+  
+        // 5) desenha a linha interna
+        baseGroup
+          .attr("data-name", planet.type)
+          .append("line")
+          .attr("x1", x1)
+          .attr("y1", y1)
+          .attr("x2", x2)
+          .attr("y2", y2)
+          .attr("stroke", "#00cccc")
+          .attr("stroke-width", 1);
+
+        // 5) desenha a linha externa
+        baseGroup
+          .attr("data-name", planet.type)
+          .append("line")
+          .attr("x1", x1Outer)
+          .attr("y1", y1Outer)
+          .attr("x2", x2Outer)
+          .attr("y2", y2Outer)
+          .attr("stroke", "#00cccc")
+          .attr("stroke-width", 1);
+  
+        // 6) desenha o ícone do planeta
+        const iconSrc = `/planets/transits/${planet.type}${planet.isRetrograde ? "-rx" : ""
+          }.png`;
+  
+        baseGroup
+          .attr("data-name", planet.type)
+          .append("image")
+          .attr("href", iconSrc) // no D3 v6+ use 'href'
+          .attr("width", iconSize)
+          .attr("height", iconSize)
+          .attr("x", xs - iconSize / 2)
+          .attr("y", ys - iconSize / 2);
+  
+          const planetName = t(`planets.${planet.type}`);
+          const content = makePlanetTooltip({
+            label: planetName,
+            longitude: planet.longitude,
+            planetType: planet.type,
+            isAntiscion: false,
+            isRetrograde: planet.isRetrograde,
+            isTransit: true
+          });
+  
+          baseGroup
+            .append("rect") // área de hit invisível, mais fácil de clicar que image
+            .attr("x", xs - iconSize / 2 - 4)
+            .attr("y", ys - iconSize / 2 - 4)
+            .attr("width", iconSize + 8)
+            .attr("height", iconSize + 8)
+            .attr("fill", "transparent")
+            .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
+              showTooltip(event, content);
+            })
+            .on("mouseout", () => {
+              if (!isMobile) hideTooltip();
+            });
+  
+        chartElementsForAspect.current = [
+          ...chartElementsForAspect.current,
+          chartElement,
+        ];
+      }
+    })
 
     if (showOuterChart && outerPlanets) {
       outerPlanets.forEach((planet) => {
@@ -2622,17 +2657,20 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             if (!isMobile) hideTooltip();
           });
 
-        chartElementsForAspect.current.push({
-          id: chartElementsForAspect.current.length,
-          isAntiscion: false,
-          longitude: decimalToDegreesMinutes(startDeg),
-          name: `${fixedNames.outerKeyPrefix}-${fixedNames.houseName}-${j}`,
-          elementType: "house",
-          isFromOuterChart: true,
-          isRetrograde: false,
-        });
+        chartElementsForAspect.current = [
+          ...chartElementsForAspect.current,
+          {
+            id: chartElementsForAspect.current.length,
+            isAntiscion: false,
+            longitude: decimalToDegreesMinutes(startDeg),
+            name: `${fixedNames.outerKeyPrefix}-${fixedNames.houseName}-${j}`,
+            elementType: "house",
+            isFromOuterChart: true,
+            isRetrograde: false,
+            isTransit: false,
+        }]
       }
-    }
+    }   
 
     drawAspects(chartElementsForAspect.current, {
       baseGroup,
@@ -2736,9 +2774,6 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     baseGroupRef.current.selectAll(".aspect-hit").remove();
 
     const aspectsData: PlanetAspectData[] = !hasIsolatedAspect ? aspects : [...aspects.filter(asp => asp.key === selectedAspect!.key)];
-    console.log('aspects');
-    console.log(aspectsData);
-
     aspectsData.forEach(aspect => {
       const coords = aspectStrokeCoords.current.get(aspect.key);
       if (!coords) return; // linha não foi desenhada (ex: aspecto com casa)
@@ -2823,32 +2858,6 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     setShowArabicPartsAntiscia((prev) => !prev);
   };
 
-  let className = `absolute
-    xl:right-[4.5rem] 2xl:left-[4.25rem] 3xl:left-5-5rem`;
-
-  // if (!isMobileBreakPoint()) {
-  //   if (isReturnChart())
-  //     className = "absolute " + showOuterChart ? "right-28" : "right-20";
-
-  //   if (isSinastryChart())
-  //     className = "absolute right-[6.8rem] top-12"
-
-  //   if (isProgressionChart() || isProfectionChart())
-  //     className = "";
-  // } else {
-  //   className = showOuterChart ? "mb-8" : "mb-6";
-  //   className += " absolute left-3";
-
-  //   if (isCombinedWithBirthChart || isCombinedWithReturnChart)
-  //     className = "absolute left-10 top-4"
-
-  //   if (isSinastryChart())
-  //     className = "absolute right-10 top-6"
-
-  //   if (isProgressionChart())
-  //     className = "absolute " + (!isCombinedWithBirthChart ? "left-3 top-[-0.75rem]" : "left-9 top-4");
-  // }
-
   // Define o deslocamento extra a partir do centro (em px), por contexto
   let offsetX = 0;
   let offsetY = 0;
@@ -2916,13 +2925,12 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
               style={{
                 position: "absolute",
                 left: `calc(50% + ${offsetX}px)`,
-                top: `calc(49% + ${offsetY}px)`,
+                top: `calc(50% + ${offsetY}px)`,
                 transform: "translate(-50%, -50%)",
               }}
             />
           </ReturnSelectorArrows>
         ) :
-          // <svg className={className} ref={ref}></svg>
           <svg
             ref={ref}
             style={{

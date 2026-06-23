@@ -54,15 +54,21 @@
     "title": "Escolha os mapas a serem combinados em sinastria",
     "firstChart": "Primeiro mapa",
     "secondChart": "Segundo mapa",
-    "makeSynastry": "Gerar Sinastria"
+    "makeSynastry": "Gerar Sinastria",
+    "sinastry": "Sinastria"
   },
   "secondaryProgressions": {
     "title": "Progressões Secundárias",
-    "generateProgression": "Gerar Progressão"
+    "generateProgression": "Gerar Progressão",
+    "birth": "Nascimento",
+    "progressed": "Progredido"
   },
   "profections": {
     "title": "Profecção Anual",
-    "generateProfection": "Gerar Profecção"
+    "generateProfection": "Gerar Profecção",
+    "yearProfection": "Profecção para o ano ",
+    "birth": "Nascimento",
+    "profected": "Profectado"
   },
   "momentChart": {
     "title": "Mapa do Momento"

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import ChartAndData from "../ChartAndData";
 import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT } from "@/app/utils/constants";
+import { useTranslations } from "next-intl";
 
 interface SinastryProps {
   sinastryChart?: BirthChart;
@@ -19,6 +20,8 @@ export default function SinastryChart(props: SinastryProps) {
   const [tableItemsPerPage, setTableItemsPerPage] = useState(
     ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT
   );
+
+  const t = useTranslations();
 
   function handleOnItemsPerPagechanged(newItemsPerPage: number) {
     setTableItemsPerPage(newItemsPerPage);
@@ -36,16 +39,18 @@ export default function SinastryChart(props: SinastryProps) {
             tableItemsPerPage={tableItemsPerPage}
             onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
             chartDateProps={{
-              chartType: "birth",
+              chartType: "sinastry",
               birthChart: birthChart,
               label: profileName,
+              chartDate: birthChart.birthDate
             }}
             outerChartDateProps={{
-              chartType: "birth",
+              chartType: "sinastry",
               birthChart: sinastryChart,
               label: sinastryProfileName,
+              chartDate: sinastryChart.birthDate
             }}
-            title={`Sinastria - ${profileName} x ${sinastryProfileName}`}
+            title={`${t('synastryChart.sinastry')} - ${profileName} x ${sinastryProfileName}`}
           />
         </div>
       )}

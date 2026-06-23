@@ -342,30 +342,32 @@ export default function BirthChart() {
 
     if (!chartProfile || (transitsFormData && transitsFormData.profile === undefined)) return;
 
-    if (chartProfile?.birthDate?.coordinates)
+    if(transitsFormData)
+      setChartProfile(transitsFormData.profile);
+    else if (chartProfile?.birthDate?.coordinates)
       selectCity(chartProfile?.birthDate?.coordinates);
 
     if (transitsFormData?.profile?.birthDate?.coordinates)
       selectCity(transitsFormData.profile.birthDate.coordinates);
 
+    const date = transitsFormData? transitsFormData.profile.birthDate : chartProfile.birthDate;
     try {
       const data = await apiFetch("birth-chart", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          birthDate: { ...chartProfile.birthDate, houseSystem },
+          birthDate: { ...date, houseSystem },
           transitsDate,
         }),
       });
 
-      console.log(data);
+      // console.log(data);
 
       updateBirthChart({
-        profileName: chartProfile?.name,
+        profileName: transitsFormData? transitsFormData.profile.name : chartProfile?.name,
         chartData: {
           ...data,
-          birthDate:
-            chartProfile?.birthDate,
+          birthDate: date
         },
         transits: data.transits,
         chartType: "transits",
@@ -374,6 +376,7 @@ export default function BirthChart() {
     catch (error) {
       console.error("Erro ao consultar mapa astral:", error);
     } finally {
+      setTransitsMenu(0);
       addChartMenu("transits");
       updateChartMenuDirectly("transits");
       setLoading(false);
@@ -1023,6 +1026,7 @@ export default function BirthChart() {
               chartDateProps={{
                 chartType: "birth",
                 birthChart,
+                chartDate: birthChart.birthDate
               }}
             />
           </div>
@@ -1038,6 +1042,7 @@ export default function BirthChart() {
               chartDateProps={{
                 chartType: "transits",
                 birthChart,
+                chartDate: birthChart.birthDate
               }}
             />
           </div>

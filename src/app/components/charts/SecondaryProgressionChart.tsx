@@ -5,11 +5,14 @@ import ChartAndData from "../ChartAndData";
 import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT } from "@/app/utils/constants";
 import { BirthChart } from "@/interfaces/BirthChartInterfaces";
 import { ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
+import { useTranslations } from "next-intl";
+import { toDate } from "@/app/utils/chartUtils";
 
 export default function SecondaryProgressionChart() {
   const { profileName } = useBirthChart();
   const { birthChart, progressionChart, isCombinedWithBirthChart } = useBirthChart();
   const { arabicParts, archArabicParts } = useArabicParts();
+  const t = useTranslations();
 
   const [tableItemsPerPage, setTableItemsPerPage] = useState(
     ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT
@@ -21,6 +24,27 @@ export default function SecondaryProgressionChart() {
 
   if (!progressionChart || !birthChart) {
     return null;
+  }
+
+  function getTitle() {
+    if(!progressionChart?.birthDate || !birthChart?.birthDate) 
+      return `${t('secondaryProgressions.title')} - ${profileName}`;    
+    
+    const date1 = toDate(birthChart.birthDate);
+    const date2 = toDate(progressionChart.birthDate);
+   
+    const diffMs = date2.getTime() - date1.getTime();
+    const diffDays = Math.floor(
+      diffMs / (1000 * 60 * 60 * 24)
+    );
+
+    const progressedYears = diffDays + 1;
+    const nextYear = progressedYears + 1;
+
+    const targetYear = birthChart.birthDate.year + progressedYears;
+    const targetNextYear = targetYear + 1;
+
+    return `${t('secondaryProgressions.title')} ${progressedYears}/${nextYear} (${targetYear}/${targetNextYear}) - ${profileName}`;
   }
 
   const getInnerChart = (): BirthChart => !isCombinedWithBirthChart ? progressionChart! : birthChart!;
@@ -44,14 +68,17 @@ export default function SecondaryProgressionChart() {
       chartDateProps={{
         chartType: "birth",
         birthChart: birthChart,
-        label: "Nascimento",
+        label: t("secondaryProgressions.birth"),
+        chartDate: birthChart.birthDate
       }}
       outerChartDateProps={{
         chartType: "birth",
         birthChart: progressionChart,
-        label: "Progredido",
+        label: t("secondaryProgressions.progressed"),
+        chartDate: progressionChart.birthDate
       }}
-      title={`Progressão Secundária - ${profileName}`}
+      // title={`${t('secondaryProgressions.title')} - ${profileName}`}
+      title={getTitle()}
     />
   );
 }

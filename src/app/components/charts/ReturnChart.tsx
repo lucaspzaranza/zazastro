@@ -61,6 +61,7 @@ export default function ReturnChart() {
               chartType: "return",
               birthChart: returnChart,
               label: t("returnChart.return"),
+              chartDate: returnChart.birthDate
             }}
             title={getTitle()}
           />

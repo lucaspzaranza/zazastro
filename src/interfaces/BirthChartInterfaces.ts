@@ -137,4 +137,5 @@ export interface ChatDateProps {
   chartType: ChartType;
   label?: string;
   birthChart?: BirthChart;
+  chartDate?: BirthDate;
 }

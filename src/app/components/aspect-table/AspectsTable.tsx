@@ -290,22 +290,8 @@ export default function AspectsTable({
     const _2ndSignLong = getDegreesInsideASign(_2ndElementRawLongitude);
 
     const numericDistance = Number.parseFloat(
-      // decimalToDegreesMinutes(Math.abs(_1stSignLong - _2ndSignLong)).toFixed(2)
       decimalToDegreesMinutes(Math.abs(_1stSignLong - _2ndSignLong)).toFixed(2)
     );
-
-    if(aspect.aspectedElement.name === "northNode" && aspect.aspectedElement.isTransit) {
-      console.log("teste");
-
-      console.log("getDegreesInsideASign 1: ", _1stSignLong);
-      console.log("getDegreesInsideASign 2: ", _2ndSignLong);
-      
-      console.log(aspect.element.longitude);
-      console.log(aspect.aspectedElement.longitude);
-      
-      console.log('diff: ', Math.abs(aspect.element.longitude - aspect.aspectedElement.longitude));
-      console.log('numeric distance: ', numericDistance);
-    }
 
     distanceValues.push({ key: aspect.key, distance: numericDistance });
 
