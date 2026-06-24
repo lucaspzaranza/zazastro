@@ -78,9 +78,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   const [showArabicParts, setShowArabicParts] = useState(false);
   const [showPlanetsAntiscia, setShowPlanetsAntiscia] = useState(false);
   const [showArabicPartsAntiscia, setShowArabicPartsAntiscia] = useState(false);
-  const [showOuterChart, setShowOuterChart] = useState(
-    outerPlanets !== undefined && outerHouses !== undefined
-  );
+  const [showOuterChart, setShowOuterChart] = useState(outerPlanets !== undefined && outerHouses !== undefined);
   const [showDegrees, setShowDegrees] = useState(true);
 
   const { aspects, updateAspectsData, selectedAspect, setSelectedAspect, 
@@ -2925,7 +2923,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
               style={{
                 position: "absolute",
                 left: `calc(50% + ${offsetX}px)`,
-                top: `calc(50% + ${offsetY}px)`,
+                top: `calc(${isMobile? '49%' : '50%'} + ${offsetY}px)`,
                 transform: "translate(-50%, -50%)",
               }}
             />

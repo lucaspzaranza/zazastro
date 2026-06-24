@@ -23,7 +23,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
     toggleCombineWithBirthChart,
     toggleCombineWithReturnChart,
     togglePlanetsAntiscia,
-    toggleDegrees
+    toggleDegrees,
   } = props;
 
   const [planetsAntiscia, setPlanetsAntiscia] = useState(false);
@@ -32,6 +32,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
   const [showDegrees, setShowDegrees] = useState(true);
   const [lunarDerivedModal, setLunarDerivedModal] = useState(false);
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
+  
   const contextMenuRef = useRef<HTMLDivElement>(null);
   const t = useTranslations();
 
@@ -46,7 +47,9 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
     isCombinedWithReturnChart,
     updateIsCombinedWithReturnChart,
     isMountingChart,
-    updateIsMountingChart
+    updateIsMountingChart,
+    chartIsLocked,
+    setChartIsLocked
   } = useBirthChart();
 
   const { chartMenu } = useChartMenu();
@@ -302,7 +305,16 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
         </div>
 
         {/* Mobile: botão de três pontos + dropdown */}
-        <div className="absolute w-full flex md:hidden flex-row items-center justify-end">
+        <div className="absolute w-full flex md:hidden flex-row items-center justify-between">
+          <button
+            className={`p-1.5 rounded-full hover:bg-zinc-100 active:bg-zinc-200 ${
+              chartIsLocked ? "bg-zinc-200" : ""
+            }`}
+            onClick={() => setChartIsLocked(!chartIsLocked)}
+          >
+            <Image alt="lock" src={chartIsLocked? "lock.png" : "lock-open.png"} width={20} height={20} unoptimized />
+          </button>
+
           <div className="relative" ref={contextMenuRef}>
             <button
               className="p-1.5 rounded-full hover:bg-zinc-100 active:bg-zinc-200"

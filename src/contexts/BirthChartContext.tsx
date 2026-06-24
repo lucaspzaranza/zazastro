@@ -54,6 +54,9 @@ interface BirthChartContextType {
 
   houseSystem?: HouseSystem;
   updateHouseSystem: (houseSystem: HouseSystem) => void;
+
+  chartIsLocked: boolean;
+  setChartIsLocked: (val: boolean) => void;
 }
 
 const BirthChartContext = createContext<BirthChartContextType | undefined>(
@@ -86,6 +89,8 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
   const updateIsCombinedWithBirthChart = (val: boolean) => {
     setIsCombinedWithBirthChart(val);
   };
+
+  const [chartIsLocked, setChartIsLockedState] = useState(false);
 
   const updateIsCombinedWithReturnChart = (val: boolean) => {
     setIsCombinedWithReturnChart(val);
@@ -218,6 +223,10 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
     setHouseSystem(houseSystem);
   }
 
+  const setChartIsLocked = (val: boolean) => {
+    setChartIsLockedState(val)
+  };
+
   return (
     <BirthChartContext.Provider
       value={{
@@ -243,6 +252,8 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
         profectionChart,
         houseSystem,
         updateHouseSystem,
+        chartIsLocked,
+        setChartIsLocked
       }}
     >
       {children}

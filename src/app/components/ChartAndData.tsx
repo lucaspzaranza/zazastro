@@ -77,7 +77,9 @@ export default function ChartAndData(props: Props) {
     isCombinedWithBirthChart,
     isCombinedWithReturnChart,
     loadingNextChart,
-    isMountingChart
+    isMountingChart,
+    chartIsLocked,
+    setChartIsLocked
   } = useBirthChart();
   const { chartMenu, resetChartMenus, isReturnChart,
     isSinastryChart, isProgressionChart, isProfectionChart } = useChartMenu();
@@ -599,8 +601,18 @@ export default function ChartAndData(props: Props) {
       {isMobileBreakPoint() && (
         <>
           {renderChart()}
-          {renderPlanetsAndHouses()}
-          {renderArabicPartsAndAspectsTable()}
+
+          {chartIsLocked ? (
+            <div className="w-full overflow-y-auto overscroll-contain" style={{ maxHeight: "calc(100vh - 24rem)" }}>
+              {renderPlanetsAndHouses()}
+              {renderArabicPartsAndAspectsTable()}
+            </div>
+          ) : (
+            <>
+              {renderPlanetsAndHouses()}
+              {renderArabicPartsAndAspectsTable()}
+            </>
+          )}
         </>
       )}
 
