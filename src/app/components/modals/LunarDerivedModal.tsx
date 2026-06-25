@@ -134,7 +134,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
             <div className="flex flex-row gap-2">
               <input
                 type="number"
-                className="w-16 border border-zinc-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-zinc-300"
+                className="w-16 md:w-20 border border-zinc-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-zinc-300"
                 placeholder={t("form.day")}
                 required
                 onChange={(e) => {

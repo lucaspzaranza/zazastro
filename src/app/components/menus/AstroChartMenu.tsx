@@ -15,8 +15,8 @@ interface AstroChartMenuProps {
   toggleArabicParts?: () => void;
   toggleArabicPartsAntiscia?: () => void;
   toggleDegrees?: () => void;
-  togglePtolemaicsTerms?: () => void;
-  toggleEgyptianTerms?: () => void;
+  togglePtolemaicsTerms?: (val: boolean) => void;
+  toggleEgyptianTerms?: (val: boolean) => void;
   toggleDecans?: () => void;
 }
 
@@ -87,26 +87,50 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
   }
 
   function handleTogglePtolemaicTerms() {
-    const next = !usePtolemaicsTerms;
-    setUsePtolemaicsTerms(next);
-    togglePtolemaicsTerms?.();
+    // const next = !usePtolemaicsTerms;
+    // setUsePtolemaicsTerms(next);
+    // togglePtolemaicsTerms?.(next);
 
-    // Mutuamente exclusivo com Termos Egípcios: ativar um desliga o outro
-    if (next && useEgyptianTerms) {
+    // // Mutuamente exclusivo com Termos Egípcios: ativar um desliga o outro
+    // if (next && useEgyptianTerms) {
+    //   setUseEgyptianTerms(false);
+    //   toggleEgyptianTerms?.(false);
+    // }
+
+    if(useEgyptianTerms) {
       setUseEgyptianTerms(false);
-      toggleEgyptianTerms?.();
+      setUsePtolemaicsTerms(true);
+      togglePtolemaicsTerms?.(true);
+    } else if(usePtolemaicsTerms) {
+      setUsePtolemaicsTerms(false);
+      togglePtolemaicsTerms?.(false);
+    } else {
+      setUsePtolemaicsTerms(true);
+      togglePtolemaicsTerms?.(true);
     }
   }
 
   function handleToggleEgyptianTerms() {
-    const next = !useEgyptianTerms;
-    setUseEgyptianTerms(next);
-    toggleEgyptianTerms?.();
+    // const next = !useEgyptianTerms;
+    // setUseEgyptianTerms(next);
+    // toggleEgyptianTerms?.(next);
 
-    // Mutuamente exclusivo com Termos Ptolemaicos: ativar um desliga o outro
-    if (next && usePtolemaicsTerms) {
+    // // Mutuamente exclusivo com Termos Ptolemaicos: ativar um desliga o outro
+    // if (next && usePtolemaicsTerms) {
+    //   setUsePtolemaicsTerms(false);
+    //   togglePtolemaicsTerms?.(false);
+    // }
+
+    if(usePtolemaicsTerms) {
       setUsePtolemaicsTerms(false);
-      togglePtolemaicsTerms?.();
+      setUseEgyptianTerms(true);
+      toggleEgyptianTerms?.(true);
+    } else if(useEgyptianTerms) {
+      setUseEgyptianTerms(false);
+      toggleEgyptianTerms?.(false);
+    } else {
+      setUseEgyptianTerms(true);
+      toggleEgyptianTerms?.(true);
     }
   }
 
@@ -278,7 +302,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
           </button>
 
           {contextMenuOpen && (
-            <div className="absolute w-[16rem] bg-white shadow px-2 py-3 right-0 top-8 flex flex-col items-start z-30">
+            <div className="absolute w-[18rem] bg-zinc-50 shadow px-2 py-3 right-0 top-8 flex flex-col items-start z-30">
               {menuItems.map(renderMenuItem)}
             </div>
           )}

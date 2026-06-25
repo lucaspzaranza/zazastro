@@ -36,7 +36,7 @@ import { useBirthChart } from "@/contexts/BirthChartContext";
 import { useTranslations } from "next-intl";
 import { ArabicPart } from "@/interfaces/ArabicPartInterfaces";
 import { useAspectsData } from "@/contexts/AspectsContext";
-import { EGYPTIAN_TERMS, PTOLEMAIC_TERMS } from "@/app/utils/termsAndDecans";
+import { CHALDEAN_DECANS, EGYPTIAN_TERMS, PTOLEMAIC_TERMS } from "@/app/utils/termsAndDecans";
 
 interface TooltipData {
   x: number;
@@ -83,7 +83,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   const [showDegrees, setShowDegrees] = useState(true);
   const [useTerms, setUseTerms] = useState(true);
   const [useDecans, setUseDecans] = useState(true);
-  const [currentTerms, setCurrentTerms] = useState<Record<Sign, TermOrDecan[]> | undefined>(undefined);
+  const [currentTerms, setCurrentTerms] = useState<Record<Sign, TermOrDecan[]> | undefined>(PTOLEMAIC_TERMS);
 
   const { aspects, updateAspectsData, selectedAspect, setSelectedAspect, 
     hasIsolatedAspect, setHasIsolatedAspect } = useAspectsData();
@@ -91,11 +91,20 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   const getScaleFactor = (): number => {
     if(!isMobileBreakPoint()) {
 
-      if(birthChart?.transits)
+         if(birthChart?.transits)
         return 1.45;
 
       return showOuterChart ? 1.25 : 1.5;
-    } else return showOuterChart ? 0.7 : 0.85;
+    } else { 
+      if((useDecans && !useTerms) || (!useDecans && useTerms))
+        return 0.835;
+      if(!useDecans && !useTerms)
+        return 0.86;
+      if(useDecans && useTerms)
+        return 0.78;
+
+      return showOuterChart ? 0.7 : 0.85;
+    }
   }
 
   // const [selectedAspect, setSelectedAspect] = useState<PlanetAspectData | null>(null);
@@ -136,12 +145,59 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   const scaleFactor = getScaleFactor();
   const scaledSize = size * scaleFactor;
   const center = size / 2;
-  const radius = size / 2 - 40;
+
+  /**
+   * Espessura de cada anel de dignidade (Faces/Termos). Ambos têm o mesmo
+   * tamanho hoje; ajuste aqui se quiser anéis com espessuras diferentes.
+   */
+  const dignityRingThickness = 11;
+
+  /**
+   * Espaço total reservado para os anéis ativos. O radius cresce dinamicamente
+   * conforme useDecans/useTerms são ativados, abrindo espaço para dentro
+   * (na faixa imediatamente interna à borda do círculo zodiacal) sem afetar
+   * nada que hoje já depende de radius "para fora" (zodiacRadius, glifos, etc).
+   */
+  const activeDignityRingsCount = (useDecans ? 1 : 0) + (useTerms && currentTerms !== undefined ? 1 : 0);
+  const dignityRingsSpace = activeDignityRingsCount * dignityRingThickness;
+
+  const baseRadius = size / 2 - 40;
+  const radius = baseRadius + dignityRingsSpace;
   const zodiacRadius = radius + 20;
   const outerZodiacRadius = zodiacRadius + 10;
   const outerChartBorderRadius = outerZodiacRadius + 60;
   const outerChartBorderRadiusTransits = outerZodiacRadius + 32.5;
   const transitsIconsOffset = 18;
+
+  /**
+   * Anéis de Faces (decanatos) e Termos, desenhados por dentro da borda do
+   * círculo zodiacal (radius), comprimindo a área de planetas/casas para abrir
+   * espaço. Faces ficam coladas à borda interna do círculo (mais próximas dos
+   * glifos, do lado de fora), Termos ficam um anel mais para dentro.
+   * Ícones bem pequenos, no estilo Astrodienst/Astro-Seek.
+   */
+  const decansRingOuter = radius;
+  const decansRingInner = useDecans ? decansRingOuter - dignityRingThickness : decansRingOuter;
+  const termsDivisionRadius = decansRingInner; // circunferência divisória entre Faces e Termos
+  const termsRingOuter = termsDivisionRadius;
+  const termsRingInner = (useTerms && currentTerms !== undefined) ? termsRingOuter - dignityRingThickness : termsRingOuter;
+  const dignityIconSize = 7; // px, ícone do planeta regente dentro dos anéis
+
+  /**
+   * Borda mais interna entre os anéis de dignidade ativos (ou o próprio `radius`,
+   * se nenhum estiver ativo). Tudo que é desenhado "para dentro" do círculo
+   * zodiacal — planetas, cúspides de casa, números de casa, aspectos — deve
+   * partir DESTE raio, não de `radius`, para não ficar sobreposto aos anéis
+   * de Termos/Faces quando eles estiverem ativos.
+   */
+  const chartInnerRadius = termsRingInner;
+
+  // Ordem dos signos batendo com o índice usado em zodiacSigns (0 = Aries ... 11 = Pisces)
+  const SIGN_ORDER: Sign[] = [
+    "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+    "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces",
+  ];
+
   const baseGroupRef =
     useRef<d3.Selection<SVGGElement, unknown, null, undefined>>(undefined);
 
@@ -1394,6 +1450,128 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       .attr("stroke", "black")
       .attr("stroke-width", 1);
 
+    // ===== Faces (decanatos) e Termos =====
+    // Criado AQUI (depois do círculo branco de raio `radius`) para garantir que
+    // fique visualmente por cima dele. Elementos SVG seguem a ordem de inserção
+    // no DOM: como esse círculo branco opaco já existia antes, qualquer anel
+    // desenhado dentro de zodiacGroup (criado mais acima, antes deste círculo)
+    // ficaria coberto por ele, mesmo que o código que o desenha rode depois.
+    // Por isso usamos um grupo novo, com a mesma rotação de zodiacGroup, inserido
+    // neste ponto mais tardio do DOM.
+    const dignitiesGroup = baseGroup
+      .append("g");
+
+    const termsIsActive = useTerms && currentTerms !== undefined;
+
+    // Circunferência divisória entre os dois anéis: só faz sentido quando ambos
+    // estão ativos ao mesmo tempo (separa Faces de Termos). Se só um estiver
+    // ativo, ele já fica colado à borda do círculo zodiacal, sem precisar de divisória.
+    if (useDecans && termsIsActive) {
+      dignitiesGroup
+        .append("circle")
+        .attr("r", termsDivisionRadius)
+        .attr("fill", "none")
+        .attr("stroke", "black")
+        .attr("stroke-width", 0.75);
+    }
+
+    function getDignityIconSrc(planet: PlanetType): string {
+      return `/planets/${planet}.png`;
+    }
+
+    function drawDignityRing(options: {
+      table: Record<Sign, TermOrDecan[]>;
+      innerRadius: number;
+      outerRadius: number;
+      strokeColor: string;
+    }) {
+      const { table, innerRadius, outerRadius, strokeColor } = options;
+      const midRadius = (innerRadius + outerRadius) / 2;
+
+      SIGN_ORDER.forEach((signName, i) => {
+        const divisions = table[signName];
+        if (!divisions) return;
+
+        divisions.forEach((division) => {
+          // Longitude absoluta (0-360, Aries 0° como origem) do início e meio da divisão
+          const startAbsDeg = i * 30 + division.start;
+          const endAbsDeg = i * 30 + division.end;
+          const midAbsDeg = (startAbsDeg + endAbsDeg) / 2;
+
+          // Linha radial no início da divisão (mesma convenção usada pelos
+          // planetas/elementos do mapa: 180 - longitude - 90, com a rotação do
+          // zodíaco aplicada manualmente via subtração — igual aos planetas,
+          // sem depender de transform de grupo, para garantir que os dois
+          // sistemas usem exatamente o mesmo mecanismo e não corram risco de
+          // sinais opostos entre rotação de grupo e subtração trigonométrica)
+          const startRawDeg = 180 - startAbsDeg - 90;
+          const startRawRad = (startRawDeg * Math.PI) / 180;
+          const rotRad = (zodiacRotation * Math.PI) / 180;
+          const startRad = startRawRad - rotRad;
+
+          const lx1 = innerRadius * Math.cos(startRad);
+          const ly1 = innerRadius * Math.sin(startRad);
+          const lx2 = outerRadius * Math.cos(startRad);
+          const ly2 = outerRadius * Math.sin(startRad);
+
+          dignitiesGroup
+            .append("line")
+            .attr("x1", lx1)
+            .attr("y1", ly1)
+            .attr("x2", lx2)
+            .attr("y2", ly2)
+            .attr("stroke", strokeColor)
+            .attr("stroke-width", 0.4);
+
+          // Ícone do planeta regente, centrado no meio da divisão
+          const midRawDeg = 180 - midAbsDeg - 90;
+          const midRawRad = (midRawDeg * Math.PI) / 180;
+          const midRad = midRawRad - rotRad;
+
+          const ix = midRadius * Math.cos(midRad);
+          const iy = midRadius * Math.sin(midRad);
+
+          dignitiesGroup
+            .append("image")
+            .attr("href", getDignityIconSrc(division.ruler))
+            .attr("width", dignityIconSize)
+            .attr("height", dignityIconSize)
+            .attr("x", ix - dignityIconSize / 2)
+            .attr("y", iy - dignityIconSize / 2);
+        });
+      });
+    }
+
+    if (useDecans) {
+      drawDignityRing({
+        table: CHALDEAN_DECANS,
+        innerRadius: decansRingInner,
+        outerRadius: decansRingOuter,
+        strokeColor: "black",
+      });
+    }
+
+    if (termsIsActive) {
+      drawDignityRing({
+        table: currentTerms!,
+        innerRadius: termsRingInner,
+        outerRadius: termsRingOuter,
+        strokeColor: "black",
+      });
+    }
+
+    // Fecha a borda interna do anel mais interno ativo (Termos, se ativo; senão Faces).
+    // Sem essa circunferência, os "arcos" de cada divisão ficam abertos por dentro.
+    if (useDecans || termsIsActive) {
+      dignitiesGroup
+        .append("circle")
+        .attr("r", chartInnerRadius)
+        .attr("fill", "none")
+        .attr("stroke", "black")
+        .attr("stroke-width", 0.75);
+    }
+    // ===== Fim Faces e Termos =====
+
     // 1) Defina os raios dos dois círculos menores (diâmetro = 1/4 do diâmetro maior)
     const smallOuterRadius = radius / 1.5;
     const smallInnerRadius = smallOuterRadius - 20; // ajuste o “gap” entre círculos
@@ -1594,10 +1772,10 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
         const angleRadOverlapped = rawRadOverlapped - rotRad;
   
         // 3) offsets de sobreposição
-        // const rSymbol = radius - symbolOffset;
-        const rSymbol = radius - overlapData.offset;
-        const rLineStart = radius - lineStartOffset;
-        const rLineEnd = radius;
+        // const rSymbol = chartInnerRadius - symbolOffset;
+        const rSymbol = chartInnerRadius - overlapData.offset;
+        const rLineStart = chartInnerRadius - lineStartOffset;
+        const rLineEnd = chartInnerRadius;
   
         // 4) cálculos das coordenadas
         const xs = rSymbol * Math.cos(angleRadOverlapped);
@@ -1694,10 +1872,10 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
           const angleRadOverlapped = rawRadOverlapped - rotAntRad;
 
           // 3) offsets de sobreposição
-          // const rAntSymbol = radius - symbolOffset;
-          const rAntSymbol = radius - overlapData.offset;
-          const rAntLineStart = radius - lineStartOffset;
-          const AntLineEnd = radius;
+          // const rAntSymbol = chartInnerRadius - symbolOffset;
+          const rAntSymbol = chartInnerRadius - overlapData.offset;
+          const rAntLineStart = chartInnerRadius - lineStartOffset;
+          const AntLineEnd = chartInnerRadius;
 
           // 4) cálculos das coordenadas
           const xAnts = rAntSymbol * Math.cos(angleRadOverlapped);
@@ -1799,9 +1977,9 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             const angleRadOverlapped = rawRadOverlapped - rotRad;
   
             // 3) offsets de sobreposição
-            const rSymbol = radius - overlapData.offset;
-            const rLineStart = radius - lineStartOffset;
-            const rLineEnd = radius;
+            const rSymbol = chartInnerRadius - overlapData.offset;
+            const rLineStart = chartInnerRadius - lineStartOffset;
+            const rLineEnd = chartInnerRadius;
   
             // 4) cálculos das coordenadas
             const xs = rSymbol * Math.cos(angleRadOverlapped);
@@ -1898,9 +2076,9 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
             const angleRadOverlapped = rawRadOverlapped - rotRad;
   
             // 3) offsets de sobreposição
-            const rSymbol = radius - overlapData.offset;
-            const rLineStart = radius - lineStartOffset;
-            const rLineEnd = radius;
+            const rSymbol = chartInnerRadius - overlapData.offset;
+            const rLineStart = chartInnerRadius - lineStartOffset;
+            const rLineEnd = chartInnerRadius;
   
             // 4) cálculos das coordenadas
             const xs = rSymbol * Math.cos(angleRadOverlapped);
@@ -1986,8 +2164,8 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       const x1 = i % 3 === 0 ? 0 : innerCircleRadius * Math.cos(angleRad);
       const y1 = i % 3 === 0 ? 0 : innerCircleRadius * Math.sin(angleRad);
       // ponto final da cúspide
-      const x2 = radius * Math.cos(angleRad);
-      const y2 = radius * Math.sin(angleRad);
+      const x2 = chartInnerRadius * Math.cos(angleRad);
+      const y2 = chartInnerRadius * Math.sin(angleRad);
 
       // desenha a cúspide
       rotatedGroup
@@ -2081,8 +2259,8 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   
         // 3) offsets de sobreposição
         const rSymbol = outerZodiacRadius + overlapData.offset;
-        const rLineStart = radius - lineStartOffset;
-        const rLineEnd = radius;
+        const rLineStart = chartInnerRadius - lineStartOffset;
+        const rLineEnd = chartInnerRadius;
   
         // 4) cálculos das coordenadas
         const xs = rSymbol * Math.cos(angleRadOverlapped);
@@ -2692,7 +2870,10 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     testValue,
     showOuterChart,
     showDegrees,
-    hasIsolatedAspect
+    hasIsolatedAspect,
+    useDecans,
+    useTerms,
+    currentTerms
   ]);
 
   useEffect(() => {
@@ -2866,14 +3047,30 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     setShowArabicPartsAntiscia((prev) => !prev);
   };
 
-  const togglePtolemaicTerms = () => {
-    setUseTerms((prev) => !prev);
-    setCurrentTerms(useTerms ? PTOLEMAIC_TERMS : undefined);
+  const togglePtolemaicTerms = (val: boolean) => {
+    if(!val && currentTerms === PTOLEMAIC_TERMS) {
+      setCurrentTerms(undefined);
+      setUseTerms(false);
+    } else if(val && currentTerms === EGYPTIAN_TERMS) {
+      setCurrentTerms(PTOLEMAIC_TERMS);
+      setUseTerms(true);
+    } else {
+      setUseTerms(val);
+      setCurrentTerms(val ? PTOLEMAIC_TERMS : undefined);
+    }
   };
 
-   const toggleEgyptianTerms = () => {
-    setUseTerms((prev) => !prev);
-    setCurrentTerms(useTerms ? EGYPTIAN_TERMS : undefined);
+   const toggleEgyptianTerms = (val: boolean) => {
+    if(!val && currentTerms === EGYPTIAN_TERMS) {
+      setCurrentTerms(undefined);
+      setUseTerms(false);
+    } else if(val && currentTerms === PTOLEMAIC_TERMS) {
+      setCurrentTerms(EGYPTIAN_TERMS);
+      setUseTerms(true);
+    } else {
+      setUseTerms(val);
+      setCurrentTerms(val ? EGYPTIAN_TERMS : undefined);
+    }
   };
 
   const toggleDecans = () => {
@@ -2915,6 +3112,26 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     }
   }
 
+  const getMobileHeight = () => {
+    if(!useDecans && !useTerms)
+      return 'h-[20rem]'
+    else if((useDecans && !useTerms) || (!useDecans && useTerms))
+      return 'h-[21rem]'
+    else if(useDecans && useTerms)
+      return 'h-[22rem]'
+  }
+
+  const getDesktopHeight = () => {
+    if(!useDecans && !useTerms)
+      return 'md:h-[38rem]'
+
+    if((useDecans && !useTerms) || (!useDecans && useTerms))
+      return 'md:h-[40rem]'
+
+    if(useDecans && useTerms)
+      return 'md:h-[42rem]'
+  }
+
   return (
     <div
       className={`w-full flex flex-col justify-center items-center gap-8
@@ -2936,7 +3153,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
 
       <div 
         ref={containerRef} 
-        className={`relative w-full h-[20rem] md:h-[38rem] ${(isMountingChart ? "opacity-0" : "")}`}
+        className={`relative w-full ${getMobileHeight()} ${getDesktopHeight()} ${(isMountingChart ? "opacity-0" : "")}`}
         onClick={(e) => {
           // fecha tooltip se clicar fora do SVG
           if (e.target === containerRef.current) hideTooltip();

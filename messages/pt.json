@@ -37,7 +37,7 @@
     "transits": "Trânsitos",
     "termsPtolomaics": "Termos Ptolomaicos",
     "termsEgyptians": "Termos Egípcios",
-    "decans": "Faces"
+    "decans": "Faces (Decanatos)"
   },
   "returnChart": {
     "title": "Escolha um mapa e digite o ano da revolução",
@@ -45,7 +45,7 @@
     "combineWithBirthChart": "Combinar com Mapa Natal",
     "combineWithBirthChartMobile": "Combinar com Mapa Astral",
     "combineWithSolarReturnChart": "Combinar com Retorno Solar",
-    "combineWithSolarReturnChartMobile": "Combinar c/ R.S.",
+    "combineWithSolarReturnChartMobile": "Combinar com Revolução Solar",
     "lunarDerivedReturn": "Retorno Lunar Derivado",
     "lunarDerivedReturnMobile": "Retorno Lunar Derivado",
     "return": "Retorno",
