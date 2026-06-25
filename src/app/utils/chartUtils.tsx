@@ -12,10 +12,13 @@ import {
   PlanetType,
   planetTypes,
   ReturnChartType,
+  Sign,
+  TermOrDecan,
   Transits,
 } from "@/interfaces/BirthChartInterfaces";
 import { HouseSystem } from "@/types/HouseSystem";
 import Image from "next/image";
+import { CHALDEAN_DECANS } from "./termsAndDecans";
 
 export const signsKeys = [
   "aries",
@@ -624,3 +627,22 @@ export const convertTransitsToChart = (transits: Transits): BirthChart => ({
 })
 
 export const getHouseSystemLabel = (houseSystem: HouseSystem) => houseSystem.charAt(0).toUpperCase() + houseSystem.slice(1);
+
+export function getTermRuler(
+  sign: Sign,
+  degree: number,
+  terms: Record<Sign, TermOrDecan[]>
+): PlanetType {
+  return terms[sign].find(
+    term => degree >= term.start && degree < term.end
+  )!.ruler;
+}
+
+export function getDecanRuler(
+  sign: Sign,
+  degree: number
+): PlanetType {
+  return CHALDEAN_DECANS[sign].find(
+    decan => degree >= decan.start && degree < decan.end
+  )!.ruler;
+}

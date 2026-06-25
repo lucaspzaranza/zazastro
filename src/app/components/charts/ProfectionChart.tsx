@@ -36,9 +36,6 @@ export default function ProfectionChart() {
     !isCombinedWithBirthChart ? undefined : archArabicParts;
 
   function getTitle() {
-    console.log(birthChart);
-    console.log(profectionChart);
-    
     if(!birthChart?.birthDate || !profectionChart?.birthDate) 
       return `${t('profections.title')} - ${profileName}`;    
     

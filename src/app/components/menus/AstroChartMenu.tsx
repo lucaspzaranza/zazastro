@@ -14,6 +14,9 @@ interface AstroChartMenuProps {
   toggleArabicParts?: () => void;
   toggleArabicPartsAntiscia?: () => void;
   toggleDegrees?: () => void;
+  togglePtolemaicsTerms?: () => void;
+  toggleEgyptianTerms?: () => void;
+  toggleDecans?: () => void;
 }
 
 export default function AstroChartMenu(props: AstroChartMenuProps) {
@@ -24,6 +27,9 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
     toggleCombineWithReturnChart,
     togglePlanetsAntiscia,
     toggleDegrees,
+    togglePtolemaicsTerms,
+    toggleEgyptianTerms,
+    toggleDecans
   } = props;
 
   const [planetsAntiscia, setPlanetsAntiscia] = useState(false);
@@ -32,6 +38,9 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
   const [showDegrees, setShowDegrees] = useState(true);
   const [lunarDerivedModal, setLunarDerivedModal] = useState(false);
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
+  const [usePtolemaicsTerms, setUsePtolemaicsTerms] = useState(true);
+  const [useEgyptianTerms, setUseEgyptianTerms] = useState(true);
+  const [useDecans, setUseDecans] = useState(true);
   
   const contextMenuRef = useRef<HTMLDivElement>(null);
   const t = useTranslations();
@@ -302,6 +311,39 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
               <span className="w-min">{t("birthChart.showInfo")}</span>
             </button>
           )}
+
+          <button
+              disabled={hasIsolatedAspect}
+              className={showDegrees ? pillActive : pillInactive}
+              onClick={() => {
+                setUsePtolemaicsTerms((prev) => !prev);
+                togglePtolemaicsTerms?.();
+              }}
+            >
+              <span className="w-min">{t("birthChart.termsPtolomaics")}</span>
+            </button>
+
+            <button
+              disabled={hasIsolatedAspect}
+              className={showDegrees ? pillActive : pillInactive}
+              onClick={() => {
+                setUseEgyptianTerms((prev) => !prev);
+                toggleEgyptianTerms?.();
+              }}
+            >
+              <span className="w-min">{t("birthChart.termsEgyptians")}</span>
+            </button>
+
+            <button
+              disabled={hasIsolatedAspect}
+              className={showDegrees ? pillActive : pillInactive}
+              onClick={() => {
+                setUseDecans((prev) => !prev);
+                toggleDecans?.();
+              }}
+            >
+              <span className="w-min">{t("birthChart.decans")}</span>
+            </button>
         </div>
 
         {/* Mobile: botão de três pontos + dropdown */}

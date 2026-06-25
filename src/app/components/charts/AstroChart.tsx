@@ -16,7 +16,7 @@ import {
   mod360,
   signsGlpyphs,
 } from "@/utils/chartUtils";
-import { FixedStar, PlanetType } from "@/interfaces/BirthChartInterfaces";
+import { FixedStar, PlanetType, Sign, TermOrDecan } from "@/interfaces/BirthChartInterfaces";
 import {
   Aspect,
   AspectedElement,
@@ -36,6 +36,7 @@ import { useBirthChart } from "@/contexts/BirthChartContext";
 import { useTranslations } from "next-intl";
 import { ArabicPart } from "@/interfaces/ArabicPartInterfaces";
 import { useAspectsData } from "@/contexts/AspectsContext";
+import { EGYPTIAN_TERMS, PTOLEMAIC_TERMS } from "@/app/utils/termsAndDecans";
 
 interface TooltipData {
   x: number;
@@ -80,6 +81,9 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   const [showArabicPartsAntiscia, setShowArabicPartsAntiscia] = useState(false);
   const [showOuterChart, setShowOuterChart] = useState(outerPlanets !== undefined && outerHouses !== undefined);
   const [showDegrees, setShowDegrees] = useState(true);
+  const [useTerms, setUseTerms] = useState(true);
+  const [useDecans, setUseDecans] = useState(true);
+  const [currentTerms, setCurrentTerms] = useState<Record<Sign, TermOrDecan[]> | undefined>(undefined);
 
   const { aspects, updateAspectsData, selectedAspect, setSelectedAspect, 
     hasIsolatedAspect, setHasIsolatedAspect } = useAspectsData();
@@ -2840,6 +2844,12 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     });
   }, [aspects, hasIsolatedAspect]);  
 
+  useEffect(() => {
+    if(useTerms && currentTerms === undefined) {
+      setCurrentTerms(PTOLEMAIC_TERMS);
+    }
+  }, [useTerms]);
+
   const toggleArabicParts = () => {
     setShowArabicParts((prev) => !prev);
   };
@@ -2854,6 +2864,20 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
 
   const toggleArabicPartsAntiscia = () => {
     setShowArabicPartsAntiscia((prev) => !prev);
+  };
+
+  const togglePtolemaicTerms = () => {
+    setUseTerms((prev) => !prev);
+    setCurrentTerms(useTerms ? PTOLEMAIC_TERMS : undefined);
+  };
+
+   const toggleEgyptianTerms = () => {
+    setUseTerms((prev) => !prev);
+    setCurrentTerms(useTerms ? EGYPTIAN_TERMS : undefined);
+  };
+
+  const toggleDecans = () => {
+    setUseDecans((prev) => !prev)
   };
 
   // Define o deslocamento extra a partir do centro (em px), por contexto
@@ -2904,6 +2928,9 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
           toggleCombineWithBirthChart={isReturnChart() || isProgressionChart() || isProfectionChart()}
           toggleCombineWithReturnChart={isLunarDerivedReturnChart()}
           toggleDegrees={toggleDegrees}
+          toggleDecans={toggleDecans}
+          togglePtolemaicsTerms={togglePtolemaicTerms}
+          toggleEgyptianTerms={toggleEgyptianTerms}
         />
       </div>
 
@@ -2917,7 +2944,6 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       >
         {useReturnSelectorArrows ? (
           <ReturnSelectorArrows>
-            {/* <svg className={className} ref={ref}></svg> */}
             <svg
               ref={ref}
               style={{

@@ -34,7 +34,10 @@
     "houses": "Houses",
     "planets": "Planets",
     "aspects": "Aspects",
-    "transits": "Transits"
+    "transits": "Transits",
+    "termsPtolomaics": "Ptolemaic Terms",
+    "termsEgyptians": "Egyptian Terms",
+    "decans": "Decans"
   },
   "returnChart": {
     "title": "Choose a chart and enter the year of the return",

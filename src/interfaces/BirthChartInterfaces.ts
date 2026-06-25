@@ -19,6 +19,20 @@ export type ReturnChartType = "solar" | "lunar";
 export type ChartType = "birth" | "return" | "sinastry" | "progression" | "lunarDerived" | "profection" | "transits";
 export type ArabicPartType = "birth" | "arch" | "solarReturn" | "sinastry" | "custom";
 
+export type Sign =
+  | "Aries"
+  | "Taurus"
+  | "Gemini"
+  | "Cancer"
+  | "Leo"
+  | "Virgo"
+  | "Libra"
+  | "Scorpio"
+  | "Sagittarius"
+  | "Capricorn"
+  | "Aquarius"
+  | "Pisces";
+
 export const planetTypes: PlanetType[] = [
   "sun",
   "moon",
@@ -138,4 +152,10 @@ export interface ChatDateProps {
   label?: string;
   birthChart?: BirthChart;
   chartDate?: BirthDate;
+}
+
+export interface TermOrDecan {
+  start: number; // inclusive
+  end: number;   // exclsive
+  ruler: PlanetType;
 }

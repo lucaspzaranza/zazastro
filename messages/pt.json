@@ -34,7 +34,10 @@
     "houses": "Casas",
     "planets": "Planetas",
     "aspects": "Aspectos",
-    "transits": "Trânsitos"
+    "transits": "Trânsitos",
+    "termsPtolomaics": "Termos Ptolomaicos",
+    "termsEgyptians": "Termos Egípcios",
+    "decans": "Faces"
   },
   "returnChart": {
     "title": "Escolha um mapa e digite o ano da revolução",
