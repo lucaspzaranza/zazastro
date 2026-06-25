@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useAspectsData } from "@/contexts/AspectsContext";
 import { BsThreeDots } from "react-icons/bs";
+import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 
 interface AstroChartMenuProps {
   toggleCombineWithBirthChart?: boolean;
@@ -39,9 +40,9 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
   const [lunarDerivedModal, setLunarDerivedModal] = useState(false);
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
   const [usePtolemaicsTerms, setUsePtolemaicsTerms] = useState(true);
-  const [useEgyptianTerms, setUseEgyptianTerms] = useState(true);
+  const [useEgyptianTerms, setUseEgyptianTerms] = useState(false);
   const [useDecans, setUseDecans] = useState(true);
-  
+
   const contextMenuRef = useRef<HTMLDivElement>(null);
   const t = useTranslations();
 
@@ -63,6 +64,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
 
   const { chartMenu } = useChartMenu();
   const { hasIsolatedAspect } = useAspectsData();
+  const { isMobileBreakPoint } = useScreenDimensions();
 
   useEffect(() => {
     setPlanetsAntiscia(false);
@@ -84,24 +86,39 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
     setLunarDerivedModal(false);
   }
 
+  function handleTogglePtolemaicTerms() {
+    const next = !usePtolemaicsTerms;
+    setUsePtolemaicsTerms(next);
+    togglePtolemaicsTerms?.();
+
+    // Mutuamente exclusivo com Termos Egípcios: ativar um desliga o outro
+    if (next && useEgyptianTerms) {
+      setUseEgyptianTerms(false);
+      toggleEgyptianTerms?.();
+    }
+  }
+
+  function handleToggleEgyptianTerms() {
+    const next = !useEgyptianTerms;
+    setUseEgyptianTerms(next);
+    toggleEgyptianTerms?.();
+
+    // Mutuamente exclusivo com Termos Ptolemaicos: ativar um desliga o outro
+    if (next && usePtolemaicsTerms) {
+      setUsePtolemaicsTerms(false);
+      togglePtolemaicsTerms?.();
+    }
+  }
+
   const checkSrc = "/check.png";
   const checkSize = 13;
-  const className =
-    "default-btn flex flex-row gap-1 items-center justify-center text-[0.65rem] md:text-[0.75rem] w-full text-white px-0 py-2 rounded";
 
-  const pillBase =
-    "flex items-center justify-center text-[0.7rem] md:text-[0.75rem] px-3 py-2 rounded-full border transition-all cursor-pointer whitespace-nowrap disabled:opacity-50";
-  const pillActive =
-    `${pillBase} default-bg border-blue-700 text-white`;
-  const pillInactive =
-    `${pillBase} bg-transparent border-zinc-300 dark:border-zinc-600 text-black dark:text-zinc-400 hover:border-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 disabled:border-zinc-300 disabled:hover:text-black`;
+  const menuItemClass =
+    "w-full flex gap-2 p-2 pl-1 flex-row items-center justify-between active:bg-blue-100 disabled:opacity-50 hover:bg-zinc-100 active:bg-zinc-200";
 
-  const mobileMenuItemClass =
-    "w-full flex gap-2 p-2 pl-1 flex-row items-center justify-between active:bg-blue-100 disabled:opacity-50";
-
-  // Define quais toggles aparecem no menu mobile, em ordem.
-  // Centralizar aqui facilita adicionar novos itens sem duplicar JSX.
-  type MobileMenuItem = {
+  // Define quais toggles aparecem no menu de contexto, em ordem.
+  // Centralizar aqui facilita adicionar novos itens sem duplicar JSX entre desktop/mobile.
+  type MenuItem = {
     key: string;
     label: string;
     active: boolean;
@@ -109,7 +126,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
     visible: boolean;
   };
 
-  const mobileMenuItems: MobileMenuItem[] = [
+  const menuItems: MenuItem[] = [
     {
       key: "planetsAntiscia",
       label: t("birthChart.antiscion"),
@@ -138,6 +155,30 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       onClick: () => {
         setArabicPartsAntiscia((prev) => !prev);
         toggleArabicPartsAntiscia?.();
+      },
+    },
+    {
+      key: "termsPtolemaics",
+      label: t("birthChart.termsPtolomaics"),
+      active: usePtolemaicsTerms,
+      visible: true,
+      onClick: handleTogglePtolemaicTerms,
+    },
+    {
+      key: "termsEgyptians",
+      label: t("birthChart.termsEgyptians"),
+      active: useEgyptianTerms,
+      visible: true,
+      onClick: handleToggleEgyptianTerms,
+    },
+    {
+      key: "decans",
+      label: t("birthChart.decans"),
+      active: useDecans,
+      visible: true,
+      onClick: () => {
+        setUseDecans((prev) => !prev);
+        toggleDecans?.();
       },
     },
     {
@@ -191,7 +232,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
     },
   ];
 
-  function renderMobileMenuItem(item: MobileMenuItem) {
+  function renderMenuItem(item: MenuItem) {
     if (!item.visible) return null;
 
     return (
@@ -199,7 +240,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
         key={item.key}
         disabled={hasIsolatedAspect}
         title={item.label}
-        className={mobileMenuItemClass}
+        className={menuItemClass}
         onClick={item.onClick}
       >
         <span className="text-sm font-normal text-left">{item.label}</span>
@@ -212,165 +253,35 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
 
   return (
     <>
-      <div className="relative w-full flex flex-col gap-2 ">
-        {/* Desktop: pills inline, como antes */}
-        <div className="w-full hidden md:grid grid-cols-4 items-stretch justify-center gap-1">
-          <button
-            disabled={hasIsolatedAspect}
-            className={planetsAntiscia ? pillActive : pillInactive}
-            onClick={() => {
-              setPlanetsAntiscia((prev) => !prev);
-              togglePlanetsAntiscia?.();
-            }}
-          >
-            <span className="w-min">{t("birthChart.planetsAntiscion")}</span>
-          </button>
-
-          <button
-            disabled={hasIsolatedAspect}
-            className={arabicParts ? pillActive : pillInactive}
-            onClick={() => {
-              setArabicParts((prev) => !prev);
-              toggleArabicParts?.();
-            }}
-          >
-            <span className="w-min">{t("birthChart.arabicParts")}</span>
-          </button>
-
-          <button
-            disabled={hasIsolatedAspect}
-            className={arabicPartsAntiscia ? pillActive : pillInactive}
-            onClick={() => {
-              setArabicPartsAntiscia((prev) => !prev);
-              toggleArabicPartsAntiscia?.();
-            }}
-          >
-            <span className="w-min">{t("birthChart.arabicPartsAntiscion")}</span>
-          </button>
-
-          {toggleCombineWithBirthChart === false && (
-            <button
-              disabled={hasIsolatedAspect}
-              className={showDegrees ? pillActive : pillInactive}
-              onClick={() => {
-                setShowDegrees((prev) => !prev);
-                toggleDegrees?.();
-              }}
-            >
-              <span className="w-min">{t("birthChart.showInfo")}</span>
-            </button>
-          )}
-
-          {toggleCombineWithBirthChart && !isCombinedWithReturnChart && (
-            <button
-              disabled={hasIsolatedAspect}
-              className={isCombinedWithBirthChart ? pillActive : pillInactive}
-              onClick={() => {
-                updateIsCombinedWithBirthChart(!isCombinedWithBirthChart);
-                updateIsMountingChart(true);
-              }}
-            >
-              <span className="w-min">{t("returnChart.combineWithBirthChart")}</span>
-            </button>
-          )}
-
-          {toggleCombineWithReturnChart && !isCombinedWithBirthChart && (
-            <button
-              disabled={hasIsolatedAspect}
-              className={isCombinedWithReturnChart ? pillActive : pillInactive}
-              onClick={() => {
-                updateIsCombinedWithReturnChart(!isCombinedWithReturnChart);
-                updateIsMountingChart(true);
-              }}
-            >
-              <span className="w-min">{t("returnChart.combineWithSolarReturnChart")}</span>
-            </button>
-          )}
-
-          {chartMenu === "solarReturn" && (
-            <button
-              disabled={hasIsolatedAspect}
-              className={lunarDerivedModal ? pillActive : pillInactive}
-              onClick={() => {
-                setLunarDerivedModal(true);
-              }}
-            >
-              <span className="w-min">{t("returnChart.lunarDerivedReturn")}</span>
-            </button>
-          )}
-
-          {toggleCombineWithBirthChart && (
-            <button
-              disabled={hasIsolatedAspect}
-              className={showDegrees ? pillActive : pillInactive}
-              onClick={() => {
-                setShowDegrees((prev) => !prev);
-                toggleDegrees?.();
-              }}
-            >
-              <span className="w-min">{t("birthChart.showInfo")}</span>
-            </button>
-          )}
-
-          <button
-              disabled={hasIsolatedAspect}
-              className={showDegrees ? pillActive : pillInactive}
-              onClick={() => {
-                setUsePtolemaicsTerms((prev) => !prev);
-                togglePtolemaicsTerms?.();
-              }}
-            >
-              <span className="w-min">{t("birthChart.termsPtolomaics")}</span>
-            </button>
-
-            <button
-              disabled={hasIsolatedAspect}
-              className={showDegrees ? pillActive : pillInactive}
-              onClick={() => {
-                setUseEgyptianTerms((prev) => !prev);
-                toggleEgyptianTerms?.();
-              }}
-            >
-              <span className="w-min">{t("birthChart.termsEgyptians")}</span>
-            </button>
-
-            <button
-              disabled={hasIsolatedAspect}
-              className={showDegrees ? pillActive : pillInactive}
-              onClick={() => {
-                setUseDecans((prev) => !prev);
-                toggleDecans?.();
-              }}
-            >
-              <span className="w-min">{t("birthChart.decans")}</span>
-            </button>
-        </div>
-
-        {/* Mobile: botão de três pontos + dropdown */}
-        <div className="absolute w-full flex md:hidden flex-row items-center justify-between">
+      <div className="absolute right-0 md:right-4 w-full flex flex-row items-center justify-between">
+        {/* Cadeado: só faz sentido fixar a visualização no mobile, onde o mapa ocupa a tela inteira */}
+        {isMobileBreakPoint() ? (
           <button
             className={`p-1.5 rounded-full hover:bg-zinc-100 active:bg-zinc-200 ${
               chartIsLocked ? "bg-zinc-200" : ""
             }`}
             onClick={() => setChartIsLocked(!chartIsLocked)}
           >
-            <Image alt="lock" src={chartIsLocked? "lock.png" : "lock-open.png"} width={20} height={20} unoptimized />
+            <Image alt="lock" src={chartIsLocked ? "lock.png" : "lock-open.png"} width={20} height={20} unoptimized />
+          </button>
+        ) : (
+          // Mantém o espaço simétrico no desktop, empurrando o menu de contexto para a direita
+          <span className="w-[32px]" />
+        )}
+
+        <div className="relative" ref={contextMenuRef}>
+          <button
+            className="p-1.5 rounded-full hover:bg-zinc-100 active:bg-zinc-200"
+            onClick={() => setContextMenuOpen((prev) => !prev)}
+          >
+            <BsThreeDots size={20} />
           </button>
 
-          <div className="relative" ref={contextMenuRef}>
-            <button
-              className="p-1.5 rounded-full hover:bg-zinc-100 active:bg-zinc-200"
-              onClick={() => setContextMenuOpen((prev) => !prev)}
-            >
-              <BsThreeDots size={20} />
-            </button>
-
-            {contextMenuOpen && (
-              <div className="absolute w-[16rem] bg-white shadow px-2 py-3 right-0 top-8 flex flex-col items-start z-30">
-                {mobileMenuItems.map(renderMobileMenuItem)}
-              </div>
-            )}
-          </div>
+          {contextMenuOpen && (
+            <div className="absolute w-[16rem] bg-white shadow px-2 py-3 right-0 top-8 flex flex-col items-start z-30">
+              {menuItems.map(renderMenuItem)}
+            </div>
+          )}
         </div>
       </div>
 
