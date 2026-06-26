@@ -97,11 +97,11 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
       return showOuterChart ? 1.25 : 1.5;
     } else { 
       if((useDecans && !useTerms) || (!useDecans && useTerms))
-        return 0.835;
+        return showOuterChart? 0.7 : 0.835;
       if(!useDecans && !useTerms)
-        return 0.86;
+        return showOuterChart? 0.7 : 0.86;
       if(useDecans && useTerms)
-        return 0.78;
+        return showOuterChart? 0.68 : 0.78;
 
       return showOuterChart ? 0.7 : 0.85;
     }
@@ -3113,12 +3113,14 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   }
 
   const getMobileHeight = () => {
-    if(!useDecans && !useTerms)
-      return 'h-[20rem]'
-    else if((useDecans && !useTerms) || (!useDecans && useTerms))
-      return 'h-[21rem]'
-    else if(useDecans && useTerms)
-      return 'h-[22rem]'
+    // if(!useDecans && !useTerms)
+    //   return 'h-[22rem]'
+    // else if((useDecans && !useTerms) || (!useDecans && useTerms))
+    //   return 'h-[22rem]'
+    // else if(useDecans && useTerms)
+    //   return 'h-[22rem]'
+
+    return 'h-[22rem]'
   }
 
   const getDesktopHeight = () => {

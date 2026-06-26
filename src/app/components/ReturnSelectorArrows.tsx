@@ -179,8 +179,8 @@ export default function ReturnSelectorArrows(props: ChartSelectorProps) {
 
   const getMobileTopValue = () => {
     if (isMobileBreakPoint()) {
-      if (isCombinedWithBirthChart || isCombinedWithReturnChart) return "top-[19rem]";
-      else return "top-[19rem]";
+      if (isCombinedWithBirthChart || isCombinedWithReturnChart) return "top-[21rem]";
+      else return "top-[21rem]";
     } else return ""
   }
 
