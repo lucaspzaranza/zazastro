@@ -87,16 +87,6 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
   }
 
   function handleTogglePtolemaicTerms() {
-    // const next = !usePtolemaicsTerms;
-    // setUsePtolemaicsTerms(next);
-    // togglePtolemaicsTerms?.(next);
-
-    // // Mutuamente exclusivo com Termos Egípcios: ativar um desliga o outro
-    // if (next && useEgyptianTerms) {
-    //   setUseEgyptianTerms(false);
-    //   toggleEgyptianTerms?.(false);
-    // }
-
     if(useEgyptianTerms) {
       setUseEgyptianTerms(false);
       setUsePtolemaicsTerms(true);
@@ -111,16 +101,6 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
   }
 
   function handleToggleEgyptianTerms() {
-    // const next = !useEgyptianTerms;
-    // setUseEgyptianTerms(next);
-    // toggleEgyptianTerms?.(next);
-
-    // // Mutuamente exclusivo com Termos Ptolemaicos: ativar um desliga o outro
-    // if (next && usePtolemaicsTerms) {
-    //   setUsePtolemaicsTerms(false);
-    //   togglePtolemaicsTerms?.(false);
-    // }
-
     if(usePtolemaicsTerms) {
       setUsePtolemaicsTerms(false);
       setUseEgyptianTerms(true);
@@ -136,6 +116,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
 
   const checkSrc = "/check.png";
   const checkSize = 13;
+  const menuItemIconSize = 16;
 
   const menuItemClass =
     "w-full flex gap-2 p-2 pl-1 flex-row items-center justify-between active:bg-blue-100 disabled:opacity-50 hover:bg-zinc-100 active:bg-zinc-200";
@@ -148,6 +129,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
     active: boolean;
     onClick: () => void;
     visible: boolean;
+    iconPath?: string;
   };
 
   const menuItems: MenuItem[] = [
@@ -156,6 +138,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       label: t("birthChart.antiscion"),
       active: planetsAntiscia,
       visible: true,
+      iconPath: "planets/antiscion/sun.png",
       onClick: () => {
         setPlanetsAntiscia((prev) => !prev);
         togglePlanetsAntiscia?.();
@@ -166,6 +149,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       label: t("birthChart.arabicPartsMobile"),
       active: arabicParts,
       visible: true,
+      iconPath: "planets/fortune.png",
       onClick: () => {
         setArabicParts((prev) => !prev);
         toggleArabicParts?.();
@@ -176,6 +160,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       label: t("birthChart.arabicPartsAntiscionMobile"),
       active: arabicPartsAntiscia,
       visible: true,
+      iconPath: "planets/antiscion/necessity.png",
       onClick: () => {
         setArabicPartsAntiscia((prev) => !prev);
         toggleArabicPartsAntiscia?.();
@@ -186,6 +171,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       label: t("birthChart.termsPtolomaics"),
       active: usePtolemaicsTerms,
       visible: true,
+      iconPath: "planets/jupiter.png",
       onClick: handleTogglePtolemaicTerms,
     },
     {
@@ -193,6 +179,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       label: t("birthChart.termsEgyptians"),
       active: useEgyptianTerms,
       visible: true,
+      iconPath: "planets/saturn.png",
       onClick: handleToggleEgyptianTerms,
     },
     {
@@ -200,6 +187,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       label: t("birthChart.decans"),
       active: useDecans,
       visible: true,
+      iconPath: "planets/venus.png",
       onClick: () => {
         setUseDecans((prev) => !prev);
         toggleDecans?.();
@@ -210,6 +198,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       label: t("birthChart.showInfo"),
       active: showDegrees,
       visible: toggleCombineWithBirthChart === false,
+      iconPath: "see-more.png",
       onClick: () => {
         setShowDegrees((prev) => !prev);
         toggleDegrees?.();
@@ -220,6 +209,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       label: t("returnChart.combineWithBirthChartMobile"),
       active: isCombinedWithBirthChart,
       visible: !!toggleCombineWithBirthChart && !isCombinedWithReturnChart,
+      iconPath: "combine.png",
       onClick: () => {
         updateIsCombinedWithBirthChart(!isCombinedWithBirthChart);
         updateIsMountingChart(true);
@@ -230,6 +220,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       label: t("returnChart.combineWithSolarReturnChartMobile"),
       active: isCombinedWithReturnChart,
       visible: !!toggleCombineWithReturnChart && !isCombinedWithBirthChart,
+      iconPath: "planets/sun.png",
       onClick: () => {
         updateIsCombinedWithReturnChart(!isCombinedWithReturnChart);
         updateIsMountingChart(true);
@@ -240,6 +231,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       label: t("returnChart.lunarDerivedReturnMobile"),
       active: lunarDerivedModal,
       visible: chartMenu === "solarReturn",
+      iconPath: "planets/moon.png",
       onClick: () => {
         setLunarDerivedModal(true);
       },
@@ -249,6 +241,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       label: t("birthChart.showInfo"),
       active: showDegrees,
       visible: !!toggleCombineWithBirthChart,
+      iconPath: "see-more.png",
       onClick: () => {
         setShowDegrees((prev) => !prev);
         toggleDegrees?.();
@@ -267,7 +260,10 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
         className={menuItemClass}
         onClick={item.onClick}
       >
-        <span className="text-sm font-normal text-left">{item.label}</span>
+        <div className="flex flex-row items-center justify-center gap-2">
+          {item.iconPath && <Image alt="check" src={item.iconPath} width={menuItemIconSize} height={menuItemIconSize} unoptimized />}
+          <span className="text-sm font-normal text-left">{item.label}</span>
+        </div>
         {item.active && (
           <Image alt="check" src={checkSrc} width={checkSize} height={checkSize} unoptimized />
         )}

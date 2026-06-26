@@ -4,7 +4,10 @@ allowBuilds:
   '@tailwindcss/oxide': false
   sharp: false
   unrs-resolver: false
+  overrides:
+  baseline-browser-mapping: $baseline-browser-mapping
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'
   - sharp
   - unrs-resolver
+  
