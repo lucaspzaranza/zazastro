@@ -99,7 +99,10 @@
     "yes": "Yes",
     "no": "No",
     "areYouSureYouWantToDelete": "Are you sure you want to delete the profile of ",
-    "deletedSuccessfully": "Profile deleted successfully."
+    "deletedSuccessfully": "Profile deleted successfully.",
+    "male": "Male",
+    "female": "Female",
+    "event": "Event/Horary"
   },
   "houses": {
     "1": {

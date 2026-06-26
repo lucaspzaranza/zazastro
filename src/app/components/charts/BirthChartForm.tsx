@@ -6,6 +6,7 @@ import {
 import {
   BirthChartProfile,
   BirthDate,
+  GenderType,
   SelectedCity,
 } from "@/interfaces/BirthChartInterfaces";
 import React, { useEffect, useRef, useState } from "react";
@@ -16,6 +17,7 @@ import { useBirthChart } from "@/contexts/BirthChartContext";
 import Image from "next/image";
 import HouseSystemDropdown from "../HouseSystemDropdown";
 import { useTranslations } from "next-intl";
+import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 
 interface BirthChartFormProps {
   currentBirthDate?: BirthDate;
@@ -25,6 +27,7 @@ interface BirthChartFormProps {
 export default function BirthChartForm(props: BirthChartFormProps) {
   const { onSubmit } = props;
   const t = useTranslations();
+   const { isMobileBreakPoint } = useScreenDimensions();
 
   const { profiles, createProfile, updateProfile, deleteProfile } =
     useProfiles();
@@ -36,10 +39,14 @@ export default function BirthChartForm(props: BirthChartFormProps) {
   const [minutes, setMinutes] = useState<number | null>(null);
   const [profile, setProfile] = useState<BirthChartProfile | undefined>();
   const [menu, setMenu] = useState(0);
+  const [gender, setGender] = useState<GenderType>("male");
   const form = useRef<HTMLFormElement>(null);
   const [editProfile, setEditProfile] = useState(false);
   const [showDeleteProfileMenu, setShowDeleteProfileMenu] = useState(false);
   const { currentCity, selectCity } = useBirthChart();
+  const { updateCurrentSelectedProfile } = useProfiles();
+
+  const genderIconSize = 16;
 
   useEffect(() => {
     if (
@@ -48,11 +55,12 @@ export default function BirthChartForm(props: BirthChartFormProps) {
       year &&
       name.length > 0 &&
       hour !== null &&
-      minutes !== null && currentCity
+      minutes !== null && currentCity      
     ) {
       setProfile({
         id: editProfile ? profile?.id : undefined,
         name,
+        gender,
         birthDate: {
           day,
           month,
@@ -63,6 +71,13 @@ export default function BirthChartForm(props: BirthChartFormProps) {
       });
     }
   }, [name, day, month, year, hour, minutes, currentCity]);
+
+  useEffect(() => {
+    setProfile({
+      ...profile,
+      gender
+    });    
+  }, [gender])
 
   useEffect(() => {
     if (profiles.length === 0) {
@@ -81,6 +96,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
       setDay(profile.birthDate.day);
       setMonth(profile.birthDate.month);
       setYear(profile.birthDate.year);
+      setGender(profile.gender ?? "male");
 
       const [hourToEdit, minutesToEdit] = getHourAndMinute(
         Number.parseFloat(profile.birthDate.time)
@@ -103,6 +119,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
       if (!editProfile) {
         onSubmit?.(profile);
       } else if (profile.id && updateProfile(profile.id, profile)) {
+        updateCurrentSelectedProfile(profile);
         onSubmit?.(profile);
       }
     } // create chart
@@ -182,6 +199,79 @@ export default function BirthChartForm(props: BirthChartFormProps) {
               setName(e.target.value);
             }}
           />
+
+          {
+            !isMobileBreakPoint() ? 
+            <div className="flex flex-row items-center justify-between">
+              <label htmlFor="male" className="gap-2 flex flex-row items-center">
+                <input
+                  type="radio"
+                  id="male"
+                  name="genderGroup"
+                  value="male"
+                  checked={gender === "male"}
+                  // defaultChecked={profiles.length > 0}
+                  disabled={profiles.length === 0}
+                  onChange={() => setGender("male")}
+                />
+                {t("form.male")}
+                <Image src="planets/mars.png" width={genderIconSize} height={genderIconSize} unoptimized alt="genderIcon" />
+              </label>
+
+              <label
+                htmlFor="female"
+                className="gap-2 flex flex-row items-center justify-end"
+              >
+                <input
+                  type="radio"
+                  id="female"
+                  name="genderGroup"
+                  value="female"
+                  checked={gender === "female"}
+                  onChange={() => setGender("female")}
+                />
+                {t("form.female")}
+                <Image src="planets/venus.png" width={genderIconSize} height={genderIconSize} unoptimized alt="genderIcon" />
+              </label>
+
+              <label
+                htmlFor="event"
+                className="gap-2 flex flex-row items-center justify-end"
+              >
+                <input
+                  type="radio"
+                  id="event"
+                  name="genderGroup"
+                  value="event"
+                  checked={gender === "event"}
+                  onChange={() => setGender("event")}
+                />
+                {t("form.event")}
+                <Image src="event.png" width={20} height={20} unoptimized alt="genderIcon" />
+              </label>
+            </div>
+            :
+            <select className="border-2 p-1 rounded-sm" 
+              defaultValue={gender}
+              onChange={(e) => {
+                // console.log(e.target.value);
+                setGender(e.target.value as GenderType);
+              }}
+            >
+              <option value="male">
+                {t("form.male")}
+              </option>
+
+              <option value="female">
+                {t("form.female")}
+              </option>
+
+              <option value="event">
+                {t("form.event")}
+              </option>
+            </select>
+        }
+          
           <div className="w-full flex flex-row justify-between gap-1">
             <input
               required

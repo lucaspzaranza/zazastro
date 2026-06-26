@@ -3,6 +3,7 @@
 import {
   BirthChart,
   ChatDateProps,
+  GenderType,
   PlanetType,
 } from "@/interfaces/BirthChartInterfaces";
 import React, { JSX, useCallback, useEffect, useState } from "react";
@@ -12,6 +13,7 @@ import {
   formatSignColor,
   getAntiscion,
   getDegreeAndSign,
+  getGenderIconPath,
   getPlanetImage,
 } from "../utils/chartUtils";
 import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
@@ -42,7 +44,8 @@ interface Props {
   onTableItemsPerPageChanged?: (newItemsPerPage: number) => void;
   chartDateProps: ChatDateProps;
   outerChartDateProps?: ChatDateProps;
-  title?: string;
+  title?: string | React.ReactNode;
+  gender?: GenderType;
 }
 
 export default function ChartAndData(props: Props) {
@@ -55,6 +58,7 @@ export default function ChartAndData(props: Props) {
     chartDateProps,
     outerChartDateProps,
     title,
+    gender,
   } = {
     ...props,
   };
@@ -96,9 +100,11 @@ export default function ChartAndData(props: Props) {
   const [useInnerParts, setUseInnerParts] = useState(true);
   const [nextChartContentLoaded, setNextChartContentLoaded] = useState(false);
   const t = useTranslations();
-  const [translatedTitle, setTranslatedTitle] = useState(title);
+  // const [translatedTitle, setTranslatedTitle] = useState(title);
   
   const { setHasIsolatedAspect, setSelectedAspect } = useAspectsData();
+
+  const genderIconSize = 20;
 
   const [planetsAntiscion, setPlanetsAntiscion] = useState<
     Record<PlanetType, boolean>
@@ -251,8 +257,12 @@ export default function ChartAndData(props: Props) {
         <>
           <ChartSelectorArrows className="w-full mb-0 md:px-6">
             {title && (
-              <h1 className="text-lg md:text-xl font-bold text-center">
+              <h1 className="flex flex-row items-center gap-2 text-lg md:text-xl font-bold text-center">
                 {title}
+                {
+                  chartDateProps.chartType !== "sinastry" &&
+                  <Image src={getGenderIconPath(gender ?? "event")} width={genderIconSize} height={genderIconSize} alt="genderIcon"/>
+                }
               </h1>
             )}
           </ChartSelectorArrows>

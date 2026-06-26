@@ -6,12 +6,14 @@ import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT } from "@/app/utils/constants";
 import { BirthChart } from "@/interfaces/BirthChartInterfaces";
 import { ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import { useTranslations } from "next-intl";
+import { useProfiles } from "@/contexts/ProfilesContext";
 
 export default function ProfectionChart() {
   const { profileName } = useBirthChart();
   const { birthChart, profectionChart, isCombinedWithBirthChart } = useBirthChart();
   const { arabicParts, archArabicParts } = useArabicParts();
   const t = useTranslations();
+  const { currentProfile } = useProfiles();
 
   const [tableItemsPerPage, setTableItemsPerPage] = useState(
     ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT
@@ -68,8 +70,8 @@ export default function ProfectionChart() {
         label: t("profections.profected"),
         chartDate: profectionChart.birthDate
       } : undefined}
-      // title={`${t('profections.title')} - ${profileName}`}
       title={getTitle()}
+      gender={currentProfile?.gender}
     />
   );
 }

@@ -7,12 +7,14 @@ import { BirthChart } from "@/interfaces/BirthChartInterfaces";
 import { ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import { useTranslations } from "next-intl";
 import { toDate } from "@/app/utils/chartUtils";
+import { useProfiles } from "@/contexts/ProfilesContext";
 
 export default function SecondaryProgressionChart() {
   const { profileName } = useBirthChart();
   const { birthChart, progressionChart, isCombinedWithBirthChart } = useBirthChart();
   const { arabicParts, archArabicParts } = useArabicParts();
   const t = useTranslations();
+  const { currentProfile } = useProfiles();
 
   const [tableItemsPerPage, setTableItemsPerPage] = useState(
     ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT
@@ -77,8 +79,8 @@ export default function SecondaryProgressionChart() {
         label: t("secondaryProgressions.progressed"),
         chartDate: progressionChart.birthDate
       }}
-      // title={`${t('secondaryProgressions.title')} - ${profileName}`}
       title={getTitle()}
+      gender={currentProfile?.gender}
     />
   );
 }

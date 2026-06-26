@@ -1,18 +1,22 @@
 import { useBirthChart } from "@/contexts/BirthChartContext";
-import { BirthChart } from "@/interfaces/BirthChartInterfaces";
+import { BirthChart, GenderType } from "@/interfaces/BirthChartInterfaces";
 import { useState } from "react";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import ChartAndData from "../ChartAndData";
 import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT } from "@/app/utils/constants";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
+import { getGenderIconPath } from "@/app/utils/chartUtils";
 
 interface SinastryProps {
   sinastryChart?: BirthChart;
   sinastryProfileName?: string;
+  gender?: GenderType;
+  genderSinastry?: GenderType;
 }
 
 export default function SinastryChart(props: SinastryProps) {
-  const { sinastryChart, sinastryProfileName } = props;
+  const { sinastryChart, sinastryProfileName, gender, genderSinastry } = props;
 
   const { profileName } = useBirthChart();
   const { birthChart } = useBirthChart();
@@ -22,9 +26,24 @@ export default function SinastryChart(props: SinastryProps) {
   );
 
   const t = useTranslations();
+  const genderIconSize = 20;
 
   function handleOnItemsPerPagechanged(newItemsPerPage: number) {
     setTableItemsPerPage(newItemsPerPage);
+  }
+
+  const getTitle = () => {
+    return <>
+      {t('synastryChart.sinastry')} - 
+        <span className="flex flex-row items-center gap-1">
+          {profileName}
+          <Image src={getGenderIconPath(gender ?? "event")} width={genderIconSize} height={genderIconSize} alt="genderIcon"/>
+        </span> x 
+        <span className="flex flex-row items-center gap-1">
+          {sinastryProfileName}
+          <Image src={getGenderIconPath(genderSinastry ?? "event")} width={genderIconSize} height={genderIconSize} alt="genderIcon"/>
+        </span>
+      </>
   }
 
   return (
@@ -50,7 +69,8 @@ export default function SinastryChart(props: SinastryProps) {
               label: sinastryProfileName,
               chartDate: sinastryChart.birthDate
             }}
-            title={`${t('synastryChart.sinastry')} - ${profileName} x ${sinastryProfileName}`}
+            title={getTitle()}
+            gender={gender}
           />
         </div>
       )}

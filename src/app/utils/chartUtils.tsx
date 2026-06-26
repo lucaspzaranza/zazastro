@@ -8,6 +8,7 @@ import {
   BirthChart,
   BirthDate,
   FixedStar,
+  GenderType,
   Planet,
   PlanetType,
   planetTypes,
@@ -645,4 +646,13 @@ export function getDecanRuler(
   return CHALDEAN_DECANS[sign].find(
     decan => degree >= decan.start && degree < decan.end
   )!.ruler;
+}
+
+export function getGenderIconPath(gender: GenderType) {
+  if(gender === "male") {
+    return "/planets/mars.png";
+  } else if(gender === "female") {
+    return "/planets/venus.png";
+  } else 
+    return "/event.png";
 }

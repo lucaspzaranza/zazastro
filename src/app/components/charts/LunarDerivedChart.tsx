@@ -9,6 +9,7 @@ import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT } from "@/app/utils/constants";
 import { BirthChart } from "@/interfaces/BirthChartInterfaces";
 import { ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import { useTranslations } from "next-intl";
+import { useProfiles } from "@/contexts/ProfilesContext";
 
 export default function LunarDerivedChart() {
   const [returnTime, setReturnTime] = useState("");
@@ -20,6 +21,8 @@ export default function LunarDerivedChart() {
   const { birthChart, returnChart, lunarDerivedChart,
     isCombinedWithBirthChart, isCombinedWithReturnChart } = useBirthChart();
     const t = useTranslations();
+    
+  const { currentProfile } = useProfiles();
 
   useEffect(() => {
     if (lunarDerivedChart && lunarDerivedChart.returnTime) {
@@ -89,6 +92,7 @@ export default function LunarDerivedChart() {
             chartDate: lunarDerivedChart.birthDate
           }}
           title={getTitle()}
+          gender={currentProfile?.gender}
         />
       )}
     </div>

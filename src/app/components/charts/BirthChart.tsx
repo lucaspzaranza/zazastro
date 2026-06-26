@@ -67,7 +67,7 @@ export default function BirthChart() {
     houseSystem,
     updateHouseSystem
   } = useBirthChart();
-  const { profiles } = useProfiles();
+  const { profiles, currentProfile, updateCurrentSelectedProfile, updateSinastryProfile } = useProfiles();
   const { arabicParts, archArabicParts } = useArabicParts();
   const [solarYear, setSolarYear] = useState(0);
   const [lunarDay, setLunarDay] = useState(1);
@@ -191,17 +191,28 @@ export default function BirthChart() {
   useEffect(() => {
     if (profiles.length > 0 && !firstProfileSetAtBeggining.current) {
       setChartProfile(profiles[0]);
+      updateCurrentSelectedProfile(profiles[0]);
       firstProfileSetAtBeggining.current = true;
     }
   }, [profiles]);
+
+  useEffect(() => {
+    updateCurrentSelectedProfile(chartProfile);
+  }, [currentProfile]);
+
+  useEffect(() => {
+    setChartProfile(chartProfile);
+  }, [chartProfile]);
+
+  useEffect(() => {
+    updateSinastryProfile(sinastryProfile);
+  }, [sinastryProfile]);
 
   async function getBirthChart(chartProfileToOverwrite?: BirthChartProfile) {
     setLoading(true);
     if (chartProfileToOverwrite) {
       setChartProfile(chartProfileToOverwrite);
     }
-
-    // console.log(houseSystem);
 
     if (chartProfileToOverwrite?.birthDate?.coordinates)
       selectCity(chartProfileToOverwrite?.birthDate?.coordinates);
@@ -1013,6 +1024,8 @@ export default function BirthChart() {
     </Container>
 
   const getChartContent = (): JSX.Element | null => {
+    // console.log('gender to be rendered: ', currentProfile?.gender);
+    
     switch (activeChart) {
       case "birth":
       case "moment":
@@ -1026,8 +1039,9 @@ export default function BirthChart() {
               chartDateProps={{
                 chartType: "birth",
                 birthChart,
-                chartDate: birthChart.birthDate
+                chartDate: birthChart.birthDate,
               }}
+              gender={chartProfile?.gender}
             />
           </div>
         </div> : null;
@@ -1044,6 +1058,7 @@ export default function BirthChart() {
                 birthChart,
                 chartDate: birthChart.birthDate
               }}
+              gender={chartProfile?.gender}
             />
           </div>
         </div> : null;
@@ -1062,6 +1077,8 @@ export default function BirthChart() {
           <SinastryChart
             sinastryChart={sinastryChart}
             sinastryProfileName={sinastryProfile?.name}
+            gender={chartProfile?.gender}
+            genderSinastry={sinastryProfile?.gender}
           />
         ) : null;
 

@@ -9,6 +9,7 @@ import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT } from "@/app/utils/constants";
 import { BirthChart } from "@/interfaces/BirthChartInterfaces";
 import { ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import { useTranslations } from "next-intl";
+import { useProfiles } from "@/contexts/ProfilesContext";
 
 export default function ReturnChart() {
   const { profileName } = useBirthChart();
@@ -19,6 +20,7 @@ export default function ReturnChart() {
   const [tableItemsPerPage, setTableItemsPerPage] = useState(
     ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT
   );
+  const { currentProfile } = useProfiles();
 
   const t = useTranslations();
 
@@ -64,6 +66,7 @@ export default function ReturnChart() {
               chartDate: returnChart.birthDate
             }}
             title={getTitle()}
+            gender={currentProfile?.gender}
           />
         </div>
       )}

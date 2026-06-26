@@ -17,6 +17,10 @@ interface ProfilesContextType {
   readProfile: (id: string) => BirthChartProfile | null;
   updateProfile: (id: string, profile: BirthChartProfile) => boolean;
   deleteProfile: (id: string) => boolean;
+  currentProfile?: BirthChartProfile;
+  updateCurrentSelectedProfile: (newProfile: BirthChartProfile | undefined) => void;
+  sinastryProfile?: BirthChartProfile;
+  updateSinastryProfile: (newProfile: BirthChartProfile | undefined) => void;
 }
 
 const PROFILE_KEY = "zazastro:profile-";
@@ -29,6 +33,8 @@ export const ProfilesContextProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [profiles, setProfiles] = useState<BirthChartProfile[]>([]);
+  const [currentProfile, setCurrentProfile] = useState<BirthChartProfile | undefined>(undefined);
+  const [sinastryProfile, setSinastryProfile] = useState<BirthChartProfile | undefined>(undefined);
 
   useEffect(() => {
     let array: BirthChartProfile[] = [];
@@ -54,6 +60,14 @@ export const ProfilesContextProvider: React.FC<{ children: ReactNode }> = ({
       setProfiles([...array]);
     }
   }, []);
+
+  const updateCurrentSelectedProfile = (newProfile: BirthChartProfile | undefined) => {
+    setCurrentProfile(newProfile);
+  }
+
+  const updateSinastryProfile = (newProfile: BirthChartProfile | undefined) => {
+    setSinastryProfile(newProfile);
+  }
 
   const createProfile = (profile: BirthChartProfile): boolean => {
     try {
@@ -119,6 +133,10 @@ export const ProfilesContextProvider: React.FC<{ children: ReactNode }> = ({
         readProfile,
         updateProfile,
         deleteProfile,
+        currentProfile,
+        updateCurrentSelectedProfile,
+        sinastryProfile,
+        updateSinastryProfile
       }}
     >
       {children}

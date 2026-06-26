@@ -18,6 +18,7 @@ export type PlanetType =
 export type ReturnChartType = "solar" | "lunar";
 export type ChartType = "birth" | "return" | "sinastry" | "progression" | "lunarDerived" | "profection" | "transits";
 export type ArabicPartType = "birth" | "arch" | "solarReturn" | "sinastry" | "custom";
+export type GenderType = "male" | "female" | "event";
 
 export type Sign =
   | "Aries"
@@ -63,6 +64,7 @@ export interface BirthChartProfile {
   birthDate?: BirthDate;
   chartMenu?: ChartMenuType
   transitsDate?: BirthDate;
+  gender?: GenderType;
 }
 
 export interface TransitsChartFormData {

@@ -99,7 +99,10 @@
     "yes": "Sim",
     "no": "Não",
     "areYouSureYouWantToDelete": "Tem certeza que deseja deletar o perfil de ",
-    "deletedSuccessfully": "Perfil deletado com sucesso."
+    "deletedSuccessfully": "Perfil deletado com sucesso.",
+    "male": "Homem",
+    "female": "Mulher",
+    "event": "Evento/Horária"
   },
   "houses": {
     "1": {
