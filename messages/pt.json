@@ -37,7 +37,8 @@
     "transits": "Trânsitos",
     "termsPtolomaics": "Termos Ptolomaicos",
     "termsEgyptians": "Termos Egípcios",
-    "decans": "Faces (Decanatos)"
+    "decans": "Faces (Decanatos)",
+    "fixedStars": "Estrelas Fixas"
   },
   "returnChart": {
     "title": "Escolha um mapa e digite o ano da revolução",

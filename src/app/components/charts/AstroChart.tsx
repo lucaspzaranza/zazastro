@@ -83,6 +83,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   const [showDegrees, setShowDegrees] = useState(true);
   const [useTerms, setUseTerms] = useState(true);
   const [useDecans, setUseDecans] = useState(true);
+  const [showFixedStars, setShowFixedStars] = useState(true);
   const [currentTerms, setCurrentTerms] = useState<Record<Sign, TermOrDecan[]> | undefined>(PTOLEMAIC_TERMS);
 
   const { aspects, updateAspectsData, selectedAspect, setSelectedAspect, 
@@ -2873,7 +2874,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     hasIsolatedAspect,
     useDecans,
     useTerms,
-    currentTerms
+    currentTerms,    
   ]);
 
   useEffect(() => {
@@ -2887,7 +2888,14 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   }, []);
 
   useEffect(() => {
-    // console.log(fixedStarsAspects);
+    if (!baseGroupRef.current) return;
+
+    // Limpa estrelas e tooltips desenhadas anteriormente, sempre,
+    // antes de decidir se desenha de novo ou não.
+    baseGroupRef.current.selectAll(".fixed-star-icon").remove();
+    baseGroupRef.current.selectAll(".fixed-star-hit").remove();
+
+    if (!showFixedStars) return;
 
     fixedStarsAspects.forEach((asp) => {
       // 1) ângulo zodiacal original (graus → rad)
@@ -2912,17 +2920,19 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
 
       baseGroupRef.current
         ?.append("image")
-        .attr("href", iconSrc) // no D3 v6+ use 'href'
+        .attr("class", "fixed-star-icon")
+        .attr("href", iconSrc)
         .attr("width", iconSize)
         .attr("height", iconSize)
         .attr("x", xs - iconSize / 2)
         .attr("y", ys - iconSize / 2)
         .attr("opacity", opacity);
 
-        const starContent = makeFixedStarTooltip(asp.aspectedElement);
+      const starContent = makeFixedStarTooltip(asp.aspectedElement);
 
       baseGroupRef.current
         ?.append("rect")
+        .attr("class", "fixed-star-hit")
         .attr("x", xs - iconSize / 2 - 4)
         .attr("y", ys - iconSize / 2 - 4)
         .attr("width", iconSize + 8)
@@ -2935,7 +2945,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
           if (!isMobile) hideTooltip();
         });
     });
-  }, [fixedStarsAspects]);
+  }, [fixedStarsAspects, showFixedStars]);
 
   useEffect(() => {
     setShowArabicParts(false);
@@ -3077,6 +3087,10 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     setUseDecans((prev) => !prev)
   };
 
+  const toggleFixedStars = () => {
+    setShowFixedStars((prev) => !prev)
+  };
+
   // Define o deslocamento extra a partir do centro (em px), por contexto
   let offsetX = 0;
   let offsetY = 0;
@@ -3150,6 +3164,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
           toggleDecans={toggleDecans}
           togglePtolemaicsTerms={togglePtolemaicTerms}
           toggleEgyptianTerms={toggleEgyptianTerms}
+          toggleFixedStars={toggleFixedStars}
         />
       </div>
 

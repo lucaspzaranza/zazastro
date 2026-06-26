@@ -37,7 +37,8 @@
     "transits": "Transits",
     "termsPtolomaics": "Ptolemaic Terms",
     "termsEgyptians": "Egyptian Terms",
-    "decans": "Decans"
+    "decans": "Decans",
+    "fixedStars": "Fixed Stars"
   },
   "returnChart": {
     "title": "Choose a chart and enter the year of the return",

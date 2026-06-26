@@ -14,6 +14,7 @@ interface AstroChartMenuProps {
   togglePlanetsAntiscia?: () => void;
   toggleArabicParts?: () => void;
   toggleArabicPartsAntiscia?: () => void;
+  toggleFixedStars?: () => void;
   toggleDegrees?: () => void;
   togglePtolemaicsTerms?: (val: boolean) => void;
   toggleEgyptianTerms?: (val: boolean) => void;
@@ -24,6 +25,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
   const {
     toggleArabicParts,
     toggleArabicPartsAntiscia,
+    toggleFixedStars,
     toggleCombineWithBirthChart,
     toggleCombineWithReturnChart,
     togglePlanetsAntiscia,
@@ -42,6 +44,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
   const [usePtolemaicsTerms, setUsePtolemaicsTerms] = useState(true);
   const [useEgyptianTerms, setUseEgyptianTerms] = useState(false);
   const [useDecans, setUseDecans] = useState(true);
+  const [fixedStars, setfixedStars] = useState(true);
 
   const contextMenuRef = useRef<HTMLDivElement>(null);
   const t = useTranslations();
@@ -84,6 +87,11 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
 
   function handleOnCloseLunarModal() {
     setLunarDerivedModal(false);
+  }
+
+  function handleToggleFixedStars() {
+    setfixedStars(prev => !prev);
+    toggleFixedStars?.();
   }
 
   function handleTogglePtolemaicTerms() {
@@ -167,6 +175,16 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       },
     },
     {
+      key: "showFixedStars",
+      label: t("birthChart.fixedStars"),
+      active: fixedStars,
+      visible: true,
+      iconPath: "star-1.png",
+      onClick: () => {
+        handleToggleFixedStars();
+      },
+    },
+    {
       key: "termsPtolemaics",
       label: t("birthChart.termsPtolomaics"),
       active: usePtolemaicsTerms,
@@ -235,7 +253,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       onClick: () => {
         setLunarDerivedModal(true);
       },
-    },
+    },    
     {
       key: "showDegreesWithBirth",
       label: t("birthChart.showInfo"),
