@@ -261,7 +261,7 @@ export default function ChartAndData(props: Props) {
                 {title}
                 {
                   chartDateProps.chartType !== "sinastry" &&
-                  <Image src={getGenderIconPath(gender ?? "event")} width={genderIconSize} height={genderIconSize} alt="genderIcon"/>
+                  <Image src={getGenderIconPath(gender ?? "event")} width={genderIconSize} height={genderIconSize} alt="genderIcon" unoptimized/>
                 }
               </h1>
             )}
