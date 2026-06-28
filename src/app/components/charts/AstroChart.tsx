@@ -28,7 +28,6 @@ import {
   OrbCalculationOrientation,
   PlanetAspectData,
 } from "@/interfaces/AstroChartInterfaces";
-import AstroChartMenu from "../menus/AstroChartMenu";
 import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 import ReturnSelectorArrows from "../ReturnSelectorArrows";
 import { useChartMenu } from "@/contexts/ChartMenuContext";
@@ -36,7 +35,7 @@ import { useBirthChart } from "@/contexts/BirthChartContext";
 import { useTranslations } from "next-intl";
 import { ArabicPart } from "@/interfaces/ArabicPartInterfaces";
 import { useAspectsData } from "@/contexts/AspectsContext";
-import { CHALDEAN_DECANS, EGYPTIAN_TERMS, PTOLEMAIC_TERMS } from "@/app/utils/termsAndDecans";
+import { CHALDEAN_DECANS } from "@/app/utils/termsAndDecans";
 
 interface TooltipData {
   x: number;
@@ -52,7 +51,24 @@ const ASPECTS: Aspect[] = [
   { type: "opposition", angle: 180 },
 ];
 
-const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
+/**
+ * Toggles de exibição que antes viviam como useState internos ao
+ * AstroChart e agora são controlados de fora (ChartAndData.tsx via
+ * useAstroChartToggles), para poderem ser compartilhados com o
+ * cabeçalho/menu que ficou fora deste componente.
+ */
+interface AstroChartToggleProps {
+  showArabicParts: boolean;
+  showPlanetsAntiscia: boolean;
+  showArabicPartsAntiscia: boolean;
+  showDegrees: boolean;
+  useTerms: boolean;
+  useDecans: boolean;
+  showFixedStars: boolean;
+  currentTerms: Record<Sign, TermOrDecan[]> | undefined;
+}
+
+const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] & AstroChartToggleProps }> = ({ props }) => {
   const {
     planets,
     housesData,
@@ -63,6 +79,14 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     fixedStars,
     useReturnSelectorArrows,
     onUpdateAspectsData,
+    showArabicParts,
+    showPlanetsAntiscia,
+    showArabicPartsAntiscia,
+    showDegrees,
+    useTerms,
+    useDecans,
+    showFixedStars,
+    currentTerms,
   } = { ...props };
 
   const ref = useRef<SVGSVGElement>(null);
@@ -76,15 +100,7 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   const { isReturnChart, isLunarDerivedReturnChart, isSinastryChart, isProgressionChart, isProfectionChart } = useChartMenu();
   const { birthChart, isMountingChart, updateIsMountingChart, isCombinedWithBirthChart, isCombinedWithReturnChart } = useBirthChart();
   const [testValue] = useState(2.5);
-  const [showArabicParts, setShowArabicParts] = useState(false);
-  const [showPlanetsAntiscia, setShowPlanetsAntiscia] = useState(false);
-  const [showArabicPartsAntiscia, setShowArabicPartsAntiscia] = useState(false);
   const [showOuterChart, setShowOuterChart] = useState(outerPlanets !== undefined && outerHouses !== undefined);
-  const [showDegrees, setShowDegrees] = useState(true);
-  const [useTerms, setUseTerms] = useState(true);
-  const [useDecans, setUseDecans] = useState(true);
-  const [showFixedStars, setShowFixedStars] = useState(true);
-  const [currentTerms, setCurrentTerms] = useState<Record<Sign, TermOrDecan[]> | undefined>(PTOLEMAIC_TERMS);
 
   const { aspects, updateAspectsData, selectedAspect, setSelectedAspect, 
     hasIsolatedAspect, setHasIsolatedAspect } = useAspectsData();
@@ -92,19 +108,23 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   const getScaleFactor = (): number => {
     if(!isMobileBreakPoint()) {
 
-         if(birthChart?.transits)
+      if(birthChart?.transits)
         return 1.45;
 
       return showOuterChart ? 1.25 : 1.5;
     } else { 
-      if((useDecans && !useTerms) || (!useDecans && useTerms))
-        return showOuterChart? 0.7 : 0.835;
-      if(!useDecans && !useTerms)
-        return showOuterChart? 0.7 : 0.86;
-      if(useDecans && useTerms)
-        return showOuterChart? 0.68 : 0.78;
 
-      return showOuterChart ? 0.7 : 0.85;
+      if(birthChart?.transits)
+        return 0.7;
+
+      if((useDecans && !useTerms) || (!useDecans && useTerms))
+        return showOuterChart? 0.625 : 0.8;
+      if(!useDecans && !useTerms)
+        return showOuterChart? 0.625 : 0.86;
+      if(useDecans && useTerms)
+        return showOuterChart? 0.625 : 0.75;
+
+      return showOuterChart ? 0.625 : 0.85;
     }
   }
 
@@ -2948,19 +2968,6 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
   }, [fixedStarsAspects, showFixedStars]);
 
   useEffect(() => {
-    setShowArabicParts(false);
-    setShowPlanetsAntiscia(false);
-    setShowArabicPartsAntiscia(false);
-  }, [planets,
-    housesData,
-    arabicParts,
-    outerPlanets,
-    outerHouses,
-    outerArabicParts,
-    fixedStars,
-    useReturnSelectorArrows]);
-
-  useEffect(() => {
     if (!aspects || !aspects.every(a => a.aspectImg !== undefined)) return;
     if (!baseGroupRef.current) return;
 
@@ -3035,62 +3042,6 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     });
   }, [aspects, hasIsolatedAspect]);  
 
-  useEffect(() => {
-    if(useTerms && currentTerms === undefined) {
-      setCurrentTerms(PTOLEMAIC_TERMS);
-    }
-  }, [useTerms]);
-
-  const toggleArabicParts = () => {
-    setShowArabicParts((prev) => !prev);
-  };
-
-  const toggleAntiscia = () => {
-    setShowPlanetsAntiscia((prev) => !prev);
-  };
-
-  const toggleDegrees = () => {
-    setShowDegrees((prev) => !prev)
-  };
-
-  const toggleArabicPartsAntiscia = () => {
-    setShowArabicPartsAntiscia((prev) => !prev);
-  };
-
-  const togglePtolemaicTerms = (val: boolean) => {
-    if(!val && currentTerms === PTOLEMAIC_TERMS) {
-      setCurrentTerms(undefined);
-      setUseTerms(false);
-    } else if(val && currentTerms === EGYPTIAN_TERMS) {
-      setCurrentTerms(PTOLEMAIC_TERMS);
-      setUseTerms(true);
-    } else {
-      setUseTerms(val);
-      setCurrentTerms(val ? PTOLEMAIC_TERMS : undefined);
-    }
-  };
-
-   const toggleEgyptianTerms = (val: boolean) => {
-    if(!val && currentTerms === EGYPTIAN_TERMS) {
-      setCurrentTerms(undefined);
-      setUseTerms(false);
-    } else if(val && currentTerms === PTOLEMAIC_TERMS) {
-      setCurrentTerms(EGYPTIAN_TERMS);
-      setUseTerms(true);
-    } else {
-      setUseTerms(val);
-      setCurrentTerms(val ? EGYPTIAN_TERMS : undefined);
-    }
-  };
-
-  const toggleDecans = () => {
-    setUseDecans((prev) => !prev)
-  };
-
-  const toggleFixedStars = () => {
-    setShowFixedStars((prev) => !prev)
-  };
-
   // Define o deslocamento extra a partir do centro (em px), por contexto
   let offsetX = 0;
   let offsetY = 0;
@@ -3134,61 +3085,62 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
     // else if(useDecans && useTerms)
     //   return 'h-[22rem]'
 
-    return 'h-[22rem]'
+    return 'h-[21rem]'
   }
 
   const getDesktopHeight = () => {
     if(!useDecans && !useTerms)
-      return 'md:h-[38rem]'
+      return showOuterChart? 'md:h-[40rem]' : 'md:h-[42rem]'
 
     if((useDecans && !useTerms) || (!useDecans && useTerms))
-      return 'md:h-[40rem]'
+      return showOuterChart? 'md:h-[42rem]' : 'md:h-[44rem]'
 
     if(useDecans && useTerms)
-      return 'md:h-[42rem]'
+      return showOuterChart? 'md:h-[44rem]' : 'md:h-[46rem]'
   }
 
   return (
     <div
-      className={`w-full flex flex-col justify-center items-center gap-8
+      className={`w-full flex flex-col justify-center items-center gap-8 mb-4 md:mb-0
         ${useReturnSelectorArrows ? 'mx-14' : 'mx-10'}`}
     >
-      <div className="w-full mb-[-25px] md:mb-[-8px] md:px-4 z-10">
-        <AstroChartMenu
-          togglePlanetsAntiscia={toggleAntiscia}
-          toggleArabicParts={toggleArabicParts}
-          toggleArabicPartsAntiscia={toggleArabicPartsAntiscia}
-          toggleCombineWithBirthChart={isReturnChart() || isProgressionChart() || isProfectionChart()}
-          toggleCombineWithReturnChart={isLunarDerivedReturnChart()}
-          toggleDegrees={toggleDegrees}
-          toggleDecans={toggleDecans}
-          togglePtolemaicsTerms={togglePtolemaicTerms}
-          toggleEgyptianTerms={toggleEgyptianTerms}
-          toggleFixedStars={toggleFixedStars}
-        />
-      </div>
-
-      <div 
-        ref={containerRef} 
-        className={`relative w-full ${getMobileHeight()} ${getDesktopHeight()} ${(isMountingChart ? "opacity-0" : "")}`}
-        onClick={(e) => {
-          // fecha tooltip se clicar fora do SVG
-          if (e.target === containerRef.current) hideTooltip();
-        }}
-      >
-        {useReturnSelectorArrows ? (
-          <ReturnSelectorArrows>
+      {useReturnSelectorArrows ? (
+        <ReturnSelectorArrows>
+          <div
+            ref={containerRef}
+            className={`relative w-full mb-[-20px] ${getMobileHeight()} ${getDesktopHeight()} ${(isMountingChart ? "opacity-0" : "")}`}
+            onClick={(e) => {
+              if (e.target === containerRef.current) hideTooltip();
+            }}
+          >
             <svg
               ref={ref}
               style={{
                 position: "absolute",
                 left: `calc(50% + ${offsetX}px)`,
-                top: `calc(${isMobile? '49%' : '50%'} + ${offsetY}px)`,
+                top: `calc(${isMobile ? '49%' : '50%'} + ${offsetY}px)`,
                 transform: "translate(-50%, -50%)",
               }}
             />
-          </ReturnSelectorArrows>
-        ) :
+
+            {tooltip && showDegrees && (
+              <div
+                className="absolute z-50 pointer-events-none px-2 py-1 rounded text-sm bg-white border border-zinc-200 shadow-md w-max max-w-[350px]"
+                style={{ left: tooltip.x + 10, top: tooltip.y - 28 }}
+              >
+                {tooltip.content}
+              </div>
+            )}
+          </div>
+        </ReturnSelectorArrows>
+      ) : (
+        <div
+          ref={containerRef}
+          className={`relative w-full ${getMobileHeight()} ${getDesktopHeight()} ${(isMountingChart ? "opacity-0" : "")}`}
+          onClick={(e) => {
+            if (e.target === containerRef.current) hideTooltip();
+          }}
+        >
           <svg
             ref={ref}
             style={{
@@ -3198,9 +3150,8 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
               transform: "translate(-50%, -50%)",
             }}
           />
-        }
 
-          {tooltip && showDegrees &&(
+          {tooltip && showDegrees && (
             <div
               className="absolute z-50 pointer-events-none px-2 py-1 rounded text-sm bg-white border border-zinc-200 shadow-md w-max max-w-[350px]"
               style={{ left: tooltip.x + 10, top: tooltip.y - 28 }}
@@ -3208,7 +3159,8 @@ const AstroChart: React.FC<AstroChartProps> = ({ props }) => {
               {tooltip.content}
             </div>
           )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

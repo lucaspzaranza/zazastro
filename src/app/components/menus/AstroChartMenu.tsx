@@ -6,60 +6,63 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useAspectsData } from "@/contexts/AspectsContext";
 import { BsThreeDots } from "react-icons/bs";
-import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
+import { FaHome } from "react-icons/fa";
+import { AstroChartTogglesState } from "@/hooks/useAstroChartToggles";
+import { PTOLEMAIC_TERMS, EGYPTIAN_TERMS } from "@/app/utils/termsAndDecans";
 
 interface AstroChartMenuProps {
   toggleCombineWithBirthChart?: boolean;
   toggleCombineWithReturnChart?: boolean;
-  togglePlanetsAntiscia?: () => void;
-  toggleArabicParts?: () => void;
-  toggleArabicPartsAntiscia?: () => void;
-  toggleFixedStars?: () => void;
-  toggleDegrees?: () => void;
-  togglePtolemaicsTerms?: (val: boolean) => void;
-  toggleEgyptianTerms?: (val: boolean) => void;
-  toggleDecans?: () => void;
+  /** Navega de volta ao menu principal. Substitui o antigo botão "Menu Principal" no rodapé. */
+  onGoHome: () => void;
+  /**
+   * Estado e togglers vindos de useAstroChartToggles(), levantado para o
+   * componente pai (ChartAndData.tsx). Substitui os useState que antes
+   * viviam dentro deste componente.
+   */
+  toggles: AstroChartTogglesState;
 }
 
 export default function AstroChartMenu(props: AstroChartMenuProps) {
   const {
-    toggleArabicParts,
-    toggleArabicPartsAntiscia,
-    toggleFixedStars,
     toggleCombineWithBirthChart,
     toggleCombineWithReturnChart,
-    togglePlanetsAntiscia,
-    toggleDegrees,
-    togglePtolemaicsTerms,
-    toggleEgyptianTerms,
-    toggleDecans
+    onGoHome,
+    toggles,
   } = props;
 
-  const [planetsAntiscia, setPlanetsAntiscia] = useState(false);
-  const [arabicParts, setArabicParts] = useState(false);
-  const [arabicPartsAntiscia, setArabicPartsAntiscia] = useState(false);
-  const [showDegrees, setShowDegrees] = useState(true);
-  const [lunarDerivedModal, setLunarDerivedModal] = useState(false);
-  const [contextMenuOpen, setContextMenuOpen] = useState(false);
-  const [usePtolemaicsTerms, setUsePtolemaicsTerms] = useState(true);
-  const [useEgyptianTerms, setUseEgyptianTerms] = useState(false);
-  const [useDecans, setUseDecans] = useState(true);
-  const [fixedStars, setfixedStars] = useState(true);
+  const {
+    showArabicParts,
+    showPlanetsAntiscia,
+    showArabicPartsAntiscia,
+    showDegrees,
+    useTerms,
+    useDecans,
+    showFixedStars,
+    currentTerms,
+    toggleArabicParts,
+    toggleAntiscia,
+    toggleDegrees,
+    toggleArabicPartsAntiscia,
+    togglePtolemaicTerms,
+    toggleEgyptianTerms,
+    toggleDecans,
+    toggleFixedStars,
+  } = toggles;
 
-  const contextMenuRef = useRef<HTMLDivElement>(null);
+  const [lunarDerivedModal, setLunarDerivedModal] = useState(false);
+  const [mobileContextMenuOpen, setMobileContextMenuOpen] = useState(false);
+  const [desktopContextMenuOpen, setDesktopContextMenuOpen] = useState(false);
+
+  const mobileContextMenuRef = useRef<HTMLDivElement>(null);
+  const desktopContextMenuRef = useRef<HTMLDivElement>(null);
   const t = useTranslations();
 
   const {
-    birthChart,
-    returnChart,
-    lunarDerivedChart,
-    progressionChart,
-    profectionChart,
     isCombinedWithBirthChart,
     updateIsCombinedWithBirthChart,
     isCombinedWithReturnChart,
     updateIsCombinedWithReturnChart,
-    isMountingChart,
     updateIsMountingChart,
     chartIsLocked,
     setChartIsLocked
@@ -67,18 +70,18 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
 
   const { chartMenu } = useChartMenu();
   const { hasIsolatedAspect } = useAspectsData();
-  const { isMobileBreakPoint } = useScreenDimensions();
 
-  useEffect(() => {
-    setPlanetsAntiscia(false);
-    setArabicParts(false);
-    setArabicPartsAntiscia(false);
-  }, [birthChart, returnChart, lunarDerivedChart, progressionChart, profectionChart, isMountingChart]);
+  // Nota: o reset de showArabicParts/showPlanetsAntiscia/showArabicPartsAntiscia
+  // ao trocar de mapa agora é responsabilidade do componente pai
+  // (via toggles.resetPerChartToggles(), chamado em ChartAndData.tsx).
 
   useEffect(() => {
     function handleOutsideClick(e: MouseEvent) {
-      if (contextMenuRef.current && !contextMenuRef.current.contains(e.target as Node)) {
-        setContextMenuOpen(false);
+      if (mobileContextMenuRef.current && !mobileContextMenuRef.current.contains(e.target as Node)) {
+        setMobileContextMenuOpen(false);
+      }
+      if (desktopContextMenuRef.current && !desktopContextMenuRef.current.contains(e.target as Node)) {
+        setDesktopContextMenuOpen(false);
       }
     }
     document.addEventListener("click", handleOutsideClick);
@@ -89,38 +92,11 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
     setLunarDerivedModal(false);
   }
 
-  function handleToggleFixedStars() {
-    setfixedStars(prev => !prev);
-    toggleFixedStars?.();
-  }
-
-  function handleTogglePtolemaicTerms() {
-    if(useEgyptianTerms) {
-      setUseEgyptianTerms(false);
-      setUsePtolemaicsTerms(true);
-      togglePtolemaicsTerms?.(true);
-    } else if(usePtolemaicsTerms) {
-      setUsePtolemaicsTerms(false);
-      togglePtolemaicsTerms?.(false);
-    } else {
-      setUsePtolemaicsTerms(true);
-      togglePtolemaicsTerms?.(true);
-    }
-  }
-
-  function handleToggleEgyptianTerms() {
-    if(usePtolemaicsTerms) {
-      setUsePtolemaicsTerms(false);
-      setUseEgyptianTerms(true);
-      toggleEgyptianTerms?.(true);
-    } else if(useEgyptianTerms) {
-      setUseEgyptianTerms(false);
-      toggleEgyptianTerms?.(false);
-    } else {
-      setUseEgyptianTerms(true);
-      toggleEgyptianTerms?.(true);
-    }
-  }
+  // Termos Ptolemaicos/Egípcios derivam do estado de currentTerms (qual
+  // tabela está ativa), em vez de um boolean próprio — assim a fonte de
+  // verdade fica só no hook, sem duplicar estado aqui.
+  const usePtolemaicsTerms = useTerms && currentTerms === PTOLEMAIC_TERMS;
+  const useEgyptianTerms = useTerms && currentTerms === EGYPTIAN_TERMS;
 
   const checkSrc = "/check.png";
   const checkSize = 13;
@@ -129,8 +105,22 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
   const menuItemClass =
     "w-full flex gap-2 p-2 pl-1 flex-row items-center justify-between active:bg-blue-100 disabled:opacity-50 hover:bg-zinc-100 active:bg-zinc-200";
 
-  // Define quais toggles aparecem no menu de contexto, em ordem.
-  // Centralizar aqui facilita adicionar novos itens sem duplicar JSX entre desktop/mobile.
+  const pillBase =
+    "flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-full border text-[11.5px] whitespace-nowrap transition-colors disabled:opacity-50";
+  const pillInactive =
+    `${pillBase} border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400`;
+  const pillActive =
+    `${pillBase} border-blue-400 bg-blue-50 text-blue-700`;
+
+  // Largura fixa e uniforme para as pills fixas (Antiscion, Partes Árabes,
+  // Antiscion Partes Árabes) — calculada a partir do texto mais longo entre
+  // elas (em "ch", aproximando 1 caractere monoespaçado), com folga para o
+  // ícone + padding, para que todas fiquem com a mesma largura sem cortar
+  // o texto da maior label.
+
+  // Define quais toggles aparecem no menu, em ordem.
+  // Centralizar aqui facilita adicionar novos itens sem duplicar JSX entre
+  // a barra de pills (desktop) e o menu de contexto (mobile).
   type MenuItem = {
     key: string;
     label: string;
@@ -138,51 +128,50 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
     onClick: () => void;
     visible: boolean;
     iconPath?: string;
+    /**
+     * Itens marcados como pinned ficam sempre visíveis como pill no desktop
+     * (fora do menu de contexto). Os demais entram no menu de contexto do
+     * desktop, ao lado das pills fixas. No mobile, pinned não importa: TODOS
+     * os itens aparecem dentro do menu de contexto, como já era.
+     */
+    pinned?: boolean;
   };
 
   const menuItems: MenuItem[] = [
     {
       key: "planetsAntiscia",
       label: t("birthChart.antiscion"),
-      active: planetsAntiscia,
+      active: showPlanetsAntiscia,
       visible: true,
       iconPath: "planets/antiscion/sun.png",
-      onClick: () => {
-        setPlanetsAntiscia((prev) => !prev);
-        togglePlanetsAntiscia?.();
-      },
+      onClick: toggleAntiscia,
+      pinned: true,
     },
     {
       key: "arabicParts",
       label: t("birthChart.arabicPartsMobile"),
-      active: arabicParts,
+      active: showArabicParts,
       visible: true,
       iconPath: "planets/fortune.png",
-      onClick: () => {
-        setArabicParts((prev) => !prev);
-        toggleArabicParts?.();
-      },
+      onClick: toggleArabicParts,
+      pinned: true,
     },
     {
       key: "arabicPartsAntiscia",
       label: t("birthChart.arabicPartsAntiscionMobile"),
-      active: arabicPartsAntiscia,
+      active: showArabicPartsAntiscia,
       visible: true,
       iconPath: "planets/antiscion/necessity.png",
-      onClick: () => {
-        setArabicPartsAntiscia((prev) => !prev);
-        toggleArabicPartsAntiscia?.();
-      },
+      onClick: toggleArabicPartsAntiscia,
+      pinned: true,
     },
     {
       key: "showFixedStars",
       label: t("birthChart.fixedStars"),
-      active: fixedStars,
+      active: showFixedStars,
       visible: true,
       iconPath: "star-1.png",
-      onClick: () => {
-        handleToggleFixedStars();
-      },
+      onClick: toggleFixedStars,
     },
     {
       key: "termsPtolemaics",
@@ -190,7 +179,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       active: usePtolemaicsTerms,
       visible: true,
       iconPath: "planets/jupiter.png",
-      onClick: handleTogglePtolemaicTerms,
+      onClick: () => togglePtolemaicTerms(!usePtolemaicsTerms),
     },
     {
       key: "termsEgyptians",
@@ -198,7 +187,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       active: useEgyptianTerms,
       visible: true,
       iconPath: "planets/saturn.png",
-      onClick: handleToggleEgyptianTerms,
+      onClick: () => toggleEgyptianTerms(!useEgyptianTerms),
     },
     {
       key: "decans",
@@ -206,10 +195,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       active: useDecans,
       visible: true,
       iconPath: "planets/venus.png",
-      onClick: () => {
-        setUseDecans((prev) => !prev);
-        toggleDecans?.();
-      },
+      onClick: toggleDecans,
     },
     {
       key: "showDegreesNoBirth",
@@ -217,10 +203,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       active: showDegrees,
       visible: toggleCombineWithBirthChart === false,
       iconPath: "see-more.png",
-      onClick: () => {
-        setShowDegrees((prev) => !prev);
-        toggleDegrees?.();
-      },
+      onClick: toggleDegrees,
     },
     {
       key: "combineWithBirthChart",
@@ -253,17 +236,14 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       onClick: () => {
         setLunarDerivedModal(true);
       },
-    },    
+    },
     {
       key: "showDegreesWithBirth",
       label: t("birthChart.showInfo"),
       active: showDegrees,
       visible: !!toggleCombineWithBirthChart,
       iconPath: "see-more.png",
-      onClick: () => {
-        setShowDegrees((prev) => !prev);
-        toggleDegrees?.();
-      },
+      onClick: toggleDegrees,
     },
   ];
 
@@ -289,37 +269,134 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
     );
   }
 
+  function renderPill(item: MenuItem, widthClass?: string) {
+    if (!item.visible) return null;
+
+    return (
+      <button
+        key={item.key}
+        disabled={hasIsolatedAspect}
+        title={item.label}
+        className={`${item.active ? pillActive : pillInactive} ${widthClass ?? ""}`}
+        onClick={item.onClick}
+      >
+        {item.iconPath && <Image alt="" src={item.iconPath} width={14} height={14} unoptimized />}
+        <span className="truncate">{item.label}</span>
+      </button>
+    );
+  }
+
+  // Versão "ícone apenas" das pills fixas, usada no mobile: mesmo toggle,
+  // mesmo estado ativo/inativo, sem o texto do label — só o ícone, para
+  // caber numa linha estreita ao lado do botão de três pontos.
+  function renderIconOnlyToggle(item: MenuItem) {
+    if (!item.visible || !item.iconPath) return null;
+
+    return (
+      <button
+        key={item.key}
+        disabled={hasIsolatedAspect}
+        title={item.label}
+        className={`p-1.5 rounded-full border disabled:opacity-50 transition-colors ${
+          item.active
+            ? "border-blue-400 bg-blue-50"
+            : "border-zinc-300 bg-white hover:border-zinc-400"
+        }`}
+        onClick={item.onClick}
+      >
+        <Image alt={item.label} src={item.iconPath} width={18} height={18} unoptimized />
+      </button>
+    );
+  }
+
+  const pinnedItems = menuItems.filter((item) => item.pinned);
+  const restItems = menuItems.filter((item) => !item.pinned);
+
+  // Largura fixa para as pills fixas (Antiscion, Partes Árabes, Antiscion
+  // Partes Árabes), comportando o texto completo da maior label + ícone.
+  const pinnedPillWidthClass = "w-52";
+
   return (
     <>
-      <div className="absolute right-0 md:right-4 w-full flex flex-row items-center justify-between">
-        {/* Cadeado: só faz sentido fixar a visualização no mobile, onde o mapa ocupa a tela inteira */}
-        {isMobileBreakPoint() ? (
+      {/* Desktop: Home + 3 pills fixas, centralizadas, mesma largura + menu de
+          contexto ao lado para o restante dos toggles */}
+      <div className="hidden md:flex w-full flex-row items-center justify-center gap-1.5">
+        <button
+          title={t("birthChart.mainMenu")}
+          className={pillInactive}
+          onClick={onGoHome}
+        >
+          <FaHome size={14} />
+          <span>{t("birthChart.mainMenu")}</span>
+        </button>
+
+        {pinnedItems.map((item) => renderPill(item, pinnedPillWidthClass))}
+
+        <div className="relative" ref={desktopContextMenuRef}>
           <button
-            className={`p-1.5 rounded-full hover:bg-zinc-100 active:bg-zinc-200 ${
-              chartIsLocked ? "bg-zinc-200" : ""
+            className={`p-1.5 rounded-full border disabled:opacity-50 transition-colors ${
+              desktopContextMenuOpen
+                ? "border-blue-400 bg-blue-50"
+                : "border-zinc-300 bg-white hover:border-zinc-400"
+            }`}
+            onClick={() => setDesktopContextMenuOpen((prev) => !prev)}
+          >
+            <BsThreeDots size={18} />
+          </button>
+
+          {desktopContextMenuOpen && (
+            <div className="absolute w-[18rem] bg-zinc-50 shadow px-2 py-3 right-0 top-9 flex flex-col items-start z-50">
+              {restItems.map(renderMenuItem)}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Mobile: mantém o menu de contexto, exatamente como já era */}
+      <div className="md:hidden right-0 w-full flex flex-row items-center justify-between z-50">
+        <div className="flex flex-row items-center gap-1.5">
+          <button
+            title={t("birthChart.mainMenu")}
+            className="p-1.5 rounded-full border border-zinc-300 bg-white hover:border-zinc-400 transition-colors"
+            onClick={onGoHome}
+          >
+            <FaHome size={22} />
+          </button>
+
+          {/* Cadeado: só faz sentido fixar a visualização no mobile, onde o mapa ocupa a tela inteira */}
+          <button
+            className={`p-1.5 rounded-full border disabled:opacity-50 transition-colors ${
+              chartIsLocked
+                ? "border-blue-400 bg-blue-50"
+                : "border-zinc-300 bg-white hover:border-zinc-400"
             }`}
             onClick={() => setChartIsLocked(!chartIsLocked)}
           >
             <Image alt="lock" src={chartIsLocked ? "lock.png" : "lock-open.png"} width={20} height={20} unoptimized />
           </button>
-        ) : (
-          // Mantém o espaço simétrico no desktop, empurrando o menu de contexto para a direita
-          <span className="w-[32px]" />
-        )}
+        </div>
 
-        <div className="relative" ref={contextMenuRef}>
-          <button
-            className="p-1.5 rounded-full hover:bg-zinc-100 active:bg-zinc-200"
-            onClick={() => setContextMenuOpen((prev) => !prev)}
-          >
-            <BsThreeDots size={20} />
-          </button>
+        <div className="flex flex-row items-center gap-1.5">
+          {pinnedItems.map(renderIconOnlyToggle)}
 
-          {contextMenuOpen && (
-            <div className="absolute w-[18rem] bg-zinc-50 shadow px-2 py-3 right-0 top-8 flex flex-col items-start z-30">
-              {menuItems.map(renderMenuItem)}
-            </div>
-          )}
+          <div className="relative" ref={mobileContextMenuRef}>
+            <button
+              className={`p-1.5 rounded-full border disabled:opacity-50 transition-colors ${
+                mobileContextMenuOpen
+                  ? "border-blue-400 bg-blue-50"
+                  : "border-zinc-300 bg-white hover:border-zinc-400"
+              }`}
+              onClick={() => setMobileContextMenuOpen((prev) => !prev)}
+            >
+              <BsThreeDots size={20} />
+            </button>
+
+            {mobileContextMenuOpen && (
+              <div className="absolute w-[18rem] bg-zinc-50 shadow px-2 py-3 right-0 top-8 flex flex-col items-start z-50">
+                {menuItems.map(renderMenuItem)}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

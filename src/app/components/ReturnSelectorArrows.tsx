@@ -27,6 +27,14 @@ export default function ReturnSelectorArrows(props: ChartSelectorProps) {
   const { archArabicParts, updateSolarReturnParts } = useArabicParts();
   const { hasIsolatedAspect } = useAspectsData();
 
+  const arrowButtonClass = `w-[2rem] h-[2rem] mx-4 flex flex-row items-center justify-center
+    text-xl hover:outline-2 active:bg-gray-300 rounded-md
+    disabled:opacity-50 disabled:hover:outline-0 disabled:active:bg-transparent`;
+
+  const mobileArrowButtonClass = `w-[5rem] h-[2rem] flex flex-row items-center justify-center
+    text-xl outline-2 active:bg-gray-300 rounded-md
+    disabled:opacity-50 disabled:hover:outline-0 disabled:active:bg-transparent`;
+
   useEffect(() => {
     if (chartMenu === "lunarDerivedReturn")
       updateSolarReturnParts(archArabicParts);
@@ -177,40 +185,50 @@ export default function ReturnSelectorArrows(props: ChartSelectorProps) {
     }, 100);
   }
 
-  const getMobileTopValue = () => {
-    if (isMobileBreakPoint()) {
-      if (isCombinedWithBirthChart || isCombinedWithReturnChart) return "top-[21rem]";
-      else return "top-[21rem]";
-    } else return ""
-  }
-
   return (
-    <div className="relative w-full h-full flex flex-row items-center justify-between">
+    <div className="w-full flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4">
+      {/* Seta esquerda: só no desktop, ao lado do conteúdo */}
       <button
         disabled={hasIsolatedAspect}
         onClick={() => getChart("previous")}
-        className={`absolute ${getMobileTopValue()} md:top-auto outline-2 md:outline-0 left-2 
-          w-[5rem] md:w-[2rem] h-[2rem] mb-3 mr-2 flex flex-row items-center justify-center md:justify-start 
-          text-xl hover:outline-2 active:bg-gray-300 rounded-md disabled:opacity-50 disabled:hover:outline-0 disabled:active:bg-transparent`}
+        className={`hidden md:flex ${arrowButtonClass}`}
         title="Retorno anterior"
       >
         <MdKeyboardDoubleArrowLeft size={30} />
       </button>
 
-      <div className="w-full flex flex-row items-center justify-center">
-        {children}
-      </div>
+      {/* Conteúdo (o container do SVG), intocado */}
+      {children}
 
+      {/* Seta direita: só no desktop, ao lado do conteúdo */}
       <button
         disabled={hasIsolatedAspect}
         onClick={() => getChart("next")}
-        className={`absolute ${getMobileTopValue()} md:top-auto outline-2 md:outline-0 right-2
-          w-[5rem] md:w-[2rem] h-[2rem] mb-3 ml-2 flex flex-row items-center justify-center md:justify-end 
-          text-xl hover:outline-2 active:bg-gray-300 rounded-md disabled:opacity-50 disabled:hover:outline-0 disabled:active:bg-transparent`}
+        className={`hidden md:flex ${arrowButtonClass}`}
         title="Próximo retorno"
       >
         <MdKeyboardDoubleArrowRight size={30} />
       </button>
+
+      {/* Setas mobile: linha própria, abaixo do conteúdo */}
+      <div className="w-full md:hidden flex flex-row items-center justify-between gap-4">
+        <button
+          disabled={hasIsolatedAspect}
+          onClick={() => getChart("previous")}
+          className={mobileArrowButtonClass}
+          title="Retorno anterior"
+        >
+          <MdKeyboardDoubleArrowLeft size={30} />
+        </button>
+        <button
+          disabled={hasIsolatedAspect}
+          onClick={() => getChart("next")}
+          className={mobileArrowButtonClass}
+          title="Próximo retorno"
+        >
+          <MdKeyboardDoubleArrowRight size={30} />
+        </button>
+      </div>
     </div>
   );
 }

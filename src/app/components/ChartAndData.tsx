@@ -26,14 +26,16 @@ import ArabicPartsLayout from "./ArabicPartsLayout";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 import Image from "next/image";
-import { ChartDate } from "./ChartDate";
-import ChartSelectorArrows from "./ChartSelectorArrows";
 import Container from "./Container";
 import { SkeletonLine, SkeletonTable } from "./skeletons";
 import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT, SKELETON_LOADER_TIME } from "../utils/constants";
 import Spinner from "./Spinner";
 import { useTranslations } from "next-intl";
 import { useAspectsData } from "@/contexts/AspectsContext";
+import { useAstroChartToggles } from "@/hooks/useAstroChartToggles";
+import { useResolvedChartDate, ResolvedChartDate } from "@/hooks/useResolvedChartDate";
+import ChartHeader from "./ChartHeader";
+import AstroChartMenu from "./menus/AstroChartMenu";
 
 interface Props {
   innerChart: BirthChart;
@@ -86,7 +88,7 @@ export default function ChartAndData(props: Props) {
     setChartIsLocked
   } = useBirthChart();
   const { chartMenu, resetChartMenus, isReturnChart,
-    isSinastryChart, isProgressionChart, isProfectionChart } = useChartMenu();
+    isSinastryChart, isProgressionChart, isProfectionChart, isLunarDerivedReturnChart } = useChartMenu();
   const {
     updateArabicParts,
     updateSinastryArabicParts,
@@ -105,6 +107,40 @@ export default function ChartAndData(props: Props) {
   const { setHasIsolatedAspect, setSelectedAspect } = useAspectsData();
 
   const genderIconSize = 20;
+
+  // Estado de toggles do mapa (antiscion, partes árabes, termos, decanatos,
+  // estrelas fixas), antes interno ao AstroChart, agora levantado para este
+  // componente e compartilhado entre AstroChartMenu (controles) e AstroChart
+  // (renderização do SVG).
+  const toggles = useAstroChartToggles();
+
+  // Resolve cada bloco de data individualmente (hooks não podem ser
+  // chamados dentro de loop/.map nem condicionalmente — por isso as três
+  // chamadas abaixo SEMPRE ocorrem, mesmo quando o bloco correspondente não
+  // existe; useResolvedChartDate já retorna undefined quando chartDate não
+  // é fornecido, então passamos chartDate: undefined nesses casos).
+  const innerDateBlock = useResolvedChartDate(chartDateProps);
+  const outerDateBlock = useResolvedChartDate(
+    outerChartDateProps ?? { chartType: "birth", chartDate: undefined }
+  );
+  const transitsDateBlock = useResolvedChartDate({
+    chartType: "transits",
+    label: t("birthChart.transits"),
+    chartDate: innerChart.transits?.date,
+  });
+
+  const dateBlocks: ResolvedChartDate[] = [
+    innerDateBlock,
+    outerChartDateProps ? outerDateBlock : undefined,
+    innerChart.transits ? transitsDateBlock : undefined,
+  ].filter((b): b is ResolvedChartDate => b !== undefined);
+
+  // Reseta os toggles "por mapa" (antiscion, partes árabes e variantes)
+  // sempre que o conteúdo do mapa muda — mesmo comportamento que antes
+  // vivia dentro do AstroChart, reagindo às mesmas dependências.
+  useEffect(() => {
+    toggles.resetPerChartToggles();
+  }, [innerChart, outerChart, arabicParts, outerArabicParts, innerChart.fixedStars]);
 
   const [planetsAntiscion, setPlanetsAntiscion] = useState<
     Record<PlanetType, boolean>
@@ -255,21 +291,22 @@ export default function ChartAndData(props: Props) {
         }
 
         <>
-          <ChartSelectorArrows className="w-full mb-0 md:px-6">
-            {title && (
-              <h1 className="flex flex-row items-center gap-2 text-lg md:text-xl font-bold text-center">
-                {title}
-                {
-                  chartDateProps.chartType !== "sinastry" &&
-                  <Image src={getGenderIconPath(gender ?? "event")} width={genderIconSize} height={genderIconSize} alt="genderIcon" unoptimized/>
-                }
-              </h1>
-            )}
-          </ChartSelectorArrows>
-          <div className="mb-2">
-            <ChartDate {...chartDateProps} />
-            {outerChartDateProps && <ChartDate {...outerChartDateProps} />}
-            {innerChart.transits && <ChartDate chartType="transits" label={t("birthChart.transits")} chartDate={innerChart.transits.date} />}
+          <ChartHeader
+            title={title}
+            dateBlocks={dateBlocks}
+            genderIconPath={
+              chartDateProps.chartType !== "sinastry" ? getGenderIconPath(gender ?? "event") : undefined
+            }
+            genderIconSize={genderIconSize}
+          />
+
+          <div className="w-full md:px-4 mt-2">
+            <AstroChartMenu
+              toggleCombineWithBirthChart={isReturnChart() || isProgressionChart() || isProfectionChart()}
+              toggleCombineWithReturnChart={isLunarDerivedReturnChart()}
+              onGoHome={handleReset}
+              toggles={toggles}
+            />
           </div>
 
           {innerChart && (
@@ -284,17 +321,17 @@ export default function ChartAndData(props: Props) {
                 fixedStars: innerChart.fixedStars,
                 onUpdateAspectsData: handleOnUpdateAspectsData,
                 useReturnSelectorArrows: isReturnChart() || isProgressionChart() || isProfectionChart(),
+                showArabicParts: toggles.showArabicParts,
+                showPlanetsAntiscia: toggles.showPlanetsAntiscia,
+                showArabicPartsAntiscia: toggles.showArabicPartsAntiscia,
+                showDegrees: toggles.showDegrees,
+                useTerms: toggles.useTerms,
+                useDecans: toggles.useDecans,
+                showFixedStars: toggles.showFixedStars,
+                currentTerms: toggles.currentTerms,
               }}
             />
           )}
-
-          <button
-            type="button"
-            className="default-btn w-full! md:w-[25.5rem]! mt-6 mb-2"
-            onClick={handleReset}
-          >
-            {t("birthChart.mainMenu")}
-          </button>
         </>
       </div>
     );
