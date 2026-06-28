@@ -73,8 +73,14 @@ progress {
   @apply text-[#ff914d];
 }
 
-.default-btn {
+/* .default-btn {
   @apply bg-gradient-to-b from-blue-600 via-blue-800 from-10% to-blue-900 to-100% w-full text-white px-4 py-2 rounded hover:from-blue-600 hover:via-blue-900 hover:to-blue-950 transition-all;
+} */
+
+.default-btn {
+  @apply flex items-center justify-center gap-1.5 px-3 py-2 rounded-full border 
+  font-medium whitespace-nowrap transition-colors disabled:opacity-50 border-zinc-400
+  bg-zinc-50 text-zinc-700 hover:border-zinc-500 hover:bg-zinc-50;
 }
 
 .default-bg {

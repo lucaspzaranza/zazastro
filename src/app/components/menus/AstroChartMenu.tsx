@@ -106,11 +106,11 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
     "w-full flex gap-2 p-2 pl-1 flex-row items-center justify-between active:bg-blue-100 disabled:opacity-50 hover:bg-zinc-100 active:bg-zinc-200";
 
   const pillBase =
-    "flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-full border text-[11.5px] whitespace-nowrap transition-colors disabled:opacity-50";
+    "flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full border text-[12px] font-medium whitespace-nowrap transition-colors disabled:opacity-50";
   const pillInactive =
-    `${pillBase} border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400`;
+    `${pillBase} border-zinc-400 bg-white text-zinc-700 hover:border-zinc-500 hover:bg-zinc-50`;
   const pillActive =
-    `${pillBase} border-blue-400 bg-blue-50 text-blue-700`;
+    `${pillBase} border-blue-500 bg-blue-100 text-blue-800`;
 
   // Largura fixa e uniforme para as pills fixas (Antiscion, Partes Árabes,
   // Antiscion Partes Árabes) — calculada a partir do texto mais longo entre
@@ -281,7 +281,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
         onClick={item.onClick}
       >
         {item.iconPath && <Image alt="" src={item.iconPath} width={14} height={14} unoptimized />}
-        <span className="truncate">{item.label}</span>
+        <span className="">{item.label}</span>
       </button>
     );
   }
@@ -299,8 +299,8 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
         title={item.label}
         className={`p-1.5 rounded-full border disabled:opacity-50 transition-colors ${
           item.active
-            ? "border-blue-400 bg-blue-50"
-            : "border-zinc-300 bg-white hover:border-zinc-400"
+            ? "border-blue-500 bg-blue-100"
+            : "border-zinc-400 bg-white hover:border-zinc-500"
         }`}
         onClick={item.onClick}
       >
@@ -322,12 +322,12 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
           contexto ao lado para o restante dos toggles */}
       <div className="hidden md:flex w-full flex-row items-center justify-center gap-1.5">
         <button
-          title={t("birthChart.mainMenu")}
+          title={t("birthChart.home")}
           className={pillInactive}
           onClick={onGoHome}
         >
           <FaHome size={14} />
-          <span>{t("birthChart.mainMenu")}</span>
+          <span>{t("birthChart.home")}</span>
         </button>
 
         {pinnedItems.map((item) => renderPill(item, pinnedPillWidthClass))}
@@ -336,8 +336,8 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
           <button
             className={`p-1.5 rounded-full border disabled:opacity-50 transition-colors ${
               desktopContextMenuOpen
-                ? "border-blue-400 bg-blue-50"
-                : "border-zinc-300 bg-white hover:border-zinc-400"
+                ? "border-blue-500 bg-blue-100"
+                : "border-zinc-400 bg-white hover:border-zinc-500"
             }`}
             onClick={() => setDesktopContextMenuOpen((prev) => !prev)}
           >
@@ -356,7 +356,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       <div className="md:hidden right-0 w-full flex flex-row items-center justify-between z-50">
         <div className="flex flex-row items-center gap-1.5">
           <button
-            title={t("birthChart.mainMenu")}
+            title={t("birthChart.home")}
             className="p-1.5 rounded-full border border-zinc-300 bg-white hover:border-zinc-400 transition-colors"
             onClick={onGoHome}
           >
@@ -367,8 +367,8 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
           <button
             className={`p-1.5 rounded-full border disabled:opacity-50 transition-colors ${
               chartIsLocked
-                ? "border-blue-400 bg-blue-50"
-                : "border-zinc-300 bg-white hover:border-zinc-400"
+                ? "border-blue-500 bg-blue-100"
+                : "border-zinc-400 bg-white hover:border-zinc-500"
             }`}
             onClick={() => setChartIsLocked(!chartIsLocked)}
           >
@@ -383,8 +383,8 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
             <button
               className={`p-1.5 rounded-full border disabled:opacity-50 transition-colors ${
                 mobileContextMenuOpen
-                  ? "border-blue-400 bg-blue-50"
-                  : "border-zinc-300 bg-white hover:border-zinc-400"
+                  ? "border-blue-500 bg-blue-100"
+                  : "border-zinc-400 bg-white hover:border-zinc-500"
               }`}
               onClick={() => setMobileContextMenuOpen((prev) => !prev)}
             >

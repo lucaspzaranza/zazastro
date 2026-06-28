@@ -1,6 +1,7 @@
 'use client'
 
 import { useBirthChart } from "@/contexts/BirthChartContext";
+import Image from "next/image";
 import { JSX, useEffect, useRef, useState } from "react";
 import {
   convertDegMinToDecimal,
@@ -104,6 +105,8 @@ export default function BirthChart() {
   const lunarReturnForm = useRef<HTMLFormElement>(null);
   const progressionForm = useRef<HTMLFormElement>(null);
   const profectionForm = useRef<HTMLFormElement>(null);
+
+  const iconSize = 22;
 
   useEffect(() => {
     setIsClientReady(true);
@@ -615,6 +618,7 @@ export default function BirthChart() {
               onClick={() => setMenu("birthChart")}
             >
               {t("home.birthChart")}
+              <Image src="horoscope.png" width={iconSize + 2} height={iconSize + 2} unoptimized alt="chart"/>
             </button>
 
             <button
@@ -622,6 +626,7 @@ export default function BirthChart() {
               onClick={() => setMenu("solarReturn")}
             >
               {t("home.solarReturn")}
+              <Image src="planets/sun.png" width={iconSize - 2} height={iconSize - 2} unoptimized alt="chart"/>
             </button>
 
             <button
@@ -629,6 +634,7 @@ export default function BirthChart() {
               onClick={() => setMenu("lunarReturn")}
             >
               {t("home.lunarReturn")}
+              <Image src="planets/moon.png" width={iconSize - 2} height={iconSize - 2} unoptimized alt="chart"/>
             </button>
 
             <button
@@ -636,6 +642,7 @@ export default function BirthChart() {
               onClick={() => setMenu("transits")}
             >
               {t("birthChart.transits")}
+              <Image src="planets/transits/mercury.png" width={iconSize} height={iconSize} unoptimized alt="chart"/>
             </button>
 
             <button
@@ -643,6 +650,7 @@ export default function BirthChart() {
               onClick={() => setMenu("sinastry")}
             >
               {t("home.sinastry")}
+              <Image src="heart.png" width={iconSize} height={iconSize} unoptimized alt="chart"/>
             </button>
 
             <button
@@ -650,6 +658,7 @@ export default function BirthChart() {
               onClick={() => setMenu("secondaryProgressions")}
             >
               {t("home.secondaryProgressions")}
+              <Image src="fast-forward.png" width={iconSize} height={iconSize} unoptimized alt="chart"/>
             </button>
 
             <button
@@ -657,6 +666,7 @@ export default function BirthChart() {
               onClick={() => setMenu("profection")}
             >
               {t("home.profections")}
+              <Image src="one.png" width={iconSize + 2} height={iconSize + 2} unoptimized alt="chart"/>
             </button>            
           </div>
         )}
@@ -841,6 +851,7 @@ export default function BirthChart() {
             className="default-btn"
           >
             {t("home.momentChart")}
+            <Image src="clock.png" width={iconSize} height={iconSize} unoptimized alt="chart"/>
           </button>
         )}
 

@@ -31,7 +31,7 @@ export default function ReturnSelectorArrows(props: ChartSelectorProps) {
     text-xl hover:outline-2 active:bg-gray-300 rounded-md
     disabled:opacity-50 disabled:hover:outline-0 disabled:active:bg-transparent`;
 
-  const mobileArrowButtonClass = `w-[5rem] h-[2rem] flex flex-row items-center justify-center
+  const mobileArrowButtonClass = `bg-zinc-50 w-[5rem] h-[2rem] flex flex-row items-center justify-center
     text-xl outline-2 active:bg-gray-300 rounded-md
     disabled:opacity-50 disabled:hover:outline-0 disabled:active:bg-transparent`;
 
