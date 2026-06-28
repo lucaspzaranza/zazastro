@@ -1,17 +1,12 @@
 import type { Metadata } from "next";
-import { Geist_Mono } from "next/font/google";
-import "./globals.css";
+import { JetBrains_Mono } from "next/font/google";
+import "./globals.css"
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import Providers from "./providers";
 
-// const geistSans = Geist({
-//   variable: "--font-geist-sans",
-//   subsets: ["latin"],
-// });
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
   subsets: ["latin"],
 });
 
@@ -49,7 +44,7 @@ export default async function RootLayout({
 
   return (
     <html lang={locale}>
-      <body className={`${geistMono.variable} antialiased`}>
+      <body className={`${jetbrainsMono.variable} antialiased`}>
         <NextIntlClientProvider messages={messages}>
           <Providers>
             {children}

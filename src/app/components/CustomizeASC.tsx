@@ -80,7 +80,7 @@ export default function CustomizeASC(props: ASCModalProps) {
     <div className="w-full flex flex-col items-center justify-between gap-2">
       <div className="w-full flex flex-row justify-between gap-2">
         <select
-          className="border-2 rounded-sm text-sm bg-white"
+          className="border border-zinc-400 rounded-lg text-sm bg-white"
           onChange={(e) => {
             const val = Number.parseInt(e.target.value);
             setCustomACMode(val);
@@ -99,7 +99,7 @@ export default function CustomizeASC(props: ASCModalProps) {
             <div className="w-full flex flex-row gap-2">
               <select
                 value={signIndex}
-                className="border-2 w-full rounded-sm bg-white"
+                className="border border-zinc-400 rounded-lg w-full bg-white"
                 onChange={(e) => {
                   const newSignIndex = Number.parseInt(e.target.value);
                   setSignIndex(newSignIndex);
@@ -115,7 +115,7 @@ export default function CustomizeASC(props: ASCModalProps) {
               </select>
               <input
                 ref={ascInputRef}
-                className="border-2 rounded-sm w-[5rem] md:w-[8rem] p-1 text-sm bg-white"
+                className="border border-zinc-400 rounded-lg w-[5rem] md:w-[8rem] p-1 text-sm bg-white"
                 placeholder="ex: 29.37"
                 onChange={(e) => {
                   const lastChar = e.target.value[e.target.value.length - 1];

@@ -15,7 +15,7 @@ export default async function Home() {
   const t = await getTranslations("home");
 
   return (
-    <div className="min-h-screen sm:min-h-[100vh] flex flex-col items-center justify-between font-[family-name:var(--font-geist-mono)] bg-gradient-to-b from-blue-50 via-slate-50 to-blue-200">
+    <div className="min-h-screen sm:min-h-[100vh] flex flex-col items-center justify-between font-[family-name:var(--font-jetbrains-mono)] bg-gradient-to-b from-blue-50 via-slate-50 to-blue-200">
       <div className="relative w-full flex justify-center items-center pt-4">
         <div className="flex flex-row items-center gap-2">
           <h1 className="text-3xl font-bold">{t("title")}</h1>

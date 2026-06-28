@@ -650,9 +650,9 @@ export function getDecanRuler(
 
 export function getGenderIconPath(gender: GenderType) {
   if(gender === "male") {
-    return "/planets/mars.png";
+    return "/male.png";
   } else if(gender === "female") {
-    return "/planets/venus.png";
+    return "/female.png";
   } else 
     return "/event.png";
 }

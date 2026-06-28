@@ -14,7 +14,7 @@ const HouseSystemDropdown = () => {
       <label className="mb-[-8px]">{t("form.houseSystem")}</label>
       <select
         required
-        className="p-1 border-2 w-full rounded-sm"
+        className="p-1 border border-zinc-400 bg-zinc-50 w-full rounded-lg"
         value={houseSystem}
         onChange={(e) => updateHouseSystem(e.target.value as HouseSystem)}
       >

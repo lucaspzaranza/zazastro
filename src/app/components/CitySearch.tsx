@@ -107,7 +107,7 @@ export default function CitySearch({
     <div ref={wrapperRef} className="flex flex-col gap-1 mb-5">
       <input
         required
-        className="border-2 p-1 rounded"
+        className="border border-zinc-400 rounded-lg p-1"
         type="text"
         placeholder={t("form.city")}
         value={query}
@@ -126,7 +126,7 @@ export default function CitySearch({
         </div>
 
         {results.length > 0 && !isLoading && (
-          <ul className="absolute bg-white border rounded shadow p-2">
+          <ul className="absolute bg-white border border-zinc-400 rounded-lg shadow p-2">
             {results.map((city, index) => (
               <li
                 key={index}

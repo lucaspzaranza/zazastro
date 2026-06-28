@@ -93,7 +93,7 @@ export default function TransitsChartForm(props: TransitsChartFormProps) {
        <div className="w-full flex flex-row justify-between gap-1">
         <input
           required
-          className="border-2 rounded-sm w-1/3 px-1"
+          className="border border-zinc-400 rounded-lg w-1/3 px-1"
           placeholder={t("form.day")}
           type="number"
           value={day ?? ""}
@@ -112,7 +112,7 @@ export default function TransitsChartForm(props: TransitsChartFormProps) {
         />
         <select
           required
-          className="border-2 w-1/2 rounded-sm"
+          className="border border-zinc-400 rounded-lg w-1/2"
           value={month}
           onChange={(e) => setMonth(Number.parseInt(e.target.value))}
         >
@@ -125,7 +125,7 @@ export default function TransitsChartForm(props: TransitsChartFormProps) {
         <input
           required
           type="number"
-          className="border-2 w-20 p-1 rounded-sm"
+          className="border border-zinc-400 rounded-lg w-20 p-1"
           value={year ?? ""}
           placeholder={t("form.year")}
           onChange={(e) => {
@@ -147,7 +147,7 @@ export default function TransitsChartForm(props: TransitsChartFormProps) {
         <input
           required
           type="number"
-          className="border-2 w-16 p-1 rounded-sm"
+          className="border border-zinc-400 rounded-lg w-16 p-1"
           placeholder="16"
           value={hour ?? ""}
           onChange={(e) => {
@@ -167,7 +167,7 @@ export default function TransitsChartForm(props: TransitsChartFormProps) {
         <input
           required
           type="number"
-          className="border-2 w-16 p-1 rounded-sm"
+          className="border border-zinc-400 rounded-lg w-16 p-1"
           placeholder="30"
           value={minutes ?? ""}
           onChange={(e) => {
@@ -192,6 +192,7 @@ export default function TransitsChartForm(props: TransitsChartFormProps) {
         className="default-btn"
       >
         {t("birthChart.createMomentChart")}
+        <Image src="/planets/transits/mercury.png" width={22} height={22} unoptimized alt="chart"/>
       </button>
       
     </form>

@@ -152,7 +152,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
               disabled={profiles.length === 0}
               onChange={() => setMenu(0)}
             />
-            {t("birthChart.load")}
+             {!isMobileBreakPoint()? t("birthChart.load") : t("birthChart.loadMobile")}
           </label>
 
           <label
@@ -167,7 +167,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
               defaultChecked={profiles.length === 0}
               onChange={() => setMenu(1)}
             />
-            {t("birthChart.create")}
+            {!isMobileBreakPoint()? t("birthChart.create") : t("birthChart.createMobile")}
           </label>
         </div>
       )}
@@ -193,7 +193,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
           <input
             required
             placeholder={t("form.name")}
-            className="border-2 p-1 rounded-sm"
+            className="border border-zinc-400 p-1 rounded-lg"
             value={name}
             onChange={(e) => {
               setName(e.target.value);
@@ -215,7 +215,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
                   onChange={() => setGender("male")}
                 />
                 {t("form.male")}
-                <Image src="planets/mars.png" width={genderIconSize} height={genderIconSize} unoptimized alt="genderIcon" />
+                <Image src="male.png" width={genderIconSize} height={genderIconSize} unoptimized alt="genderIcon" />
               </label>
 
               <label
@@ -231,7 +231,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
                   onChange={() => setGender("female")}
                 />
                 {t("form.female")}
-                <Image src="planets/venus.png" width={genderIconSize} height={genderIconSize} unoptimized alt="genderIcon" />
+                <Image src="female.png" width={genderIconSize} height={genderIconSize} unoptimized alt="genderIcon" />
               </label>
 
               <label
@@ -251,7 +251,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
               </label>
             </div>
             :
-            <select className="border-2 p-1 rounded-sm" 
+            <select className="border-2 p-1 rounded-lg" 
               defaultValue={gender}
               onChange={(e) => {
                 // console.log(e.target.value);
@@ -275,7 +275,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
           <div className="w-full flex flex-row justify-between gap-1">
             <input
               required
-              className="border-2 rounded-sm w-1/3 px-1"
+              className="border border-zinc-400 rounded-lg w-1/3 px-1"
               placeholder={t("form.day")}
               type="number"
               value={day ?? ""}
@@ -294,7 +294,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
             />
             <select
               required
-              className="border-2 w-1/2 rounded-sm"
+              className="border border-zinc-400 rounded-lg w-1/2"
               value={month}
               onChange={(e) => setMonth(Number.parseInt(e.target.value))}
             >
@@ -307,7 +307,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
             <input
               required
               type="number"
-              className="border-2 w-20 p-1 rounded-sm"
+              className="border border-zinc-400 rounded-lg w-20 p-1"
               value={year ?? ""}
               placeholder={t("form.year")}
               onChange={(e) => {
@@ -328,7 +328,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
             <input
               required
               type="number"
-              className="border-2 w-16 p-1 rounded-sm"
+              className="border border-zinc-400 rounded-lg w-16 p-1"
               placeholder="16"
               value={hour ?? ""}
               onChange={(e) => {
@@ -348,7 +348,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
             <input
               required
               type="number"
-              className="border-2 w-16 p-1 rounded-sm"
+              className="border border-zinc-400 rounded-lg w-16 p-1"
               placeholder="30"
               value={minutes ?? ""}
               onChange={(e) => {
@@ -383,7 +383,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
               updateProfileForEditing();
               setEditProfile(true);
             }}
-            className="w-full bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 flex flex-row items-center justify-center gap-2"
+            className="w-full bg-green-700 border text-white px-4 py-2 rounded-full hover:bg-green-800 flex flex-row items-center justify-center gap-2"
           >
             {t("form.edit")}
             <Image alt="edit" src="/edit.png" width={16} height={16} />
@@ -397,7 +397,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
                 setShowDeleteProfileMenu(true);
               }
             }}
-            className="w-full bg-red-700 text-white px-4 py-2 rounded hover:bg-red-800 flex flex-row items-center justify-center gap-2"
+            className="w-full bg-red-700 text-white px-4 py-2 rounded-full hover:bg-red-800 flex flex-row items-center justify-center gap-2"
           >
             {t("form.delete")}
             <Image alt="delete" src="/trash-white.png" width={17} height={17} />
@@ -418,6 +418,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
           className="default-btn"
         >
           <span>{t("birthChart.create")}</span>
+          <Image src="horoscope.png" width={22} height={22} unoptimized alt="chart"/>
         </button>
       )}
 
@@ -428,7 +429,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
             submitForm();
             setEditProfile(false);
           }}
-          className="bg-green-700 w-full text-white px-4 py-2 rounded hover:bg-green-800"
+          className="bg-green-700 w-full text-white px-4 py-2 rounded-full hover:bg-green-800"
         >
           {t("form.saveEditAndMakeChart")}
         </button>
@@ -446,7 +447,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
                 e.preventDefault();
                 setShowDeleteProfileMenu(false);
               }}
-              className="bg-green-700 w-full text-white px-4 py-2 rounded hover:bg-green-800"
+              className="bg-green-700 w-full text-white px-4 py-2 rounded-full hover:bg-green-800"
             >
               {t("form.no")}
             </button>
@@ -464,7 +465,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
                   setShowDeleteProfileMenu(false);
                 }
               }}
-              className="bg-red-700 w-full text-white px-4 py-2 rounded hover:bg-red-700"
+              className="bg-red-700 w-full text-white px-4 py-2 rounded-full hover:bg-red-700"
             >
               {t("form.yes")}
             </button>

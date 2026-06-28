@@ -5,7 +5,7 @@
     "birthChart": "Birth Chart",
     "solarReturn": "Solar Return",
     "lunarReturn": "Lunar Return",
-    "sinastry": "Combine Charts (Sinastry)",
+    "sinastry": "Combination (Sinastry)",
     "secondaryProgressions": "Secondary Progressions",
     "profections": "Profections",
     "momentChart": "Moment Chart",
@@ -81,7 +81,7 @@
   "transitsChart": {
     "title": "Birth Chart And Transits",
     "momentTransits": "Moment Transits",
-    "calculateTransits": "Calculate Transits"
+    "calculateTransits": "Calculate"
   },
   "form": {
     "houseSystem": "House System",

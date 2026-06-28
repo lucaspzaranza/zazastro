@@ -5,7 +5,7 @@
     "birthChart": "Carta Astral",
     "solarReturn": "Revolución Solar",
     "lunarReturn": "Revolución Lunar",
-    "sinastry": "Combinar cartas (Sinastria)",
+    "sinastry": "Combinación (Sinastria)",
     "secondaryProgressions": "Progressiones Secundarias",
     "profections": "Profeciones",
     "momentChart": "Carta del Momento",
@@ -81,7 +81,7 @@
   "transitsChart": {
     "title": "Carta Natal y Tránsitos",
     "momentTransits": "Tránsitos Actuales",
-    "calculateTransits": "Calcular Tránsitos"
+    "calculateTransits": "Calcular"
   },
   "form": { 
     "houseSystem": "Sistema de Casas",

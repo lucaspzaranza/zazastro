@@ -5,7 +5,7 @@
     "birthChart": "Mapa Astral",
     "solarReturn": "Revolução Solar",
     "lunarReturn": "Revolução Lunar",
-    "sinastry": "Combinar mapas (Sinastria)",
+    "sinastry": "Combinação (Sinastria)",
     "secondaryProgressions": "Progressões Secundárias",
     "profections": "Profecção",
     "momentChart": "Mapa do Momento",
@@ -16,7 +16,9 @@
   "birthChart": {
     "title": "Escolha ou crie um novo mapa astral",
     "load": "Carregar mapa",
+    "loadMobile": "Carregar",
     "create": "Gerar Mapa Natal",
+    "createMobile": "Criar",
     "createMomentChart": "Gerar Mapa",
     "chartTitle": "Mapa Natal - ",
     "chartTransitsTitle": "Mapa Natal e Trânsitos - ",
@@ -80,8 +82,8 @@
   },
   "transitsChart": {
     "title": "Mapa Natal e Trânsitos",
-    "momentTransits": "Trânsitos do Momento",
-    "calculateTransits": "Calcular Trânsitos"
+    "momentTransits": "Momento",
+    "calculateTransits": "Calcular"
   },
   "form": {
     "houseSystem": "Sistema de Casas",

@@ -618,7 +618,7 @@ export default function BirthChart() {
               onClick={() => setMenu("birthChart")}
             >
               {t("home.birthChart")}
-              <Image src="horoscope.png" width={iconSize + 2} height={iconSize + 2} unoptimized alt="chart"/>
+              <Image src="horoscope.png" width={iconSize} height={iconSize} unoptimized alt="chart"/>
             </button>
 
             <button
@@ -626,7 +626,7 @@ export default function BirthChart() {
               onClick={() => setMenu("solarReturn")}
             >
               {t("home.solarReturn")}
-              <Image src="planets/sun.png" width={iconSize - 2} height={iconSize - 2} unoptimized alt="chart"/>
+              <Image src="sun.png" width={iconSize - 2} height={iconSize - 2} unoptimized alt="chart"/>
             </button>
 
             <button
@@ -634,7 +634,7 @@ export default function BirthChart() {
               onClick={() => setMenu("lunarReturn")}
             >
               {t("home.lunarReturn")}
-              <Image src="planets/moon.png" width={iconSize - 2} height={iconSize - 2} unoptimized alt="chart"/>
+              <Image src="moon.png" width={iconSize - 2} height={iconSize - 2} unoptimized alt="chart"/>
             </button>
 
             <button
@@ -666,7 +666,7 @@ export default function BirthChart() {
               onClick={() => setMenu("profection")}
             >
               {t("home.profections")}
-              <Image src="one.png" width={iconSize + 2} height={iconSize + 2} unoptimized alt="chart"/>
+              <Image src="profection.png" width={iconSize + 2} height={iconSize + 2} unoptimized alt="chart"/>
             </button>            
           </div>
         )}
@@ -700,7 +700,7 @@ export default function BirthChart() {
             >
               <input
                 required
-                className="border-2 rounded-sm w-full p-1"
+                className="border border-zinc-400 rounded-lg w-full p-1"
                 placeholder={t("returnChart.inputPlaceholder")}
                 type="number"
                 onChange={(e) => {
@@ -727,9 +727,10 @@ export default function BirthChart() {
                     solarReturnForm.current?.reportValidity();
                   }
                 }}
-                className="default-btn"
+                className="default-btn w-full"
               >
                 {t("home.solarReturn")} 
+                <Image src="sun.png" width={iconSize - 2} height={iconSize - 2} unoptimized alt="chart"/>
               </button>
             </form>
           </>
@@ -758,7 +759,7 @@ export default function BirthChart() {
               <div className="w-full flex flex-row justify-between gap-1">
                 <input
                   required
-                  className="border-2 rounded-sm w-1/3 px-1"
+                  className="border border-zinc-400 rounded-lg w-1/3 px-1"
                   placeholder={t("form.day")}
                   type="number"
                   onChange={(e) => {
@@ -774,7 +775,7 @@ export default function BirthChart() {
 
                 <select
                   required
-                  className="border-2 w-1/2 rounded-sm"
+                  className="border border-zinc-400 rounded-lg w-1/2"
                   value={lunarMonth}
                   onChange={(e) =>
                     setLunarMonth(Number.parseInt(e.target.value))
@@ -790,7 +791,7 @@ export default function BirthChart() {
                 <input
                   required
                   type="number"
-                  className="border-2 w-20 p-1 rounded-sm"
+                  className="border border-zinc-400 rounded-lg w-20 p-1"
                   placeholder={t("form.year")}
                   onChange={(e) => {
                     if (e.target.value.length > 0) {
@@ -819,6 +820,7 @@ export default function BirthChart() {
                 className="default-btn"
               >
                 {t("home.lunarReturn")}
+                <Image src="moon.png" width={iconSize} height={iconSize} unoptimized alt="chart"/>
               </button>
             </form>
           </>
@@ -841,6 +843,7 @@ export default function BirthChart() {
               className="default-btn"
             >
               {t("synastryChart.makeSynastry")}
+              <Image src="heart.png" width={iconSize} height={iconSize} unoptimized alt="chart"/>
             </button>
           </>
         )}
@@ -875,7 +878,7 @@ export default function BirthChart() {
                 required
                 type="number"
                 placeholder="ex: 30"
-                className="w-full border-2 p-1 rounded-sm"
+                className="w-full border border-zinc-400 rounded-lg p-1"
                 value={progressionYear ?? ""}
                 onChange={(e) => {
                   const parsed = Number.parseInt(e.target.value);
@@ -896,6 +899,7 @@ export default function BirthChart() {
               className="default-btn"
             >
               {t("secondaryProgressions.generateProgression")}
+              <Image src="fast-forward.png" width={iconSize} height={iconSize} unoptimized alt="chart"/>
             </button>
           </form>
         )}
@@ -920,7 +924,7 @@ export default function BirthChart() {
                 required
                 type="number"
                 placeholder="ex: 30"
-                className="w-full border-2 p-1 rounded-sm"
+                className="w-full border border-zinc-400 rounded-lg p-1"
                 value={profectionYear ?? ""}
                 onChange={(e) => {
                   const parsed = Number.parseInt(e.target.value);
@@ -941,6 +945,7 @@ export default function BirthChart() {
               className="default-btn"
             >
               {t("profections.generateProfection")}
+              <Image src="profection.png" width={iconSize} height={iconSize} unoptimized alt="chart"/>
             </button>
           </form>
         )}
@@ -964,8 +969,8 @@ export default function BirthChart() {
         {
           menu === "transits" && (
             <>
-              <div className="w-full flex flex-row gap-2">
-                <label htmlFor="load" className="w-1/2 gap-2 flex flex-row">
+              <div className="w-full flex flex-row justify-between md:justify-start md:gap-4">
+                <label htmlFor="load" className="gap-2 flex flex-row">
                   <input
                     type="radio"
                     id="load"
@@ -980,7 +985,7 @@ export default function BirthChart() {
 
                 <label
                   htmlFor="create"
-                  className="w-1/2 gap-2 flex flex-row items-center justify-end"
+                  className="gap-2 flex flex-row items-center justify-end"
                 >
                   <input
                     type="radio"
@@ -1005,6 +1010,7 @@ export default function BirthChart() {
                     onClick={() => getChartWithTransits()}
                   >
                     {t("birthChart.createMomentChart")}
+                    <Image src="/planets/transits/mercury.png" width={22} height={22} unoptimized alt="chart"/>
                   </button>
                 </>
               }
@@ -1018,9 +1024,13 @@ export default function BirthChart() {
         {menu !== "home" && (
           <button
             className="default-btn"
-            onClick={() => setMenu("home")}
+            onClick={() => {
+              setMenu("home");
+              setTransitsMenu(0);
+            }}
           >
             {t("form.back")}
+            <Image src="back.png" width={iconSize} height={iconSize} unoptimized alt="chart"/>
           </button>
         )}
 
