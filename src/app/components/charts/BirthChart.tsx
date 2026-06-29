@@ -1142,7 +1142,7 @@ export default function BirthChart() {
   }
 
   return (
-    <div className="w-[98vw] min-h-[50vh] mt-4 flex flex-col items-center justify-center gap-2">
+    <div className="w-[98vw] min-h-[50vh] md:mt-2 flex flex-col items-center justify-center gap-2">
       {/* <h3 className="font-bold">:: Test Mode ::</h3> */}
       {!canRenderChart() ? getInitialMenuContent() :
         <>

@@ -135,7 +135,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
             <div className="flex flex-row gap-2">
               <input
                 type="number"
-                className="w-16 md:w-20 default-input-field px-3 py-2 focus:outline-none focus:ring-2 focus:ring-zinc-300"
+                className="w-16 md:w-20 default-input-field"
                 placeholder={t("form.day")}
                 required
                 onChange={(e) => {
@@ -152,7 +152,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
               />
 
               <select
-                className="flex-1 default-input-field px-3 py-2 focus:outline-none focus:ring-2 focus:ring-zinc-300"
+                className="flex-1 default-input-field"
                 onChange={(e) =>
                   setMonth(Number.parseInt(e.target.value) + 1)
                 }
@@ -170,7 +170,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
 
               <input
                 type="number"
-                className="w-20 default-input-field px-3 py-2 focus:outline-none focus:ring-2 focus:ring-zinc-300"
+                className="w-20 default-input-field"
                 placeholder={t("form.year")}
                 required
                 onChange={(e) => {

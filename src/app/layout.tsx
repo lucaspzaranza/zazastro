@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     siteName: "Zazastro",
     images: [
       {
-        url: "https://zazastro.vercel.app/preview.png", // coloque esse arquivo em /public
+        url: "https://zazastro.vercel.app/pisces.png", // coloque esse arquivo em /public
         width: 1200,
         height: 630,
         alt: "Preview do Meu Projeto",

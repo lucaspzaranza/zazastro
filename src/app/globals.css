@@ -84,7 +84,7 @@ progress {
 }
 
 .default-input-field {
-  @apply border border-zinc-400 rounded-lg
+  @apply border border-zinc-400 rounded-lg p-1.5
 }
 
 .default-bg {

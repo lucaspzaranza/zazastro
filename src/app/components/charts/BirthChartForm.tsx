@@ -193,7 +193,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
           <input
             required
             placeholder={t("form.name")}
-            className="border border-zinc-400 p-1 rounded-lg"
+            className="default-input-field"
             value={name}
             onChange={(e) => {
               setName(e.target.value);

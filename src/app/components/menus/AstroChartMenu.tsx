@@ -259,11 +259,11 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
         onClick={item.onClick}
       >
         <div className="flex flex-row items-center justify-center gap-2">
-          {item.iconPath && <Image alt="check" src={item.iconPath} width={menuItemIconSize} height={menuItemIconSize} unoptimized />}
+          {item.iconPath && <Image alt="check" src={item.iconPath} width={menuItemIconSize} height={menuItemIconSize} unoptimized priority/>}
           <span className="text-sm font-normal text-left">{item.label}</span>
         </div>
         {item.active && (
-          <Image alt="check" src={checkSrc} width={checkSize} height={checkSize} unoptimized />
+          <Image alt="check" src={checkSrc} width={checkSize} height={checkSize} unoptimized priority />
         )}
       </button>
     );
