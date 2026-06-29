@@ -12,7 +12,7 @@ export default function AspectTableFilterModalLayout({
   onCancel,
   onConfirm,
 }: FilterModalProps) {
-  const classes = `absolute flex flex-col z-10 bg-white outline-2 ${
+  const classes = `absolute rounded-lg border-zinc-400 p-0! flex flex-col z-10 bg-white outline ${
     isVisible ? "block" : "hidden"
   } ${className}`;
 
@@ -20,17 +20,17 @@ export default function AspectTableFilterModalLayout({
 
   return (
     <div className={classes}>
-      <span className=" border-b-2 p-1">{title}</span>
+      <span className="border-b p-1">{title}</span>
       {children}
       <div className="flex flex-row items-center justify-around mb-1">
         <button
-          className="border-2 px-1 hover:bg-gray-200 active:bg-gray-300"
+          className="default-input-field p-1! hover:bg-gray-200 active:bg-gray-300"
           onClick={() => onCancel?.()}
         >
           {t("aspects.cancel")}
         </button>
         <button
-          className="border-2 px-1 hover:bg-gray-200 active:bg-gray-300"
+          className="default-input-field p-1! hover:bg-gray-200 active:bg-gray-300"
           onClick={() => onConfirm?.()}
         >
           {t("aspects.filter")}

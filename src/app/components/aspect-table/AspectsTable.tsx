@@ -108,13 +108,13 @@ export default function AspectsTable({
   const distanceTypes: AspectDistanceTypeInterface[] = [];
 
   const tdClasses =
-    "w-full border-r-2 flex flex-row items-center justify-center";
+    "w-full border-r flex flex-row items-center justify-center";
 
   const tdClasses3W4 =
-    "w-3/4 border-r-2 flex flex-row items-center justify-center";
+    "w-3/4 border-r flex flex-row items-center justify-center";
 
   const tdClasses10W12 =
-    "w-10/12 border-r-2 flex flex-row items-center justify-center";
+    "w-10/12 border-r flex flex-row items-center justify-center";
 
   useEffect(() => {
     clearFilters();
@@ -487,7 +487,7 @@ export default function AspectsTable({
     const rows: React.ReactNode[] = [];
 
     for (let index = 0; index < emptyRowsCount; index++) {
-      const trClasses = `flex flex-row border-t-2 ${index > 0 ? "border-[#fdfdfd]" : ""
+      const trClasses = `flex flex-row border-t ${index > 0 ? "border-[#fdfdfd]" : ""
         }`;
       rows.push(
         <tr key={index} className={trClasses}>
@@ -684,7 +684,7 @@ export default function AspectsTable({
   }
 
   const tableNavBtnsClasses: string = 
-    "border-2 w-[30px] hover:bg-gray-200 active:bg-gray-300 disabled:opacity-50 disabled:bg-transparent disabled:hover:bg-transparent";
+    "default-input-field p-1! w-[30px] hover:bg-gray-200 active:bg-gray-300 disabled:opacity-50 disabled:bg-transparent disabled:hover:bg-transparent";
 
   return (
     (loading || loadingNextChart || isMountingChart) ? (
@@ -707,17 +707,17 @@ export default function AspectsTable({
 
         {openInfoPopup && <div className="w-full 2xl:w-[420px] 3xl:w-[470px] relative"><InfoPopup /></div>}
 
-        <table className="w-full 2xl:w-[420px] 3xl:w-[470px] flex flex-col border-2 text-[0.75rem] md:text-sm text-center bg-white">
+        <table className="w-full 2xl:w-[420px] 3xl:w-[470px] flex flex-col default-input-field p-0! text-[0.75rem] md:text-sm text-center bg-white">
           <thead>
             <tr className="flex flex-row justify-between">
-              <th className="w-3/4 text-center border-r-2">{t("aspects.element")}</th>
-              <th className="w-3/4 text-center border-r-2">{t("aspects.aspect")}</th>
-              <th className="w-full text-center border-r-2">{t("aspects.aspected")}</th>
-              <th className="w-10/12 text-center border-r-2">{t("aspects.distance")}</th>
+              <th className="w-3/4 text-center border-r">{t("aspects.element")}</th>
+              <th className="w-3/4 text-center border-r">{t("aspects.aspect")}</th>
+              <th className="w-full text-center border-r">{t("aspects.aspected")}</th>
+              <th className="w-10/12 text-center border-r">{t("aspects.distance")}</th>
               <th className="w-1/2 text-center">{t("aspects.type")}</th>
             </tr>
-            <tr className="flex flex-row items-center justify-between border-t-2">
-              <th className="w-3/4 h-full text-center border-r-2 text-[0.85rem]">
+            <tr className="flex flex-row items-center justify-between border-t">
+              <th className="w-3/4 h-full text-center border-r text-[0.85rem]">
                 <AspectTableFilterButton
                   ref={elementButtonRef}
                   type="element"
@@ -730,7 +730,7 @@ export default function AspectsTable({
                   getElementImage={getElementImage}
                 />
               </th>
-              <th className="w-3/4 text-center border-r-2">
+              <th className="w-3/4 text-center border-r">
                 <AspectTableFilterButton
                   ref={aspectButtonRef}
                   type="aspect"
@@ -741,7 +741,7 @@ export default function AspectsTable({
                   onConfirm={handleOnConfirmFilter}
                 />
               </th>
-              <th className="w-full text-center border-r-2">
+              <th className="w-full text-center border-r">
                 <AspectTableFilterButton
                   ref={aspectedElementButtonRef}
                   type="aspectedElement"
@@ -754,7 +754,7 @@ export default function AspectsTable({
                   getElementImage={getElementImage}
                 />
               </th>
-              <th className="w-10/12 text-center border-r-2">
+              <th className="w-10/12 text-center border-r">
                 <AspectTableFilterButton
                   ref={distanceButtonRef}
                   type="distance"
@@ -780,7 +780,7 @@ export default function AspectsTable({
             </tr>
           </thead>
           {filteredAspects && filteredAspects.length > 0 && (
-            <tbody className="flex flex-col border-b-2">
+            <tbody className="flex flex-col border-b">
               {filteredAspects
                 .filter(
                   (_, index) =>
@@ -789,7 +789,7 @@ export default function AspectsTable({
                 )
                 .map((aspect, index) => {
                   return (
-                    <tr className="flex flex-row border-t-2 hover:bg-gray-200 active:bg-gray-300" key={index}
+                    <tr className="flex flex-row border-t hover:bg-gray-200 active:bg-gray-300" key={index}
                       onClick={() => {
                           toggleSelectAspect(!hasIsolatedAspect, aspect); 
                         }}
@@ -840,13 +840,13 @@ export default function AspectsTable({
           )}
 
           {(filteredAspects === undefined || filteredAspects.length === 0) && (
-            <tbody className="flex flex-col border-y-2">
+            <tbody className="flex flex-col border-y">
               <tr className="flex flex-row">
                 <td className="w-full">{t("aspects.noAspectFound")}</td>
               </tr>
             </tbody>
           )}
-          <tfoot className="h-7 flex flex-row items-center justify-around p-2 font-bold">
+          <tfoot className="h-9 flex flex-row items-center justify-around p-2 font-bold">
             <tr className="w-full flex flex-row justify-between">
               <td className="w-1/2 text-start md:text-center flex flex-row items-center tracking-tight">
                 {isMobileBreakPoint() && <span>{t("aspects.items")}</span>}
@@ -857,7 +857,7 @@ export default function AspectsTable({
                 <select
                   value={itemsPerPage}
                   disabled={hasIsolatedAspect}
-                  className="border-2 ml-1 disabled:opacity-50"
+                  className="default-input-field p-0! ml-1 disabled:opacity-50"
                   onChange={(e) => {
                     updateTableItemsPerPage(Number.parseInt(e.target.value));
                   }}
@@ -873,7 +873,7 @@ export default function AspectsTable({
                 <div className="w-full flex flex-row items-center">
                   <button
                     disabled={hasIsolatedAspect}
-                    className="hover:outline-2 outline-offset-[-2px] p-1 active:bg-gray-200 disabled:opacity-50 disabled:bg-transparent disabled:hover:bg-transparent disabled:hover:outline-0"
+                    className="md:ml-2 hover:outline outline-offset-[-1px] outline-zinc-400 rounded-lg p-1 active:bg-gray-200 disabled:opacity-50 disabled:bg-transparent disabled:hover:bg-transparent disabled:hover:outline-0"
                     onClick={() => clearFilters()}
                     title="Limpar Filtros"
                   >
