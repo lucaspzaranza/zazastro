@@ -684,7 +684,7 @@ export default function AspectsTable({
   }
 
   const tableNavBtnsClasses: string = 
-    "default-input-field p-1! w-[30px] hover:bg-gray-200 active:bg-gray-300 disabled:opacity-50 disabled:bg-transparent disabled:hover:bg-transparent";
+    "default-input-field p-1! py-0.5! w-[30px] hover:bg-gray-200 active:bg-gray-300 disabled:opacity-50 disabled:bg-transparent disabled:hover:bg-transparent";
 
   return (
     (loading || loadingNextChart || isMountingChart) ? (
@@ -857,7 +857,7 @@ export default function AspectsTable({
                 <select
                   value={itemsPerPage}
                   disabled={hasIsolatedAspect}
-                  className="default-input-field p-0! ml-1 disabled:opacity-50"
+                  className="default-input-field p-1! py-0.5! ml-1 disabled:opacity-50"
                   onChange={(e) => {
                     updateTableItemsPerPage(Number.parseInt(e.target.value));
                   }}
@@ -873,7 +873,7 @@ export default function AspectsTable({
                 <div className="w-full flex flex-row items-center">
                   <button
                     disabled={hasIsolatedAspect}
-                    className="md:ml-2 hover:outline outline-offset-[-1px] outline-zinc-400 rounded-lg p-1 active:bg-gray-200 disabled:opacity-50 disabled:bg-transparent disabled:hover:bg-transparent disabled:hover:outline-0"
+                    className="md:ml-2 hover:outline default-input-field border-none active:bg-gray-200 disabled:opacity-50 disabled:bg-transparent hover:outline-zinc-400 disabled:hover:bg-transparent disabled:hover:outline-0"
                     onClick={() => clearFilters()}
                     title="Limpar Filtros"
                   >

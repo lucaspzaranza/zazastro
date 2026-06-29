@@ -6,8 +6,8 @@ export default function InfoPopup() {
   const t = useTranslations();
 
   return (
-    <div className="absolute w-full bg-white border-2 z-10 flex flex-col gap-1">
-      <h2 className="text-lg text-center font-bold border-b-2">{t("aspects.legend")}</h2>
+    <div className="absolute w-full bg-white default-input-field p-0! z-10 flex flex-col gap-1">
+      <h2 className="text-lg text-center font-bold border-b border-zinc-400">{t("aspects.legend")}</h2>
 
       <div className="p-2 flex flex-col gap-1">
         <h2 className="text-sm md:text-[1rem] font-bold">{t("aspects.aspects")}:</h2>

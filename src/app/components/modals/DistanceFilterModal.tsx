@@ -207,7 +207,7 @@ function DistanceFilterModalFn(
             <select
               disabled={!currentState.useLowerLimit}
               value={getFnIndexFromFunc(currentState.lowerLimitFilterFunc)}
-              className="w-[90%] border-2 rounded-sm disabled:border-gray-400 disabled:text-gray-400"
+              className="w-[90%] default-input-field disabled:border-gray-400 disabled:text-gray-400"
               onChange={(e) => {
                 const fnIndex = Number.parseInt(e.target.value);
                 selectLowerFilterFunction(fnIndex);
@@ -225,7 +225,7 @@ function DistanceFilterModalFn(
             <input
               type="number"
               disabled={!currentState.useLowerLimit}
-              className="border-2 w-1/4 pl-1 rounded-sm disabled:border-gray-400 disabled:text-gray-400"
+              className="default-input-field w-1/4 rounded-sm disabled:border-gray-400 disabled:text-gray-400"
               value={currentState.lowerLimitValue ?? 0}
               onChange={(e) => {
                 const raw = e.target.value;
@@ -264,7 +264,7 @@ function DistanceFilterModalFn(
             <select
               disabled={!currentState.useUpperLimit}
               value={getFnIndexFromFunc(currentState.upperLimitFilterFunc)}
-              className="w-[90%] border-2 rounded-sm disabled:border-gray-400 disabled:text-gray-400"
+              className="w-[90%] default-input-field rounded-sm disabled:border-gray-400 disabled:text-gray-400"
               onChange={(e) => {
                 const fnIndex = Number.parseInt(e.target.value);
                 selectUpperFilterFunction(fnIndex);
@@ -282,7 +282,7 @@ function DistanceFilterModalFn(
             <input
               type="number"
               disabled={!currentState.useUpperLimit}
-              className="border-2 w-1/4 pl-1 rounded-sm disabled:border-gray-400 disabled:text-gray-400"
+              className="default-input-field w-1/4 rounded-sm disabled:border-gray-400 disabled:text-gray-400"
               value={currentState.upperLimitValue ?? 0}
               onChange={(e) => {
                 const raw = e.target.value;
