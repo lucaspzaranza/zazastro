@@ -29,7 +29,7 @@ interface ChartHeaderProps {
  * já que esse componente não era reutilizado em nenhum outro lugar.
  */
 export default function ChartHeader(props: ChartHeaderProps) {
-  const { title, dateBlocks, genderIconPath, genderIconSize = 18 } = props;
+  const { title, dateBlocks, genderIconPath, genderIconSize = 16 } = props;
   const [metadataExpanded, setMetadataExpanded] = useState(false);
 
   const { isFirstChart, isLastChart, nextChartMenu, previousChartMenu } = useChartMenu();
@@ -57,22 +57,22 @@ export default function ChartHeader(props: ChartHeaderProps) {
   const collapsedSummaryLabel = `${resolvedBlocks.length} ${resolvedBlocks.length === 1 ? "mapa" : "mapas"}`;
 
   return (
-    <div className="w-full flex flex-col gap-1 px-3">
+    <div className="w-full flex flex-col gap-1 md:px-3">
       {/* Linha 1: navegação + título truncado */}
-      <div className="w-full flex items-center gap-1.5">
+      <div className="w-full flex items-center justify-center gap-1.5">
         <button
           disabled={isFirstChart()}
           onClick={goToPrevious}
           title="Menu anterior"
-          className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 active:bg-zinc-200 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+          className="flex-shrink-0 md:px-4 md:w-6 h-min flex items-center justify-center rounded-md text-zinc-800 hover:bg-zinc-200 hover:text-zinc-700 active:bg-zinc-200 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
         >
-          <span className="text-sm leading-none">◀</span>
+          <span className="text-lg leading-none">◀</span>
         </button>
 
-        <div className="flex-1 min-w-0 flex items-center justify-center gap-1.5 px-1">
+        <div className="flex-1 min-w-0 flex flex-row items-center justify-center gap-1.5 px-1">
           {typeof title === "string" ? (
             <span
-              className="text-[13px] font-semibold text-zinc-800 whitespace-nowrap overflow-hidden text-ellipsis"
+              className="text-[16px] font-semibold text-zinc-800 whitespace-nowrap overflow-hidden text-ellipsis"
               title={title}
             >
               {title}
@@ -82,7 +82,7 @@ export default function ChartHeader(props: ChartHeaderProps) {
             // não há texto puro para o atributo `title` nativo de tooltip —
             // o truncamento ainda se aplica visualmente, mas sem fallback de
             // texto completo no hover nesse caso específico.
-            <span className="text-[13px] font-semibold text-zinc-800 whitespace-nowrap overflow-hidden text-ellipsis flex items-center gap-1">
+            <span className="text-[16px] font-semibold text-zinc-800 whitespace-nowrap overflow-hidden text-ellipsis flex flex-row items-center justify-center gap-1">
               {title}
             </span>
           )}
@@ -103,9 +103,9 @@ export default function ChartHeader(props: ChartHeaderProps) {
           disabled={isLastChart()}
           onClick={goToNext}
           title="Próximo menu"
-          className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 active:bg-zinc-200 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+          className="flex-shrink-0 md:px-4 md:w-6 h-min flex items-center justify-center rounded-md text-zinc-800 hover:bg-zinc-200 hover:text-zinc-700 active:bg-zinc-200 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
         >
-          <span className="text-sm leading-none">▶</span>
+          <span className="text-lg leading-none">▶</span>
         </button>
       </div>
 
@@ -114,7 +114,7 @@ export default function ChartHeader(props: ChartHeaderProps) {
         <div className="w-full flex flex-col items-center">
           {!hasMultipleBlocks ? (
             <span
-              className="text-[11.5px] text-zinc-500 text-center whitespace-nowrap overflow-hidden text-ellipsis max-w-full"
+              className="text-[12px] md:text-[14px] text-zinc-800 text-center whitespace-nowrap overflow-hidden text-ellipsis max-w-full"
               title={
                 resolvedBlocks[0].label
                   ? `${resolvedBlocks[0].label}: ${resolvedBlocks[0].formattedText}`
@@ -130,23 +130,22 @@ export default function ChartHeader(props: ChartHeaderProps) {
             <>
               <button
                 onClick={() => setMetadataExpanded((prev) => !prev)}
-                className="text-[11.5px] text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors"
+                className="text-[14px] text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors"
               >
                 {collapsedSummaryLabel}
                 <span
-                  className="text-[10px] transition-transform"
-                  style={{ transform: metadataExpanded ? "rotate(180deg)" : "rotate(0deg)" }}
+                  className="transition-transform"
                 >
-                  ▾
+                  {metadataExpanded? "🔼": "🔽" }
                 </span>
               </button>
 
               {metadataExpanded && (
-                <div className="w-full flex flex-col gap-0.5 mt-1.5 px-2">
+                <div className="w-full flex flex-col gap-0 mt-0 px-2 py-1">
                   {resolvedBlocks.map((block, index) => (
                     <div
                       key={index}
-                      className="flex items-baseline gap-1.5 text-[11.5px] text-zinc-600"
+                      className="flex items-baseline justify-center gap-1.5 text-[12px] md:text-[14px] text-zinc-600"
                     >
                       {block.label && (
                         <span className="font-semibold text-zinc-800 flex-shrink-0">
@@ -154,7 +153,7 @@ export default function ChartHeader(props: ChartHeaderProps) {
                         </span>
                       )}
                       <span className="overflow-hidden text-ellipsis whitespace-nowrap">
-                        {block.formattedText}
+                        {block.formattedText}                        
                       </span>
                     </div>
                   ))}

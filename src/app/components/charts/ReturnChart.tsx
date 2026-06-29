@@ -10,9 +10,12 @@ import { BirthChart } from "@/interfaces/BirthChartInterfaces";
 import { ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import { useTranslations } from "next-intl";
 import { useProfiles } from "@/contexts/ProfilesContext";
+import Image from "next/image";
+import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 
 export default function ReturnChart() {
   const { profileName } = useBirthChart();
+  const { isMobileBreakPoint} = useScreenDimensions();
   const { birthChart, returnChart, isCombinedWithBirthChart } = useBirthChart();
   const { arabicParts, archArabicParts } = useArabicParts();
   const [isSolarReturn, setIsSolarReturn] = useState(true);
@@ -24,6 +27,8 @@ export default function ReturnChart() {
 
   const t = useTranslations();
 
+  const iconSize = 14;
+
   useEffect(() => {
     setIsSolarReturn(returnChart?.returnType === "solar");
     setIsSolarReturnSet(true);
@@ -33,12 +38,40 @@ export default function ReturnChart() {
     setTableItemsPerPage(newItemsPerPage);
   }
 
-  function getTitle() {
-    return `${isSolarReturn ? t("returnChart.solarReturnFor") : t("returnChart.lunarReturnFor")}  
-            ${getReturnDateRangeString(
-      returnChart?.returnTime ?? "0000-00-00 00:00:00",
-      isSolarReturn ? "solar" : "lunar"
-    )} - ${profileName}`;
+  function getTitle(): React.ReactNode {
+    return (
+      <div className="flex flex-row items-center gap-1 text-[16px] min-w-0">
+        <Image
+          src={"/planets/" + (isSolarReturn ? "sun" : "moon") + ".png"}
+          width={iconSize}
+          height={iconSize}
+          alt="return"
+          unoptimized
+          className="flex-shrink-0"
+        />
+
+        <span className="flex-shrink-0 whitespace-nowrap">
+          {isSolarReturn
+            ? !isMobileBreakPoint() ? t("returnChart.solarReturnFor") : t("returnChart.solarReturnForMobile")
+            : !isMobileBreakPoint() ? t("returnChart.lunarReturnFor") : t("returnChart.lunarReturnForMobile")}
+        </span>
+
+        <span className="flex-shrink-0 whitespace-nowrap">
+          {getReturnDateRangeString(
+            returnChart?.returnTime ?? "0000-00-00 00:00:00",
+            isSolarReturn ? "solar" : "lunar"
+          )}
+          {" - "}
+        </span>
+
+        <span
+          className="min-w-0 flex-1 truncate"
+          title={profileName}
+        >
+          {profileName}
+        </span>
+      </div>
+    );
   }
 
   const getInnerChart = (): BirthChart => !isCombinedWithBirthChart ? returnChart! : birthChart!;

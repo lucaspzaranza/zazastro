@@ -51,9 +51,12 @@
     "lunarDerivedReturn": "Lunar Derived Return",
     "lunarDerivedReturnMobile": "Derived Lunar Return",
     "return": "Return",
-    "solarReturnFor": "Solar Return for",
-    "lunarReturnFor": "Lunar Return for",
-    "lunarDerivedReturnFor": "Lunar Derived Return for"
+    "solarReturnFor": "Solar Return",
+    "solarReturnForMobile": "SR",
+    "lunarReturnFor": "Lunar Return",
+    "lunarReturnForMobile": "LR",
+    "lunarDerivedReturnFor": "Lunar Derived Return",
+    "lunarDerivedReturnForMobile": "LDR"
   },
   "synastryChart": {
     "title": "Choose charts to combine in sinastry",
@@ -80,6 +83,7 @@
   },
   "transitsChart": {
     "title": "Birth Chart And Transits",
+    "titleMobile": "Transits",
     "momentTransits": "Moment Transits",
     "calculateTransits": "Calculate"
   },
@@ -87,7 +91,7 @@
     "houseSystem": "House System",
     "edit": "Edit",
     "editProfile": "Edit Profile",
-    "saveEditAndMakeChart": "Save Edits and Generate Birth Chart",
+    "saveEditAndMakeChart": "Save and generate Chart",
     "delete": "Delete",
     "back": "Back",
     "name": "Name",

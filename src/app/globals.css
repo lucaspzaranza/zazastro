@@ -79,7 +79,12 @@ progress {
 .default-btn {
   @apply flex items-center justify-center gap-1.5 px-3 py-2 rounded-full border 
   font-medium whitespace-nowrap transition-colors disabled:opacity-50 border-zinc-400
-  bg-zinc-50 text-zinc-700 hover:border-zinc-500 hover:bg-zinc-50;
+  hover:bg-zinc-200 active:bg-zinc-300
+  bg-zinc-50 text-zinc-700 hover:border-zinc-500;
+}
+
+.default-input-field {
+  @apply border border-zinc-400 rounded-lg
 }
 
 .default-bg {

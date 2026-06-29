@@ -51,9 +51,12 @@
     "lunarDerivedReturn": "Retorno Lunar Derivado",
     "lunarDerivedReturnMobile": "Retorno Lunar Derivado",
     "return": "Revolución",
-    "solarReturnFor": "Retorno Solar para",
-    "lunarReturnFor": "Retorno Lunar para",
-    "lunarDerivedReturnFor": "Retorno Lunar Derivado para"
+    "solarReturnFor": "Retorno Solar",
+    "solarReturnForMobile": "RS",
+    "lunarReturnFor": "Retorno Lunar",
+    "lunarReturnForMobile": "RL",
+    "lunarDerivedReturnFor": "Retorno Lunar Derivado",
+    "lunarDerivedReturnForMobile": "RLD"
   },
   "synastryChart": {
     "title": "Elige las cartas que se combinarán en sinastría",
@@ -80,6 +83,7 @@
   },
   "transitsChart": {
     "title": "Carta Natal y Tránsitos",
+    "titleMobile": "Tránsitos",
     "momentTransits": "Tránsitos Actuales",
     "calculateTransits": "Calcular"
   },
@@ -87,7 +91,7 @@
     "houseSystem": "Sistema de Casas",
     "edit": "Editar",
     "editProfile": "Editar Perfil",
-    "saveEditAndMakeChart": "Guarda las ediciones y generar la carta natal.",
+    "saveEditAndMakeChart": "Guarda y generar carta.",
     "delete": "Borrar",
     "back": "Volver",
     "name": "Nombre",

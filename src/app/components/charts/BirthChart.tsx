@@ -74,9 +74,9 @@ export default function BirthChart() {
   const [lunarDay, setLunarDay] = useState(1);
   const [lunarMonth, setLunarMonth] = useState(1);
   const [lunarYear, setLunarYear] = useState(0);
-  const [chartProfile, setChartProfile] = useState<
-    BirthChartProfile | undefined
-  >(profiles[0]);
+  // const [chartProfile, setChartProfile] = useState<
+  //   BirthChartProfile | undefined
+  // >(profiles[0]);
   const [sinastryProfile, setSinastryProfile] = useState<
     BirthChartProfile | undefined
   >();
@@ -93,7 +93,7 @@ export default function BirthChart() {
   const { chartMenu, addChartMenu, updateChartMenuDirectly } = useChartMenu();
   const { calculateArabicParts, calculateBirthArchArabicParts } =
     useArabicParts();
-  const { screenDimensions } = useScreenDimensions();
+  const { screenDimensions, isMobileBreakPoint } = useScreenDimensions();
 
   const [menu, setMenu] = useState<MenuButtonChoice>("home");
   const [transitsMenu, setTransitsMenu] = useState(0);
@@ -186,26 +186,28 @@ export default function BirthChart() {
     if (menu === "home") {
       updateHouseSystem("placidus" as HouseSystem);
       firstProfileSetAtBeggining.current = false;
-      setChartProfile(profiles[0]);
+      // setChartProfile(profiles[0]);
+      updateCurrentSelectedProfile(profiles[0]);
       setSinastryProfile(profiles[0]);
     }
-  }, [menu, chartProfile]);
+  // }, [menu, chartProfile]);
+  }, [menu]);
 
   useEffect(() => {
     if (profiles.length > 0 && !firstProfileSetAtBeggining.current) {
-      setChartProfile(profiles[0]);
+      // setChartProfile(profiles[0]);
       updateCurrentSelectedProfile(profiles[0]);
       firstProfileSetAtBeggining.current = true;
     }
   }, [profiles]);
 
-  useEffect(() => {
-    updateCurrentSelectedProfile(chartProfile);
-  }, [currentProfile]);
+  // useEffect(() => {
+  //   updateCurrentSelectedProfile(chartProfile);
+  // }, [currentProfile]);
 
-  useEffect(() => {
-    setChartProfile(chartProfile);
-  }, [chartProfile]);
+  // useEffect(() => {
+  //   setChartProfile(chartProfile);
+  // }, [chartProfile]);
 
   useEffect(() => {
     updateSinastryProfile(sinastryProfile);
@@ -214,7 +216,8 @@ export default function BirthChart() {
   async function getBirthChart(chartProfileToOverwrite?: BirthChartProfile) {
     setLoading(true);
     if (chartProfileToOverwrite) {
-      setChartProfile(chartProfileToOverwrite);
+      // setChartProfile(chartProfileToOverwrite);
+      updateCurrentSelectedProfile(chartProfileToOverwrite);
     }
 
     if (chartProfileToOverwrite?.birthDate?.coordinates)
@@ -226,18 +229,18 @@ export default function BirthChart() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           birthDate:
-            { ...chartProfileToOverwrite?.birthDate ?? chartProfile?.birthDate, houseSystem }
+            { ...chartProfileToOverwrite?.birthDate ?? currentProfile?.birthDate, houseSystem }
         }),
       });
 
       // console.log(data);
 
       updateBirthChart({
-        profileName: chartProfileToOverwrite?.name ?? chartProfile?.name,
+        profileName: chartProfileToOverwrite?.name ?? currentProfile?.name,
         chartData: {
           ...data,
           birthDate:
-            chartProfileToOverwrite?.birthDate ?? chartProfile?.birthDate,
+            chartProfileToOverwrite?.birthDate ?? currentProfile?.birthDate,
         },
         chartType: "birth",
       });
@@ -251,46 +254,46 @@ export default function BirthChart() {
   const getPlanetReturn = async (returnType: ReturnChartType) => {
     setLoading(true);
 
-    if (!chartProfile) return;
+    if (!currentProfile) return;
 
     const targetDate: BirthDate = {
-      ...chartProfile.birthDate!,
-      day: returnType === "solar" ? chartProfile.birthDate!.day : lunarDay,
+      ...currentProfile.birthDate!,
+      day: returnType === "solar" ? currentProfile.birthDate!.day : lunarDay,
       month:
-        returnType === "solar" ? chartProfile.birthDate!.month : lunarMonth,
+        returnType === "solar" ? currentProfile.birthDate!.month : lunarMonth,
       year: returnType === "solar" ? solarYear : lunarYear,
     };
 
-    if (chartProfile?.birthDate?.coordinates)
-      selectCity(chartProfile?.birthDate?.coordinates);
+    if (currentProfile?.birthDate?.coordinates)
+      selectCity(currentProfile?.birthDate?.coordinates);
 
     const data = await apiFetch("return/" + returnType, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        birthDate: chartProfile?.birthDate,
+        birthDate: currentProfile?.birthDate,
         targetDate,
       }),
     });
 
     updateBirthChart({
       chartType: "birth",
-      profileName: chartProfile?.name,
+      profileName: currentProfile?.name,
       chartData: {
         ...data,
-        birthDate: chartProfile?.birthDate,
+        birthDate: currentProfile?.birthDate,
         targetDate,
       },
     });
 
-    if (chartProfile) {
+    if (currentProfile) {
       updateBirthChart({
         chartType: "return",
         chartData: {
           planets: data.returnPlanets,
           housesData: data.returnHousesData,
           returnType,
-          birthDate: chartProfile.birthDate!,
+          birthDate: currentProfile.birthDate!,
           targetDate,
           returnTime: data.returnTime,
           fixedStars: data.fixedStars,
@@ -348,23 +351,24 @@ export default function BirthChart() {
       month: now.getMonth() + 1,
       year: now.getFullYear(),
       time: hourString,
-      coordinates: chartProfile?.birthDate?.coordinates ?? {
+      coordinates: currentProfile?.birthDate?.coordinates ?? {
         latitude: 0,
         longitude: 0
       },
     };
 
-    if (!chartProfile || (transitsFormData && transitsFormData.profile === undefined)) return;
+    if (!currentProfile || (transitsFormData && transitsFormData.profile === undefined)) return;
 
     if(transitsFormData)
-      setChartProfile(transitsFormData.profile);
-    else if (chartProfile?.birthDate?.coordinates)
-      selectCity(chartProfile?.birthDate?.coordinates);
+      // setChartProfile(transitsFormData.profile);
+      updateCurrentSelectedProfile(transitsFormData.profile);
+    else if (currentProfile?.birthDate?.coordinates)
+      selectCity(currentProfile?.birthDate?.coordinates);
 
     if (transitsFormData?.profile?.birthDate?.coordinates)
       selectCity(transitsFormData.profile.birthDate.coordinates);
 
-    const date = transitsFormData? transitsFormData.profile.birthDate : chartProfile.birthDate;
+    const date = transitsFormData? transitsFormData.profile.birthDate : currentProfile.birthDate;
     try {
       const data = await apiFetch("birth-chart", {
         method: "POST",
@@ -378,7 +382,7 @@ export default function BirthChart() {
       // console.log(data);
 
       updateBirthChart({
-        profileName: transitsFormData? transitsFormData.profile.name : chartProfile?.name,
+        profileName: transitsFormData? transitsFormData.profile.name : currentProfile?.name,
         chartData: {
           ...data,
           birthDate: date
@@ -400,20 +404,20 @@ export default function BirthChart() {
   const makeSinastryCharts = async () => {
     setLoading(true);
 
-    if (!chartProfile) {
+    if (!currentProfile) {
       setLoading(false);
       return;
     }
 
-    if (chartProfile?.birthDate?.coordinates)
-      selectCity(chartProfile?.birthDate?.coordinates);
+    if (currentProfile?.birthDate?.coordinates)
+      selectCity(currentProfile?.birthDate?.coordinates);
 
     try {
       const data = await apiFetch("birth-chart", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          birthDate: chartProfile?.birthDate,
+          birthDate: currentProfile?.birthDate,
         }),
       });
 
@@ -426,10 +430,10 @@ export default function BirthChart() {
       });
 
       updateBirthChart({
-        profileName: chartProfile?.name,
+        profileName: currentProfile?.name,
         chartData: {
           ...data,
-          birthDate: chartProfile?.birthDate,
+          birthDate: currentProfile?.birthDate,
         },
         chartType: "birth",
       });
@@ -465,13 +469,13 @@ export default function BirthChart() {
     else if (menu === "secondaryProgressions") return t("secondaryProgressions.title");
     else if (menu === "profection") return t("profections.title");
     else if (menu === "momentMap") return t("momentChart.title");
-    else if (menu === "transits") return t("transitsChart.title");
+    else if (menu === "transits") return !isMobileBreakPoint()? t("transitsChart.title") : t("transitsChart.titleMobile");
 
     return "Sem título";
   }
 
   async function makeSecondaryProgression() {
-    let birthDate = chartProfile?.birthDate;
+    let birthDate = currentProfile?.birthDate;
     if (!birthDate || !progressionYear) return;
 
     const jsDate = new Date(birthDate.year, birthDate.month - 1, birthDate.day);
@@ -497,7 +501,7 @@ export default function BirthChart() {
       });
 
       updateBirthChart({
-        profileName: chartProfile?.name,
+        profileName: currentProfile?.name,
         chartData: {
           ...data,
           birthDate,
@@ -529,7 +533,7 @@ export default function BirthChart() {
       chartData: {
         ...profectedChart,
       },
-      profileName: chartProfile?.name,
+      profileName: currentProfile?.name,
       chartType: "profection",
     });
 
@@ -604,6 +608,23 @@ export default function BirthChart() {
     return false;
   }
 
+  function getTransitsTitle(): React.ReactNode {
+    return (
+      <div className="flex flex-row items-center gap-1 text-[16px] min-w-0">
+        <span className="flex-shrink-0 whitespace-nowrap">
+          {!isMobileBreakPoint()? t("transitsChart.title") : t("transitsChart.titleMobile")}
+        </span>
+
+        <span
+          className="min-w-0 flex-1 truncate"
+          title={currentProfile?.name}
+        >
+          - {currentProfile?.name}
+        </span>
+      </div>
+    );
+  }
+
   const getInitialMenuContent = (): JSX.Element =>
     <Container className="w-[90%] sm:w-1/4">
       <h2 className="text-[1rem] sm:text-lg text-center sm:text-start pt-4 px-2 sm:pt-0 sm:mb-4 font-bold">
@@ -673,7 +694,7 @@ export default function BirthChart() {
 
         {menu === "birthChart" && (
           <BirthChartForm
-            currentBirthDate={chartProfile?.birthDate}
+            currentBirthDate={currentProfile?.birthDate}
             onSubmit={(profile) => getBirthChart(profile)}
           />
         )}
@@ -681,7 +702,7 @@ export default function BirthChart() {
         {menu === "solarReturn" && (
           <>
             <PresavedChartsDropdown
-              onChange={(profile) => setChartProfile(profile)}
+              onChange={(profile) => updateCurrentSelectedProfile(profile)}
             />
             <form
               ref={solarReturnForm}
@@ -700,7 +721,7 @@ export default function BirthChart() {
             >
               <input
                 required
-                className="border border-zinc-400 rounded-lg w-full p-1"
+                className="default-input-field w-full p-1"
                 placeholder={t("returnChart.inputPlaceholder")}
                 type="number"
                 onChange={(e) => {
@@ -739,7 +760,7 @@ export default function BirthChart() {
         {menu === "lunarReturn" && (
           <>
             <PresavedChartsDropdown
-              onChange={(newProfile) => setChartProfile(newProfile)}
+              onChange={(newProfile) => updateCurrentSelectedProfile(newProfile)}
             />
             <form
               ref={lunarReturnForm}
@@ -759,7 +780,7 @@ export default function BirthChart() {
               <div className="w-full flex flex-row justify-between gap-1">
                 <input
                   required
-                  className="border border-zinc-400 rounded-lg w-1/3 px-1"
+                  className="default-input-field w-1/3 px-1"
                   placeholder={t("form.day")}
                   type="number"
                   onChange={(e) => {
@@ -775,7 +796,7 @@ export default function BirthChart() {
 
                 <select
                   required
-                  className="border border-zinc-400 rounded-lg w-1/2"
+                  className="default-input-field w-1/2"
                   value={lunarMonth}
                   onChange={(e) =>
                     setLunarMonth(Number.parseInt(e.target.value))
@@ -791,7 +812,7 @@ export default function BirthChart() {
                 <input
                   required
                   type="number"
-                  className="border border-zinc-400 rounded-lg w-20 p-1"
+                  className="default-input-field w-20 p-1"
                   placeholder={t("form.year")}
                   onChange={(e) => {
                     if (e.target.value.length > 0) {
@@ -830,7 +851,7 @@ export default function BirthChart() {
           <>
             <span>{t("synastryChart.firstChart")}:</span>
             <PresavedChartsDropdown
-              onChange={(profile) => setChartProfile(profile)}
+              onChange={(profile) => updateCurrentSelectedProfile(profile)}
             />
 
             <span>{t("synastryChart.secondChart")}:</span>
@@ -869,7 +890,7 @@ export default function BirthChart() {
           >
             <span>{t("home.selectChart")}:</span>
             <PresavedChartsDropdown
-              onChange={(profile) => setChartProfile(profile)}
+              onChange={(profile) => updateCurrentSelectedProfile(profile)}
             />
 
             <div className="flex flex-row items-center gap-2">
@@ -878,7 +899,7 @@ export default function BirthChart() {
                 required
                 type="number"
                 placeholder="ex: 30"
-                className="w-full border border-zinc-400 rounded-lg p-1"
+                className="w-full default-input-field p-1"
                 value={progressionYear ?? ""}
                 onChange={(e) => {
                   const parsed = Number.parseInt(e.target.value);
@@ -915,7 +936,7 @@ export default function BirthChart() {
           >
             <span>{t("home.selectChart")}:</span>
             <PresavedChartsDropdown
-              onChange={(profile) => setChartProfile(profile)}
+              onChange={(profile) => updateCurrentSelectedProfile(profile)}
             />
 
             <div className="flex flex-row items-center gap-2">
@@ -924,7 +945,7 @@ export default function BirthChart() {
                 required
                 type="number"
                 placeholder="ex: 30"
-                className="w-full border border-zinc-400 rounded-lg p-1"
+                className="w-full default-input-field p-1"
                 value={profectionYear ?? ""}
                 onChange={(e) => {
                   const parsed = Number.parseInt(e.target.value);
@@ -1002,7 +1023,7 @@ export default function BirthChart() {
               {transitsMenu === 0 && 
                 <>
                   <PresavedChartsDropdown
-                    onChange={(profile) => setChartProfile(profile)}
+                    onChange={(profile) => updateCurrentSelectedProfile(profile)}
                   />
                   <HouseSystemDropdown />
                   <button
@@ -1054,7 +1075,7 @@ export default function BirthChart() {
           <div className="w-full text-left flex flex-col items-center mb-4">
             <ChartAndData
               arabicParts={arabicParts}
-              title={chartMenu === "moment" ? t("birthChart.chartTitle") + " " + t("momentChart.title") :
+              title={chartMenu === "moment" ? t("momentChart.title") :
                 `${t("birthChart.chartTitle")}${profileName}`}
               innerChart={birthChart}
               chartDateProps={{
@@ -1062,7 +1083,7 @@ export default function BirthChart() {
                 birthChart,
                 chartDate: birthChart.birthDate,
               }}
-              gender={chartProfile?.gender}
+              gender={currentProfile?.gender}
             />
           </div>
         </div> : null;
@@ -1072,14 +1093,14 @@ export default function BirthChart() {
           <div className="w-full text-left flex flex-col items-center mb-4">
             <ChartAndData
               arabicParts={arabicParts}
-              title={`${t("birthChart.chartTransitsTitle")}${profileName}`}
+              title={getTransitsTitle()}
               innerChart={birthChart}
               chartDateProps={{
                 chartType: "transits",
                 birthChart,
                 chartDate: birthChart.birthDate
               }}
-              gender={chartProfile?.gender}
+              gender={currentProfile?.gender}
             />
           </div>
         </div> : null;
@@ -1098,7 +1119,7 @@ export default function BirthChart() {
           <SinastryChart
             sinastryChart={sinastryChart}
             sinastryProfileName={sinastryProfile?.name}
-            gender={chartProfile?.gender}
+            gender={currentProfile?.gender}
             genderSinastry={sinastryProfile?.gender}
           />
         ) : null;

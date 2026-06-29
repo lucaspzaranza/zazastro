@@ -53,9 +53,12 @@
     "lunarDerivedReturn": "Retorno Lunar Derivado",
     "lunarDerivedReturnMobile": "Retorno Lunar Derivado",
     "return": "Retorno",
-    "solarReturnFor": "Retorno Solar para",
-    "lunarReturnFor": "Retorno Lunar para",
-    "lunarDerivedReturnFor": "Retorno Lunar Derivado para"
+    "solarReturnFor": "Retorno Solar",
+    "solarReturnForMobile": "RS",
+    "lunarReturnFor": "Retorno Lunar",
+    "lunarReturnForMobile": "RL",
+    "lunarDerivedReturnFor": "Retorno Lunar Derivado",
+    "lunarDerivedReturnForMobile": "RLD"
   },
   "synastryChart": {
     "title": "Escolha os mapas a serem combinados em sinastria",
@@ -82,6 +85,7 @@
   },
   "transitsChart": {
     "title": "Mapa Natal e Trânsitos",
+    "titleMobile": "Trânsitos",
     "momentTransits": "Momento",
     "calculateTransits": "Calcular"
   },
@@ -89,7 +93,7 @@
     "houseSystem": "Sistema de Casas",
     "edit": "Editar",
     "editProfile": "Editar Perfil",
-    "saveEditAndMakeChart": "Salvar edições e gerar Mapa Natal",
+    "saveEditAndMakeChart": "Salvar e gerar Mapa",
     "delete": "Deletar",
     "back": "Voltar",
     "name": "Nome",

@@ -10,6 +10,8 @@ import { BirthChart } from "@/interfaces/BirthChartInterfaces";
 import { ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import { useTranslations } from "next-intl";
 import { useProfiles } from "@/contexts/ProfilesContext";
+import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
+import Image from "next/image";
 
 export default function LunarDerivedChart() {
   const [returnTime, setReturnTime] = useState("");
@@ -20,9 +22,12 @@ export default function LunarDerivedChart() {
   );
   const { birthChart, returnChart, lunarDerivedChart,
     isCombinedWithBirthChart, isCombinedWithReturnChart } = useBirthChart();
-    const t = useTranslations();
+  const t = useTranslations();
+  const { isMobileBreakPoint } = useScreenDimensions();
     
   const { currentProfile } = useProfiles();
+
+  const iconSize = 20;
 
   useEffect(() => {
     if (lunarDerivedChart && lunarDerivedChart.returnTime) {
@@ -35,13 +40,39 @@ export default function LunarDerivedChart() {
     setTableItemsPerPage(newItemsPerPage);
   }
 
-  function getTitle() {
-    return `${t("returnChart.lunarDerivedReturnFor")} 
-              ${getReturnDateRangeString(
-      returnTime ?? "0000-00-00 00:00:00",
-      "lunar"
-    )}`;
-  }
+  function getTitle(): React.ReactNode {
+      return (
+        <div className="flex flex-row items-center gap-1 text-[16px] min-w-0">
+          <Image
+            src="/planets/moon.png"
+            width={iconSize}
+            height={iconSize}
+            alt="return"
+            unoptimized
+            className="flex-shrink-0"
+          />
+  
+          <span className="flex-shrink-0 whitespace-nowrap">
+            {!isMobileBreakPoint()? t("returnChart.lunarDerivedReturnFor") : t("returnChart.lunarDerivedReturnForMobile")}
+          </span>
+  
+          <span className="flex-shrink-0 whitespace-nowrap">
+            {getReturnDateRangeString(
+              returnTime ?? "0000-00-00 00:00:00",
+              "lunar"
+            )}
+            {" - "}
+          </span>
+  
+          <span
+            className="min-w-0 flex-1 truncate"
+            title={currentProfile?.name}
+          >
+            {currentProfile?.name}
+          </span>
+        </div>
+      );
+    }
 
   const getInnerChart = (): BirthChart => {
     if (isCombinedWithBirthChart && birthChart)

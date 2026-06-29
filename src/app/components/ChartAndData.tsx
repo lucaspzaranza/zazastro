@@ -297,7 +297,7 @@ export default function ChartAndData(props: Props) {
             genderIconPath={
               chartDateProps.chartType !== "sinastry" ? getGenderIconPath(gender ?? "event") : undefined
             }
-            genderIconSize={genderIconSize}
+            genderIconSize={gender !== undefined && gender !== "event" ? genderIconSize - 4 : genderIconSize}
           />
 
           <div className="w-full md:px-4 mt-2">
@@ -529,7 +529,7 @@ export default function ChartAndData(props: Props) {
           <h2 className="font-bold self-start text-lg mb-2 flex flex-row items-center gap-1">
             {t("birthChart.houses")}:
             <span className="w-fit flex flex-row items-center justify-start gap-1">
-              {showSwitchPartsButton() && (
+              {(showSwitchPartsButton() && chartDateProps.birthChart?.transits === undefined) && (
                 <>
                   <button
                     title="Alterar entre partes internas e externas"

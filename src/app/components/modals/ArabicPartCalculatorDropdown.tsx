@@ -24,7 +24,7 @@ export default function ArabicPartCalculatorDropdown(
     <div className="flex flex-col text-sm gap-1">
       <label className="text-nowrap">{label}</label>
       <select
-        className="w-full py-1 md:w-[7.5rem] border border-zinc-400 rounded-lg bg-white"
+        className="w-full py-1 md:w-[7.5rem] default-input-field bg-white"
         defaultValue={items["angles"][0].key}
         onChange={(e) => {
           const selected = flatMap.get(e.target.value);

@@ -7,6 +7,7 @@ import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT } from "@/app/utils/constants";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { getGenderIconPath } from "@/app/utils/chartUtils";
+import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 
 interface SinastryProps {
   sinastryChart?: BirthChart;
@@ -17,6 +18,8 @@ interface SinastryProps {
 
 export default function SinastryChart(props: SinastryProps) {
   const { sinastryChart, sinastryProfileName, gender, genderSinastry } = props;
+
+  const { isMobileBreakPoint } = useScreenDimensions();
 
   const { profileName } = useBirthChart();
   const { birthChart } = useBirthChart();
@@ -33,18 +36,40 @@ export default function SinastryChart(props: SinastryProps) {
   }
 
   const getTitle = () => {
-    return <>
-      {t('synastryChart.sinastry')} - 
-        <span className="flex flex-row items-center gap-1">
-          {profileName}
-          <Image src={getGenderIconPath(gender ?? "event")} width={genderIconSize} height={genderIconSize} alt="genderIcon"/>
-        </span> x 
-        <span className="flex flex-row items-center gap-1">
-          {sinastryProfileName}
-          <Image src={getGenderIconPath(genderSinastry ?? "event")} width={genderIconSize} height={genderIconSize} alt="genderIcon"/>
-        </span>
-      </>
-  }
+    return (
+      <div className="w-full flex flex-row items-center justify-center gap-1 text-[16px]">
+        {!isMobileBreakPoint() ? <span className="flex-shrink-0 whitespace-nowrap">{t('synastryChart.sinastry')} - </span> : null}
+
+        <div className="flex flex-row items-center gap-1 min-w-0 justify-end">
+          <span className="min-w-0 truncate" title={profileName}>
+            {profileName}
+          </span>
+          <Image
+            src={getGenderIconPath(gender ?? "event")}
+            width={genderIconSize}
+            height={genderIconSize}
+            alt="genderIcon"
+            className="flex-shrink-0"
+          />
+        </div>
+
+        <span className="flex-shrink-0">&nbsp;x&nbsp;</span>
+
+        <div className="flex flex-row items-center gap-1 min-w-0">
+          <span className="min-w-0 truncate" title={sinastryProfileName}>
+            {sinastryProfileName}
+          </span>
+          <Image
+            src={getGenderIconPath(genderSinastry ?? "event")}
+            width={genderIconSize}
+            height={genderIconSize}
+            alt="genderIcon"
+            className="flex-shrink-0"
+          />
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="w-full flex flex-col items-center justify-center gap-3 mb-4">

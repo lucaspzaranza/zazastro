@@ -1,4 +1,5 @@
 import { apiFetch } from "@/app/utils/api";
+import Image from "next/image";
 import {
   convertDegMinToDecimal,
   makeLunarDerivedChart,
@@ -103,7 +104,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 w-full h-full flex items-center justify-center z-30 px-3">
+    <div className="fixed inset-0 w-full h-full flex items-center justify-center z-50 px-3">
       <div
         className="absolute inset-0 bg-black/30"
         onClick={() => onClose?.()}
@@ -134,7 +135,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
             <div className="flex flex-row gap-2">
               <input
                 type="number"
-                className="w-16 md:w-20 border border-zinc-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-zinc-300"
+                className="w-16 md:w-20 default-input-field px-3 py-2 focus:outline-none focus:ring-2 focus:ring-zinc-300"
                 placeholder={t("form.day")}
                 required
                 onChange={(e) => {
@@ -151,7 +152,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
               />
 
               <select
-                className="flex-1 border border-zinc-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-zinc-300"
+                className="flex-1 default-input-field px-3 py-2 focus:outline-none focus:ring-2 focus:ring-zinc-300"
                 onChange={(e) =>
                   setMonth(Number.parseInt(e.target.value) + 1)
                 }
@@ -169,7 +170,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
 
               <input
                 type="number"
-                className="w-20 border border-zinc-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-zinc-300"
+                className="w-20 default-input-field px-3 py-2 focus:outline-none focus:ring-2 focus:ring-zinc-300"
                 placeholder={t("form.year")}
                 required
                 onChange={(e) => {
@@ -191,6 +192,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
               className="default-btn"
             >
               {t("birthChart.createMomentChart")}
+              <Image src="moon.png" width={22} height={22} unoptimized alt="moon"/>
             </button>
 
             <div

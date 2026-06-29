@@ -251,10 +251,9 @@ export default function BirthChartForm(props: BirthChartFormProps) {
               </label>
             </div>
             :
-            <select className="border-2 p-1 rounded-lg" 
+            <select className="default-input-field p-1" 
               defaultValue={gender}
               onChange={(e) => {
-                // console.log(e.target.value);
                 setGender(e.target.value as GenderType);
               }}
             >
@@ -275,7 +274,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
           <div className="w-full flex flex-row justify-between gap-1">
             <input
               required
-              className="border border-zinc-400 rounded-lg w-1/3 px-1"
+              className="default-input-field w-1/3 px-1"
               placeholder={t("form.day")}
               type="number"
               value={day ?? ""}
@@ -294,7 +293,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
             />
             <select
               required
-              className="border border-zinc-400 rounded-lg w-1/2"
+              className="default-input-field w-1/2"
               value={month}
               onChange={(e) => setMonth(Number.parseInt(e.target.value))}
             >
@@ -307,7 +306,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
             <input
               required
               type="number"
-              className="border border-zinc-400 rounded-lg w-20 p-1"
+              className="default-input-field w-20 p-1"
               value={year ?? ""}
               placeholder={t("form.year")}
               onChange={(e) => {
@@ -328,7 +327,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
             <input
               required
               type="number"
-              className="border border-zinc-400 rounded-lg w-16 p-1"
+              className="default-input-field w-16 p-1"
               placeholder="16"
               value={hour ?? ""}
               onChange={(e) => {
@@ -348,7 +347,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
             <input
               required
               type="number"
-              className="border border-zinc-400 rounded-lg w-16 p-1"
+              className="default-input-field w-16 p-1"
               placeholder="30"
               value={minutes ?? ""}
               onChange={(e) => {
