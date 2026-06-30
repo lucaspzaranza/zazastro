@@ -633,7 +633,7 @@ export default function BirthChart() {
         {getTitleMenuTitle()}
       </h2>
 
-      <div className="w-full p-4 sm:p-0 flex flex-col gap-2">
+      <div className="w-full p-4 sm:p-0 flex flex-col gap-3">
         {menu === "home" && (
           <div className="w-full flex flex-col gap-2">
             <button
@@ -708,7 +708,7 @@ export default function BirthChart() {
             />
             <form
               ref={solarReturnForm}
-              className="w-full flex flex-col items-center gap-2"
+              className="w-full flex flex-col items-center gap-3"
               onSubmit={(e) => {
                 e.preventDefault();
                 if (
@@ -766,7 +766,7 @@ export default function BirthChart() {
             />
             <form
               ref={lunarReturnForm}
-              className="w-full flex flex-col justify-between gap-2"
+              className="w-full flex flex-col justify-between gap-3"
               onSubmit={(e) => {
                 e.preventDefault();
                 if (
@@ -851,15 +851,19 @@ export default function BirthChart() {
 
         {menu === "sinastry" && (
           <>
-            <span>{t("synastryChart.firstChart")}:</span>
-            <PresavedChartsDropdown
-              onChange={(profile) => updateCurrentSelectedProfile(profile)}
-            />
+            <div className="flex flex-col gap-1">
+              <span>{t("synastryChart.firstChart")}:</span>
+              <PresavedChartsDropdown
+                onChange={(profile) => updateCurrentSelectedProfile(profile)}
+              />
+            </div>
 
-            <span>{t("synastryChart.secondChart")}:</span>
-            <PresavedChartsDropdown
-              onChange={(profile) => setSinastryProfile(profile)}
-            />
+            <div className="flex flex-col gap-1">
+              <span>{t("synastryChart.secondChart")}:</span>
+              <PresavedChartsDropdown
+                onChange={(profile) => setSinastryProfile(profile)}
+              />
+            </div>
 
             <button
               onClick={() => makeSinastryCharts()}

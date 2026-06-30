@@ -20,7 +20,7 @@
     "load": "Load Chart",
     "loadMobile": "Load Chart",
     "create": "Create Birth Chart",
-    "createMobile": "Create Chart",
+    "createMobile": "Create",
     "createMomentChart": "Generate Chart",
     "chartTitle": "Birth Chart - ",
     "chartTransitsTitle": "Birth Chart and Transits - ",

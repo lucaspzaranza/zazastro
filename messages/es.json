@@ -46,7 +46,7 @@
     "fixedStars": "Estrellas Fijas"
   },
   "returnChart": {
-    "title": "Ingresa el año de la Revolución",
+    "title": "Ingresa el año",
     "titleLunar": "Ingresa el fecha",
     "inputPlaceholder": "Año de la Revolución Solar",
     "combineWithBirthChart": "Combinar con Carta Natal",
