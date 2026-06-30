@@ -36,6 +36,8 @@ import { useAstroChartToggles } from "@/hooks/useAstroChartToggles";
 import { useResolvedChartDate, ResolvedChartDate } from "@/hooks/useResolvedChartDate";
 import ChartHeader from "./ChartHeader";
 import AstroChartMenu from "./menus/AstroChartMenu";
+import ChartHeaderSubtitle from "./ChartHeaderSubtitle";
+import { useProfiles } from "@/contexts/ProfilesContext";
 
 interface Props {
   innerChart: BirthChart;
@@ -102,7 +104,7 @@ export default function ChartAndData(props: Props) {
   const [useInnerParts, setUseInnerParts] = useState(true);
   const [nextChartContentLoaded, setNextChartContentLoaded] = useState(false);
   const t = useTranslations();
-  // const [translatedTitle, setTranslatedTitle] = useState(title);
+  const { currentProfile } = useProfiles();
   
   const { setHasIsolatedAspect, setSelectedAspect } = useAspectsData();
 
@@ -115,14 +117,30 @@ export default function ChartAndData(props: Props) {
   const toggles = useAstroChartToggles();
 
   // Resolve cada bloco de data individualmente (hooks não podem ser
-  // chamados dentro de loop/.map nem condicionalmente — por isso as três
-  // chamadas abaixo SEMPRE ocorrem, mesmo quando o bloco correspondente não
-  // existe; useResolvedChartDate já retorna undefined quando chartDate não
-  // é fornecido, então passamos chartDate: undefined nesses casos).
+  // chamados dentro de loop/.map nem condicionalmente — por isso as
+  // chamadas abaixo SEMPRE ocorrem, mesmo quando o bloco correspondente
+  // não existe; useResolvedChartDate já retorna undefined quando chartDate
+  // não é fornecido, então passamos chartDate: undefined nesses casos).
+
+  const isReturnType = chartDateProps.chartType === "return" || chartDateProps.chartType === "lunarDerived";
+
+  // Bloco de nascimento original, mostrado ADEMAIS do bloco de retorno
+  // quando o mapa é de Retorno Solar/Lunar (ou Lunar Derivado) — usa o
+  // mesmo birthChart.birthDate que já está disponível em chartDateProps,
+  // forçando chartType: "birth" para cair no branch "padrão" do hook
+  // (que usa chartDate direto, sem o cálculo de returnTime).
+  const birthDateBlockRaw = useResolvedChartDate({
+    chartType: "birth",
+    label: currentProfile?.name, // ajuste a chave de tradução conforme já existir no seu projeto
+    chartDate: chartDateProps.birthChart?.birthDate,
+  });
+
   const innerDateBlock = useResolvedChartDate(chartDateProps);
+
   const outerDateBlock = useResolvedChartDate(
     outerChartDateProps ?? { chartType: "birth", chartDate: undefined }
   );
+
   const transitsDateBlock = useResolvedChartDate({
     chartType: "transits",
     label: t("birthChart.transits"),
@@ -130,6 +148,8 @@ export default function ChartAndData(props: Props) {
   });
 
   const dateBlocks: ResolvedChartDate[] = [
+    // Para retorno solar/lunar/lunar derivado: nascimento primeiro, depois o retorno
+    isReturnType ? birthDateBlockRaw : undefined,
     innerDateBlock,
     outerChartDateProps ? outerDateBlock : undefined,
     innerChart.transits ? transitsDateBlock : undefined,
@@ -293,7 +313,7 @@ export default function ChartAndData(props: Props) {
         <>
           <ChartHeader
             title={title}
-            dateBlocks={dateBlocks}
+            dateBlocks={!isMobileBreakPoint() ? dateBlocks : []}
             genderIconPath={
               chartDateProps.chartType !== "sinastry" ? getGenderIconPath(gender ?? "event") : undefined
             }
@@ -329,9 +349,10 @@ export default function ChartAndData(props: Props) {
                 useDecans: toggles.useDecans,
                 showFixedStars: toggles.showFixedStars,
                 currentTerms: toggles.currentTerms,
+                dateBlocks: isMobileBreakPoint() ? [...dateBlocks] : undefined
               }}
             />
-          )}
+          )}          
         </>
       </div>
     );

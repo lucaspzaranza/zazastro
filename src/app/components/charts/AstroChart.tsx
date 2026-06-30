@@ -36,6 +36,7 @@ import { useTranslations } from "next-intl";
 import { ArabicPart } from "@/interfaces/ArabicPartInterfaces";
 import { useAspectsData } from "@/contexts/AspectsContext";
 import { CHALDEAN_DECANS } from "@/app/utils/termsAndDecans";
+import ChartHeaderSubtitle from "../ChartHeaderSubtitle";
 
 interface TooltipData {
   x: number;
@@ -87,6 +88,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     useDecans,
     showFixedStars,
     currentTerms,
+    dateBlocks
   } = { ...props };
 
   const ref = useRef<SVGSVGElement>(null);
@@ -97,7 +99,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
   const aspectStrokeCoords = useRef<Map<string, { x1: number; y1: number; x2: number; y2: number }>>(new Map());
 
   const { isMobileBreakPoint } = useScreenDimensions();
-  const { isReturnChart, isLunarDerivedReturnChart, isSinastryChart, isProgressionChart, isProfectionChart } = useChartMenu();
+  const { chartMenu, isReturnChart, isLunarDerivedReturnChart, isSinastryChart, isProgressionChart, isProfectionChart } = useChartMenu();
   const { birthChart, isMountingChart, updateIsMountingChart, isCombinedWithBirthChart, isCombinedWithReturnChart } = useBirthChart();
   const [testValue] = useState(2.5);
   const [showOuterChart, setShowOuterChart] = useState(outerPlanets !== undefined && outerHouses !== undefined);
@@ -3085,7 +3087,25 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     // else if(useDecans && useTerms)
     //   return 'h-[22rem]'
 
-    return 'h-[21rem]'
+    if(chartMenu === "sinastry")
+      return 'h-[21rem]';
+
+    if(chartMenu === "profection")
+      return "h-[24rem]";
+
+    return useReturnSelectorArrows? "h-[24rem]" : 'h-[21rem]';
+  }
+  
+  const getMobileDateBlockPosition = () => {
+    if(chartMenu === "birth" || chartMenu === "moment")
+      return 'mt-[-15px]';
+    else if(chartMenu === "solarReturn" || chartMenu === "lunarReturn" || 
+      chartMenu === "lunarDerivedReturn" || chartMenu === "progression") 
+      return 'bottom-[-5px]';
+    else if(chartMenu === "transits" || chartMenu === "sinastry")
+      return 'mt-[-20px]';
+    else if(chartMenu === "profection")
+      return 'bottom-[-5px]';
   }
 
   const getDesktopHeight = () => {
@@ -3108,7 +3128,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
         <ReturnSelectorArrows>
           <div
             ref={containerRef}
-            className={`relative w-full mb-[-20px] ${getMobileHeight()} ${getDesktopHeight()} ${(isMountingChart ? "opacity-0" : "")}`}
+            className={`relative w-full ${getMobileHeight()} ${getDesktopHeight()} ${(isMountingChart ? "opacity-0" : "")}`}
             onClick={(e) => {
               if (e.target === containerRef.current) hideTooltip();
             }}
@@ -3118,10 +3138,16 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
               style={{
                 position: "absolute",
                 left: `calc(50% + ${offsetX}px)`,
-                top: `calc(${isMobile ? '49%' : '50%'} + ${offsetY}px)`,
+                top: `calc(${isMobile ? '46%' : '50%'} + ${offsetY}px)`,
                 transform: "translate(-50%, -50%)",
               }}
             />
+
+            {isMobileBreakPoint() && dateBlocks &&
+              <div className={`absolute w-full ${getMobileDateBlockPosition()}`}>
+                <ChartHeaderSubtitle blocks={dateBlocks}/>
+              </div>
+            }
 
             {tooltip && showDegrees && (
               <div
@@ -3146,7 +3172,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
             style={{
               position: "absolute",
               left: `calc(50% + ${offsetX}px)`,
-              top: `calc(50% + ${offsetY}px)`,
+               top: `calc(${isMobile ? '51%' : '50%'} + ${offsetY}px)`,
               transform: "translate(-50%, -50%)",
             }}
           />
@@ -3160,7 +3186,13 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
             </div>
           )}
         </div>
-      )}
+      )}  
+
+      {!useReturnSelectorArrows && isMobileBreakPoint() && dateBlocks &&
+        <div className={`h-min w-full ${getMobileDateBlockPosition()}`}>
+          <ChartHeaderSubtitle blocks={dateBlocks}/>
+        </div>
+      }    
     </div>
   );
 };

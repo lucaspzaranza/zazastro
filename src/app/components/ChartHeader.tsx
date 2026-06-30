@@ -5,6 +5,7 @@ import { useBirthChart } from "@/contexts/BirthChartContext";
 import { useChartMenu } from "@/contexts/ChartMenuContext";
 import Image from "next/image";
 import { ResolvedChartDate } from "@/hooks/useResolvedChartDate";
+import ChartHeaderSubtitle from "./ChartHeaderSubtitle";
 
 interface ChartHeaderProps {
   /** Título do mapa. Pode ser string ou ReactNode (ex: nome + símbolo de gênero). */
@@ -109,60 +110,7 @@ export default function ChartHeader(props: ChartHeaderProps) {
         </button>
       </div>
 
-      {/* Linha 2: metadados — direto se 1 bloco, colapsável se 2+ */}
-      {resolvedBlocks.length > 0 && (
-        <div className="w-full flex flex-col items-center">
-          {!hasMultipleBlocks ? (
-            <span
-              className="text-[12px] md:text-[14px] text-zinc-800 text-center whitespace-nowrap overflow-hidden text-ellipsis max-w-full"
-              title={
-                resolvedBlocks[0].label
-                  ? `${resolvedBlocks[0].label}: ${resolvedBlocks[0].formattedText}`
-                  : resolvedBlocks[0].formattedText
-              }
-            >
-              {resolvedBlocks[0].label && (
-                <span className="font-semibold text-zinc-700">{resolvedBlocks[0].label}: </span>
-              )}
-              {resolvedBlocks[0].formattedText}
-            </span>
-          ) : (
-            <>
-              <button
-                onClick={() => setMetadataExpanded((prev) => !prev)}
-                className="text-[14px] text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors"
-              >
-                {collapsedSummaryLabel}
-                <span
-                  className="transition-transform"
-                >
-                  {metadataExpanded? "🔼": "🔽" }
-                </span>
-              </button>
-
-              {metadataExpanded && (
-                <div className="w-full flex flex-col gap-0 mt-0 px-2 py-1">
-                  {resolvedBlocks.map((block, index) => (
-                    <div
-                      key={index}
-                      className="flex items-baseline justify-center gap-1.5 text-[12px] md:text-[14px] text-zinc-600"
-                    >
-                      {block.label && (
-                        <span className="font-semibold text-zinc-800 flex-shrink-0">
-                          {block.label}:
-                        </span>
-                      )}
-                      <span className="overflow-hidden text-ellipsis whitespace-nowrap">
-                        {block.formattedText}                        
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </>
-          )}
-        </div>
-      )}
+      <ChartHeaderSubtitle blocks={resolvedBlocks}/>
     </div>
   );
 }

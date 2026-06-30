@@ -1,3 +1,4 @@
+import { ResolvedChartDate } from "@/hooks/useResolvedChartDate";
 import { ArabicPartsType } from "./ArabicPartInterfaces";
 import {
   FixedStar,
@@ -19,6 +20,7 @@ export interface AstroChartProps {
     fixedStars?: FixedStar[];
     useReturnSelectorArrows?: boolean;
     onUpdateAspectsData?: (aspectsData: PlanetAspectData[]) => void;
+    dateBlocks?: ResolvedChartDate[];
   };
 }
 

@@ -59,17 +59,17 @@ export default function ProfectionChart() {
       tableItemsPerPage={tableItemsPerPage}
       onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
       chartDateProps={{
-        chartType: isCombinedWithBirthChart ? "birth" : "profection",
-        birthChart: getInnerChart(),
-        label: isCombinedWithBirthChart ? t("profections.birth") : t("profections.profected"),
-        chartDate: getInnerChart().birthDate
+        chartType: "birth",
+        birthChart: birthChart,
+        label: t("profections.birth"),
+        chartDate: birthChart.birthDate
       }}
-      outerChartDateProps={isCombinedWithBirthChart ? {
+      outerChartDateProps={{
         chartType: "profection",
         birthChart: profectionChart,
         label: t("profections.profected"),
         chartDate: profectionChart.birthDate
-      } : undefined}
+      }}
       title={getTitle()}
       gender={currentProfile?.gender}
     />
