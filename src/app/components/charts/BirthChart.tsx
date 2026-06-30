@@ -459,11 +459,13 @@ export default function BirthChart() {
   };
 
   function getTitleMenuTitle(): string {
-    if (menu === "home") return t("home.subtitle");
+    if (menu === "home") return isMobileBreakPoint()? t("home.subtitleMobile") : t("home.subtitle");
     else if (menu === "birthChart")
-      return t("birthChart.title");
-    else if (menu === "solarReturn" || menu === "lunarReturn")
+      return isMobileBreakPoint() ? t("birthChart.titleMobile") : t("birthChart.title");
+    else if (menu === "solarReturn")
       return t("returnChart.title");
+    else if (menu === "lunarReturn")
+      return t("returnChart.titleLunar");
     else if (menu === "sinastry")
       return t("synastryChart.title");
     else if (menu === "secondaryProgressions") return t("secondaryProgressions.title");
@@ -1149,7 +1151,7 @@ export default function BirthChart() {
           {isTransitioning && (
             <div className="absolute inset-0 flex items-center justify-center">
               <div
-                className={`absolute w-full h-full top-0 md:top-auto md:h-[108%] px-3 md:px-0 bg-white/10 backdrop-blur-sm flex flex-col items-center justify-center z-10 
+                className={`absolute w-screen md:w-full h-full top-0 md:top-auto md:h-[108%] px-3 md:px-0 bg-white/10 backdrop-blur-sm flex flex-col items-center justify-center z-10 
                   md:rounded-2xl transition-all duration-200 ease-in-out opacity-0 animate-[fadeIn_0.2s_forwards]`}
               >
                 <Spinner size="16" />

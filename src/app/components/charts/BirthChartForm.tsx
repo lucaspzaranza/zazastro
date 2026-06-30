@@ -134,7 +134,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
   return (
     <form
       ref={form}
-      className="w-full flex flex-col justify-between gap-2"
+      className="w-full flex flex-col justify-between gap-3"
       onSubmit={(e) => {
         e.preventDefault();
         submitForm();

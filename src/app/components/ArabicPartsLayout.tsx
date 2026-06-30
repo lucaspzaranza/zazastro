@@ -86,7 +86,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
     return <>
       <button
         title={t("arabicParts.title")}
-        className={`rounded-sm hover:outline-2 hover:scale-110 outline-offset-4 ${menu === "default" ? "outline-2 scale-110" : ""
+        className={`rounded-sm hover:outline outline-zinc-400 outline-offset-4 ${menu === "default" ? "outline" : ""
           }`}
         onClick={() => {
           setMenu("default");
@@ -103,7 +103,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
 
       <button
         title={t("arabicParts.lotCalculator")}
-        className={`rounded-sm hover:outline-2 hover:scale-110 outline-offset-4 ${menu === "lotCalculator" ? "outline-2 scale-110" : ""
+        className={`rounded-sm hover:outline outline-zinc-400 outline-offset-4 ${menu === "lotCalculator" ? "outline" : ""
           }`}
         onClick={() => {
           setMenu("lotCalculator");
@@ -120,7 +120,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
 
       <button
         title={t("arabicParts.customizeASC")}
-        className={`rounded-sm hover:outline-2 hover:scale-110 outline-offset-4 ${menu === "customizeASC" ? "outline-2 scale-110" : ""
+        className={`rounded-sm hover:outline outline-zinc-400 outline-offset-4 ${menu === "customizeASC" ? "outline" : ""
           }`}
         onClick={() => {
           setMenu("customizeASC");
@@ -136,7 +136,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
       </button>
       <button
         title={t("arabicParts.seeMore")}
-        className="rounded-sm hover:outline-2 hover:scale-110 outline-offset-4"
+        className="rounded-sm hover:outline outline-zinc-400 outline-offset-4"
         onClick={() => {
           setModalIsOpen(true);
         }}
@@ -235,7 +235,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
           <>
             <button
               title={t("arabicParts.switchParts")}
-              className="rounded-sm hover:outline-2 outline-offset-4 hover:cursor-pointer active:bg-gray-300"
+              className="rounded-sm hover:outline outline-zinc-400 outline-offset-4 hover:cursor-pointer active:bg-gray-300"
               onClick={() => {
                 toggleInnerPartsVisualization();
               }}

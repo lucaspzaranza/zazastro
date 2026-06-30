@@ -2,6 +2,7 @@
   "home": {
     "title": "Zazastro",
     "subtitle": "Selecione o tipo de mapa que deseja",
+    "subtitleMobile": "Selecione o tipo de mapa",
     "birthChart": "Mapa Astral",
     "solarReturn": "Revolução Solar",
     "lunarReturn": "Revolução Lunar",
@@ -14,11 +15,12 @@
     "loading": "Carregando..."
   },
   "birthChart": {
-    "title": "Escolha ou crie um novo mapa astral",
-    "load": "Carregar mapa",
+    "title": "Escolha ou gere um novo Mapa Natal",
+    "titleMobile": "Escolher ou gerar",
+    "load": "Carregar Mapa",
     "loadMobile": "Carregar",
     "create": "Gerar Mapa Natal",
-    "createMobile": "Criar",
+    "createMobile": "Criar Mapa",
     "createMomentChart": "Gerar Mapa",
     "chartTitle": "Mapa Natal - ",
     "chartTransitsTitle": "Mapa Natal e Trânsitos - ",
@@ -44,7 +46,8 @@
     "fixedStars": "Estrelas Fixas"
   },
   "returnChart": {
-    "title": "Escolha um mapa e digite o ano da revolução",
+    "title": "Digite o ano da revolução",
+    "titleLunar": "Digite a data da Revolução",
     "inputPlaceholder": "Ano Rev. Solar",
     "combineWithBirthChart": "Combinar com Mapa Natal",
     "combineWithBirthChartMobile": "Combinar com Mapa Astral",

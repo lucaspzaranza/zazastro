@@ -2,6 +2,7 @@
   "home": {
     "title": "Zazastro",
     "subtitle": "Select a chart to view",
+    "subtitleMobile": "Select a chart to view",
     "birthChart": "Birth Chart",
     "solarReturn": "Solar Return",
     "lunarReturn": "Lunar Return",
@@ -15,8 +16,11 @@
   },
   "birthChart": {
     "title": "Choose or create a chart",
+    "titleMobile": "Choose or create a chart",
     "load": "Load Chart",
+    "loadMobile": "Load Chart",
     "create": "Create Birth Chart",
+    "createMobile": "Create Chart",
     "createMomentChart": "Generate Chart",
     "chartTitle": "Birth Chart - ",
     "chartTransitsTitle": "Birth Chart and Transits - ",
@@ -42,13 +46,14 @@
     "fixedStars": "Fixed Stars"
   },
   "returnChart": {
-    "title": "Choose a chart and enter the year of the return",
+    "title": "Enter the year of the return",
+    "titleLunar": "Enter the date of the Return",
     "inputPlaceholder": "Solar Return Year",
     "combineWithBirthChart": "Combine with Birth Chart",
     "combineWithBirthChartMobile": "Combine with Chart",
     "combineWithSolarReturnChart": "Combine with Solar Return Chart",
     "combineWithSolarReturnChartMobile": "Combine with Solar Return",
-    "lunarDerivedReturn": "Lunar Derived Return",
+    "lunarDerivedReturn": "Derived Lunar Return",
     "lunarDerivedReturnMobile": "Derived Lunar Return",
     "return": "Return",
     "solarReturnFor": "Solar Return",

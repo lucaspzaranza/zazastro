@@ -2,6 +2,7 @@
   "home": {
     "title": "Zazastro",
     "subtitle": "Selecciona el tipo de carta",
+    "subtitleMobile": "Selecciona el tipo de carta",
     "birthChart": "Carta Astral",
     "solarReturn": "Revolución Solar",
     "lunarReturn": "Revolución Lunar",
@@ -15,8 +16,11 @@
   },
   "birthChart": {
     "title": "Elige o crea un mapa",
+    "titleMobile": "Elige o crea un mapa",
     "load": "Carregar carta",
+    "loadMobile": "Carregar",
     "create": "Crear Carta Astral",
+    "createMobile": "Crear Carta",
     "createMomentChart": "Generar Carta",
     "chartTitle": "Carta Astral - ",
     "chartTransitsTitle": "Carta Astral y Tránsitos - ",
@@ -42,7 +46,8 @@
     "fixedStars": "Estrellas Fijas"
   },
   "returnChart": {
-    "title": "Elige un mapa e ingresa el año de la Revolución",
+    "title": "Ingresa el año de la Revolución",
+    "titleLunar": "Ingresa el fecha",
     "inputPlaceholder": "Año de la Revolución Solar",
     "combineWithBirthChart": "Combinar con Carta Natal",
     "combineWithBirthChartMobile": "Combinar con Carta Natal",
@@ -84,7 +89,7 @@
   "transitsChart": {
     "title": "Carta Natal y Tránsitos",
     "titleMobile": "Tránsitos",
-    "momentTransits": "Tránsitos Actuales",
+    "momentTransits": "Tránsitos",
     "calculateTransits": "Calcular"
   },
   "form": { 

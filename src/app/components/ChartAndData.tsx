@@ -303,8 +303,8 @@ export default function ChartAndData(props: Props) {
       <div className="w-full md:min-w-[51rem] flex flex-col items-center justify-center relative">
         {(loadingNextChart || isMountingChart) &&
           <div
-            className={`absolute w-full h-full top-0 md:top-auto md:h-[108%] px-3 md:px-0 bg-white/10 backdrop-blur-sm flex flex-col items-center justify-center z-10 
-              md:rounded-2xl transition-all duration-200 ease-in-out opacity-0 animate-[fadeIn_0.2s_forwards]`}>
+            className={`absolute w-screen md:w-full h-full top-0 md:top-auto md:h-[108%] px-3 md:px-0 bg-white/10 backdrop-blur-sm flex flex-col items-center justify-center z-10 
+              md:rounded-full transition-all duration-200 ease-in-out opacity-0 animate-[fadeIn_0.2s_forwards]`}>
             <Spinner size="16" />
             <h2 className="font-bold text-lg pl-10 mt-3">{t("home.loading")}</h2>
           </div>
@@ -453,7 +453,7 @@ export default function ChartAndData(props: Props) {
                 <>
                   <button
                     title="Alterar entre partes internas e externas"
-                    className="rounded-sm hover:outline-2 outline-offset-4 hover:cursor-pointer active:bg-gray-300"
+                    className="rounded-sm hover:outline outline-zinc-400 outline-offset-4 hover:cursor-pointer active:bg-gray-300"
                     onClick={() => {
                       toggleInnerPlanetsVisualization();
                     }}
@@ -514,7 +514,7 @@ export default function ChartAndData(props: Props) {
 
                     <button
                       title={`${planetsAntiscion[planet.type] ? "Normal" : "Antiscion"}`}
-                      className={`rounded-sm w-[2rem] hidden xl:flex xl:flex-row xl:items-center xl:justify-center 3xl:hidden hover:outline-2 hover:bg-gray-200 active:bg-gray-400 
+                      className={`rounded-sm w-[2rem] hidden xl:flex xl:flex-row xl:items-center xl:justify-center 3xl:hidden hover:outline outline-zinc-400 hover:bg-gray-200 active:bg-gray-400 
                       ${planetsAntiscion[planet.type] ? "antiscion" : ""}`}
                       onClick={() => {
                         togglePlanetAntiscion(planet.type);
@@ -554,7 +554,7 @@ export default function ChartAndData(props: Props) {
                 <>
                   <button
                     title="Alterar entre partes internas e externas"
-                    className="rounded-sm hover:outline-2 outline-offset-4 hover:cursor-pointer active:bg-gray-300"
+                    className="rounded-sm hover:outline outline-zinc-400 outline-offset-4 hover:cursor-pointer active:bg-gray-300"
                     onClick={() => {
                       toggleInnerHousesVisualization();
                     }}

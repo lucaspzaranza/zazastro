@@ -277,9 +277,10 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     const rect = container.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
+    const offset = isMobileBreakPoint() ? 0 : 10;
 
     const tooltipWidth = 200; // max-w do tooltip
-    const adjustedX = x + tooltipWidth > rect.width ? x - tooltipWidth - 10 : x + 10;
+    const adjustedX = x + tooltipWidth > rect.width ? x - tooltipWidth - offset : x + offset;
 
     setTooltip({ x: adjustedX, y, content });
   }
