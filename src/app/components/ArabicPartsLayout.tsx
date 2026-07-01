@@ -322,20 +322,19 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
     <div className="text-sm md:text-[1rem] flex flex-col gap-2">
       {renderTitleAndMenuBtns()}
 
-      {menu === "default" && renderArabicPartsDefaultDetails()}
+      <div className={menu === "default" ? "block" : "hidden"}>
+          {renderArabicPartsDefaultDetails()}
+      </div>
 
       {showMenuButtons && (
         <>
-          {menu === "lotCalculator" && (
-            <ArabicPartCalculator
-            />
-          )}
+          <div className={menu === "lotCalculator" ? "block" : "hidden"}>
+            <ArabicPartCalculator/>
+          </div>
 
-          {menu === "customizeASC" && (
-            <CustomizeASC
-              baseParts={parts}
-            />
-          )}
+          <div className={menu === "customizeASC" ? "block" : "hidden"}>
+            <CustomizeASC baseParts={parts} />
+          </div>
 
           {modalIsOpen && (
             <ArabicPartsModal

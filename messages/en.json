@@ -43,7 +43,9 @@
     "termsPtolomaics": "Ptolemaic Terms",
     "termsEgyptians": "Egyptian Terms",
     "decans": "Decans",
-    "fixedStars": "Fixed Stars"
+    "fixedStars": "Fixed Stars",
+    "dayMap": "Day Map",
+    "nightMap": "Night Map"
   },
   "returnChart": {
     "title": "Enter the year of the return",

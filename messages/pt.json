@@ -43,7 +43,9 @@
     "termsPtolomaics": "Termos Ptolomaicos",
     "termsEgyptians": "Termos Egípcios",
     "decans": "Faces (Decanatos)",
-    "fixedStars": "Estrelas Fixas"
+    "fixedStars": "Estrelas Fixas",
+    "dayMap": "Diurno",
+    "nightMap": "Noturno"
   },
   "returnChart": {
     "title": "Digite o ano da revolução",

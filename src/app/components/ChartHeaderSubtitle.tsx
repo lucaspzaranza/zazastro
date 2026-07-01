@@ -1,10 +1,19 @@
+import { useBirthChart } from "@/contexts/BirthChartContext";
+import { useChartMenu } from "@/contexts/ChartMenuContext";
+import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 import { ResolvedChartDate } from "@/hooks/useResolvedChartDate";
+import { ChartType } from "@/interfaces/BirthChartInterfaces";
+import { useTranslations } from "next-intl";
+import Image from "next/image";
 import { useState } from "react";
 
 export default function ChartHeaderSubtitle(props: {blocks: ResolvedChartDate[]}) {
   const { blocks } = props;
-
   const [metadataExpanded, setMetadataExpanded] = useState(false);
+  const { chartMenu } = useChartMenu();
+  const { birthChart } = useBirthChart();
+  const t = useTranslations();
+  const { isMobileBreakPoint } = useScreenDimensions();
 
   // Filtra blocos ainda não resolvidos (useResolvedChartDate retorna
   // undefined até a primeira resolução assíncrona terminar).
@@ -14,6 +23,15 @@ export default function ChartHeaderSubtitle(props: {blocks: ResolvedChartDate[]}
   // Resumo curto mostrado quando colapsado, ex: "2 mapas" ou, quando
   // possível, algo mais descritivo como "Natal e trânsitos".
   const collapsedSummaryLabel = `${resolvedBlocks.length} ${resolvedBlocks.length === 1 ? "mapa" : "mapas"}`;
+  
+  const iconSize = 12;
+
+  const getDayOrNightLabel = (isDiurnal: boolean) => {
+    return <div className="flex items-center justify-center gap-1 text-[12px] md:text-[14px] text-zinc-800 ml-1">
+      <Image src={`/planets/${isDiurnal? "sun" : "moon"}.png`} width={iconSize} height={iconSize} unoptimized alt="Day/Night"/>
+      {isDiurnal ? `${t("birthChart.dayMap")}` : `${t("birthChart.nightMap")}`}
+    </div>
+  }
 
   return resolvedBlocks.length > 0 &&
     <div className="w-full flex flex-col items-center">
@@ -29,7 +47,21 @@ export default function ChartHeaderSubtitle(props: {blocks: ResolvedChartDate[]}
           {resolvedBlocks[0].label && (
             <span className="font-semibold text-zinc-700">{resolvedBlocks[0].label}: </span>
           )}
-          {resolvedBlocks[0].formattedText}
+          
+          {
+            isMobileBreakPoint() ? <>
+              {resolvedBlocks[0].formattedText}
+              {(chartMenu === "birth" || chartMenu === "moment") && birthChart?.isDiurnal !== undefined && (
+                getDayOrNightLabel(birthChart.isDiurnal)
+              )}
+            </> :
+            <div className="inline-flex items-center gap-1">
+              {resolvedBlocks[0].formattedText}
+              {(chartMenu === "birth" || chartMenu === "moment") && birthChart?.isDiurnal !== undefined && (
+                getDayOrNightLabel(birthChart.isDiurnal)
+              )}
+            </div>
+          }
         </span>
       ) : (
         <>

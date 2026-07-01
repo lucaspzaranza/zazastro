@@ -304,7 +304,7 @@ export default function ChartAndData(props: Props) {
         {(loadingNextChart || isMountingChart) &&
           <div
             className={`absolute w-screen md:w-full h-full top-0 md:top-auto md:h-[108%] px-3 md:px-0 bg-white/10 backdrop-blur-sm flex flex-col items-center justify-center z-10 
-              md:rounded-full transition-all duration-200 ease-in-out opacity-0 animate-[fadeIn_0.2s_forwards]`}>
+              transition-all duration-200 ease-in-out opacity-0 animate-[fadeIn_0.2s_forwards]`}>
             <Spinner size="16" />
             <h2 className="font-bold text-lg pl-10 mt-3">{t("home.loading")}</h2>
           </div>

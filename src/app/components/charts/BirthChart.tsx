@@ -74,9 +74,6 @@ export default function BirthChart() {
   const [lunarDay, setLunarDay] = useState(1);
   const [lunarMonth, setLunarMonth] = useState(1);
   const [lunarYear, setLunarYear] = useState(0);
-  // const [chartProfile, setChartProfile] = useState<
-  //   BirthChartProfile | undefined
-  // >(profiles[0]);
   const [sinastryProfile, setSinastryProfile] = useState<
     BirthChartProfile | undefined
   >();
@@ -186,28 +183,17 @@ export default function BirthChart() {
     if (menu === "home") {
       updateHouseSystem("placidus" as HouseSystem);
       firstProfileSetAtBeggining.current = false;
-      // setChartProfile(profiles[0]);
       updateCurrentSelectedProfile(profiles[0]);
       setSinastryProfile(profiles[0]);
     }
-  // }, [menu, chartProfile]);
   }, [menu]);
 
   useEffect(() => {
     if (profiles.length > 0 && !firstProfileSetAtBeggining.current) {
-      // setChartProfile(profiles[0]);
       updateCurrentSelectedProfile(profiles[0]);
       firstProfileSetAtBeggining.current = true;
     }
   }, [profiles]);
-
-  // useEffect(() => {
-  //   updateCurrentSelectedProfile(chartProfile);
-  // }, [currentProfile]);
-
-  // useEffect(() => {
-  //   setChartProfile(chartProfile);
-  // }, [chartProfile]);
 
   useEffect(() => {
     updateSinastryProfile(sinastryProfile);
@@ -216,7 +202,6 @@ export default function BirthChart() {
   async function getBirthChart(chartProfileToOverwrite?: BirthChartProfile) {
     setLoading(true);
     if (chartProfileToOverwrite) {
-      // setChartProfile(chartProfileToOverwrite);
       updateCurrentSelectedProfile(chartProfileToOverwrite);
     }
 
@@ -232,8 +217,6 @@ export default function BirthChart() {
             { ...chartProfileToOverwrite?.birthDate ?? currentProfile?.birthDate, houseSystem }
         }),
       });
-
-      // console.log(data);
 
       updateBirthChart({
         profileName: chartProfileToOverwrite?.name ?? currentProfile?.name,
@@ -360,7 +343,6 @@ export default function BirthChart() {
     if (!currentProfile || (transitsFormData && transitsFormData.profile === undefined)) return;
 
     if(transitsFormData)
-      // setChartProfile(transitsFormData.profile);
       updateCurrentSelectedProfile(transitsFormData.profile);
     else if (currentProfile?.birthDate?.coordinates)
       selectCity(currentProfile?.birthDate?.coordinates);
@@ -378,8 +360,6 @@ export default function BirthChart() {
           transitsDate,
         }),
       });
-
-      // console.log(data);
 
       updateBirthChart({
         profileName: transitsFormData? transitsFormData.profile.name : currentProfile?.name,
@@ -1072,7 +1052,6 @@ export default function BirthChart() {
     </Container>
 
   const getChartContent = (): JSX.Element | null => {
-    // console.log('gender to be rendered: ', currentProfile?.gender);
     
     switch (activeChart) {
       case "birth":
@@ -1156,7 +1135,7 @@ export default function BirthChart() {
             <div className="absolute inset-0 flex items-center justify-center">
               <div
                 className={`absolute w-screen md:w-full h-full top-0 md:top-auto md:h-[108%] px-3 md:px-0 bg-white/10 backdrop-blur-sm flex flex-col items-center justify-center z-10 
-                  md:rounded-2xl transition-all duration-200 ease-in-out opacity-0 animate-[fadeIn_0.2s_forwards]`}
+                  transition-all duration-200 ease-in-out opacity-0 animate-[fadeIn_0.2s_forwards]`}
               >
                 <Spinner size="16" />
                 <h2 className="font-bold text-lg pl-10 mt-3">{t("home.loading")}</h2>

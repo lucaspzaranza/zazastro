@@ -43,7 +43,9 @@
     "termsPtolomaics": "Términos Ptolemaicos",
     "termsEgyptians": "Términos Egipcios",
     "decans": "Faces (Decanatos)",
-    "fixedStars": "Estrellas Fijas"
+    "fixedStars": "Estrellas Fijas",
+    "dayMap": "Diurno",
+    "nightMap": "Nocturno"
   },
   "returnChart": {
     "title": "Ingresa el año",
