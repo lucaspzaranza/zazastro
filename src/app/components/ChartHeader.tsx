@@ -65,7 +65,7 @@ export default function ChartHeader(props: ChartHeaderProps) {
           disabled={isFirstChart()}
           onClick={goToPrevious}
           title="Menu anterior"
-          className="flex-shrink-0 md:px-4 md:w-6 h-min flex items-center justify-center rounded-md text-zinc-800 hover:bg-zinc-200 hover:text-zinc-700 active:bg-zinc-200 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+          className="absolute py-3 left-1 md:left-2 flex-shrink-0 md:px-4 md:w-6 h-min flex items-center justify-center rounded-md text-zinc-800 hover:bg-zinc-200 hover:text-zinc-700 active:bg-zinc-200 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
         >
           <span className="text-lg leading-none">◀</span>
         </button>
@@ -95,6 +95,7 @@ export default function ChartHeader(props: ChartHeaderProps) {
               height={genderIconSize}
               alt="genderIcon"
               unoptimized
+              priority
               className="flex-shrink-0"
             />
           )}
@@ -104,7 +105,7 @@ export default function ChartHeader(props: ChartHeaderProps) {
           disabled={isLastChart()}
           onClick={goToNext}
           title="Próximo menu"
-          className="flex-shrink-0 md:px-4 md:w-6 h-min flex items-center justify-center rounded-md text-zinc-800 hover:bg-zinc-200 hover:text-zinc-700 active:bg-zinc-200 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+          className="absolute py-3 right-1 md:right-2 flex-shrink-0 md:px-4 md:w-6 h-min flex items-center justify-center rounded-md text-zinc-800 hover:bg-zinc-200 hover:text-zinc-700 active:bg-zinc-200 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
         >
           <span className="text-lg leading-none">▶</span>
         </button>
