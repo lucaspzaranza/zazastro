@@ -656,3 +656,14 @@ export function getGenderIconPath(gender: GenderType) {
   } else 
     return "/event.png";
 }
+
+export function isDiurnal(sunLongitude: number, ascendant: number): boolean {
+  // Converte a longitude do Sol para posição relativa ao ASC (0-360, sentido horário)
+  const relativePos = (sunLongitude - ascendant + 360) % 360;
+
+  // console.log(`sun: ${sunLongitude}, asc: ${ascendant}, relativePos: ${relativePos}`);
+
+  // Casas 7 - 12 = hemisfério superior = diurno (relativePos entre 180 e 360)
+  // Casas 1 - 6  = hemisfério inferior = noturno (relativePos entre 0 e 180)
+  return relativePos >= 180;
+}

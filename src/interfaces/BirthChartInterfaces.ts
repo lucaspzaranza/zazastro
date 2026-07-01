@@ -83,6 +83,7 @@ export interface BirthChart {
   housesData: HousesData;
   birthDate: BirthDate;
   fixedStars: FixedStar[];
+  isDiurnal?: boolean;
 
   // If it is a return chart, these props will be needed
   returnType?: ReturnChartType;

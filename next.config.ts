@@ -21,6 +21,10 @@ const nextConfig: NextConfig = {
 
     return config;
   },
+  
+  experimental: {
+    turbopackFileSystemCacheForDev: true, // nome pode variar por versão, checar changelog
+  },
 };
 
 export default withNextIntl(nextConfig);

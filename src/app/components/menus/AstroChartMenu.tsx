@@ -9,6 +9,7 @@ import { BsThreeDots } from "react-icons/bs";
 import { FaHome } from "react-icons/fa";
 import { AstroChartTogglesState } from "@/hooks/useAstroChartToggles";
 import { PTOLEMAIC_TERMS, EGYPTIAN_TERMS } from "@/app/utils/termsAndDecans";
+import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 
 interface AstroChartMenuProps {
   toggleCombineWithBirthChart?: boolean;
@@ -70,6 +71,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
 
   const { chartMenu } = useChartMenu();
   const { hasIsolatedAspect } = useAspectsData();
+  const { isMobileBreakPoint } = useScreenDimensions();
 
   // Nota: o reset de showArabicParts/showPlanetsAntiscia/showArabicPartsAntiscia
   // ao trocar de mapa agora é responsabilidade do componente pai
@@ -211,6 +213,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       active: isCombinedWithBirthChart,
       visible: !!toggleCombineWithBirthChart && !isCombinedWithReturnChart,
       iconPath: "combine.png",
+      pinned: isMobileBreakPoint(),
       onClick: () => {
         updateIsCombinedWithBirthChart(!isCombinedWithBirthChart);
         updateIsMountingChart(true);

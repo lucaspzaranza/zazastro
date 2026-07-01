@@ -5,6 +5,7 @@ import {
   getAntiscion,
   getDegreeAndSign,
   HOUSE_SYSTEMS,
+  isDiurnal,
 } from "@/app/utils/chartUtils";
 import {
   BirthChart,
@@ -104,6 +105,8 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
         : {
           ...chartData,
 
+          isDiurnal: chartType === 'birth' ? isDiurnal(chartData.planets.find(p => p.name === 'Sol')?.longitude || 0, chartData.housesData.ascendant) : undefined,
+
           planets: chartData.planets.map((planet) => {
             return {
               ...planet,
@@ -190,6 +193,9 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
     else if (chartType === "sinastry") setSinastryChart(chartObject);
     else if (chartType === "progression") setProgressionChart(chartObject);
     else if (chartType === "profection") setProfectionChart(chartObject);
+
+    if(chartType === "birth" && chartObject?.isDiurnal !== undefined) 
+      console.log('isDiurnal: ', chartObject?.isDiurnal);
   };
 
   const updateLunarDerivedChart = (lunarChart?: BirthChart) => {
