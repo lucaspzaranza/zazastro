@@ -10,6 +10,7 @@ import { useChartMenu } from "@/contexts/ChartMenuContext";
 import { useBirthChart } from "@/contexts/BirthChartContext";
 import { BsThreeDots } from "react-icons/bs";
 import { useTranslations } from "next-intl";
+import { useArabicParts } from "@/contexts/ArabicPartsContext";
 
 type ArabicPartsMenu = "default" | "customizeASC" | "lotCalculator";
 
@@ -21,6 +22,7 @@ interface ArabicPartsLayoutProps {
   partColWidth?: string;
   antisciaColWidth?: string;
   showSwitchParts: boolean;
+  isOuterPartLayout: boolean;
   onToggleInnerPartsVisualization?: (showOuterParts: boolean) => void;
 }
 
@@ -33,6 +35,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
     partColWidth,
     antisciaColWidth,
     showSwitchParts,
+    isOuterPartLayout,
     onToggleInnerPartsVisualization,
   } = props;
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -40,6 +43,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
   const [menu, setMenu] = useState<ArabicPartsMenu>("default");
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
   const contextMenuRef = useRef<HTMLDivElement>(null);
+  const { customArabicPart, updateCustomArabicPart } = useArabicParts();
 
   const { isCombinedWithBirthChart, isCombinedWithReturnChart } =
     useBirthChart();
@@ -73,6 +77,10 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
 
     return result;
   }
+  
+  // useEffect(( ) => {
+  //   console.log('isOuterPartLayout at layout: ', isOuterPartLayout);
+  // }, [isOuterPartLayout])
 
   const getTitle = () => {
     if (title) return title;
@@ -274,48 +282,62 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
   }
 
   const renderArabicPartsDefaultDetails = (): JSX.Element => {
-    return <>
-      <ul className={className}>
-        {parts?.map((arabicPart, index) => {
-          return (
-            <li key={index} className="flex flex-row items-center">
-              <div className="w-full flex flex-row justify-between">
+    return <ul className={className}>
+      {parts?.map((arabicPart, index) => {
+        return (
+          <li key={index} className={`flex flex-row items-center 
+            ${arabicPart.planet === undefined ? 
+              "font-light cursor-pointer hover:text-zinc-700 active:hover:text-zinc-900" : ""}
+              ${(customArabicPart && arabicPart.partKey === customArabicPart.partKey)? "text-blue-600" : ""}
+              `}
+            title={t("birthChart.toggleShowOnMap")}
+            onClick={() => {
+              if (arabicPart.planet === undefined) {
+                console.log('isOuterPartLayout: ', isOuterPartLayout);
+                
+                if(!customArabicPart || (customArabicPart && arabicPart.partKey !== customArabicPart.partKey))
+                  updateCustomArabicPart({...arabicPart, isFromOuterChart: showSwitchParts && isOuterPartLayout});
+                else updateCustomArabicPart(undefined);
+              }}
+            }
+          >
+            <div className="w-full flex flex-row justify-between">
+              <span
+                className={`w-[14rem] md:w-[14rem] flex flex-row items-center justify-between
+                  ${partColWidth}`}
+              >
                 <span
-                  className={`w-[14rem] md:w-[14rem] flex flex-row items-center justify-between
-                    ${partColWidth}`}
+                  className="w-[8rem] md:w-[9rem] flex flex-row items-center justify-between"
                 >
-                  <span
-                    className="w-[8rem] md:w-[9rem] flex flex-row items-center justify-between"
-                  >
-                    {t(`arabicParts.${arabicPart?.partKey}.short`)}
+                  {t(`arabicParts.${arabicPart?.partKey}.short`)}
 
-                    <span className="w-full flex flex-row items-center justify-end mr-4 md:mr-0 md:pr-1">
-                      {getArabicPartImage(arabicPart, {
-                        size: isMobileBreakPoint() ? 12 : 15,
-                      })}
-                      :
-                    </span>
-                  </span>
-                  <span
-                    className={`w-[4rem] md:w-[5rem] text-end ml-[-15px] md:pr-3`}
-                  >
-                    {formatSignColor(arabicPart.longitudeSign)}
+                  <span className="w-full flex flex-row items-center justify-end mr-4 md:mr-0 md:pr-1">
+                    {getArabicPartImage(arabicPart, {
+                      size: isMobileBreakPoint() ? 12 : 15,
+                    })}
+                    :
                   </span>
                 </span>
-
                 <span
-                  className={`w-full md:w-[12rem] flex flex-row items-center pl-2 gap-1 ${antisciaColWidth}`}
+                  className={`w-[4rem] md:w-[5rem] text-end ml-[-15px] md:pr-3`}
                 >
-                  Antiscion:
-                  <span className="w-[4rem] md:w-full text-end">
-                    {formatSignColor(arabicPart.antiscionSign)}
-                  </span>
+                  {formatSignColor(arabicPart.longitudeSign)}
                 </span>
-              </div>
-            </li>
-          );
-        })}
-      </ul></>
+              </span>
+
+              <span
+                className={`w-full md:w-[12rem] flex flex-row items-center pl-2 gap-1 ${antisciaColWidth}`}
+              >
+                Antiscion:
+                <span className="w-[4rem] md:w-full text-end">
+                  {formatSignColor(arabicPart.antiscionSign)}
+                </span>
+              </span>
+            </div>
+          </li>
+        );
+      })}
+    </ul>
   }
 
   return (

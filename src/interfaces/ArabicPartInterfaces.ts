@@ -15,6 +15,7 @@ export interface ArabicPart {
   zodiacRuler?: PlanetType;
   planet?: PlanetType;
   partKey: keyof ArabicPartsType;
+  isFromOuterChart?: boolean;
 }
 
 export interface FormulaElement {

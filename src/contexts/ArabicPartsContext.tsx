@@ -52,6 +52,9 @@ interface ArabicPartsContextType {
 
   sinastryParts?: ArabicPartsType;
   updateSinastryArabicParts: (sinastryArabicParts?: ArabicPartsType) => void;
+
+  customArabicPart?: ArabicPart;
+  updateCustomArabicPart: (customArabicPart: ArabicPart | undefined) => void;
 }
 
 const ArabicPartsContext = createContext<ArabicPartsContextType | undefined>(
@@ -74,6 +77,10 @@ export const ArabicPartsContextProvider: React.FC<{ children: ReactNode }> = ({
 
   const [sinastryParts, setSinastryParts] = useState<
     ArabicPartsType | undefined
+  >();
+
+  const [customArabicPart, setCustomArabicPart] = useState<
+    ArabicPart | undefined
   >();
 
   const { calculateLotOfFortune, calculateLotOfSpirit, calculateLotOfNecessity,
@@ -182,6 +189,11 @@ export const ArabicPartsContextProvider: React.FC<{ children: ReactNode }> = ({
     });
   };
 
+  const updateCustomArabicPart = (customArabicPart: ArabicPart | undefined) => {
+    // console.log("Updating custom Arabic part:", customArabicPart);
+    setCustomArabicPart(customArabicPart);
+  }
+
   return (
     <ArabicPartsContext.Provider
       value={{
@@ -198,6 +210,8 @@ export const ArabicPartsContextProvider: React.FC<{ children: ReactNode }> = ({
         getPartsArray,
         lunarDerivedParts,
         updateLunarDerivedParts,
+        customArabicPart,
+        updateCustomArabicPart,
       }}
     >
       {children}

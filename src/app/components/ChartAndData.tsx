@@ -97,6 +97,7 @@ export default function ChartAndData(props: Props) {
     getPartsArray,
     updateSolarReturnParts,
     updateArchArabicParts,
+    updateCustomArabicPart
   } = useArabicParts();
   const [partsArray, setPartsArray] = useState<ArabicPart[]>([]);
   const [useInnerPlanets, setUseInnerPlanets] = useState(true);
@@ -227,6 +228,7 @@ export default function ChartAndData(props: Props) {
   }, [useInnerParts, arabicParts, outerArabicParts]);
 
   function handleOnToggleInnerPartsVisualization(showInnerParts: boolean) {
+    updateCustomArabicPart(undefined);
     setUseInnerParts(showInnerParts);
   }
 
@@ -251,6 +253,10 @@ export default function ChartAndData(props: Props) {
 
     setUseInnerPlanets(true);
     setUseInnerHouses(true);
+
+    if(!isCombinedWithBirthChart || !isCombinedWithReturnChart) {
+      setUseInnerParts(true);
+    }
   }, [isCombinedWithBirthChart, isCombinedWithReturnChart, chartMenu]);
 
   useEffect(() => {
@@ -279,6 +285,7 @@ export default function ChartAndData(props: Props) {
     updateIsCombinedWithReturnChart(false);
     setHasIsolatedAspect(false);
     setSelectedAspect(null);
+    updateCustomArabicPart(undefined);
     resetChartMenus();
   }, []);
 
@@ -303,7 +310,7 @@ export default function ChartAndData(props: Props) {
       <div className="w-full md:min-w-[51rem] flex flex-col items-center justify-center relative">
         {(loadingNextChart || isMountingChart) &&
           <div
-            className={`absolute w-screen md:w-full h-full top-0 md:top-auto md:h-[108%] px-3 md:px-0 bg-white/10 backdrop-blur-sm flex flex-col items-center justify-center z-10 
+            className={`absolute w-screen md:w-full h-full top-0 md:top-auto md:h-[108%] px-3 md:px-0 bg-white/10 backdrop-blur-sm flex flex-col items-center justify-center z-50 
               transition-all duration-200 ease-in-out opacity-0 animate-[fadeIn_0.2s_forwards]`}>
             <Spinner size="16" />
             <h2 className="font-bold text-lg pl-10 mt-3">{t("home.loading")}</h2>
@@ -396,6 +403,7 @@ export default function ChartAndData(props: Props) {
                   onToggleInnerPartsVisualization={
                     handleOnToggleInnerPartsVisualization
                   }
+                  isOuterPartLayout={useInnerParts ? false : true}
                 />
               }
             </Container>
@@ -421,6 +429,7 @@ export default function ChartAndData(props: Props) {
                 onToggleInnerPartsVisualization={
                   handleOnToggleInnerPartsVisualization
                 }
+                isOuterPartLayout={useInnerParts ? false : true}
               />
             }
 

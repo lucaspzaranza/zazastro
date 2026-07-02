@@ -37,6 +37,7 @@ import { ArabicPart } from "@/interfaces/ArabicPartInterfaces";
 import { useAspectsData } from "@/contexts/AspectsContext";
 import { CHALDEAN_DECANS } from "@/app/utils/termsAndDecans";
 import ChartHeaderSubtitle from "../ChartHeaderSubtitle";
+import { useArabicParts } from "@/contexts/ArabicPartsContext";
 
 interface TooltipData {
   x: number;
@@ -103,6 +104,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
   const { birthChart, isMountingChart, updateIsMountingChart, isCombinedWithBirthChart, isCombinedWithReturnChart } = useBirthChart();
   const [testValue] = useState(2.5);
   const [showOuterChart, setShowOuterChart] = useState(outerPlanets !== undefined && outerHouses !== undefined);
+  const { customArabicPart } = useArabicParts();
 
   const { aspects, updateAspectsData, selectedAspect, setSelectedAspect, 
     hasIsolatedAspect, setHasIsolatedAspect } = useAspectsData();
@@ -1969,8 +1971,11 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     if (showArabicParts && arabicParts !== undefined) {
       arabicPartKeys.forEach((key) => {
         const lot = arabicParts[key];
+        const isCustomArabicPart = customArabicPart 
+          && lot?.partKey === customArabicPart.partKey 
+          && !customArabicPart.isFromOuterChart;
 
-        if (lot !== undefined && lot.planet) {
+        if ((lot !== undefined && lot.planet) || (isCustomArabicPart)) {
           const lotChartElement: ChartElement = {
             id: chartElementsForAspect.current.length,
             isAntiscion: false,
@@ -2026,7 +2031,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
   
             // 6) desenha o ícone do planeta
             const iconSize = 13; // px
-            const iconSrc = `/planets/${key}.png`;
+            const iconSrc = `/planets/${!isCustomArabicPart ? key : "custom-lot"}.png`;
   
             baseGroup
               .append("image")
@@ -2066,8 +2071,11 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     if (showArabicPartsAntiscia && arabicParts !== undefined) {
       arabicPartKeys.forEach((key) => {
         const lot = arabicParts[key];
+        const isCustomArabicPart = customArabicPart 
+          && lot?.partKey === customArabicPart.partKey 
+          && !customArabicPart.isFromOuterChart;
 
-        if (lot !== undefined && lot.planet) {
+        if ((lot !== undefined && lot.planet) || isCustomArabicPart) {
           const lotAntiscionChartElement: ChartElement = {
             id: chartElementsForAspect.current.length,
             isAntiscion: true,
@@ -2125,7 +2133,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
   
             // 6) desenha o ícone do planeta
             const iconSize = 13; // px
-            const iconSrc = `/planets/antiscion/${key}.png`;
+            const iconSrc = `/planets/antiscion/${!isCustomArabicPart ? key : "custom-lot"}.png`;
   
             baseGroup
               .append("image")
@@ -2174,7 +2182,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
             ];
           }
         }
-      });
+      });      
     }
 
     // Desenha as cúspide das casas do mapa interno
@@ -2572,8 +2580,11 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     if (showOuterChart && showArabicParts && outerArabicParts) {
       arabicPartKeys.forEach((key) => {
         const lot = outerArabicParts[key];
+        const isCustomArabicPart = customArabicPart 
+          && lot?.partKey === customArabicPart.partKey 
+          && customArabicPart.isFromOuterChart;
 
-        if (lot !== undefined && lot.planet) {
+        if ((lot !== undefined && lot.planet) || isCustomArabicPart) {
           const outerLotChartElement: ChartElement = {
             id: chartElementsForAspect.current.length,
             isAntiscion: false,
@@ -2630,7 +2641,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
   
             // 6) desenha o ícone do planeta
             const iconSize = 13; // px
-            const iconSrc = `/planets/${key}.png`;
+            const iconSrc = `/planets/${!isCustomArabicPart ? key : "custom-lot"}.png`;
   
             baseGroup
               .append("image")
@@ -2670,7 +2681,11 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     if (showOuterChart && showArabicPartsAntiscia && outerArabicParts) {
       arabicPartKeys.forEach((key) => {
         const lot = outerArabicParts[key];
-        if (lot !== undefined && lot.planet) {
+        const isCustomArabicPart = customArabicPart 
+          && lot?.partKey === customArabicPart.partKey 
+          && customArabicPart.isFromOuterChart;
+
+        if ((lot !== undefined && lot.planet) || isCustomArabicPart) {
           const outerLotChartElementAntiscion: ChartElement = {
             id: chartElementsForAspect.current.length,
             isAntiscion: true,
@@ -2730,7 +2745,8 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
   
             // 6) desenha o ícone do planeta
             const iconSize = 13; // px
-            const iconSrc = `/planets/antiscion/${key}.png`;
+            // const iconSrc = `/planets/antiscion/${key}.png`;
+            const iconSrc = `/planets/antiscion/${!isCustomArabicPart ? key : "custom-lot"}.png`;
   
             baseGroup
               .append("image")
@@ -2898,6 +2914,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     useDecans,
     useTerms,
     currentTerms,    
+    customArabicPart
   ]);
 
   useEffect(() => {

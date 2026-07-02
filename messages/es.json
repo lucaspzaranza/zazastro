@@ -45,7 +45,8 @@
     "decans": "Faces (Decanatos)",
     "fixedStars": "Estrellas Fijas",
     "dayMap": "Diurno",
-    "nightMap": "Nocturno"
+    "nightMap": "Nocturno",
+    "toggleShowOnMap": "Mostrar/Esconder en el Carta"
   },
   "returnChart": {
     "title": "Ingresa el año",

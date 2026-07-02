@@ -8,6 +8,7 @@ import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import { getProfectionChart, makeLunarDerivedChart } from "../utils/chartUtils";
 import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 import { useAspectsData } from "@/contexts/AspectsContext";
+import { useProfiles } from "@/contexts/ProfilesContext";
 
 interface ChartSelectorProps {
   children: React.ReactNode;
@@ -26,6 +27,7 @@ export default function ReturnSelectorArrows(props: ChartSelectorProps) {
   const { chartMenu } = useChartMenu();
   const { archArabicParts, updateSolarReturnParts } = useArabicParts();
   const { hasIsolatedAspect } = useAspectsData();
+  const { currentProfile } = useProfiles();
 
   const arrowButtonClass = `w-[2rem] h-[2rem] mx-4 flex flex-row items-center justify-center
     text-xl hover:outline-2 active:bg-gray-300 rounded-md
@@ -69,6 +71,16 @@ export default function ReturnSelectorArrows(props: ChartSelectorProps) {
           birthDate: returnChart?.birthDate,
           targetDate,
         }),
+      });
+
+      updateBirthChart({
+        chartType: "birth",
+        profileName: currentProfile?.name,
+        chartData: {
+          ...data,
+          birthDate: currentProfile?.birthDate,
+          targetDate,
+        },
       });
 
       updateBirthChart({

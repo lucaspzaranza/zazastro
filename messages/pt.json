@@ -45,7 +45,8 @@
     "decans": "Faces (Decanatos)",
     "fixedStars": "Estrelas Fixas",
     "dayMap": "Diurno",
-    "nightMap": "Noturno"
+    "nightMap": "Noturno",
+    "toggleShowOnMap": "Exibir/Ocultar no Mapa"
   },
   "returnChart": {
     "title": "Digite o ano da revolução",

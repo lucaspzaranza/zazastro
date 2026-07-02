@@ -45,7 +45,8 @@
     "decans": "Decans",
     "fixedStars": "Fixed Stars",
     "dayMap": "Day Map",
-    "nightMap": "Night Map"
+    "nightMap": "Night Map",
+    "toggleShowOnMap": "Toggle Show on Map"
   },
   "returnChart": {
     "title": "Enter the year of the return",

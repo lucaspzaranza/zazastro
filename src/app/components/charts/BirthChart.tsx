@@ -66,7 +66,7 @@ export default function BirthChart() {
     selectCity,
     sinastryChart,
     houseSystem,
-    updateHouseSystem
+    updateHouseSystem,    
   } = useBirthChart();
   const { profiles, currentProfile, updateCurrentSelectedProfile, updateSinastryProfile } = useProfiles();
   const { arabicParts, archArabicParts } = useArabicParts();
@@ -1134,7 +1134,7 @@ export default function BirthChart() {
           {isTransitioning && (
             <div className="absolute inset-0 flex items-center justify-center">
               <div
-                className={`absolute w-screen md:w-full h-full top-0 md:top-auto md:h-[108%] px-3 md:px-0 bg-white/10 backdrop-blur-sm flex flex-col items-center justify-center z-10 
+                className={`absolute w-screen md:w-full h-full top-0 md:top-auto md:h-[108%] px-3 md:px-0 bg-white/10 backdrop-blur-sm flex flex-col items-center justify-center z-50 
                   transition-all duration-200 ease-in-out opacity-0 animate-[fadeIn_0.2s_forwards]`}
               >
                 <Spinner size="16" />

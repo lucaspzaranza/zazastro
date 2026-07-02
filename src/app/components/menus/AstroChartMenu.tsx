@@ -10,6 +10,7 @@ import { FaHome } from "react-icons/fa";
 import { AstroChartTogglesState } from "@/hooks/useAstroChartToggles";
 import { PTOLEMAIC_TERMS, EGYPTIAN_TERMS } from "@/app/utils/termsAndDecans";
 import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
+import { useArabicParts } from "@/contexts/ArabicPartsContext";
 
 interface AstroChartMenuProps {
   toggleCombineWithBirthChart?: boolean;
@@ -72,6 +73,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
   const { chartMenu } = useChartMenu();
   const { hasIsolatedAspect } = useAspectsData();
   const { isMobileBreakPoint } = useScreenDimensions();
+  const { updateCustomArabicPart } = useArabicParts();
 
   // Nota: o reset de showArabicParts/showPlanetsAntiscia/showArabicPartsAntiscia
   // ao trocar de mapa agora é responsabilidade do componente pai
@@ -215,6 +217,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       iconPath: "combine.png",
       pinned: isMobileBreakPoint(),
       onClick: () => {
+        updateCustomArabicPart(undefined);
         updateIsCombinedWithBirthChart(!isCombinedWithBirthChart);
         updateIsMountingChart(true);
       },
@@ -226,6 +229,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       visible: !!toggleCombineWithReturnChart && !isCombinedWithBirthChart,
       iconPath: "planets/sun.png",
       onClick: () => {
+        updateCustomArabicPart(undefined);
         updateIsCombinedWithReturnChart(!isCombinedWithReturnChart);
         updateIsMountingChart(true);
       },
@@ -348,7 +352,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
           </button>
 
           {desktopContextMenuOpen && (
-            <div className="absolute w-[18rem] bg-zinc-50 shadow px-2 py-3 right-0 top-9 flex flex-col items-start z-50">
+            <div className="absolute w-[18rem] bg-zinc-50 shadow px-2 py-3 right-0 top-9 flex flex-col items-start z-40">
               {restItems.map(renderMenuItem)}
             </div>
           )}
@@ -356,7 +360,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       </div>
 
       {/* Mobile: mantém o menu de contexto, exatamente como já era */}
-      <div className="md:hidden right-0 w-full flex flex-row items-center justify-between z-50">
+      <div className="md:hidden right-0 w-full flex flex-row items-center justify-between z-40">
         <div className="flex flex-row items-center gap-1.5">
           <button
             title={t("birthChart.home")}
@@ -395,7 +399,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
             </button>
 
             {mobileContextMenuOpen && (
-              <div className="absolute w-[18rem] bg-zinc-50 shadow px-2 py-3 right-0 top-8 flex flex-col items-start z-50">
+              <div className="absolute w-[18rem] bg-zinc-50 shadow px-2 py-3 right-0 top-8 flex flex-col items-start z-40">
                 {menuItems.map(renderMenuItem)}
               </div>
             )}
