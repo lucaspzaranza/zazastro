@@ -38,6 +38,7 @@ import { SKELETON_LOADER_TIME } from "@/app/utils/constants";
 import { useBirthChart } from "@/contexts/BirthChartContext";
 import { useTranslations } from "next-intl";
 import { useAspectsData } from "@/contexts/AspectsContext";
+import { useArabicParts } from "@/contexts/ArabicPartsContext";
 
 export default function AspectsTable({
   aspects,
@@ -78,6 +79,8 @@ export default function AspectsTable({
 
   const { updateAspectsData, selectedAspect, setSelectedAspect, 
     hasIsolatedAspect, setHasIsolatedAspect} = useAspectsData();
+
+  const { customArabicPart } = useArabicParts();
 
   const t = useTranslations();
   const houseInitial = t("aspects.houseInitial");
@@ -264,7 +267,7 @@ export default function AspectsTable({
     } else if (element.elementType === "arabicPart") {
       const key = getArabicPartKeyFromElement(element)!;
       if (lots) {
-        const originalArabicPart = lots[key];
+        const originalArabicPart = key === "custom" ? customArabicPart : lots[key];
 
         if (originalArabicPart) {
           backupValue.current = element.isAntiscion

@@ -52,6 +52,7 @@ export default function ArabicPartCalculator(
   const t = useTranslations();
 
   const toggleShowLotOnMap = useRef<boolean>(false);
+  const prevLotIsArchLot = useRef<boolean>(false);
 
   useEffect(() => {
     if (!birthChart) return;
@@ -184,13 +185,18 @@ export default function ArabicPartCalculator(
     useArchData: boolean, lot: ArabicPart, archLot?: ArabicPart }) {
 
     const { useArchData, lot, archLot } = options;
-    const lotToUse = useArchData ? archLot : lot;
+    const lotToUse = useArchData ? archLot : lot;   
 
     return <div className={`text-[10px] md:text-[12px] hover:cursor-pointer hover:text-blue-600 active:text-blue-800
       flex flex-row items-center justify-center gap-1 mt-1`}
       onClick={() => {
-        toggleShowLotOnMap.current = !toggleShowLotOnMap.current;       
+        if(prevLotIsArchLot.current === useArchData)
+          toggleShowLotOnMap.current = !toggleShowLotOnMap.current;
+        else toggleShowLotOnMap.current = true;
+        
         updateCustomArabicPart(toggleShowLotOnMap.current ? lotToUse : undefined);
+
+        prevLotIsArchLot.current = useArchData;
       }}
     >
       [{t("birthChart.toggleShowOnMap")}]
@@ -215,7 +221,7 @@ export default function ArabicPartCalculator(
     }
 
     const distanceCtoB = mod360(significatorB?.longitude - triggerC?.longitude);
-    const distanceString = convertDecimalIntoDegMinString(
+    const distanceCToBString = convertDecimalIntoDegMinString(
       decimalToDegreesMinutes(distanceCtoB)
     );
 
@@ -235,15 +241,18 @@ export default function ArabicPartCalculator(
     const archACString = convertDecimalIntoDegMinString(
       decimalToDegreesMinutes(archACRaw)
     );
-    const archLotLongitudeRaw = decimalToDegreesMinutes(archACRaw + distanceCtoB);
+    const archLotLongitudeRaw = decimalToDegreesMinutes(mod360(archACRaw + distanceCtoB));
     const archLotLongitudeString = convertDecimalIntoDegMinString(
       Number.parseFloat(mod360(archLotLongitudeRaw).toFixed(2))
     );
     const showArchLotLongMod360Transformation = archLotLongitudeRaw > 360;
 
-    const lot = getLotData(decimalToDegreesMinutes(projectionPointA.longitude + distanceCtoB), 
+    const lot = getLotData(decimalToDegreesMinutes(mod360(projectionPointA.longitude + distanceCtoB)), 
       projectionPointA.longitude, false);
     const archLot = getLotData(archLotLongitudeRaw, archACRaw, true);
+
+    // console.log('lot: ', lot);
+    // console.log('archLot: ', archLot);
 
     // In case of changing the lot calculus
     if(customArabicPart?.longitude !== lot.longitude)
@@ -285,7 +294,7 @@ export default function ArabicPartCalculator(
             </span>
 
             <span>
-              {t("arabicParts.distance")} <strong>(B - C)</strong>: {distanceString}.
+              {t("arabicParts.distance")} <strong>(B - C)</strong>: {distanceCToBString}.
             </span>
             <span>
               {t("arabicParts.projectedIn")}{" "}
@@ -303,7 +312,7 @@ export default function ArabicPartCalculator(
                   true
                 )
               )}
-              ) + {distanceString} ={" "}
+              ) + {distanceCToBString} ={" "}
               {showModTransformation && (
                 <>
                   <br />
@@ -316,7 +325,7 @@ export default function ArabicPartCalculator(
               {" = "}
               {formatSignColor(getDegreeAndSign(projectedLongitude, true))}.
             </span>
-            <span>{t("arabicParts.distanceFromOrigin")}: {distanceString}.</span>
+            <span>{t("arabicParts.distanceFromOrigin")}: {distanceCToBString}.</span>
 
             {chartMenu !== "birth" && chartMenu !== "moment" && (
               <div className="w-full mt-1 flex flex-col">
@@ -373,12 +382,12 @@ export default function ArabicPartCalculator(
             label={t("arabicParts.origin")}
             onSelect={(el) => selectItem(el, 0)}
           />
-          +
+          <span className="h-12 flex flex-col justify-end">+</span>
           <ArabicPartCalculatorDropdown
             label={t("arabicParts.until")}
             onSelect={(el) => selectItem(el, 1)}
           />
-          -
+          <span className="h-12 flex flex-col justify-end">-</span>
           <ArabicPartCalculatorDropdown
             label={t("arabicParts.from")}
             onSelect={(el) => selectItem(el, 2)}

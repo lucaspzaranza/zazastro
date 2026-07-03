@@ -23,6 +23,7 @@ interface ArabicPartsLayoutProps {
   antisciaColWidth?: string;
   showSwitchParts: boolean;
   isOuterPartLayout: boolean;
+  isCustomASC?: boolean;
   onToggleInnerPartsVisualization?: (showOuterParts: boolean) => void;
 }
 
@@ -36,6 +37,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
     antisciaColWidth,
     showSwitchParts,
     isOuterPartLayout,
+    isCustomASC,
     onToggleInnerPartsVisualization,
   } = props;
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -286,12 +288,14 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
       {parts?.filter(lot => lot.partKey !== "custom").map((arabicPart, index) => {
         return (
           <li key={index} className={`flex flex-row items-center 
-            ${arabicPart.planet === undefined ? 
+            ${(arabicPart.planet === undefined && !isCustomASC) ? 
               "font-light cursor-pointer hover:text-zinc-700 active:hover:text-zinc-900" : ""}
               ${(customArabicPart && arabicPart.partKey === customArabicPart.partKey)? "text-blue-600" : ""}
               `}
             title={t("birthChart.toggleShowOnMap")}
             onClick={() => {
+              if(isCustomASC) return;
+
               if (arabicPart.planet === undefined) {
                 // console.log('isOuterPartLayout: ', isOuterPartLayout);
                 

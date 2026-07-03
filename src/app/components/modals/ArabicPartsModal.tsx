@@ -178,7 +178,7 @@ export default function ArabicPartsModal(props: ArabicPartsModalProps) {
 
                     <div className="w-full flex flex-row items-center gap-1 text-sm text-zinc-700">
                       <span className="text-zinc-500">{t("arabicParts.formula")}:</span>
-                      <span className="text-zinc-800">{getFormulaDescription(arabicPart.formulaDescription)}</span>
+                      <span className="text-zinc-800">{getFormulaDescription(arabicPart.formulaDescription!)}</span>
                     </div>
 
                     <div className="w-full flex flex-row items-center gap-1 text-sm text-zinc-700">

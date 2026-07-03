@@ -182,6 +182,7 @@ export default function CustomizeASC(props: ASCModalProps) {
           title={t("arabicParts.title") + "*"}
           showMenuButtons={false}
           isOuterPartLayout={false}
+          isCustomASC={true}
         />
       </div>
 
