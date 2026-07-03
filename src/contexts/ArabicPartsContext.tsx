@@ -15,6 +15,7 @@
 // } from "@/hooks/useArabicPartsUtils";
 import { arabicPartKeys } from "@/app/utils/chartUtils";
 import { useArabicPartsUtils } from "@/hooks/useArabicPartsUtils";
+import { useAstroChartToggles } from "@/hooks/useAstroChartToggles";
 import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import { ArabicPartType, BirthChart } from "@/interfaces/BirthChartInterfaces";
 
@@ -89,6 +90,8 @@ export const ArabicPartsContextProvider: React.FC<{ children: ReactNode }> = ({
       calculateBirthArchArabicPart
    } = useArabicPartsUtils();
 
+  //  const { showArabicParts, showArabicPartsAntiscia } = useAstroChartToggles();
+
   function calculateArabicParts(
     birthChart: BirthChart,
     partType: ArabicPartType
@@ -111,6 +114,21 @@ export const ArabicPartsContextProvider: React.FC<{ children: ReactNode }> = ({
       marriage: calculateLotOfMarriage(birthChart),
       resignation: calculateLotOfResignation(birthChart),
       children: calculateLotOfChildren(birthChart),
+      // Due some racing conditions when updating this custom part,
+      // We will not use it, only initializing for using its key at AstroChart.tsx loop
+      custom: {
+        partKey: "custom",
+        name: "Custom",
+        longitude: 0,
+        isFromOuterChart: false,
+        longitudeRaw: 0,
+        longitudeSign: "",
+        antiscion: 0,
+        antiscionRaw: 0,
+        antiscionSign: "",
+        distanceFromASC: 0,
+        rawDistanceFromASC: 0
+      }
     };
 
     if (partType === "birth") {
@@ -191,6 +209,9 @@ export const ArabicPartsContextProvider: React.FC<{ children: ReactNode }> = ({
 
   const updateCustomArabicPart = (customArabicPart: ArabicPart | undefined) => {
     // console.log("Updating custom Arabic part:", customArabicPart);
+    // if(!showArabicParts && !showArabicPartsAntiscia)
+    //   alert("Please enable 'Arabic Parts' or 'Arabic Parts Antiscia' to show the custom lot on the map.");
+
     setCustomArabicPart(customArabicPart);
   }
 

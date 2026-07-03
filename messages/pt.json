@@ -248,6 +248,7 @@
     "in": "em",
     "projectedIn": "Projetado em",
     "distanceFromASC": "Distância pro Ascendente",
+    "distanceFromOrigin": "Distância pra origem (A)",
     "distanceFromBirthASC": "Distância pro Ascendente Natal",
     "projectedInBirthArch": "Parte Árabe projetada no Arco Natal",
     "asc": "Ascendente",
@@ -259,6 +260,7 @@
     "associatedTo": "Associada a",
     "formula": "Fórmula",
     "ruler": "Dispositor",
+    "customLot": "Parte Árabe Personalizada",
 
     "fortune": {
       "short": "Fortuna",
@@ -299,6 +301,10 @@
     "children": {
       "short": "Filhos",
       "complete": "Parte dos Filhos"
+    },
+    "custom": {
+      "short": "Parte Árabe",
+      "complete": "Parte Árabe Personalizada"
     }
   },
   "aspects": {

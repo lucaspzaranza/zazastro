@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ArabicPartCalculatorDropdown from "./modals/ArabicPartCalculatorDropdown";
 import {
+  ArabicPart,
   ArabicPartCalculatorDropdownItem,
   ArabicPartsType,
 } from "@/interfaces/ArabicPartInterfaces";
@@ -9,34 +10,48 @@ import { useBirthChart } from "@/contexts/BirthChartContext";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import {
   convertDecimalIntoDegMinString,
+  convertDegMinNumberToDecimal,
+  convertDegMinToDecimal,
   decimalToDegreesMinutes,
   extractHouseNumber,
   formatSignColor,
+  getAntiscion,
   getDegreeAndSign,
+  getZodiacRuler,
   mod360,
+  wrapZodiacLongitude,
 } from "@/app/utils/chartUtils";
 import { useChartMenu } from "@/contexts/ChartMenuContext";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
+import { useArabicPartsUtils } from "@/hooks/useArabicPartsUtils";
 
 export default function ArabicPartCalculator(
 
 ) {
   const { chartMenu } = useChartMenu();
-  const { birthChart, returnChart, lunarDerivedChart } = useBirthChart();
-  const { arabicParts } = useArabicParts();
+  const { birthChart, returnChart, lunarDerivedChart, 
+    isCombinedWithBirthChart, isCombinedWithReturnChart } = useBirthChart();
+  const { arabicParts, customArabicPart, updateCustomArabicPart, updateArabicParts,
+    updateArchArabicParts, updateSolarReturnParts, updateSinastryArabicParts
+   } = useArabicParts();
+  const { getArabicPartData, getDistanceFromAscendant } = useArabicPartsUtils();
 
-  const [projectionPoint, setProjectionPoint] =
+  const [projectionPointA, setProjectionPoint] =
     useState<ChartElementForArabicPartCalculation>();
-  const [significator, setSignificator] =
+  const [significatorB, setSignificator] =
     useState<ChartElementForArabicPartCalculation>();
-  const [trigger, setTrigger] =
+  const [triggerC, setTrigger] =
     useState<ChartElementForArabicPartCalculation>();
 
   const [showLotCalculation, setShowLotCalculation] = useState(false);
+  // const [toggleShowLotOnMap, setToggleShowLotOnMap] = useState(false);
   const [lotCalculationHTML, setLotCalculationHTML] =
     useState<React.ReactNode>();
 
   const t = useTranslations();
+
+  const toggleShowLotOnMap = useRef<boolean>(false);
 
   useEffect(() => {
     if (!birthChart) return;
@@ -144,8 +159,53 @@ export default function ArabicPartCalculator(
     return 0;
   }
 
+  function getLotData(longitudeRaw: number, asc: number, isArch: boolean): ArabicPart {
+    const longitude = Number.parseFloat(longitudeRaw.toFixed(2));
+    const zodiacRuler = getZodiacRuler(longitude);
+    const antiscion = getAntiscion(convertDegMinNumberToDecimal(longitudeRaw));
+    
+    return {
+      name: t("arabicParts.customLot"),
+      partKey: "custom",
+      zodiacRuler,
+      longitude,
+      longitudeRaw: longitudeRaw,
+      longitudeSign: getDegreeAndSign(longitude, true),
+      antiscion: antiscion,
+      antiscionRaw: getAntiscion(longitudeRaw, true),
+      antiscionSign: getDegreeAndSign(antiscion, true),
+      distanceFromASC: getDistanceFromAscendant(longitudeRaw, asc),
+      rawDistanceFromASC: wrapZodiacLongitude(longitudeRaw - asc),
+      isFromOuterChart: isArch && (isCombinedWithBirthChart || isCombinedWithReturnChart),
+    };
+  }
+
+  function renderToggleShowLotOnMapBtn(options: { 
+    useArchData: boolean, lot: ArabicPart, archLot?: ArabicPart }) {
+
+    const { useArchData, lot, archLot } = options;
+    const lotToUse = useArchData ? archLot : lot;
+
+    return <div className={`text-[10px] md:text-[12px] hover:cursor-pointer hover:text-blue-600 active:text-blue-800
+      flex flex-row items-center justify-center gap-1 mt-1`}
+      onClick={() => {
+        toggleShowLotOnMap.current = !toggleShowLotOnMap.current;       
+        updateCustomArabicPart(toggleShowLotOnMap.current ? lotToUse : undefined);
+      }}
+    >
+      [{t("birthChart.toggleShowOnMap")}]
+      <Image
+        alt="info"
+        src="/zoom.png"
+        width={13}
+        height={13}
+        unoptimized
+      />
+    </div>
+  }
+
   function calculateLot(): void {
-    if (!projectionPoint || !significator || !trigger) {
+    if (!projectionPointA || !significatorB || !triggerC) {
       setLotCalculationHTML(
         <div className="w-full text-sm text-center mt-2">
           {t("arabicParts.someFieldsAreEmpty")}
@@ -154,13 +214,13 @@ export default function ArabicPartCalculator(
       return;
     }
 
-    const distance = mod360(significator?.longitude - trigger?.longitude);
+    const distanceCtoB = mod360(significatorB?.longitude - triggerC?.longitude);
     const distanceString = convertDecimalIntoDegMinString(
-      decimalToDegreesMinutes(distance)
+      decimalToDegreesMinutes(distanceCtoB)
     );
 
     const rawProjectedLongitude = decimalToDegreesMinutes(
-      projectionPoint.longitude + distance
+      projectionPointA.longitude + distanceCtoB
     );
     const rawProjectedLongitudeString = convertDecimalIntoDegMinString(
       rawProjectedLongitude
@@ -168,33 +228,44 @@ export default function ArabicPartCalculator(
     const showModTransformation = rawProjectedLongitude > 360;
 
     const projectedLongitude = mod360(
-      decimalToDegreesMinutes(projectionPoint.longitude + distance)
+      decimalToDegreesMinutes(projectionPointA.longitude + distanceCtoB)
     );
 
     const archACRaw = getBirthArchAscendant();
     const archACString = convertDecimalIntoDegMinString(
       decimalToDegreesMinutes(archACRaw)
     );
-    const archLotLongitudeRaw = decimalToDegreesMinutes(archACRaw + distance);
+    const archLotLongitudeRaw = decimalToDegreesMinutes(archACRaw + distanceCtoB);
     const archLotLongitudeString = convertDecimalIntoDegMinString(
       Number.parseFloat(mod360(archLotLongitudeRaw).toFixed(2))
     );
     const showArchLotLongMod360Transformation = archLotLongitudeRaw > 360;
 
+    const lot = getLotData(decimalToDegreesMinutes(projectionPointA.longitude + distanceCtoB), 
+      projectionPointA.longitude, false);
+    const archLot = getLotData(archLotLongitudeRaw, archACRaw, true);
+
+    // In case of changing the lot calculus
+    if(customArabicPart?.longitude !== lot.longitude)
+      toggleShowLotOnMap.current = false;
+
     setLotCalculationHTML(
       <div className="w-full text-center mt-2">
+
         {t("arabicParts.lotIsIn")}
         {formatSignColor(getDegreeAndSign(projectedLongitude, true))}.
+        {renderToggleShowLotOnMapBtn({ useArchData: false, lot, archLot })}
+        
         <div className="w-full flex flex-col mt-2">
           <strong>{t("arabicParts.calculationDetails")}:</strong>
           <div className="flex flex-col text-start text-sm">
             <span>
               {t("arabicParts.significator")} <strong>(B)</strong>:{" "}
-              <strong>{getLabel(significator)}</strong>
+              <strong>{getLabel(significatorB)}</strong>
               {" "}{t("arabicParts.in")}{" "}
               {formatSignColor(
                 getDegreeAndSign(
-                  decimalToDegreesMinutes(significator.longitude),
+                  decimalToDegreesMinutes(significatorB.longitude),
                   true
                 )
               )}
@@ -202,11 +273,11 @@ export default function ArabicPartCalculator(
             </span>
 
             <span>
-              {t("arabicParts.trigger")} <strong>(C)</strong>: <strong>{getLabel(trigger)}</strong>
+              {t("arabicParts.trigger")} <strong>(C)</strong>: <strong>{getLabel(triggerC)}</strong>
               {" "}{t("arabicParts.in")}{" "}
               {formatSignColor(
                 getDegreeAndSign(
-                  decimalToDegreesMinutes(trigger.longitude),
+                  decimalToDegreesMinutes(triggerC.longitude),
                   true
                 )
               )}
@@ -219,16 +290,16 @@ export default function ArabicPartCalculator(
             <span>
               {t("arabicParts.projectedIn")}{" "}
               <strong>
-                (A) {getLabel(projectionPoint)}: A + B - C{" = "}
+                (A) {getLabel(projectionPointA)}: A + B - C{" = "}
               </strong>
               <br />
               {convertDecimalIntoDegMinString(
-                decimalToDegreesMinutes(projectionPoint.longitude)
+                decimalToDegreesMinutes(projectionPointA.longitude)
               )}{" "}
               (
               {formatSignColor(
                 getDegreeAndSign(
-                  decimalToDegreesMinutes(projectionPoint.longitude),
+                  decimalToDegreesMinutes(projectionPointA.longitude),
                   true
                 )
               )}
@@ -245,7 +316,7 @@ export default function ArabicPartCalculator(
               {" = "}
               {formatSignColor(getDegreeAndSign(projectedLongitude, true))}.
             </span>
-            <span>{t("arabicParts.distanceFromASC")}: {distanceString}.</span>
+            <span>{t("arabicParts.distanceFromOrigin")}: {distanceString}.</span>
 
             {chartMenu !== "birth" && chartMenu !== "moment" && (
               <div className="w-full mt-1 flex flex-col">
@@ -277,6 +348,7 @@ export default function ArabicPartCalculator(
                   {t("arabicParts.projectedLotInBirthArch")}{" "}
                   {formatSignColor(getDegreeAndSign(archLotLongitudeRaw, true))}
                   .
+                  {renderToggleShowLotOnMapBtn({ useArchData: true, lot, archLot })}
                 </span>
               </div>
             )}

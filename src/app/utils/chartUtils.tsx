@@ -115,6 +115,7 @@ export const arabicPartKeys: (keyof ArabicPartsType)[] = [
   "marriage",
   "resignation",
   "children",
+  "custom"
 ];
 
 export function getSign(longitude: number, getGlyphOnly = false): string {

@@ -1346,6 +1346,10 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     setShowOuterChart(logic);
   }, [outerPlanets, outerHouses]);
 
+  useEffect(() => {
+    // console.log('arabicParts at AstroChart.tsx: ', arabicParts);
+  }, [arabicParts])
+
   // Main useEffect
   useEffect(() => {
     if (!ref.current) return;
@@ -1970,10 +1974,11 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
 
     if (showArabicParts && arabicParts !== undefined) {
       arabicPartKeys.forEach((key) => {
-        const lot = arabicParts[key];
         const isCustomArabicPart = customArabicPart 
-          && lot?.partKey === customArabicPart.partKey 
+          && arabicParts[key]?.partKey === customArabicPart.partKey 
           && !customArabicPart.isFromOuterChart;
+
+        const lot = isCustomArabicPart ? customArabicPart : arabicParts[key]!;
 
         if ((lot !== undefined && lot.planet) || (isCustomArabicPart)) {
           const lotChartElement: ChartElement = {
@@ -1988,7 +1993,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
 
           let canDrawArabicPart = true;
           if(hasIsolatedAspect)
-            canDrawArabicPart = elementIsInIsolatedAspect(lotChartElement);
+            canDrawArabicPart = elementIsInIsolatedAspect(lotChartElement);                    
 
           if(canDrawArabicPart) {
             const overlapData =
@@ -2070,10 +2075,11 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
 
     if (showArabicPartsAntiscia && arabicParts !== undefined) {
       arabicPartKeys.forEach((key) => {
-        const lot = arabicParts[key];
         const isCustomArabicPart = customArabicPart 
-          && lot?.partKey === customArabicPart.partKey 
+          && arabicParts[key]?.partKey === customArabicPart.partKey 
           && !customArabicPart.isFromOuterChart;
+
+          const lot = isCustomArabicPart ? customArabicPart : arabicParts[key]!;
 
         if ((lot !== undefined && lot.planet) || isCustomArabicPart) {
           const lotAntiscionChartElement: ChartElement = {
@@ -2579,10 +2585,10 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
 
     if (showOuterChart && showArabicParts && outerArabicParts) {
       arabicPartKeys.forEach((key) => {
-        const lot = outerArabicParts[key];
         const isCustomArabicPart = customArabicPart 
-          && lot?.partKey === customArabicPart.partKey 
+          && outerArabicParts[key]?.partKey === customArabicPart.partKey 
           && customArabicPart.isFromOuterChart;
+        const lot = isCustomArabicPart ? customArabicPart : outerArabicParts[key]!;
 
         if ((lot !== undefined && lot.planet) || isCustomArabicPart) {
           const outerLotChartElement: ChartElement = {
@@ -2680,10 +2686,10 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
 
     if (showOuterChart && showArabicPartsAntiscia && outerArabicParts) {
       arabicPartKeys.forEach((key) => {
-        const lot = outerArabicParts[key];
         const isCustomArabicPart = customArabicPart 
-          && lot?.partKey === customArabicPart.partKey 
+          && outerArabicParts[key]?.partKey === customArabicPart.partKey 
           && customArabicPart.isFromOuterChart;
+        const lot = isCustomArabicPart ? customArabicPart : outerArabicParts[key]!;
 
         if ((lot !== undefined && lot.planet) || isCustomArabicPart) {
           const outerLotChartElementAntiscion: ChartElement = {
@@ -2914,7 +2920,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     useDecans,
     useTerms,
     currentTerms,    
-    customArabicPart
+    customArabicPart,
   ]);
 
   useEffect(() => {

@@ -161,7 +161,8 @@ export default function ChartAndData(props: Props) {
   // vivia dentro do AstroChart, reagindo às mesmas dependências.
   useEffect(() => {
     toggles.resetPerChartToggles();
-  }, [innerChart, outerChart, arabicParts, outerArabicParts, innerChart.fixedStars]);
+  // }, [innerChart, outerChart, arabicParts, outerArabicParts, innerChart.fixedStars]);
+  }, [innerChart, outerChart, outerArabicParts, innerChart.fixedStars]);
 
   const [planetsAntiscion, setPlanetsAntiscion] = useState<
     Record<PlanetType, boolean>

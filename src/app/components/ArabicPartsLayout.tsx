@@ -283,7 +283,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
 
   const renderArabicPartsDefaultDetails = (): JSX.Element => {
     return <ul className={className}>
-      {parts?.map((arabicPart, index) => {
+      {parts?.filter(lot => lot.partKey !== "custom").map((arabicPart, index) => {
         return (
           <li key={index} className={`flex flex-row items-center 
             ${arabicPart.planet === undefined ? 
@@ -293,7 +293,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
             title={t("birthChart.toggleShowOnMap")}
             onClick={() => {
               if (arabicPart.planet === undefined) {
-                console.log('isOuterPartLayout: ', isOuterPartLayout);
+                // console.log('isOuterPartLayout: ', isOuterPartLayout);
                 
                 if(!customArabicPart || (customArabicPart && arabicPart.partKey !== customArabicPart.partKey))
                   updateCustomArabicPart({...arabicPart, isFromOuterChart: showSwitchParts && isOuterPartLayout});

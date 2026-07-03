@@ -259,6 +259,7 @@
     "associatedTo": "Associated to",
     "formula": "Formula",
     "ruler": "Ruler",
+    "customLot": "Custom Lot",
 
     "fortune": {
       "short": "Fortune",
@@ -299,6 +300,10 @@
     "children": {
       "short": "Children",
       "complete": "Lot of Children"
+    },
+    "custom": {
+      "short": "Lot",
+      "complete": "Custom Lot"
     }
   },
   "aspects": {

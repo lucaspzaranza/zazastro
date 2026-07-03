@@ -259,6 +259,7 @@
     "associatedTo": "Asociada a",
     "formula": "Fórmula",
     "ruler": "Dispositor",
+    "customLot": "Parte Árabe Personalizada",
 
     "fortune": {
       "short": "Fortuna",
@@ -299,6 +300,10 @@
     "children": {
       "short": "Hijos",
       "complete": "Parte de los Hijos"
+    },
+    "custom": {
+      "short": "Parte Árabe",
+      "complete": "Parte Árabe Personalizada"
     }
   },
   "aspects": {
