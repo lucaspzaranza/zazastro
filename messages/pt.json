@@ -34,7 +34,7 @@
     "showDegreesMobile": "Graus",
     "showInfo": "Exibir Detalhes",
     "mainMenu": "Menu Principal",
-     "home": "Home",
+    "home": "Home",
     "house": "Casa",
     "houses": "Casas",
     "planets": "Planetas",
@@ -264,46 +264,67 @@
 
     "fortune": {
       "short": "Fortuna",
+      "shortMobile": "Fortuna",
       "complete": "Parte da Fortuna"
     },
     "spirit": {
       "short": "Espírito",
+      "shortMobile": "Espírito",
       "complete": "Parte do Espírito"
     },
     "necessity": {
       "short": "Necessidade",
+      "shortMobile": "Necessidade",
       "complete": "Parte da Necessidade"
     },
     "love": {
       "short": "Amor",
+      "shortMobile": "Amor",
       "complete": "Parte do Amor"
     },
     "valor": {
       "short": "Valor",
+      "shortMobile": "Valor",
       "complete": "Parte do Valor"
     },
     "victory": {
       "short": "Vitória",
+      "shortMobile": "Vitória",
       "complete": "Parte da Vitória"
     },
     "captivity": {
       "short": "Cativeiro",
+      "shortMobile": "Cativeiro",
       "complete": "Parte do Cativeiro"
     },
     "marriage": {
       "short": "Casamento",
+      "shortMobile": "Casamento",
       "complete": "Parte do Casamento"
+    },
+    "marriageHermes": {
+      "short": "Casamento (H)",
+      "shortMobile": "Csmnto. (H)",
+      "complete": "Parte do Casamento (Hermes)"
+    },
+    "marriageValens": {
+      "short": "Casamento (V)",
+      "shortMobile": "Csmnto. (V)",
+      "complete": "Parte do Casamento (Valens)"
     },
     "resignation": {
       "short": "Renúncia",
+      "shortMobile": "Renúncia",
       "complete": "Parte da Renúncia"
     },
     "children": {
       "short": "Filhos",
+      "shortMobile": "Filhos",
       "complete": "Parte dos Filhos"
     },
     "custom": {
       "short": "Parte Árabe",
+      "shortMobile": "Parte Árabe",
       "complete": "Parte Árabe Personalizada"
     }
   },

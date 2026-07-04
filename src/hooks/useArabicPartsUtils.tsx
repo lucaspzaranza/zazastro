@@ -1,6 +1,6 @@
 "use client";
 
-import { BirthChart } from "@/interfaces/BirthChartInterfaces";
+import { BirthChart, GenderType } from "@/interfaces/BirthChartInterfaces";
 import {
   decimalToDegreesMinutes,
   getAntiscion,
@@ -9,7 +9,7 @@ import {
   mod360,
   wrapZodiacLongitude,
 } from "../app/utils/chartUtils";
-import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
+import { ArabicPart, ArabicPartsType, FormulaElement } from "@/interfaces/ArabicPartInterfaces";
 import { useTranslations } from "next-intl";
 
 const getGlyphOnly = true;
@@ -17,6 +17,7 @@ const getGlyphOnly = true;
 export function useArabicPartsUtils() {
 
   const t = useTranslations();
+  const signals = "+, -";
   
   function getDistanceFromAscendant(
     longitudeRaw: number,
@@ -68,19 +69,19 @@ export function useArabicPartsUtils() {
       planet: "moon",
       partKey: "fortune",
       formulaDescription: {
-        projectedFrom: {
+        projectedFromA: {
           type: "house",
           key: "1"
         },
-        significator: {
+        significatorB: {
           type: "planet",
           key: "moon"
         },
-        trigger: {
+        triggerC: {
           type: "planet",
           key: "sun"
         },
-        signals: "+, -"
+        signals
       },
       longitudeRaw,
       ...getArabicPartData(longitudeRaw, asc),
@@ -102,19 +103,19 @@ export function useArabicPartsUtils() {
       partKey: "spirit",
       // formulaDescription: "AC + Sol - Lua",
       formulaDescription: {
-        projectedFrom: {
+        projectedFromA: {
           type: "house",
           key: "1"
         },
-        significator: {
+        significatorB: {
           type: "planet",
           key: "sun"
         },
-        trigger: {
+        triggerC: {
           type: "planet",
           key: "moon"
         },
-        signals: "+, -"
+        signals
       },
       longitudeRaw,
       ...getArabicPartData(longitudeRaw, asc),
@@ -140,19 +141,19 @@ export function useArabicPartsUtils() {
       partKey: "necessity",
       // formulaDescription: "AC + Parte da Fortuna - Parte do Espírito",
       formulaDescription: {
-        projectedFrom: {
+        projectedFromA: {
           type: "house",
           key: "1"
         },
-        significator: {
+        significatorB: {
           type: "arabicPart",
           key: "fortune"
         },
-        trigger: {
+        triggerC: {
           type: "arabicPart",
           key: "spirit"
         },
-        signals: "+, -"
+        signals
       },
       longitudeRaw,
       ...getArabicPartData(longitudeRaw, asc),
@@ -177,19 +178,19 @@ export function useArabicPartsUtils() {
       partKey: "love",
       // formulaDescription: "AC + Parte do Espírito - Parte da Fortuna",
       formulaDescription: {
-        projectedFrom: {
+        projectedFromA: {
           type: "house",
           key: "1"
         },
-        significator: {
+        significatorB: {
           type: "arabicPart",
           key: "spirit"
         },
-        trigger: {
+        triggerC: {
           type: "arabicPart",
           key: "fortune"
         },
-        signals: "+, -"
+        signals
       },
       longitudeRaw,
       ...getArabicPartData(longitudeRaw, asc),
@@ -214,19 +215,19 @@ export function useArabicPartsUtils() {
       partKey: "valor",
       // formulaDescription: "AC + Parte da Fortuna - Marte",
       formulaDescription: {
-        projectedFrom: {
+        projectedFromA: {
           type: "house",
           key: "1"
         },
-        significator: {
+        significatorB: {
           type: "arabicPart",
           key: "fortune"
         },
-        trigger: {
+        triggerC: {
           type: "planet",
           key: "mars"
         },
-        signals: "+, -"
+        signals
       },
       longitudeRaw,
       ...getArabicPartData(longitudeRaw, asc),
@@ -251,19 +252,19 @@ export function useArabicPartsUtils() {
       partKey: "victory",
       // formulaDescription: "AC + Júpiter - Parte do Espírito",
       formulaDescription: {
-        projectedFrom: {
+        projectedFromA: {
           type: "house",
           key: "1"
         },
-        significator: {
+        significatorB: {
           type: "planet",
           key: "jupiter"
         },
-        trigger: {
+        triggerC: {
           type: "arabicPart",
           key: "spirit"
         },
-        signals: "+, -"
+        signals
       },
       longitudeRaw,
       ...getArabicPartData(longitudeRaw, asc),
@@ -288,19 +289,19 @@ export function useArabicPartsUtils() {
       partKey: "captivity",
       // formulaDescription: "AC + Parte da Fortuna - Saturno",
       formulaDescription: {
-        projectedFrom: {
+        projectedFromA: {
           type: "house",
           key: "1"
         },
-        significator: {
+        significatorB: {
           type: "arabicPart",
           key: "fortune"
         },
-        trigger: {
+        triggerC: {
           type: "planet",
           key: "saturn"
         },
-        signals: "+, -"
+        signals
       },
       longitudeRaw,
       ...getArabicPartData(longitudeRaw, asc),
@@ -321,19 +322,130 @@ export function useArabicPartsUtils() {
       partKey: "marriage",
       // formulaDescription: "AC + DC - Vênus",
       formulaDescription: {
-        projectedFrom: {
+        projectedFromA: {
           type: "house",
           key: "1"
         },
-        significator: {
+        significatorB: {
           type: "house",
           key: "7"
         },
-        trigger: {
+        triggerC: {
           type: "planet",
           key: "venus"
         },
-        signals: "+, -"
+        signals
+      },
+      longitudeRaw,
+      zodiacRuler,
+      ...getArabicPartData(longitudeRaw, asc),
+    };
+  }
+
+  function calculateLotOfMarriageByHermes(chartData: BirthChart, gender?: GenderType): ArabicPart {
+    const isDiurnal = chartData.isDiurnal;
+
+    const asc = chartData.housesData.ascendant;
+    const venus = chartData.planets.find((p) => p.type === "venus")!;
+    const saturn = chartData.planets.find((p) => p.type === "saturn")!;
+
+    const venusElement: () => FormulaElement = () => ({ key: "venus", type: "planet" });
+    const saturnElement: () => FormulaElement = () => ({ key: "saturn", type: "planet" });
+
+    
+    const elementASC: FormulaElement = { type: "house", key: "1" };
+    // default: Male or Day Chart
+    const elementB = venusElement(); 
+    const elementC = saturnElement();
+    // alternative: Female or Night Chart
+    const elementBAlt = saturnElement();
+    const elementCAlt = venusElement();
+    let distanceFromBToC: number = wrapZodiacLongitude(venus.longitudeRaw - saturn.longitudeRaw);
+
+    if(((!gender || gender === "event") && !isDiurnal) ||                                //  Night Chart or...
+     (gender && gender === "female")) {                                                  //  Female                                                              
+      distanceFromBToC = wrapZodiacLongitude(saturn.longitudeRaw - venus.longitudeRaw);  //  Venus to Saturn | Swap Elements
+      // elementB = {...saturnElement()};
+      // elementC = {...venusElement()};
+    }
+
+    const longitudeRaw = wrapZodiacLongitude(asc + distanceFromBToC);
+    const longitude = decimalToDegreesMinutes(longitudeRaw);
+    const zodiacRuler = getZodiacRuler(longitude);
+
+    return {
+      name: "Casamento (H)",
+      partKey: "marriageHermes",
+      formulaDescription: {
+        projectedFromA: elementASC,
+        significatorB: elementB,
+        triggerC: elementC,
+        signals,
+        condition: ["day", "male"]
+      },
+      alternativeFormulaDescription: {
+        projectedFromA: elementASC,
+        significatorB: elementBAlt,
+        triggerC: elementCAlt,
+        signals,
+        condition: ["night", "female"]
+      },
+      longitudeRaw,
+      zodiacRuler,
+      ...getArabicPartData(longitudeRaw, asc),
+    };
+  }
+
+  function calculateLotOfMarriageByValens(chartData: BirthChart, gender?: GenderType): ArabicPart {
+    const isDiurnal = chartData.isDiurnal;
+
+    const asc = chartData.housesData.ascendant;
+    const moon = chartData.planets.find((p) => p.type === "moon")!;
+    const venus = chartData.planets.find((p) => p.type === "venus")!;
+    const sun = chartData.planets.find((p) => p.type === "sun")!;
+    const mars = chartData.planets.find((p) => p.type === "mars")!;
+
+    const moonElement: () => FormulaElement = () => ({ key: "moon", type: "planet" });
+    const venusElement: () => FormulaElement = () => ({ key: "venus", type: "planet" });
+    const sunElement: () => FormulaElement = () => ({ key: "sun", type: "planet" });
+    const marsElement: () => FormulaElement = () => ({ key: "mars", type: "planet" });
+
+    const elementASC: FormulaElement = { type: "house", key: "1" };
+    // default: Male or Day Chart
+    const elementB = venusElement(); 
+    const elementC = sunElement();
+    // alternative: Female or Night Chart
+    const elementBAlt = marsElement();
+    const elementCAlt = moonElement();
+    let distanceFromBToC: number = wrapZodiacLongitude(venus.longitudeRaw - sun.longitudeRaw);
+
+    if(((!gender || gender === "event") && !isDiurnal) ||                              //  Night Chart or...
+     (gender && gender === "female")) {                                                //  Female                                                              
+      distanceFromBToC = wrapZodiacLongitude(mars.longitudeRaw - moon.longitudeRaw);   //  Moon to Mars | Swap Elements
+      // elementB = {...marsElement()};
+      // elementC = {...moonElement()};
+    }
+
+    const longitudeRaw = wrapZodiacLongitude(asc + distanceFromBToC);
+    const longitude = decimalToDegreesMinutes(longitudeRaw);
+    const zodiacRuler = getZodiacRuler(longitude);
+
+    return {
+      name: "Casamento (V)",
+      partKey: "marriageValens",
+      formulaDescription: {
+        projectedFromA: elementASC,
+        significatorB: elementB,
+        triggerC: elementC,
+        signals,
+        condition: ["day", "male"]
+      },
+      alternativeFormulaDescription: {
+        projectedFromA: elementASC,
+        significatorB: elementBAlt,
+        triggerC: elementCAlt,
+        signals,
+        condition: ["night", "female"]
       },
       longitudeRaw,
       zodiacRuler,
@@ -358,19 +470,19 @@ export function useArabicPartsUtils() {
       partKey: "resignation",
       // formulaDescription: "Saturno + Júpiter - Sol",
       formulaDescription: {
-        projectedFrom: {
+        projectedFromA: {
           type: "planet",
           key: "saturn"
         },
-        significator: {
+        significatorB: {
           type: "planet",
           key: "jupiter"
         },
-        trigger: {
+        triggerC: {
           type: "planet",
           key: "sun"
         },
-        signals: "+, -"
+        signals
       },
       longitudeRaw,
       zodiacRuler,
@@ -394,19 +506,19 @@ export function useArabicPartsUtils() {
       partKey: "children",
       // formulaDescription: "AC + Saturno - Júpiter",
       formulaDescription: {
-        projectedFrom: {
+        projectedFromA: {
           type: "house",
           key: "1"
         },
-        significator: {
+        significatorB: {
           type: "planet",
           key: "saturn"
         },
-        trigger: {
+        triggerC: {
           type: "planet",
           key: "jupiter"
         },
-        signals: "+, -"
+        signals
       },
       longitudeRaw,
       zodiacRuler,
@@ -454,6 +566,8 @@ export function useArabicPartsUtils() {
     calculateLotOfVictory,
     calculateLotOfCaptivity,
     calculateLotOfMarriage,
+    calculateLotOfMarriageByHermes,
+    calculateLotOfMarriageByValens,
     calculateLotOfResignation,
     calculateLotOfChildren,
     calculateBirthArchArabicPart

@@ -287,7 +287,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
     return <ul className={className}>
       {parts?.filter(lot => lot.partKey !== "custom").map((arabicPart, index) => {
         return (
-          <li key={index} className={`flex flex-row items-center 
+          <li key={index} className={`flex flex-row items-center whitespace-nowrap
             ${(arabicPart.planet === undefined && !isCustomASC) ? 
               "font-light cursor-pointer hover:text-zinc-700 active:hover:text-zinc-900" : ""}
               ${(customArabicPart && arabicPart.partKey === customArabicPart.partKey)? "text-blue-600" : ""}
@@ -307,13 +307,15 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
           >
             <div className="w-full flex flex-row justify-between">
               <span
-                className={`w-[14rem] md:w-[14rem] flex flex-row items-center justify-between
+                className={`w-[14rem] md:w-[15rem] flex flex-row items-center justify-between
                   ${partColWidth}`}
               >
                 <span
-                  className="w-[8rem] md:w-[9rem] flex flex-row items-center justify-between"
+                  className="w-[8rem] md:w-[10rem] flex flex-row items-center justify-between"
                 >
-                  {t(`arabicParts.${arabicPart?.partKey}.short`)}
+                  {t(`arabicParts.${arabicPart?.partKey}.${!isMobileBreakPoint()? 'short' : 'shortMobile'}`)}
+                  {/* <span className="w-full flex-1 flex-row items-center">
+                  </span> */}
 
                   <span className="w-full flex flex-row items-center justify-end mr-4 md:mr-0 md:pr-1">
                     {getArabicPartImage(arabicPart, {
@@ -323,7 +325,7 @@ export default function ArabicPartsLayout(props: ArabicPartsLayoutProps) {
                   </span>
                 </span>
                 <span
-                  className={`w-[4rem] md:w-[5rem] text-end ml-[-15px] md:pr-3`}
+                  className={`w-[4rem] md:w-[5rem] text-end ml-[-15px] md:pr-2`}
                 >
                   {formatSignColor(arabicPart.longitudeSign)}
                 </span>

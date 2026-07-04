@@ -263,46 +263,67 @@
 
     "fortune": {
       "short": "Fortune",
+      "shortMobile": "Fortune",
       "complete": "Lot of Fortune"
     },
     "spirit": {
       "short": "Spirit",
+      "shortMobile": "Spirit",
       "complete": "Lot of Spirit"
     },
     "necessity": {
       "short": "Necessity",
+      "shortMobile": "Necessity",
       "complete": "Lot of Necessity"
     },
     "love": {
       "short": "Love",
+      "shortMobile": "Love",
       "complete": "Lot of Love"
     },
     "valor": {
       "short": "Courage",
+      "shortMobile": "Courage",
       "complete": "Lot of Courage"
     },
     "victory": {
       "short": "Victory",
+      "shortMobile": "Victory",
       "complete": "Lot of Victory"
     },
     "captivity": {
       "short": "Captivity",
+      "shortMobile": "Captivity",
       "complete": "Lot of Captivity"
     },
     "marriage": {
       "short": "Marriage",
+      "shortMobile": "Marriage",
       "complete": "Lot of Marriage"
+    },
+    "marriageHermes": {
+      "short": "Marriage (H)",
+      "shortMobile": "Marriage (H)",
+      "complete": "Lot of Marriage (Hermes)"
+    },
+    "marriageValens": {
+      "short": "Marriage (V)",
+      "shortMobile": "Marriage (V)",
+      "complete": "Lot of Marriage (Valens)"
     },
     "resignation": {
       "short": "Resignation",
+      "shortMobile": "Resignation",
       "complete": "Lot of Resignation"
     },
     "children": {
       "short": "Children",
+      "shortMobile": "Children",
       "complete": "Lot of Children"
     },
     "custom": {
       "short": "Lot",
+      "shortMobile": "Lot",
       "complete": "Custom Lot"
     }
   },

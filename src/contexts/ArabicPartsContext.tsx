@@ -20,6 +20,7 @@ import { ArabicPart, ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import { ArabicPartType, BirthChart } from "@/interfaces/BirthChartInterfaces";
 
 import React, { createContext, useState, useContext, ReactNode } from "react";
+import { useProfiles } from "./ProfilesContext";
 
 interface ArchArabicPartsOptions {
   isLunarDerivedChart: boolean;
@@ -86,11 +87,13 @@ export const ArabicPartsContextProvider: React.FC<{ children: ReactNode }> = ({
 
   const { calculateLotOfFortune, calculateLotOfSpirit, calculateLotOfNecessity,
       calculateLotOfLove, calculateLotOfValor, calculateLotOfVictory, calculateLotOfCaptivity,
-      calculateLotOfMarriage, calculateLotOfResignation, calculateLotOfChildren,
-      calculateBirthArchArabicPart
+      calculateLotOfMarriage, calculateLotOfMarriageByHermes, calculateLotOfMarriageByValens, 
+      calculateLotOfResignation, calculateLotOfChildren, calculateBirthArchArabicPart
    } = useArabicPartsUtils();
 
   //  const { showArabicParts, showArabicPartsAntiscia } = useAstroChartToggles();
+
+  const { currentProfile } = useProfiles();
 
   function calculateArabicParts(
     birthChart: BirthChart,
@@ -112,6 +115,8 @@ export const ArabicPartsContextProvider: React.FC<{ children: ReactNode }> = ({
       victory: calculateLotOfVictory(birthChart, parts),
       captivity: calculateLotOfCaptivity(birthChart, parts),
       marriage: calculateLotOfMarriage(birthChart),
+      marriageHermes: calculateLotOfMarriageByHermes(birthChart, currentProfile?.gender),
+      marriageValens: calculateLotOfMarriageByValens(birthChart, currentProfile?.gender),
       resignation: calculateLotOfResignation(birthChart),
       children: calculateLotOfChildren(birthChart),
       // Due some racing conditions when updating this custom part,

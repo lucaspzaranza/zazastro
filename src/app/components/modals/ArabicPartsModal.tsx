@@ -7,7 +7,7 @@ import {
   planesNamesByType,
 } from "@/app/utils/chartUtils";
 import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
-import { ArabicPart, FormulaDescription, FormulaElement } from "@/interfaces/ArabicPartInterfaces";
+import { ArabicPart, ConditionType, FormulaDescription, FormulaElement } from "@/interfaces/ArabicPartInterfaces";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import React from "react";
@@ -86,6 +86,8 @@ export default function ArabicPartsModal(props: ArabicPartsModalProps) {
   }
 
   const getTranslatedFormulaElement = (el: FormulaElement) => {
+    if(el === undefined) return '';
+
     if (el.type === "planet")
       return t(`planets.${el.key}`);
     else if (el.type === "house")
@@ -96,11 +98,37 @@ export default function ArabicPartsModal(props: ArabicPartsModalProps) {
     return '';
   }
 
+  const getTranslatedCondition = (condition?: ConditionType[]) => {
+    if(!condition) return "";
+
+    let result = "(";
+
+    condition.forEach((cond, index) => {
+      if(cond === "male") {
+        result += t("form.male");
+      } else if(cond === "female") {
+        result += t("form.female");
+      } else if(cond === "day") {
+        result += t("birthChart.dayMap");
+      } else if(cond === "night") {
+        result += t("birthChart.nightMap");
+      }
+
+      if(index < condition.length - 1)
+        result += "/";
+    });
+    result += ")";
+
+    return result;
+  }
+
   function getFormulaDescription(formula: FormulaDescription): string {
+    if(formula === undefined) return "";
+
     const signals = formula.signals.split(", ");
-    const projected = getTranslatedFormulaElement(formula.projectedFrom);
-    const significator = getTranslatedFormulaElement(formula.significator);
-    const trigger = getTranslatedFormulaElement(formula.trigger);
+    const projected = getTranslatedFormulaElement(formula.projectedFromA);
+    const significator = getTranslatedFormulaElement(formula.significatorB);
+    const trigger = getTranslatedFormulaElement(formula.triggerC);
 
     return `${projected} ${signals[0]} ${significator} ${signals[1]} ${trigger}`;
   }
@@ -127,7 +155,7 @@ export default function ArabicPartsModal(props: ArabicPartsModalProps) {
 
         <div className="w-full flex-1 overflow-y-auto px-4 py-4 bg-zinc-50">
           <ul className="w-full flex flex-col gap-3">
-            {parts?.map((arabicPart, index) => {
+            {parts?.filter(lot => lot.partKey !== "custom").map((arabicPart, index) => {
               const style = getElementStyle(arabicPart);
 
               return (
@@ -179,7 +207,16 @@ export default function ArabicPartsModal(props: ArabicPartsModalProps) {
                     <div className="w-full flex flex-row items-center gap-1 text-sm text-zinc-700">
                       <span className="text-zinc-500">{t("arabicParts.formula")}:</span>
                       <span className="text-zinc-800">{getFormulaDescription(arabicPart.formulaDescription!)}</span>
+                      <span className="text-zinc-800">{getTranslatedCondition(arabicPart.formulaDescription?.condition)}</span>
                     </div>
+                    
+                    {arabicPart.alternativeFormulaDescription && 
+                      <div className="w-full flex flex-row items-center gap-1 text-sm text-zinc-700">
+                        <span className="text-zinc-500">{t("arabicParts.formula")} Alt.:</span>
+                        <span className="text-zinc-800">{getFormulaDescription(arabicPart.alternativeFormulaDescription)}</span>
+                        <span className="text-zinc-800">{getTranslatedCondition(arabicPart.alternativeFormulaDescription.condition)}</span>
+                      </div>
+                    } 
 
                     <div className="w-full flex flex-row items-center gap-1 text-sm text-zinc-700">
                       <span className="text-zinc-500">{t("arabicParts.distanceFromBirthASC")}:</span>

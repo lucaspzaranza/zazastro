@@ -4,6 +4,7 @@ import { ChartElement, ElementType } from "./AstroChartInterfaces";
 export interface ArabicPart {
   name: string;
   formulaDescription?: FormulaDescription;
+  alternativeFormulaDescription?: FormulaDescription;
   longitude: number;
   longitudeRaw: number;
   longitudeSign: string;
@@ -23,11 +24,14 @@ export interface FormulaElement {
   key: string
 }
 
+export type ConditionType = "male" | "female" | "day" | "night";
+
 export interface FormulaDescription {
-  projectedFrom: FormulaElement,
-  significator: FormulaElement,
-  trigger: FormulaElement,
-  signals: string
+  projectedFromA: FormulaElement;
+  significatorB: FormulaElement;
+  triggerC: FormulaElement;
+  signals: string;
+  condition?: ConditionType[];
 }
 
 export interface ArabicPartsType {
@@ -41,6 +45,8 @@ export interface ArabicPartsType {
   marriage?: ArabicPart;
   resignation?: ArabicPart;
   children?: ArabicPart;
+  marriageHermes?: ArabicPart;
+  marriageValens?: ArabicPart;
   custom?: ArabicPart;
 }
 

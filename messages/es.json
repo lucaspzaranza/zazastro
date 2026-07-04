@@ -263,46 +263,67 @@
 
     "fortune": {
       "short": "Fortuna",
+      "shortMobile": "Fortuna",
       "complete": "Parte de la Fortuna"
     },
     "spirit": {
       "short": "Espíritu",
+      "shortMobile": "Espíritu",
       "complete": "Parte del Espíritu"
     },
     "necessity": {
       "short": "Necesidad",
+      "shortMobile": "Necesidad",
       "complete": "Parte de la Necesidad"
     },
     "love": {
       "short": "Amor",
+      "shortMobile": "Amor",
       "complete": "Parte del Amor"
     },
     "valor": {
       "short": "Valor",
+      "shortMobile": "Valor",
       "complete": "Parte del Valor"
     },
     "victory": {
       "short": "Victoria",
+      "shortMobile": "Victoria",
       "complete": "Parte de la Victoria"
     },
     "captivity": {
       "short": "Cautiverio",
+      "shortMobile": "Cautiverio",
       "complete": "Parte del Cautiverio"
     },
     "marriage": {
       "short": "Matrimonio",
+      "shortMobile": "Matrimonio",
       "complete": "Parte del Matrimonio"
+    },
+    "marriageHermes": {
+      "short": "Matrimonio (H)",
+      "shortMobile": "Matrm. (H)",
+      "complete": "Parte del Matrimonio (Hermes)"
+    },
+    "marriageValens": {
+      "short": "Matrimonio (V)",
+      "shortMobile": "Matrm. (V)",
+      "complete": "Parte del Matrimonio (Valens)"
     },
     "resignation": {
       "short": "Renuncia",
+      "shortMobile": "Renuncia",
       "complete": "Parte de la Renuncia"
     },
     "children": {
       "short": "Hijos",
+      "shortMobile": "Hijos",
       "complete": "Parte de los Hijos"
     },
     "custom": {
       "short": "Parte Árabe",
+      "shortMobile": "Parte Árabe",
       "complete": "Parte Árabe Personalizada"
     }
   },

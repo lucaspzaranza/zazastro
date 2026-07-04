@@ -45,7 +45,6 @@ export default function ArabicPartCalculator(
     useState<ChartElementForArabicPartCalculation>();
 
   const [showLotCalculation, setShowLotCalculation] = useState(false);
-  // const [toggleShowLotOnMap, setToggleShowLotOnMap] = useState(false);
   const [lotCalculationHTML, setLotCalculationHTML] =
     useState<React.ReactNode>();
 
@@ -193,7 +192,7 @@ export default function ArabicPartCalculator(
         if(prevLotIsArchLot.current === useArchData)
           toggleShowLotOnMap.current = !toggleShowLotOnMap.current;
         else toggleShowLotOnMap.current = true;
-        
+
         updateCustomArabicPart(toggleShowLotOnMap.current ? lotToUse : undefined);
 
         prevLotIsArchLot.current = useArchData;

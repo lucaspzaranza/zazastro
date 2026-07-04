@@ -113,6 +113,8 @@ export const arabicPartKeys: (keyof ArabicPartsType)[] = [
   "victory",
   "captivity",
   "marriage",
+  "marriageHermes",
+  "marriageValens",
   "resignation",
   "children",
   "custom"
