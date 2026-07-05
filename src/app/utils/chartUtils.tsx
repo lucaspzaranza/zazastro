@@ -5,6 +5,7 @@ import {
 } from "@/interfaces/ArabicPartInterfaces";
 import { AspectType } from "@/interfaces/AstroChartInterfaces";
 import {
+  ArabicPartType,
   BirthChart,
   BirthDate,
   FixedStar,
@@ -237,15 +238,16 @@ export function getPlanetImage(
 }
 
 export function getArabicPartImage(
-  lot: ArabicPart,
-  options: ImgOptions = {
-    isAntiscion: false,
-  }
+  lotOrKey: ArabicPart | ArabicPartType,
+  options: ImgOptions = { isAntiscion: false }
 ): React.ReactNode {
   const folder = "planets";
-  const part = lot.planet ? lot.partKey : "custom-lot";
-  const path = `/${folder}${options.isAntiscion ? "/antiscion" : ""
-    }/${part}.png`;
+  const part =
+    typeof lotOrKey === "string" ? lotOrKey : 
+      lotOrKey.planet ? lotOrKey.partKey : "custom-lot";
+
+  const path = `/${folder}${options.isAntiscion ? "/antiscion" : ""}/${part}.png`;
+
   return (
     <Image
       alt="arabicPart"

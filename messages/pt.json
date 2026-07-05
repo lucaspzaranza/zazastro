@@ -17,8 +17,8 @@
   "birthChart": {
     "title": "Escolha ou gere um novo Mapa Natal",
     "titleMobile": "Escolher ou gerar",
-    "load": "Carregar Mapa",
-    "loadMobile": "Carregar",
+    "load": "Escolher Mapa",
+    "loadMobile": "Escolher",
     "create": "Gerar Mapa Natal",
     "createMobile": "Criar Mapa",
     "createMomentChart": "Gerar Mapa",
@@ -45,7 +45,9 @@
     "decans": "Faces (Decanatos)",
     "fixedStars": "Estrelas Fixas",
     "dayMap": "Diurno",
+    "dayMapMobile": "D",
     "nightMap": "Noturno",
+    "nightMapMobile": "N",
     "toggleShowOnMap": "Exibir/Ocultar no Mapa"
   },
   "returnChart": {
@@ -114,7 +116,9 @@
     "areYouSureYouWantToDelete": "Tem certeza que deseja deletar o perfil de ",
     "deletedSuccessfully": "Perfil deletado com sucesso.",
     "male": "Homem",
+    "maleMobile": "H",
     "female": "Mulher",
+    "femaleMobile": "M",
     "event": "Evento/Horária"
   },
   "houses": {

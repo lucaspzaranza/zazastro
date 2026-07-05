@@ -17,8 +17,8 @@
   "birthChart": {
     "title": "Choose or create a chart",
     "titleMobile": "Choose or create a chart",
-    "load": "Load Chart",
-    "loadMobile": "Load Chart",
+    "load": "Choose Chart",
+    "loadMobile": "Choose Chart",
     "create": "Create Birth Chart",
     "createMobile": "Create",
     "createMomentChart": "Generate Chart",
@@ -45,7 +45,9 @@
     "decans": "Decans",
     "fixedStars": "Fixed Stars",
     "dayMap": "Day Map",
+    "dayMapMobile": "D.",
     "nightMap": "Night Map",
+    "nightMapMobile": "N.",
     "toggleShowOnMap": "Toggle Show on Map"
   },
   "returnChart": {
@@ -114,7 +116,9 @@
     "areYouSureYouWantToDelete": "Are you sure you want to delete the profile of ",
     "deletedSuccessfully": "Profile deleted successfully.",
     "male": "Male",
+    "maleMobile": "M.",
     "female": "Female",
+    "femaleMobile": "F.",
     "event": "Event/Horary"
   },
   "houses": {

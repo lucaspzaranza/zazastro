@@ -17,8 +17,8 @@
   "birthChart": {
     "title": "Elige o crea un mapa",
     "titleMobile": "Elige o crea un mapa",
-    "load": "Carregar carta",
-    "loadMobile": "Carregar",
+    "load": "Elegir carta",
+    "loadMobile": "Elegir",
     "create": "Crear Carta Astral",
     "createMobile": "Crear Carta",
     "createMomentChart": "Generar Carta",
@@ -45,7 +45,9 @@
     "decans": "Faces (Decanatos)",
     "fixedStars": "Estrellas Fijas",
     "dayMap": "Diurno",
+    "dayMapMobile": "D.",
     "nightMap": "Nocturno",
+    "nightMapMobile": "N.",
     "toggleShowOnMap": "Mostrar/Esconder en el Carta"
   },
   "returnChart": {
@@ -114,7 +116,9 @@
     "areYouSureYouWantToDelete": "¿Estás seguro de que quieres eliminar el perfil de ",
     "deletedSuccessfully": "Perfil eliminado correctamente.",
     "male": "Hombre",
+    "maleMobile": "H.",
     "female": "Mujer",
+    "femaleMobile": "M.",
     "event": "Evento/Horaria"
   },
   "houses": {

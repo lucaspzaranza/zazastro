@@ -188,12 +188,15 @@ export default function BirthChart() {
     }
   }, [menu]);
 
-  useEffect(() => {
-    if (profiles.length > 0 && !firstProfileSetAtBeggining.current) {
-      updateCurrentSelectedProfile(profiles[0]);
-      firstProfileSetAtBeggining.current = true;
-    }
-  }, [profiles]);
+  // useEffect(() => {
+  //   if (profiles.length > 0 && !firstProfileSetAtBeggining.current) {
+  //     console.log('reseting current profile to 1st');
+  //     console.log('profiles:', profiles);
+
+  //     updateCurrentSelectedProfile(profiles[0]);
+  //     firstProfileSetAtBeggining.current = true;
+  //   }
+  // }, [profiles]);
 
   useEffect(() => {
     updateSinastryProfile(sinastryProfile);
@@ -201,10 +204,6 @@ export default function BirthChart() {
 
   async function getBirthChart(chartProfileToOverwrite?: BirthChartProfile) {
     setLoading(true);
-    if (chartProfileToOverwrite) {
-      updateCurrentSelectedProfile(chartProfileToOverwrite);
-    }
-
     if (chartProfileToOverwrite?.birthDate?.coordinates)
       selectCity(chartProfileToOverwrite?.birthDate?.coordinates);
 
@@ -1052,7 +1051,6 @@ export default function BirthChart() {
     </Container>
 
   const getChartContent = (): JSX.Element | null => {
-    
     switch (activeChart) {
       case "birth":
       case "moment":
@@ -1149,6 +1147,12 @@ export default function BirthChart() {
           >
             {getChartContent()}
           </div>
+
+          {/* {(!isTransitioning && birthChart) && 
+            <div className="w-full flex items-center justify-center">
+              {getChartContent()}
+            </div>
+          } */}
         </>}
 
       {/* {_getDebugData()} */}

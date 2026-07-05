@@ -365,8 +365,6 @@ export function useArabicPartsUtils() {
     if(((!gender || gender === "event") && !isDiurnal) ||                                //  Night Chart or...
      (gender && gender === "female")) {                                                  //  Female                                                              
       distanceFromBToC = wrapZodiacLongitude(saturn.longitudeRaw - venus.longitudeRaw);  //  Venus to Saturn | Swap Elements
-      // elementB = {...saturnElement()};
-      // elementC = {...venusElement()};
     }
 
     const longitudeRaw = wrapZodiacLongitude(asc + distanceFromBToC);
@@ -381,14 +379,14 @@ export function useArabicPartsUtils() {
         significatorB: elementB,
         triggerC: elementC,
         signals,
-        condition: ["day", "male"]
+        condition: ["male", "day"]
       },
       alternativeFormulaDescription: {
         projectedFromA: elementASC,
         significatorB: elementBAlt,
         triggerC: elementCAlt,
         signals,
-        condition: ["night", "female"]
+        condition: ["female", "night"]
       },
       longitudeRaw,
       zodiacRuler,
@@ -422,8 +420,6 @@ export function useArabicPartsUtils() {
     if(((!gender || gender === "event") && !isDiurnal) ||                              //  Night Chart or...
      (gender && gender === "female")) {                                                //  Female                                                              
       distanceFromBToC = wrapZodiacLongitude(mars.longitudeRaw - moon.longitudeRaw);   //  Moon to Mars | Swap Elements
-      // elementB = {...marsElement()};
-      // elementC = {...moonElement()};
     }
 
     const longitudeRaw = wrapZodiacLongitude(asc + distanceFromBToC);
@@ -438,14 +434,14 @@ export function useArabicPartsUtils() {
         significatorB: elementB,
         triggerC: elementC,
         signals,
-        condition: ["day", "male"]
+        condition: ["male", "day"]
       },
       alternativeFormulaDescription: {
         projectedFromA: elementASC,
         significatorB: elementBAlt,
         triggerC: elementCAlt,
         signals,
-        condition: ["night", "female"]
+        condition: ["female", "night"]
       },
       longitudeRaw,
       zodiacRuler,

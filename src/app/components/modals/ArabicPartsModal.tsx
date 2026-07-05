@@ -8,6 +8,7 @@ import {
 } from "@/app/utils/chartUtils";
 import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 import { ArabicPart, ConditionType, FormulaDescription, FormulaElement } from "@/interfaces/ArabicPartInterfaces";
+import { ArabicPartType, PlanetType } from "@/interfaces/BirthChartInterfaces";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import React from "react";
@@ -49,6 +50,8 @@ export default function ArabicPartsModal(props: ArabicPartsModalProps) {
 
   const { isMobileBreakPoint } = useScreenDimensions();
 
+  const iconSize = 13;
+
   function formatNumberToDegMin(long: number): string {
     const longString = long.toFixed(2).replace(".", "°") + "'";
     return longString;
@@ -75,7 +78,7 @@ export default function ArabicPartsModal(props: ArabicPartsModalProps) {
 
   function getAssociatedPlanet(arabicPart: ArabicPart): React.ReactNode {
     const planetName = t(`planets.${arabicPart.planet!}`);
-    const planetIcon = getPlanetImage(arabicPart.planet!);
+    const planetIcon = getPlanetImage(arabicPart.planet!, {size: iconSize});
 
     return (
       <span className="flex flex-row items-center gap-1">
@@ -85,44 +88,59 @@ export default function ArabicPartsModal(props: ArabicPartsModalProps) {
     );
   }
 
-  const getTranslatedFormulaElement = (el: FormulaElement) => {
-    if(el === undefined) return '';
+  const getTranslatedFormulaElement = (el: FormulaElement): React.ReactNode => {
+    if(el === undefined) return <></>;
 
     if (el.type === "planet")
-      return t(`planets.${el.key}`);
+      return <>{getPlanetImage(el.key as PlanetType, {size: iconSize})} {!isMobileBreakPoint()? t(`planets.${el.key}`) : ''}</>;
     else if (el.type === "house")
-      return t(`houses.${el.key}.acronym`);
+      return <>{t(`houses.${el.key}.acronym`)}</>;
     else if (el.type === "arabicPart")
-      return t(`arabicParts.${el.key}.complete`);
+      return <>{getArabicPartImage(el.key as ArabicPartType, { size: 15, isAntiscion: false })} {!isMobileBreakPoint()? t(`arabicParts.${el.key}.complete`) : ''}</>;
 
-    return '';
+    return <></>;
   }
 
-  const getTranslatedCondition = (condition?: ConditionType[]) => {
-    if(!condition) return "";
+  const getTranslatedCondition = (condition?: ConditionType[]): React.ReactNode => {
+    const nodes: React.ReactNode[] = [];
 
-    let result = "(";
+    if(!condition) return nodes;;
 
     condition.forEach((cond, index) => {
       if(cond === "male") {
-        result += t("form.male");
+        nodes.push(
+          <span key={`cond-${index}`} className="flex flex-row items-center gap-1 text-sm">
+            {getPlanetImage("mars", {size: iconSize})} {t(`form.${isMobileBreakPoint()? "maleMobile" : "male"}`)}
+          </span>
+        )
       } else if(cond === "female") {
-        result += t("form.female");
+        nodes.push(
+          <span key={`cond-${index}`} className="flex flex-row items-center gap-1 text-sm">
+            {getPlanetImage("venus", {size: iconSize})} {t(`form.${isMobileBreakPoint()? "femaleMobile" : "female"}`)}
+          </span>
+        )
       } else if(cond === "day") {
-        result += t("birthChart.dayMap");
+        nodes.push(
+          <span key={`cond-${index}`} className="flex flex-row items-center gap-1 text-sm">
+            {getPlanetImage("sun", {size: iconSize})} {t(`birthChart.${isMobileBreakPoint()? "dayMapMobile" : "dayMap"}`)}
+          </span>
+        )
       } else if(cond === "night") {
-        result += t("birthChart.nightMap");
+        nodes.push(
+          <span key={`cond-${index}`} className="flex flex-row items-center gap-1 text-sm">
+            {getPlanetImage("moon", {size: iconSize})} {t(`birthChart.${isMobileBreakPoint()? "nightMapMobile" : "nightMap"}`)}
+          </span>
+        )
       }
 
       if(index < condition.length - 1)
-        result += "/";
+        nodes.push(<span key={`/${index}`} className="mr-0.5">/</span>);
     });
-    result += ")";
 
-    return result;
+    return <>({nodes})</>;
   }
 
-  function getFormulaDescription(formula: FormulaDescription): string {
+  function getFormulaDescription(formula: FormulaDescription): React.ReactNode {
     if(formula === undefined) return "";
 
     const signals = formula.signals.split(", ");
@@ -130,7 +148,7 @@ export default function ArabicPartsModal(props: ArabicPartsModalProps) {
     const significator = getTranslatedFormulaElement(formula.significatorB);
     const trigger = getTranslatedFormulaElement(formula.triggerC);
 
-    return `${projected} ${signals[0]} ${significator} ${signals[1]} ${trigger}`;
+    return <>{projected} {signals[0]} {significator} {signals[1]} {trigger}</>
   }
 
   return (
@@ -206,15 +224,23 @@ export default function ArabicPartsModal(props: ArabicPartsModalProps) {
 
                     <div className="w-full flex flex-row items-center gap-1 text-sm text-zinc-700">
                       <span className="text-zinc-500">{t("arabicParts.formula")}:</span>
-                      <span className="text-zinc-800">{getFormulaDescription(arabicPart.formulaDescription!)}</span>
-                      <span className="text-zinc-800">{getTranslatedCondition(arabicPart.formulaDescription?.condition)}</span>
+                      <span className="text-zinc-800 flex flex-row items-center gap-1">
+                        {getFormulaDescription(arabicPart.formulaDescription!)}
+                        </span>
+                      <span className="text-zinc-800 flex flex-row items-center">
+                        {getTranslatedCondition(arabicPart.formulaDescription?.condition)}
+                      </span>
                     </div>
                     
                     {arabicPart.alternativeFormulaDescription && 
                       <div className="w-full flex flex-row items-center gap-1 text-sm text-zinc-700">
-                        <span className="text-zinc-500">{t("arabicParts.formula")} Alt.:</span>
-                        <span className="text-zinc-800">{getFormulaDescription(arabicPart.alternativeFormulaDescription)}</span>
-                        <span className="text-zinc-800">{getTranslatedCondition(arabicPart.alternativeFormulaDescription.condition)}</span>
+                        <span className="text-zinc-500 w-[68px] md:w-fit">{t("arabicParts.formula")} Alt.:</span>
+                        <span className="text-zinc-800 flex flex-row items-center gap-1">
+                          {getFormulaDescription(arabicPart.alternativeFormulaDescription)}
+                        </span>
+                        <span className="text-zinc-800 flex flex-row items-center">
+                          {getTranslatedCondition(arabicPart.alternativeFormulaDescription.condition)}
+                        </span>
                       </div>
                     } 
 

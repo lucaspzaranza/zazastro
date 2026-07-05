@@ -124,7 +124,10 @@ export default function BirthChartForm(props: BirthChartFormProps) {
       }
     } // create chart
     else if (form.current && form.current.checkValidity()) {
-      if (createProfile(profile)) onSubmit?.(profile);
+      if (createProfile(profile)) {
+        updateCurrentSelectedProfile(profile);
+        onSubmit?.(profile);
+      }
       else alert("Não foi possível gerar o mapa.");
     } else {
       form.current?.reportValidity();
@@ -177,6 +180,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
           <PresavedChartsDropdown
             onChange={(newProfile) => {
               if (newProfile) {
+                updateCurrentSelectedProfile(newProfile);
                 setProfile(newProfile);
               }
             }}
@@ -391,7 +395,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
           <button
             onClick={(e) => {
               e.preventDefault();
-              console.log(profile);
+              // console.log(profile);
               if (profile) {
                 setShowDeleteProfileMenu(true);
               }
@@ -403,8 +407,6 @@ export default function BirthChartForm(props: BirthChartFormProps) {
           </button>
         </div>
       )}
-
-
 
       {!showDeleteProfileMenu && !editProfile && (
         <button
