@@ -24,7 +24,7 @@ export default function ReturnSelectorArrows(props: ChartSelectorProps) {
     updateLunarDerivedChart, updateIsCombinedWithBirthChart, updateIsCombinedWithReturnChart,
     updateLoadingNextChart } = useBirthChart();
   const { isMobileBreakPoint } = useScreenDimensions();
-  const { chartMenu } = useChartMenu();
+  const { chartMenu, removeChartMenu, getLastChartMenu, updateChartMenuDirectly, resetChartMenus } = useChartMenu();
   const { archArabicParts, updateSolarReturnParts } = useArabicParts();
   const { hasIsolatedAspect } = useAspectsData();
   const { currentProfile } = useProfiles();
@@ -43,7 +43,7 @@ export default function ReturnSelectorArrows(props: ChartSelectorProps) {
   }, [archArabicParts])
 
   async function getReturn(returnType: ReturnChartType, direction: DirectionType) {
-    if (!returnChart) return;
+    if (!returnChart) return;    
 
     let targetDate: BirthDate = {
       ...returnChart.targetDate!,
@@ -54,7 +54,7 @@ export default function ReturnSelectorArrows(props: ChartSelectorProps) {
       jsDate.setFullYear(direction === "previous" ? jsDate.getFullYear() - 1 : jsDate.getFullYear() + 1);
     } else if (returnType === "lunar") {
       jsDate.setDate(direction === "previous" ? jsDate.getDate() - 27 : jsDate.getDate() + 27);
-    }
+    }        
 
     targetDate = {
       ...targetDate,
@@ -97,6 +97,12 @@ export default function ReturnSelectorArrows(props: ChartSelectorProps) {
           timezone: data.timezone,
         },
       });
+
+      if(chartMenu === "solarReturn" && getLastChartMenu() === "lunarDerivedReturn") {
+        removeChartMenu("lunarDerivedReturn");
+        updateLunarDerivedChart(undefined);
+      }
+      
     } catch (error) {
       console.error("Erro ao consultar mapa de retorno:", error);
     }
@@ -182,7 +188,7 @@ export default function ReturnSelectorArrows(props: ChartSelectorProps) {
   const getChart = async (direction: DirectionType) => {
     updateLoadingNextChart(true);
     updateIsCombinedWithBirthChart(false);
-    updateIsCombinedWithReturnChart(false);
+    updateIsCombinedWithReturnChart(false);    
 
     setTimeout(async () => {
       if (chartMenu === "lunarReturn" || chartMenu === "solarReturn")

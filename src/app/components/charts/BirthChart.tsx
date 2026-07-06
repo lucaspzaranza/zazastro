@@ -258,6 +258,8 @@ export default function BirthChart() {
       }),
     });
 
+    console.log('data: ', data);
+
     updateBirthChart({
       chartType: "birth",
       profileName: currentProfile?.name,

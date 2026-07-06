@@ -433,7 +433,7 @@ export const clampLongitude = (
 
   let degNumber = deg === undefined ? 0 : Number.parseInt(deg);
   let minNumber = min === undefined ? 0 : Number.parseInt(min.padEnd(2, "0"));
-  console.log(`degNumber: ${degNumber}, minNumber: ${minNumber}`);
+  // console.log(`degNumber: ${degNumber}, minNumber: ${minNumber}`);
 
   if (degNumber < 0) degNumber = 0;
   else if (degNumber > degThreshold) degNumber = degThreshold;

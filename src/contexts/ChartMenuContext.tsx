@@ -30,6 +30,7 @@ interface ChartMenuContextType {
   isProgressionChart: () => boolean;
   isProfectionChart: () => boolean;
   isTransitsChart: () => boolean;
+  getLastChartMenu: () => ChartMenuType;
 }
 
 const ChartMenuContext = createContext<ChartMenuContextType | undefined>(
@@ -53,6 +54,10 @@ export const ChartMenuContextProvider: React.FC<{ children: ReactNode }> = ({
   const isLastChart = () => {
     return menus.indexOf(chartMenu) === menus.length - 1;
   };
+
+  const getLastChartMenu = () => {
+    return menus[menus.length - 1];
+  }
 
   const nextChartMenu = () => {
     const nextIndex = menus.indexOf(chartMenu) + 1;
@@ -129,7 +134,8 @@ export const ChartMenuContextProvider: React.FC<{ children: ReactNode }> = ({
         isProgressionChart,
         isSinastryChart,
         isProfectionChart,
-        isTransitsChart
+        isTransitsChart,
+        getLastChartMenu
       }}
     >
       {children}
