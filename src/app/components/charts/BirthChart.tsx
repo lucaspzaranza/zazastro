@@ -182,21 +182,21 @@ export default function BirthChart() {
   useEffect(() => {
     if (menu === "home") {
       updateHouseSystem("placidus" as HouseSystem);
-      firstProfileSetAtBeggining.current = false;
+      // firstProfileSetAtBeggining.current = false;
       updateCurrentSelectedProfile(profiles[0]);
       setSinastryProfile(profiles[0]);
     }
   }, [menu]);
 
-  // useEffect(() => {
-  //   if (profiles.length > 0 && !firstProfileSetAtBeggining.current) {
-  //     console.log('reseting current profile to 1st');
-  //     console.log('profiles:', profiles);
+  useEffect(() => {
+    if (profiles.length > 0 && !firstProfileSetAtBeggining.current) {
+      // console.log('reseting current profile to 1st');
+      // console.log('profiles:', profiles);
 
-  //     updateCurrentSelectedProfile(profiles[0]);
-  //     firstProfileSetAtBeggining.current = true;
-  //   }
-  // }, [profiles]);
+      updateCurrentSelectedProfile(profiles[0]);
+      firstProfileSetAtBeggining.current = true;
+    }
+  }, [profiles]);
 
   useEffect(() => {
     updateSinastryProfile(sinastryProfile);
@@ -236,6 +236,8 @@ export default function BirthChart() {
   const getPlanetReturn = async (returnType: ReturnChartType) => {
     setLoading(true);
 
+    console.log('currentProfile:', currentProfile);
+
     if (!currentProfile) return;
 
     const targetDate: BirthDate = {
@@ -258,7 +260,7 @@ export default function BirthChart() {
       }),
     });
 
-    console.log('data: ', data);
+    // console.log('data: ', data);
 
     updateBirthChart({
       chartType: "birth",
