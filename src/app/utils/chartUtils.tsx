@@ -401,7 +401,7 @@ export function extractHouseNumber(input: string): number | null {
 
 export function getHourAndMinute(decimalTime: number): string {
   const hours = Math.floor(decimalTime);
-  const minutes = Math.floor((decimalTime - hours) * 60);
+  const minutes = Math.floor((decimalTime - hours) * 60.5);
   const hoursString = hours.toString().padStart(2, "0");
   return `${hoursString}:${minutes}`;
 }
