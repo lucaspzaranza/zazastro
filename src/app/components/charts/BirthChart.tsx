@@ -294,6 +294,8 @@ export default function BirthChart() {
       now.getMinutes()
     ).toString();
 
+    updateCurrentSelectedProfile({...currentProfile, gender: "event"});
+
     const birthDate: BirthDate = {
       day: now.getDate(),
       month: now.getMonth() + 1,
