@@ -371,5 +371,33 @@
     "filter": "Filter",
     "cancel": "Cancel",
     "noAspectFound": "No aspect Found."
+  },
+  "timeAdvanceModal": { 
+    "title": "Time Advance/Rewind",
+    "minutes": "Minutes",
+    "hours": "Hours",
+    "days": "Days",
+    "weeks": "Weeks",
+    "months": "Months",
+    "years": "Years",
+    "apply": "Apply",
+    "abbreviations": {
+      "single": {
+        "minutes": "min.",
+        "hours": "hour",
+        "days": "day",
+        "weeks": "wk",
+        "months": "mo",
+        "years": "year"
+      },
+      "multiple": {
+        "minutes": "mins.",
+        "hours": "hrs.",
+        "days": "days",
+        "weeks": "wks.",
+        "months": "mo",
+        "years": "yrs."
+      }
+    }
   }
 }

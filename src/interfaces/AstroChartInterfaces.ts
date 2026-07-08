@@ -103,3 +103,11 @@ export interface ChartElementOverlap {
   inwardIndex: number;
   position: ElementOverlapPosition;
 }
+
+export type AdvanceChartUnitType = 
+  | "minutes"
+  | "hours"
+  | "days"
+  | "weeks"
+  | "months"
+  | "years"

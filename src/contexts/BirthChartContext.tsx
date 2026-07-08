@@ -188,6 +188,9 @@ export const BirthChartContextProvider: React.FC<{ children: ReactNode }> = ({
       setProfileName(chartOptions.profileName);
     }
 
+    // console.log('chart after step at Context:');
+    // console.log(chartObject);
+
     if (chartType === "birth" || chartType === "transits") setBirthChart(chartObject);
     else if (chartType === "return") setReturnChart(chartObject);
     else if (chartType === "sinastry") setSinastryChart(chartObject);

@@ -372,5 +372,33 @@
     "filter": "Filtrar",
     "cancel": "Cancelar",
     "noAspectFound": "Nenhum aspecto encontrado."
+  },
+  "timeAdvanceModal": { 
+    "title": "Avanço/Recuo de tempo",
+    "minutes": "Minutos",
+    "hours": "Horas",
+    "days": "Dias",
+    "weeks": "Semanas",
+    "months": "Meses",
+    "years": "Anos",
+    "apply": "Aplicar",
+    "abbreviations": {
+      "single": {
+        "minutes": "min.",
+        "hours": "hora",
+        "days": "dia",
+        "weeks": "sem.",
+        "months": "mês",
+        "years": "ano"
+      },
+      "multiple": {
+        "minutes": "mins.",
+        "hours": "hrs.",
+        "days": "dias",
+        "weeks": "sem.",
+        "months": "meses",
+        "years": "anos"
+      }
+    }
   }
 }

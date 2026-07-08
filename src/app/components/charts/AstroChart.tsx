@@ -38,6 +38,7 @@ import { useAspectsData } from "@/contexts/AspectsContext";
 import { CHALDEAN_DECANS } from "@/app/utils/termsAndDecans";
 import ChartHeaderSubtitle from "../ChartHeaderSubtitle";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
+import { useProfiles } from "@/contexts/ProfilesContext";
 
 interface TooltipData {
   x: number;
@@ -100,11 +101,17 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
   const aspectStrokeCoords = useRef<Map<string, { x1: number; y1: number; x2: number; y2: number }>>(new Map());
 
   const { isMobileBreakPoint } = useScreenDimensions();
-  const { chartMenu, isReturnChart, isLunarDerivedReturnChart, isSinastryChart, isProgressionChart, isProfectionChart } = useChartMenu();
-  const { birthChart, isMountingChart, updateIsMountingChart, isCombinedWithBirthChart, isCombinedWithReturnChart } = useBirthChart();
-  const [testValue] = useState(2.5);
-  const [showOuterChart, setShowOuterChart] = useState(outerPlanets !== undefined && outerHouses !== undefined);
+  const { chartMenu, isReturnChart, isLunarDerivedReturnChart, isSinastryChart, 
+    isProgressionChart, isProfectionChart, isTransitsChart, isMomentChart } = useChartMenu();
+  const { birthChart, isMountingChart, updateIsMountingChart, 
+    isCombinedWithBirthChart, isCombinedWithReturnChart } = useBirthChart();
   const { customArabicPart } = useArabicParts();
+  const { currentProfile } = useProfiles();
+
+  const [testValue] = useState(2.5);
+  const [showOuterChart, setShowOuterChart] = 
+    useState(outerPlanets !== undefined && outerHouses !== undefined);
+  const [showAdvanceOptions, setShowAdvanceOptions] = useState(false);
 
   const { aspects, updateAspectsData, selectedAspect, setSelectedAspect, 
     hasIsolatedAspect, setHasIsolatedAspect } = useAspectsData();
@@ -1340,6 +1347,18 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
       }
     });
   }
+
+  // Hooks
+
+  useEffect(() => {
+    if(useReturnSelectorArrows) {
+      setShowAdvanceOptions(
+        isTransitsChart() || 
+        isMomentChart() || 
+        currentProfile?.gender === "event"
+      );
+    }
+  }, [])
 
   useEffect(() => {
     let logic = outerPlanets !== undefined && outerHouses !== undefined;
@@ -3121,13 +3140,17 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
   }
   
   const getMobileDateBlockPosition = () => {
-    if(chartMenu === "birth" || chartMenu === "moment")
-      return 'mt-[-15px]';
+    if(chartMenu === "birth")
+      return !useReturnSelectorArrows ? 'mt-[-15px]' : 'top-88';
     else if(chartMenu === "solarReturn" || chartMenu === "lunarReturn" || 
       chartMenu === "lunarDerivedReturn" || chartMenu === "progression") 
       return 'bottom-[-5px]';
-    else if(chartMenu === "transits" || chartMenu === "sinastry")
+    else if(chartMenu === "sinastry")
       return 'mt-[-20px]';
+    else if(chartMenu === "transits" )
+      return 'top-86';
+    else if(chartMenu === "moment")
+      return 'top-88';
     else if(chartMenu === "profection")
       return 'bottom-[-5px]';
   }
@@ -3149,7 +3172,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
         ${useReturnSelectorArrows ? 'mx-14' : 'mx-10'}`}
     >
       {useReturnSelectorArrows ? (
-        <ReturnSelectorArrows>
+        <ReturnSelectorArrows showAdvanceOptions={showAdvanceOptions}>
           <div
             ref={containerRef}
             className={`relative w-full ${getMobileHeight()} ${getDesktopHeight()} ${(isMountingChart ? "opacity-0" : "")}`}

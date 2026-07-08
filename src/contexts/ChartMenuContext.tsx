@@ -29,6 +29,7 @@ interface ChartMenuContextType {
   isLunarDerivedReturnChart: () => boolean;
   isProgressionChart: () => boolean;
   isProfectionChart: () => boolean;
+  isMomentChart: () => boolean;
   isTransitsChart: () => boolean;
   getLastChartMenu: () => ChartMenuType;
 }
@@ -112,6 +113,10 @@ export const ChartMenuContextProvider: React.FC<{ children: ReactNode }> = ({
     return chartMenu === "profection";
   }
 
+  const isMomentChart = () => {
+    return chartMenu === "moment";
+  }
+
   const isTransitsChart = () => {
     return chartMenu === "transits";
   }
@@ -134,6 +139,7 @@ export const ChartMenuContextProvider: React.FC<{ children: ReactNode }> = ({
         isProgressionChart,
         isSinastryChart,
         isProfectionChart,
+        isMomentChart,
         isTransitsChart,
         getLastChartMenu
       }}

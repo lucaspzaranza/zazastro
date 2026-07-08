@@ -3,7 +3,7 @@ import {
   ArabicPartCalculatorDropdownItem,
   ArabicPartsType,
 } from "@/interfaces/ArabicPartInterfaces";
-import { AspectType } from "@/interfaces/AstroChartInterfaces";
+import { AdvanceChartUnitType, AspectType } from "@/interfaces/AstroChartInterfaces";
 import {
   ArabicPartType,
   BirthChart,
@@ -81,6 +81,9 @@ export const monthsNames = [
   "Novembro",
   "Dezembro",
 ];
+
+export const unitsArray: AdvanceChartUnitType[] = 
+  ["minutes", "hours", "days", "weeks", "months", "years"];
 
 // mapeamento das siglas das casas angulares
 export const angularLabels: Record<number, string> = {
@@ -446,14 +449,14 @@ export const clampLongitude = (
 };
 
 export function toDate(birthDate: BirthDate): Date {
-  const [hours, minutes] = getHourAndMinute(parseFloat(birthDate.time))
+  const [hours, minutes] = getHourAndMinute(parseFloat(birthDate.time)).split(':');
 
   return new Date(
     birthDate.year,
-    birthDate.month,
+    birthDate.month - 1,
     birthDate.day,
     parseInt(hours),
-    parseInt(minutes)
+    parseInt(minutes),
   );
 }
 
@@ -671,4 +674,40 @@ export function isDiurnal(sunLongitude: number, ascendant: number): boolean {
   // Casas 7 - 12 = hemisfério superior = diurno (relativePos entre 180 e 360)
   // Casas 1 - 6  = hemisfério inferior = noturno (relativePos entre 0 e 180)
   return relativePos >= 180;
+}
+
+export function applyDateStep(birthDate: BirthDate, direction: "previous" | "next", 
+  stepData: { value: number; unit: AdvanceChartUnitType }): BirthDate {
+  const jsDate = toDate(birthDate);
+  const amount = (direction === "previous" ? -1 : 1) * stepData.value;
+  
+  switch (stepData.unit) {
+    case "minutes":
+      jsDate.setMinutes(jsDate.getMinutes() + amount);
+      break;
+    case "hours":
+      jsDate.setHours(jsDate.getHours() + amount);
+      break;
+    case "days":
+      jsDate.setDate(jsDate.getDate() + amount);
+      break;
+    case "weeks":
+      jsDate.setDate(jsDate.getDate() + amount * 7);
+      break;
+    case "months":
+      jsDate.setMonth(jsDate.getMonth() + amount);
+      break;
+    case "years":
+      jsDate.setFullYear(jsDate.getFullYear() + amount);
+      break;
+  }
+
+  const finalTimeString = convertDegMinToDecimal(jsDate.getHours(), jsDate.getMinutes()).toString();
+  return {
+    ...birthDate,
+    day: jsDate.getDate(),
+    month: jsDate.getMonth() + 1,
+    year: jsDate.getFullYear(),
+    time: finalTimeString
+  } as BirthDate;
 }

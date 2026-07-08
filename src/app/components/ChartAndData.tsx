@@ -6,7 +6,7 @@ import {
   GenderType,
   PlanetType,
 } from "@/interfaces/BirthChartInterfaces";
-import React, { JSX, useCallback, useEffect, useState } from "react";
+import React, { JSX, useCallback, useEffect, useEffectEvent, useState } from "react";
 import {
   angularLabels,
   convertTransitsToChart,
@@ -87,10 +87,12 @@ export default function ChartAndData(props: Props) {
     loadingNextChart,
     isMountingChart,
     chartIsLocked,
-    setChartIsLocked
+    setChartIsLocked,
+    birthChart
   } = useBirthChart();
-  const { chartMenu, resetChartMenus, isReturnChart,
-    isSinastryChart, isProgressionChart, isProfectionChart, isLunarDerivedReturnChart } = useChartMenu();
+  const { chartMenu, resetChartMenus, isReturnChart, isSinastryChart,
+    isProgressionChart, isProfectionChart, isLunarDerivedReturnChart,
+    isTransitsChart, isMomentChart } = useChartMenu();
   const {
     updateArabicParts,
     updateSinastryArabicParts,
@@ -161,7 +163,6 @@ export default function ChartAndData(props: Props) {
   // vivia dentro do AstroChart, reagindo às mesmas dependências.
   useEffect(() => {
     toggles.resetPerChartToggles();
-  // }, [innerChart, outerChart, arabicParts, outerArabicParts, innerChart.fixedStars]);
   }, [innerChart, outerChart, outerArabicParts, innerChart.fixedStars]);
 
   const [planetsAntiscion, setPlanetsAntiscion] = useState<
@@ -271,6 +272,17 @@ export default function ChartAndData(props: Props) {
     setChartForHouses(useInnerHouses ? innerChart : outerChart);
   }, [useInnerHouses]);
 
+  // Updating data when advance/step back a chart
+  useEffect(() => {
+    if(useInnerHouses) 
+      setChartForHouses(innerChart);
+    
+    if(useInnerPlanets)
+      setChartForPlanets(innerChart);
+
+    // console.log('innerChart:', innerChart);
+  }, [innerChart])
+
   const handleReset = useCallback(() => {
     updateBirthChart({ chartType: "birth", chartData: undefined });
     updateBirthChart({ chartType: "return", chartData: undefined });
@@ -306,6 +318,15 @@ export default function ChartAndData(props: Props) {
     setAspectsData(newAspectData);
   }
 
+  const getDesktopHeaderPadding = () => {
+    if(chartMenu === "transits")
+      return "md:px-14";
+    // else if(chartMenu === "moment" || currentProfile?.gender === "event")
+    //   return "md:px-9";
+
+    return "md:px-9"
+  }
+
   function renderChart(): JSX.Element {
     const content = (
       <div className="w-full md:min-w-[51rem] flex flex-col items-center justify-center relative">
@@ -328,7 +349,7 @@ export default function ChartAndData(props: Props) {
             genderIconSize={gender !== undefined && gender !== "event" ? genderIconSize - 4 : genderIconSize}
           />
 
-          <div className="w-full md:px-4 mt-2">
+          <div className={`w-full mt-2 ${getDesktopHeaderPadding()}`} >
             <AstroChartMenu
               toggleCombineWithBirthChart={isReturnChart() || isProgressionChart() || isProfectionChart()}
               toggleCombineWithReturnChart={isLunarDerivedReturnChart()}
@@ -348,7 +369,8 @@ export default function ChartAndData(props: Props) {
                 outerArabicParts,
                 fixedStars: innerChart.fixedStars,
                 onUpdateAspectsData: handleOnUpdateAspectsData,
-                useReturnSelectorArrows: isReturnChart() || isProgressionChart() || isProfectionChart(),
+                useReturnSelectorArrows: isReturnChart() || isProgressionChart() || 
+                  isTransitsChart() || isProfectionChart() || isMomentChart() || currentProfile?.gender === "event",
                 showArabicParts: toggles.showArabicParts,
                 showPlanetsAntiscia: toggles.showPlanetsAntiscia,
                 showArabicPartsAntiscia: toggles.showArabicPartsAntiscia,

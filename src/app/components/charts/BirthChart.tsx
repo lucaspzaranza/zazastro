@@ -182,7 +182,6 @@ export default function BirthChart() {
   useEffect(() => {
     if (menu === "home") {
       updateHouseSystem("placidus" as HouseSystem);
-      // firstProfileSetAtBeggining.current = false;
       updateCurrentSelectedProfile(profiles[0]);
       setSinastryProfile(profiles[0]);
     }
@@ -190,9 +189,6 @@ export default function BirthChart() {
 
   useEffect(() => {
     if (profiles.length > 0 && !firstProfileSetAtBeggining.current) {
-      // console.log('reseting current profile to 1st');
-      // console.log('profiles:', profiles);
-
       updateCurrentSelectedProfile(profiles[0]);
       firstProfileSetAtBeggining.current = true;
     }
@@ -215,7 +211,7 @@ export default function BirthChart() {
           birthDate:
             { ...chartProfileToOverwrite?.birthDate ?? currentProfile?.birthDate, houseSystem }
         }),
-      });
+      });      
 
       updateBirthChart({
         profileName: chartProfileToOverwrite?.name ?? currentProfile?.name,
@@ -235,8 +231,6 @@ export default function BirthChart() {
 
   const getPlanetReturn = async (returnType: ReturnChartType) => {
     setLoading(true);
-
-    console.log('currentProfile:', currentProfile);
 
     if (!currentProfile) return;
 
@@ -259,8 +253,6 @@ export default function BirthChart() {
         targetDate,
       }),
     });
-
-    // console.log('data: ', data);
 
     updateBirthChart({
       chartType: "birth",
@@ -313,9 +305,6 @@ export default function BirthChart() {
       },
     };
 
-    // console.log(birthDate);
-
-    // setMenu("momentChart");
     updateChartMenuDirectly("moment");
     getBirthChart({
       name: t("home.momentChart"),
@@ -1055,6 +1044,7 @@ export default function BirthChart() {
     </Container>
 
   const getChartContent = (): JSX.Element | null => {
+
     switch (activeChart) {
       case "birth":
       case "moment":

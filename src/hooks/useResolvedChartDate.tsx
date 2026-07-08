@@ -79,7 +79,7 @@ export function useResolvedChartDate(props: ChatDateProps): ResolvedChartDate | 
         },
       });
     }
-  }, [birthChart]);
+  }, [birthChart, birthChart?.transits, chartDate]);
 
   if (date === undefined) return undefined;
 
