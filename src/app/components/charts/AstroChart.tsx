@@ -2343,7 +2343,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
           .attr("y1", y1)
           .attr("x2", x2)
           .attr("y2", y2)
-          .attr("stroke", "#00cccc")
+          .attr("stroke", "#005f73")
           .attr("stroke-width", 1);
 
         // 5) desenha a linha externa
@@ -2354,7 +2354,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
           .attr("y1", y1Outer)
           .attr("x2", x2Outer)
           .attr("y2", y2Outer)
-          .attr("stroke", "#00cccc")
+          .attr("stroke", "#005f73")
           .attr("stroke-width", 1);
   
         // 6) desenha o ícone do planeta

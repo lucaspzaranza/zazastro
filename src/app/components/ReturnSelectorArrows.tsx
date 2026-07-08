@@ -327,7 +327,6 @@ export default function ReturnSelectorArrows(props: ChartSelectorProps) {
         {showAdvanceOptions &&
           <AdvanceChartInputsMobile 
             onChange={(value, unit) => {
-              // console.log('value:', value, 'unit:', unit);
               setStepData({value, unit});
             }}
           />

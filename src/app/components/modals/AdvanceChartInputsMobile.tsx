@@ -26,7 +26,7 @@ export function AdvanceChartInputsMobile(props: AdvanceChartMobileInputsProps) {
       <input
         ref={inputRef}
         type="number"
-        className="w-10 h-[2rem] default-input-field border-black! bg-zinc-50"
+        className="w-10 h-[2rem] default-input-field border-black! pl-1! bg-zinc-50 text-center"
         required
         placeholder="0"
         onChange={(e) => {
@@ -44,7 +44,7 @@ export function AdvanceChartInputsMobile(props: AdvanceChartMobileInputsProps) {
       />
 
       <select
-        className="default-input-field h-[2rem] border-black! bg-zinc-50"
+        className="default-input-field h-[2rem] border-black! text-center pt-1! bg-zinc-50"
         onChange={(e) => {
           setUnit(e.target.value as AdvanceChartUnitType);
           onChange?.(value, e.target.value as AdvanceChartUnitType);
@@ -55,6 +55,7 @@ export function AdvanceChartInputsMobile(props: AdvanceChartMobileInputsProps) {
           <option
             key={index}
             value={unit}
+            className="text-start"
           >
             {t(`timeAdvanceModal.${unit}`)}
           </option>
