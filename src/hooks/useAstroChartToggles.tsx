@@ -25,14 +25,14 @@ export function useAstroChartToggles() {
   const [useTerms, setUseTerms] = useState(true);
   const [useDecans, setUseDecans] = useState(true);
   const [showFixedStars, setShowFixedStars] = useState(true);
-  const [currentTerms, setCurrentTerms] = useState<Record<Sign, TermOrDecan[]> | undefined>(PTOLEMAIC_TERMS);
+  const [currentTerms, setCurrentTerms] = useState<Record<Sign, TermOrDecan[]> | undefined>(EGYPTIAN_TERMS);
 
   // Garante que, se useTerms for ativado por algum outro caminho sem uma
-  // tabela definida, cai de volta para Ptolemaico por padrão (mesmo
+  // tabela definida, cai de volta pros Termos Egípcios por padrão (mesmo
   // comportamento do useEffect original dentro do AstroChart).
   useEffect(() => {
     if (useTerms && currentTerms === undefined) {
-      setCurrentTerms(PTOLEMAIC_TERMS);
+      setCurrentTerms(EGYPTIAN_TERMS);
     }
   }, [useTerms]);
 

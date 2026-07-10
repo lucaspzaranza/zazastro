@@ -178,20 +178,20 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       onClick: toggleFixedStars,
     },
     {
+      key: "termsEgyptians",
+      label: t("birthChart.termsEgyptians"),
+      active: useEgyptianTerms,
+      visible: true,
+      iconPath: "ankh.png",
+      onClick: () => toggleEgyptianTerms(!useEgyptianTerms),
+    },
+    {
       key: "termsPtolemaics",
       label: t("birthChart.termsPtolomaics"),
       active: usePtolemaicsTerms,
       visible: true,
       iconPath: "planets/jupiter.png",
       onClick: () => togglePtolemaicTerms(!usePtolemaicsTerms),
-    },
-    {
-      key: "termsEgyptians",
-      label: t("birthChart.termsEgyptians"),
-      active: useEgyptianTerms,
-      visible: true,
-      iconPath: "planets/saturn.png",
-      onClick: () => toggleEgyptianTerms(!useEgyptianTerms),
     },
     {
       key: "decans",
