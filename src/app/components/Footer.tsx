@@ -11,7 +11,7 @@ export default function Footer() {
 
         <div className="flex gap-6 text-lg">
           <a
-            href="https://instagram.com/lucas.zaranza"
+            href="https://instagram.com/lucas.zazastro"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Instagram - abre em nova aba"
