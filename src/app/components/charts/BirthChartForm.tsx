@@ -219,7 +219,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
                   onChange={() => setGender("male")}
                 />
                 {t("form.male")}
-                <Image src="male.png" width={genderIconSize} height={genderIconSize} unoptimized alt="genderIcon" />
+                <Image  src="/male.png" width={genderIconSize} height={genderIconSize} unoptimized alt="genderIcon" />
               </label>
 
               <label
@@ -235,7 +235,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
                   onChange={() => setGender("female")}
                 />
                 {t("form.female")}
-                <Image src="female.png" width={genderIconSize} height={genderIconSize} unoptimized alt="genderIcon" />
+                <Image  src="/female.png" width={genderIconSize} height={genderIconSize} unoptimized alt="genderIcon" />
               </label>
 
               <label
@@ -251,7 +251,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
                   onChange={() => setGender("event")}
                 />
                 {t("form.event")}
-                <Image src="event.png" width={20} height={20} unoptimized alt="genderIcon" />
+                <Image  src="/event.png" width={20} height={20} unoptimized alt="genderIcon" />
               </label>
             </div>
             :
@@ -419,7 +419,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
           className="default-btn"
         >
           <span>{t("birthChart.create")}</span>
-          <Image src="horoscope.png" width={22} height={22} unoptimized alt="chart"/>
+          <Image  src="/horoscope.png" width={22} height={22} unoptimized alt="chart"/>
         </button>
       )}
 

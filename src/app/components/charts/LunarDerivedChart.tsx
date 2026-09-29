@@ -20,7 +20,7 @@ export default function LunarDerivedChart() {
   const [tableItemsPerPage, setTableItemsPerPage] = useState(
     ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT
   );
-  const { birthChart, returnChart, lunarDerivedChart,
+  const { birthChart, returnChart, lunarDerivedChart, profileName,
     isCombinedWithBirthChart, isCombinedWithReturnChart } = useBirthChart();
   const t = useTranslations();
   const { isMobileBreakPoint } = useScreenDimensions();
@@ -32,7 +32,7 @@ export default function LunarDerivedChart() {
   useEffect(() => {
     if (lunarDerivedChart && lunarDerivedChart.returnTime) {
       setReturnTime(lunarDerivedChart.returnTime);
-      setRenderChart(true);
+      setRenderChart(true); 
     }
   }, [lunarDerivedChart]);
 
@@ -66,9 +66,10 @@ export default function LunarDerivedChart() {
   
           <span
             className="min-w-0 flex-1 truncate"
-            title={currentProfile?.name}
+            title={profileName}
           >
-            {currentProfile?.name}
+            {/* {currentProfile?.name} */}
+            {profileName}
           </span>
         </div>
       );

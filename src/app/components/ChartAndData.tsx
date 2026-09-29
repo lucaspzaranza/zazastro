@@ -38,6 +38,7 @@ import ChartHeader from "./ChartHeader";
 import AstroChartMenu from "./menus/AstroChartMenu";
 import ChartHeaderSubtitle from "./ChartHeaderSubtitle";
 import { useProfiles } from "@/contexts/ProfilesContext";
+import { useRouter } from "next/dist/client/components/navigation";
 
 interface Props {
   innerChart: BirthChart;
@@ -67,6 +68,7 @@ export default function ChartAndData(props: Props) {
     ...props,
   };
 
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const { isMobileBreakPoint, isScreen1366 } = useScreenDimensions();
   const [chartForPlanets, setChartForPlanets] = useState<
@@ -300,6 +302,7 @@ export default function ChartAndData(props: Props) {
     setSelectedAspect(null);
     updateCustomArabicPart(undefined);
     resetChartMenus();
+    router.push("/"); // <- nova linha
   }, []);
 
   const getHouseAntiscion = (houseLong: number): React.ReactNode => {

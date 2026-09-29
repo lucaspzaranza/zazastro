@@ -7,8 +7,11 @@ import { BirthChartContextProvider } from "@/contexts/BirthChartContext";
 import { ChartMenuContextProvider } from "@/contexts/ChartMenuContext";
 import { ProfilesContextProvider } from "@/contexts/ProfilesContext";
 import { ScreenDimensionsContextProvider } from "@/contexts/ScreenDimensionsContext";
+import ArabicPartsSync from "./components/ArabicPartsSync";
+import InitialProfileSync from "./components/InitialProfileSync";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
+
   return (
     <ProfilesContextProvider>
       <ChartMenuContextProvider>
@@ -16,6 +19,8 @@ export default function Providers({ children }: { children: React.ReactNode }) {
           <ArabicPartsContextProvider>
             <AspectsContextProvider>
               <ScreenDimensionsContextProvider>
+                <ArabicPartsSync />
+                <InitialProfileSync />
                 {children}
               </ScreenDimensionsContextProvider>
             </AspectsContextProvider>

@@ -147,7 +147,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       label: t("birthChart.antiscion"),
       active: showPlanetsAntiscia,
       visible: true,
-      iconPath: "planets/antiscion/sun.png",
+      iconPath:  "/planets/antiscion/sun.png",
       onClick: toggleAntiscia,
       pinned: true,
     },
@@ -156,7 +156,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       label: t("birthChart.arabicPartsMobile"),
       active: showArabicParts,
       visible: true,
-      iconPath: "planets/fortune.png",
+      iconPath:  "/planets/fortune.png",
       onClick: toggleArabicParts,
       pinned: true,
     },
@@ -165,7 +165,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       label: t("birthChart.arabicPartsAntiscionMobile"),
       active: showArabicPartsAntiscia,
       visible: true,
-      iconPath: "planets/antiscion/necessity.png",
+      iconPath:  "/planets/antiscion/necessity.png",
       onClick: toggleArabicPartsAntiscia,
       pinned: true,
     },
@@ -174,7 +174,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       label: t("birthChart.fixedStars"),
       active: showFixedStars,
       visible: true,
-      iconPath: "star-1.png",
+      iconPath:  "/star-1.png",
       onClick: toggleFixedStars,
     },
     {
@@ -182,7 +182,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       label: t("birthChart.termsEgyptians"),
       active: useEgyptianTerms,
       visible: true,
-      iconPath: "ankh.png",
+      iconPath:  "/ankh.png",
       onClick: () => toggleEgyptianTerms(!useEgyptianTerms),
     },
     {
@@ -190,7 +190,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       label: t("birthChart.termsPtolomaics"),
       active: usePtolemaicsTerms,
       visible: true,
-      iconPath: "planets/jupiter.png",
+      iconPath:  "/planets/jupiter.png",
       onClick: () => togglePtolemaicTerms(!usePtolemaicsTerms),
     },
     {
@@ -198,7 +198,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       label: t("birthChart.decans"),
       active: useDecans,
       visible: true,
-      iconPath: "planets/venus.png",
+      iconPath:  "/planets/venus.png",
       onClick: toggleDecans,
     },
     {
@@ -206,7 +206,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       label: t("birthChart.showInfo"),
       active: showDegrees,
       visible: toggleCombineWithBirthChart === false,
-      iconPath: "see-more.png",
+      iconPath:  "/see-more.png",
       onClick: toggleDegrees,
     },
     {
@@ -214,7 +214,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       label: t("returnChart.combineWithBirthChartMobile"),
       active: isCombinedWithBirthChart,
       visible: !!toggleCombineWithBirthChart && !isCombinedWithReturnChart,
-      iconPath: "combine.png",
+      iconPath:  "/combine.png",
       pinned: isMobileBreakPoint(),
       onClick: () => {
         updateCustomArabicPart(undefined);
@@ -227,7 +227,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       label: t("returnChart.combineWithSolarReturnChartMobile"),
       active: isCombinedWithReturnChart,
       visible: !!toggleCombineWithReturnChart && !isCombinedWithBirthChart,
-      iconPath: "planets/sun.png",
+      iconPath:  "/planets/sun.png",
       onClick: () => {
         updateCustomArabicPart(undefined);
         updateIsCombinedWithReturnChart(!isCombinedWithReturnChart);
@@ -239,7 +239,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       label: t("returnChart.lunarDerivedReturnMobile"),
       active: lunarDerivedModal,
       visible: chartMenu === "solarReturn",
-      iconPath: "planets/moon.png",
+      iconPath:  "/planets/moon.png",
       onClick: () => {
         setLunarDerivedModal(true);
       },
@@ -249,7 +249,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       label: t("birthChart.showInfo"),
       active: showDegrees,
       visible: !!toggleCombineWithBirthChart,
-      iconPath: "see-more.png",
+      iconPath:  "/see-more.png",
       onClick: toggleDegrees,
     },
   ];
@@ -379,7 +379,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
             }`}
             onClick={() => setChartIsLocked(!chartIsLocked)}
           >
-            <Image alt="lock" src={chartIsLocked ? "lock.png" : "lock-open.png"} width={20} height={20} unoptimized />
+            <Image alt="lock" src={chartIsLocked ?  "/lock.png" :  "/lock-open.png"} width={20} height={20} unoptimized />
           </button>
         </div>
 

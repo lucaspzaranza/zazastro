@@ -220,7 +220,8 @@ export function getPlanetImage(
 ): React.ReactNode {
   const folder = "planets";
   const { size, isAntiscion, isRetrograde, isTransit } = options;
-  let path = folder;
+  //let path = folder;
+   let path = "/" + folder; // <- era só `folder`
 
   if(isAntiscion)
     path += "/antiscion";

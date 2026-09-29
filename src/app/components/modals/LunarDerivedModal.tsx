@@ -1,3 +1,4 @@
+// LunarDerivedModal.tsx
 import { apiFetch } from "@/app/utils/api";
 import Image from "next/image";
 import {
@@ -7,9 +8,12 @@ import {
 } from "@/app/utils/chartUtils";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import { useBirthChart } from "@/contexts/BirthChartContext";
+import { useProfiles } from "@/contexts/ProfilesContext";
 import { BirthDate } from "@/interfaces/BirthChartInterfaces";
+import { buildChartUrl, birthDateToQueryFields } from "@/utils/chartUrl";
 import moment from "moment";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import Spinner from "../Spinner";
 import { useTranslations } from "next-intl";
 import { IoClose } from "react-icons/io5";
@@ -20,19 +24,22 @@ interface LunarModalProps {
 
 export default function LunarDerivedModal(props: LunarModalProps) {
   const { onClose } = props;
+  const router = useRouter();
 
-  const { birthChart, updateLunarDerivedChart } = useBirthChart();
-
+  const {
+    birthChart,
+    profileName,
+    updateLunarDerivedChart,
+    isCombinedWithBirthChart,
+    updateIsCombinedWithBirthChart,
+  } = useBirthChart();
+  const { currentProfile } = useProfiles();
   const { archArabicParts, updateSolarReturnParts } = useArabicParts();
 
   const [day, setDay] = useState(0);
   const [month, setMonth] = useState(1);
   const [year, setYear] = useState(0);
-
   const [loading, setLoading] = useState(false);
-
-  const { isCombinedWithBirthChart, updateIsCombinedWithBirthChart } =
-    useBirthChart();
 
   const t = useTranslations();
 
@@ -43,13 +50,8 @@ export default function LunarDerivedModal(props: LunarModalProps) {
 
     updateSolarReturnParts(archArabicParts);
 
-    const returnDate = moment.tz(
-      birthChart.returnTime,
-      birthChart.timezone!
-    );
-
+    const returnDate = moment.tz(birthChart.returnTime, birthChart.timezone!);
     const timeArrayString = returnDate.format("HH:mm").split(":");
-
     const time = [
       Number.parseInt(timeArrayString[0]),
       Number.parseInt(timeArrayString[1]),
@@ -60,9 +62,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
       month: returnDate.month() + 1,
       year: returnDate.year(),
       time: convertDegMinToDecimal(time[0], time[1]).toString(),
-      coordinates: {
-        ...birthChart.birthDate.coordinates,
-      },
+      coordinates: { ...birthChart.birthDate.coordinates },
     };
 
     const targetDate: BirthDate = {
@@ -75,40 +75,37 @@ export default function LunarDerivedModal(props: LunarModalProps) {
 
     const data = await apiFetch("return/lunar", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        birthDate,
-        targetDate,
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ birthDate, targetDate }),
     });
 
-    const lunarDerivedChart = makeLunarDerivedChart(
-      data,
-      birthDate,
-      targetDate
-    );
-
+    const lunarDerivedChart = makeLunarDerivedChart(data, birthDate, targetDate);
     updateLunarDerivedChart?.(lunarDerivedChart);
 
     setLoading(false);
+
+    router.push(buildChartUrl({
+      type: "lunarDerivedReturn",
+      profileName: profileName ?? currentProfile?.name ?? "",
+      gender: currentProfile?.gender ?? "event",
+      ...birthDateToQueryFields("birth", birthChart.birthDate),
+      solarTargetYear: birthChart.targetDate?.year ?? new Date().getFullYear(),
+      derivedDay: day,
+      derivedMonth: month,
+      derivedYear: year,
+    }));
 
     setTimeout(() => {
       if (isCombinedWithBirthChart) {
         updateIsCombinedWithBirthChart(false);
       }
-
       onClose?.();
     }, 100);
   };
 
   return (
     <div className="fixed inset-0 w-full h-full flex items-center justify-center z-50 px-3">
-      <div
-        className="absolute inset-0 bg-black/30"
-        onClick={() => onClose?.()}
-      />
+      <div className="absolute inset-0 bg-black/30" onClick={() => onClose?.()} />
 
       <div className="relative w-full max-w-md bg-white rounded-xl shadow-xl flex flex-col overflow-hidden">
         <header className="relative w-full px-5 py-4 flex flex-row items-center justify-center border-b border-zinc-100">
@@ -141,10 +138,8 @@ export default function LunarDerivedModal(props: LunarModalProps) {
                 onChange={(e) => {
                   if (e.target.value.length > 0) {
                     let val = Number.parseInt(e.target.value);
-
                     if (val < 1) val = 1;
                     if (val > 31) val = 31;
-
                     setDay(val);
                     e.target.value = val.toString();
                   }
@@ -153,16 +148,11 @@ export default function LunarDerivedModal(props: LunarModalProps) {
 
               <select
                 className="flex-1 default-input-field"
-                onChange={(e) =>
-                  setMonth(Number.parseInt(e.target.value) + 1)
-                }
+                onChange={(e) => setMonth(Number.parseInt(e.target.value) + 1)}
                 required
               >
                 {monthsNames.map((month, index) => (
-                  <option
-                    key={index}
-                    value={index}
-                  >
+                  <option key={index} value={index}>
                     {t(`months.${index + 1}`)}
                   </option>
                 ))}
@@ -176,9 +166,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
                 onChange={(e) => {
                   if (e.target.value.length > 0) {
                     let val = Number.parseInt(e.target.value);
-
                     if (val < 0) val = 0;
-
                     setYear(val);
                     e.target.value = val.toString();
                   }
@@ -186,19 +174,13 @@ export default function LunarDerivedModal(props: LunarModalProps) {
               />
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="default-btn"
-            >
+            <button type="submit" disabled={loading} className="default-btn">
               {t("birthChart.createMomentChart")}
-              <Image src="moon.png" width={22} height={22} unoptimized alt="moon"/>
+              <Image src="/moon.png" width={22} height={22} unoptimized alt="moon" />
             </button>
 
             <div
-              className={`flex flex-row items-center justify-center gap-3 text-sm text-zinc-600 transition-opacity ${
-                loading ? "opacity-100" : "opacity-0"
-              }`}
+              className={`flex flex-row items-center justify-center gap-3 text-sm text-zinc-600 transition-opacity ${loading ? "opacity-100" : "opacity-0"}`}
             >
               <Spinner />
               <span>{t("home.loading")}</span>

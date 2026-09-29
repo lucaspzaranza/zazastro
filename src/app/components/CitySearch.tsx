@@ -126,7 +126,7 @@ export default function CitySearch({
         </div>
 
         {results.length > 0 && !isLoading && (
-          <ul className="absolute bg-white default-input-field shadow p-2">
+          <ul className="absolute bg-white default-input-field shadow p-2 z-10">
             {results.map((city, index) => (
               <li
                 key={index}

@@ -354,7 +354,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
 
   function makeFixedStarTooltip(star: AspectedElement): React.ReactNode {
     const degree = getDegreeAndSign(decimalToDegreesMinutes(star.longitude), true);
-    const iconSrc = star.isRelevant ? "relevant-star.png" : "star-1.png";
+    const iconSrc = star.isRelevant ?  "/relevant-star.png" :  "/star-1.png";
 
     return (
       <div className="flex flex-row items-center gap-1">
@@ -2980,7 +2980,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
 
       // 5) desenha o ícone da estrela
       const iconSize = 9; // px
-      const iconSrc = asp.aspectedElement.isRelevant ? "relevant-star.png" : "star-1.png";
+      const iconSrc = asp.aspectedElement.isRelevant ?  "/relevant-star.png" :  "/star-1.png";
       const opacity = asp.aspectedElement.isRelevant ? 1 : 0.4;
 
       baseGroupRef.current
