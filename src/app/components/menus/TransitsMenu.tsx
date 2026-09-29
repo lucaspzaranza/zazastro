@@ -71,7 +71,7 @@ export default function TransitsMenu() {
 
           {mode === 0 && (
             <>
-              <PresavedChartsDropdown onChange={setProfile} />
+              <PresavedChartsDropdown onChange={setProfile} excludeEventProfiles/>
               <HouseSystemDropdown />
               <button className="default-btn" onClick={submitMomentTransits}>
                 {t("birthChart.createMomentChart")}

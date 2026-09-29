@@ -35,7 +35,7 @@ export default function SolarReturnMenu() {
     <MenuContainer titleKey="returnChart.title" loading={navigating}>
       {(iconSize) => (
         <>
-          <PresavedChartsDropdown onChange={setProfile} />
+          <PresavedChartsDropdown onChange={setProfile} excludeEventProfiles />
           <form
             className="w-full flex flex-col items-center gap-3"
             onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}

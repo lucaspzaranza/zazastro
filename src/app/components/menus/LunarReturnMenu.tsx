@@ -39,7 +39,7 @@ export default function LunarReturnMenu() {
     <MenuContainer titleKey="returnChart.titleLunar" loading={navigating}>
       {(iconSize) => (
         <>
-          <PresavedChartsDropdown onChange={setProfile} />
+          <PresavedChartsDropdown onChange={setProfile} excludeEventProfiles/>
           <form
             className="w-full flex flex-col justify-between gap-3"
             onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}

@@ -38,7 +38,7 @@ export default function ProgressionMenu() {
           onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}
         >
           <span>{t("home.selectChart")}:</span>
-          <PresavedChartsDropdown onChange={setProfile} />
+          <PresavedChartsDropdown onChange={setProfile} excludeEventProfiles/>
 
           <div className="flex flex-row items-center gap-2">
             <label className="text-nowrap">{t("home.numOfYears")}:</label>

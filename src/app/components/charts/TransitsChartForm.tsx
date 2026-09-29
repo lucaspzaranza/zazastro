@@ -88,6 +88,7 @@ export default function TransitsChartForm(props: TransitsChartFormProps) {
 
       <PresavedChartsDropdown
         onChange={(profile) => setProfile(profile)}
+        excludeEventProfiles
       />
 
        <div className="w-full flex flex-row justify-between gap-1">

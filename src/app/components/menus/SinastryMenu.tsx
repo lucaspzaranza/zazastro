@@ -39,12 +39,12 @@ export default function SinastryMenu() {
         <>
           <div className="flex flex-col gap-1">
             <span>{t("synastryChart.firstChart")}:</span>
-            <PresavedChartsDropdown onChange={setProfile1} />
+            <PresavedChartsDropdown onChange={setProfile1} excludeEventProfiles/>
           </div>
 
           <div className="flex flex-col gap-1">
             <span>{t("synastryChart.secondChart")}:</span>
-            <PresavedChartsDropdown onChange={setProfile2} />
+            <PresavedChartsDropdown onChange={setProfile2} excludeEventProfiles/>
           </div>
 
           <button onClick={handleSubmit} className="default-btn">
