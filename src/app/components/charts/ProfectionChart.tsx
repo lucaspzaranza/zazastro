@@ -7,6 +7,7 @@ import { BirthChart } from "@/interfaces/BirthChartInterfaces";
 import { ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
 import { useTranslations } from "next-intl";
 import { useProfiles } from "@/contexts/ProfilesContext";
+import { useChartCarousel } from "@/hooks/useChartCarousel";
 
 export default function ProfectionChart() {
   const { profileName } = useBirthChart();
@@ -14,10 +15,9 @@ export default function ProfectionChart() {
   const { arabicParts, archArabicParts } = useArabicParts();
   const t = useTranslations();
   const { currentProfile } = useProfiles();
+  const { step, onPrevious, onNext, previousDisabled, nextDisabled } = useChartCarousel(2);
 
-  const [tableItemsPerPage, setTableItemsPerPage] = useState(
-    ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT
-  );
+  const [tableItemsPerPage, setTableItemsPerPage] = useState(ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT);
 
   function handleOnItemsPerPagechanged(newItemsPerPage: number) {
     setTableItemsPerPage(newItemsPerPage);
@@ -27,27 +27,31 @@ export default function ProfectionChart() {
     return null;
   }
 
-  const getInnerChart = (): BirthChart => !isCombinedWithBirthChart ? profectionChart! : birthChart!;
+  const isNatalStep = step === 1;
 
-  const getOuterchart = (): BirthChart | undefined => !isCombinedWithBirthChart ? undefined : profectionChart;
-
+  const getInnerChart = (): BirthChart =>
+    isNatalStep ? birthChart! : (!isCombinedWithBirthChart ? profectionChart! : birthChart!);
+  const getOuterchart = (): BirthChart | undefined =>
+    isNatalStep ? undefined : (!isCombinedWithBirthChart ? undefined : profectionChart);
   const getInnerArabicParts = (): ArabicPartsType | undefined =>
-    !isCombinedWithBirthChart ? archArabicParts : arabicParts;
-
+    isNatalStep ? arabicParts : (!isCombinedWithBirthChart ? archArabicParts : arabicParts);
   const getOuterArabicParts = (): ArabicPartsType | undefined =>
-    !isCombinedWithBirthChart ? undefined : archArabicParts;
+    isNatalStep ? undefined : (!isCombinedWithBirthChart ? undefined : archArabicParts);
 
-  function getTitle() {
-    if(!birthChart?.birthDate || !profectionChart?.birthDate) 
-      return `${t('profections.title')} - ${profileName}`;    
-    
+  function getProfectionTitle() {
+    if (!birthChart?.birthDate || !profectionChart?.birthDate)
+      return `${t('profections.title')} - ${profileName}`;
+
     const progressedYears = profectionChart!.birthDate.year - birthChart.birthDate.year;
     const nextYear = progressedYears + 1;
-
     const targetYear = birthChart.birthDate.year + progressedYears;
     const targetNextYear = targetYear + 1;
 
     return `${t('profections.profected')} ${progressedYears}/${nextYear} (${targetYear}/${targetNextYear}) - ${profileName}`;
+  }
+
+  function getNatalTitle() {
+    return `${t("birthChart.chartTitle")}${profileName}`;
   }
 
   return (
@@ -59,19 +63,23 @@ export default function ProfectionChart() {
       tableItemsPerPage={tableItemsPerPage}
       onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
       chartDateProps={{
-        chartType: "birth",
-        birthChart: birthChart,
-        label: t("profections.birth"),
+        chartType: isNatalStep ? "birth" : "birth",
+        birthChart: isNatalStep ? birthChart : birthChart,
+        label: isNatalStep ? profileName : t("profections.birth"),
         chartDate: birthChart.birthDate
       }}
-      outerChartDateProps={{
+      outerChartDateProps={isNatalStep ? undefined : {
         chartType: "profection",
         birthChart: profectionChart,
         label: t("profections.profected"),
         chartDate: profectionChart.birthDate
       }}
-      title={getTitle()}
+      title={isNatalStep ? getNatalTitle() : getProfectionTitle()}
       gender={currentProfile?.gender}
+      onPrevious={onPrevious}
+      onNext={onNext}
+      previousDisabled={previousDisabled}
+      nextDisabled={nextDisabled}
     />
   );
 }

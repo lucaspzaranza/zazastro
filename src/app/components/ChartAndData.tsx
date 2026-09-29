@@ -51,22 +51,18 @@ interface Props {
   outerChartDateProps?: ChatDateProps;
   title?: string | React.ReactNode;
   gender?: GenderType;
+  onPrevious?: () => void;
+  onNext?: () => void;
+  previousDisabled?: boolean;
+  nextDisabled?: boolean;
 }
 
 export default function ChartAndData(props: Props) {
-  const {
-    innerChart,
-    outerChart,
-    arabicParts,
-    outerArabicParts,
-    tableItemsPerPage,
-    chartDateProps,
-    outerChartDateProps,
-    title,
-    gender,
-  } = {
-    ...props,
-  };
+   const {
+    innerChart, outerChart, arabicParts, outerArabicParts, tableItemsPerPage,
+    chartDateProps, outerChartDateProps, title, gender,
+    onPrevious, onNext, previousDisabled, nextDisabled, // <- novo
+  } = { ...props };
 
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -346,10 +342,12 @@ export default function ChartAndData(props: Props) {
           <ChartHeader
             title={title}
             dateBlocks={!isMobileBreakPoint() ? dateBlocks : []}
-            genderIconPath={
-              chartDateProps.chartType !== "sinastry" ? getGenderIconPath(gender ?? "event") : undefined
-            }
+            genderIconPath={chartDateProps.chartType !== "sinastry" ? getGenderIconPath(gender ?? "event") : undefined}
             genderIconSize={gender !== undefined && gender !== "event" ? genderIconSize - 4 : genderIconSize}
+            onPrevious={onPrevious}
+            onNext={onNext}
+            previousDisabled={previousDisabled}
+            nextDisabled={nextDisabled}
           />
 
           <div className={`w-full mt-2 ${getDesktopHeaderPadding()}`} >

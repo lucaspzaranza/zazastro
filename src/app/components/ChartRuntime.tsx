@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import moment from "moment";
 import { ChartQuery, extractBirthDate } from "@/utils/chartUrl";
 import { useBirthChart } from "@/contexts/BirthChartContext";
@@ -16,6 +16,7 @@ import LunarDerivedChart from "./charts/LunarDerivedChart";
 import SinastryChart from "./charts/SinastryChart";
 import SecondaryProgressionChart from "./charts/SecondaryProgressionChart";
 import ProfectionChart from "./charts/ProfectionChart";
+import TransitsChart from "./charts/TransitsChart";
 
 export default function ChartRuntime({ query }: { query: ChartQuery }) {
   const { addChartMenu, updateChartMenuDirectly } = useChartMenu();
@@ -26,6 +27,8 @@ export default function ChartRuntime({ query }: { query: ChartQuery }) {
   } = useBirthChart();
   const { arabicParts, archArabicParts } = useArabicParts();
   const t = useTranslations();
+
+  const transitsRawDataRef = useRef<any>(null);
 
   useEffect(() => {
     (async () => {
@@ -62,6 +65,7 @@ export default function ChartRuntime({ query }: { query: ChartQuery }) {
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ birthDate, transitsDate }),
             });
+            transitsRawDataRef.current = { ...data, birthDate }; // <- guarda o payload cru
             updateBirthChart({
               profileName: query.profileName,
               chartData: { ...data, birthDate },
@@ -229,12 +233,10 @@ export default function ChartRuntime({ query }: { query: ChartQuery }) {
       ) : null;
 
     case "transits":
-      return birthChart ? (
-        <ChartAndData
-          arabicParts={arabicParts}
-          title={`${t("transitsChart.title")} - ${query.profileName}`}
-          innerChart={birthChart}
-          chartDateProps={{ chartType: "transits", birthChart, chartDate: birthChart.birthDate }}
+      return birthChart && transitsRawDataRef.current ? (
+        <TransitsChart
+          rawData={transitsRawDataRef.current}
+          profileName={query.profileName}
           gender={query.gender}
         />
       ) : null;

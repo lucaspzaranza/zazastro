@@ -2,9 +2,7 @@ import { useBirthChart } from "@/contexts/BirthChartContext";
 import { useEffect, useState } from "react";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import ChartAndData from ".././ChartAndData";
-import {
-  getReturnDateRangeString,
-} from "@/utils/chartUtils";
+import { getReturnDateRangeString } from "@/utils/chartUtils";
 import { ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT } from "@/app/utils/constants";
 import { BirthChart } from "@/interfaces/BirthChartInterfaces";
 import { ArabicPartsType } from "@/interfaces/ArabicPartInterfaces";
@@ -12,21 +10,20 @@ import { useTranslations } from "next-intl";
 import { useProfiles } from "@/contexts/ProfilesContext";
 import Image from "next/image";
 import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
+import { useChartCarousel } from "@/hooks/useChartCarousel";
 
 export default function ReturnChart() {
   const { profileName } = useBirthChart();
-  const { isMobileBreakPoint} = useScreenDimensions();
+  const { isMobileBreakPoint } = useScreenDimensions();
   const { birthChart, returnChart, isCombinedWithBirthChart } = useBirthChart();
   const { arabicParts, archArabicParts } = useArabicParts();
   const [isSolarReturn, setIsSolarReturn] = useState(true);
   const [isSolarReturnSet, setIsSolarReturnSet] = useState(false);
-  const [tableItemsPerPage, setTableItemsPerPage] = useState(
-    ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT
-  );
+  const [tableItemsPerPage, setTableItemsPerPage] = useState(ASPECT_TABLE_ITEMS_PER_PAGE_DEFAULT);
   const { currentProfile } = useProfiles();
+  const { step, onPrevious, onNext, previousDisabled, nextDisabled } = useChartCarousel(2);
 
   const t = useTranslations();
-
   const iconSize = 14;
 
   useEffect(() => {
@@ -38,52 +35,39 @@ export default function ReturnChart() {
     setTableItemsPerPage(newItemsPerPage);
   }
 
-  function getTitle(): React.ReactNode {
+  function getReturnTitle(): React.ReactNode {
     return (
       <div className="flex flex-row items-center gap-1 text-[16px] min-w-0">
-        <Image
-          src={"/planets/" + (isSolarReturn ? "sun" : "moon") + ".png"}
-          width={iconSize}
-          height={iconSize}
-          alt="return"
-          unoptimized
-          className="flex-shrink-0"
-        />
-
+        <Image src={"/planets/" + (isSolarReturn ? "sun" : "moon") + ".png"} width={iconSize} height={iconSize} alt="return" unoptimized className="flex-shrink-0" />
         <span className="flex-shrink-0 whitespace-nowrap">
           {isSolarReturn
             ? !isMobileBreakPoint() ? t("returnChart.solarReturnFor") : t("returnChart.solarReturnForMobile")
             : !isMobileBreakPoint() ? t("returnChart.lunarReturnFor") : t("returnChart.lunarReturnForMobile")}
         </span>
-
         <span className="flex-shrink-0 whitespace-nowrap">
-          {getReturnDateRangeString(
-            returnChart?.returnTime ?? "0000-00-00 00:00:00",
-            isSolarReturn ? "solar" : "lunar"
-          )}
+          {getReturnDateRangeString(returnChart?.returnTime ?? "0000-00-00 00:00:00", isSolarReturn ? "solar" : "lunar")}
           {" - "}
         </span>
-
-        <span
-          className="min-w-0 flex-1 truncate"
-          title={profileName}
-        >
-          {profileName}
-        </span>
+        <span className="min-w-0 flex-1 truncate" title={profileName}>{profileName}</span>
       </div>
     );
   }
 
-  const getInnerChart = (): BirthChart => !isCombinedWithBirthChart ? returnChart! : birthChart!;
-  const getOuterchart = (): BirthChart | undefined => !isCombinedWithBirthChart ? undefined : returnChart;
+  const getNatalTitle = (): React.ReactNode => `${t("birthChart.chartTitle")}${profileName}`;
+  const isNatalStep = step === 1;
+
+  const getInnerChart = (): BirthChart =>
+    isNatalStep ? birthChart! : (!isCombinedWithBirthChart ? returnChart! : birthChart!);
+  const getOuterchart = (): BirthChart | undefined =>
+    isNatalStep ? undefined : (!isCombinedWithBirthChart ? undefined : returnChart);
   const getInnerArabicParts = (): ArabicPartsType | undefined =>
-    !isCombinedWithBirthChart ? archArabicParts : arabicParts
+    isNatalStep ? arabicParts : (!isCombinedWithBirthChart ? archArabicParts : arabicParts);
   const getOuterArabicParts = (): ArabicPartsType | undefined =>
-    isCombinedWithBirthChart ? archArabicParts : undefined;
+    isNatalStep ? undefined : (isCombinedWithBirthChart ? archArabicParts : undefined);
 
   return (
     <div className="w-full flex flex-col items-center justify-center gap-3 mb-4">
-      {isSolarReturnSet && returnChart && returnChart.timezone && (
+      {isSolarReturnSet && returnChart && returnChart.timezone && birthChart && (
         <div className="w-full text-left flex flex-col items-center">
           <ChartAndData
             innerChart={getInnerChart()}
@@ -93,13 +77,17 @@ export default function ReturnChart() {
             tableItemsPerPage={tableItemsPerPage}
             onTableItemsPerPageChanged={handleOnItemsPerPagechanged}
             chartDateProps={{
-              chartType: "return",
-              birthChart: returnChart,
-              label: t("returnChart.return"),
-              chartDate: returnChart.birthDate
+              chartType: isNatalStep ? "birth" : "return",
+              birthChart: isNatalStep ? birthChart : returnChart,
+              label: isNatalStep ? profileName : t("returnChart.return"),
+              chartDate: isNatalStep ? birthChart.birthDate : returnChart.birthDate
             }}
-            title={getTitle()}
+            title={isNatalStep ? getNatalTitle() : getReturnTitle()}
             gender={currentProfile?.gender}
+            onPrevious={onPrevious}
+            onNext={onNext}
+            previousDisabled={previousDisabled}
+            nextDisabled={nextDisabled}
           />
         </div>
       )}
