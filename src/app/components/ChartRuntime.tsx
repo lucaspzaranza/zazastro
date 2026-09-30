@@ -24,6 +24,7 @@ export default function ChartRuntime({ query }: { query: ChartQuery }) {
   const {
     birthChart, returnChart, lunarDerivedChart, sinastryChart, progressionChart, profectionChart,
     updateBirthChart, updateLunarDerivedChart, profileName, updateLoadingNextChart,
+    updateHouseSystem
   } = useBirthChart();
   const { arabicParts, archArabicParts } = useArabicParts();
   const t = useTranslations();
@@ -38,6 +39,7 @@ export default function ChartRuntime({ query }: { query: ChartQuery }) {
           case "birth":
           case "moment": {
             const birthDate = extractBirthDate(query, "birth", query.houseSystem);
+            updateHouseSystem(query.houseSystem);
             updateCurrentSelectedProfile({
               name: query.type === "moment" ? undefined : query.profileName,
               gender: query.type === "moment" ? "event" : query.gender,
@@ -58,6 +60,7 @@ export default function ChartRuntime({ query }: { query: ChartQuery }) {
 
           case "transits": {
             const birthDate = extractBirthDate(query, "birth", query.houseSystem);
+            updateHouseSystem(query.houseSystem);
             const transitsDate = extractBirthDate(query, "transits");
             updateCurrentSelectedProfile({ name: query.profileName, gender: query.gender, birthDate });
             const data = await apiFetch("birth-chart", {
