@@ -71,7 +71,7 @@ function ColoredSignGlyph({ sign }: { sign: string }) {
   return <span style={{ color: getSignColor(glyph) }}>{glyph}</span>;
 }
 
-function EventCell({ row }: { row: ForecastEventRow }) {
+function EventCell({ row, isMobilePanel }: { row: ForecastEventRow; isMobilePanel?: boolean }) {
   const planetType = planetTypeFromName(row.planetName);
   const withPlanetType = row.withPlanet ? planetTypeFromName(row.withPlanet) : undefined;
 
@@ -100,7 +100,7 @@ function EventCell({ row }: { row: ForecastEventRow }) {
         {planetType && getPlanetImage(planetType, { size: 15, isRetrograde: !becomingRetrograde })}
         <ForwardIcon />
         {planetType && getPlanetImage(planetType, { size: 15, isRetrograde: becomingRetrograde })}
-        <span className="w-16 flex flex-row items-center justify-between">
+        <span className={`${isMobilePanel ? "w-12" : "w-14"} flex flex-row items-center justify-between`}>
           {formatSignColor(formatDegreeSignGlyph(row.degree ?? 0, row.sign))}
         </span>
       </div>
@@ -247,7 +247,7 @@ export default function ForecastResults({
             <tbody>
               {currentRows.map((row, index) => (
                 <tr key={index} className="border-b border-zinc-100">
-                  <td className="py-1.5 pr-2"><EventCell row={row} /></td>
+                  <td className="py-1.5 pr-2"><EventCell row={row} isMobilePanel={isMobilePanel} /></td>
                   <td className="py-1.5 pr-2 whitespace-nowrap">{formatForecastDate(row.date)}</td>
                 </tr>
               ))}
