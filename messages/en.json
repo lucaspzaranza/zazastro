@@ -213,18 +213,18 @@
     "southNode": "South Node"
   },
   "signs": {
-    "aries": "Aries ♈︎",
-    "taurus": "Taurus ♉︎",
-    "gemini": "Gemini ♊︎",
-    "cancer": "Cancer ♋︎",
-    "leo": "Leo ♌︎",
-    "virgo": "Virgo ♍︎",
-    "libra": "Libra ♎︎",
-    "scorpio": "Scorpio ♏︎",
-    "sagittarius": "Sagittarius ♐︎",
-    "capricorn": "Capricorn ♑︎",
-    "aquarius": "Aquarius ♒︎",
-    "pisces": "Pisces ♓︎"
+    "aries": "Aries",
+    "taurus": "Taurus",
+    "gemini": "Gemini",
+    "cancer": "Cancer",
+    "leo": "Leo",
+    "virgo": "Virgo",
+    "libra": "Libra",
+    "scorpio": "Scorpio",
+    "sagittarius": "Sagittarius",
+    "capricorn": "Capricorn",
+    "aquarius": "Aquarius",
+    "pisces": "Pisces"
   },
   "arabicParts": {
     "title": "Arabic Parts",
@@ -398,6 +398,52 @@
         "months": "mo",
         "years": "yrs."
       }
+    }
+  },
+  "forecast": {
+    "period": "Period",
+    "month": "Month",
+    "year": "Year",
+    "planet": "Planet",
+    "city": "City",
+    "allPlanets": "All planets",
+    "generate": "Generate forecast",
+    "noEvents": "No events in this period.",
+    "sign": "Sign",
+    "movement": "Movement",
+    "event": "Event",
+    "date": "Date",
+    "degree": "Degree",
+    "whatToShow": "What to show", 
+    "whichAspects": "Which aspects",
+    "filters": "Search filters", 
+    "filter": "Filter",
+    "placeholder": "Forecast data will appear here.", 
+    "filterByDate": "Filter by date", 
+    "errorTitle": "Failed to fetch!",
+    "errorSubtitle": "We could not fetch the forecast data.",
+    "day": "Day", 
+    "allMonths": "All months",
+    "title": "Transit Forecasts",
+    "pickCityFirst": "Pick a city to continue",
+    "open": "View forecasts",
+    "editSearch": "Edit search",
+    "backHome": "Home page",
+    "eventTypes": {
+      "ingress": "Ingress",
+      "aspect": "Aspect",
+      "station": "Movement change"
+    },
+    "stationTypes": {
+      "retrograde": "Turns retrograde",
+      "direct": "Turns direct"
+    },
+    "aspectTypes": {
+      "conjunction": "Conjunction",
+      "sextile": "Sextile",
+      "square": "Square",
+      "trine": "Trine",
+      "opposition": "Opposition"
     }
   }
 }

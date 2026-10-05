@@ -213,18 +213,18 @@
     "southNode": "Nodo Sur"
   },
   "signs": {
-    "aries": "Aries ♈︎",
-    "taurus": "Tauro ♉︎",
-    "gemini": "Géminis ♊︎",
-    "cancer": "Cáncer ♋︎",
-    "leo": "Leo ♌︎",
-    "virgo": "Virgo ♍︎",
-    "libra": "Libra ♎︎",
-    "scorpio": "Escorpio ♏︎",
-    "sagittarius": "Sagitario ♐︎",
-    "capricorn": "Capricornio ♑︎",
-    "aquarius": "Acuario ♒︎",
-    "pisces": "Piscis ♓︎"
+    "aries": "Aries",
+    "taurus": "Tauro",
+    "gemini": "Géminis",
+    "cancer": "Cáncer",
+    "leo": "Leo",
+    "virgo": "Virgo",
+    "libra": "Libra",
+    "scorpio": "Escorpio",
+    "sagittarius": "Sagitario",
+    "capricorn": "Capricornio",
+    "aquarius": "Acuario",
+    "pisces": "Piscis"
   },
   "arabicParts": {
     "title": "Partes Árabes",
@@ -398,6 +398,52 @@
         "months": "meses",
         "years": "años"
       }
+    }
+  },
+  "forecast": {
+    "period": "Período",
+    "month": "Mes",
+    "year": "Año",
+    "planet": "Planeta",
+    "city": "Ciudad",
+    "allPlanets": "Todos los planetas",
+    "generate": "Generar previsión",
+    "noEvents": "Sin eventos en este período.",
+    "sign": "Signo",
+    "movement": "Movimiento",
+    "event": "Evento",
+    "date": "Fecha",
+    "degree": "Grado",
+    "whatToShow": "Qué mostrar", 
+    "whichAspects": "Qué aspectos",
+    "filters": "Filtros de búsqueda", 
+    "filter": "Filtrar",
+    "placeholder": "Los datos de la previsión aparecerán aquí.", 
+    "filterByDate": "Filtrar por fecha", 
+    "day": "Día", 
+    "allMonths": "Todos los meses",
+    "errorTitle": "¡No se pudo obtener!",
+    "errorSubtitle": "No pudimos obtener los datos de la previsión.",
+    "title": "Previsiones de Tránsitos",
+    "pickCityFirst": "Elige una ciudad para continuar",
+    "open": "Ver previsiones",
+    "editSearch": "Editar búsqueda",
+    "backHome": "Página inicial",
+    "eventTypes": {
+      "ingress": "Ingreso",
+      "aspect": "Aspecto",
+      "station": "Cambio de movimiento"
+    },
+    "stationTypes": {
+      "retrograde": "Se vuelve retrógrado",
+      "direct": "Vuelve al movimiento directo"
+    },
+    "aspectTypes": {
+      "conjunction": "Conjunción",
+      "sextile": "Sextil",
+      "square": "Cuadratura",
+      "trine": "Trígono",
+      "opposition": "Oposición"
     }
   }
 }

@@ -74,6 +74,11 @@ export default function HomeMenu() {
             </Link>
           </div>
 
+          <Link href="/forecast" className="default-btn">
+            {t("forecast.title")}
+            <Image src="/calendar-color.png" width={iconSize} height={iconSize} unoptimized alt="chart" />
+          </Link>
+
           <Link href="/moment" className="default-btn">
             {t("home.momentChart")}
             <Image src="/clock.png" width={iconSize} height={iconSize} unoptimized alt="chart" />

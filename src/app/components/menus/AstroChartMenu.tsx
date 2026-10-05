@@ -23,6 +23,8 @@ interface AstroChartMenuProps {
    * viviam dentro deste componente.
    */
   toggles: AstroChartTogglesState;
+  isEventChart: boolean;
+  onOpenForecast?: () => void; // <- novo
 }
 
 export default function AstroChartMenu(props: AstroChartMenuProps) {
@@ -31,6 +33,8 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
     toggleCombineWithReturnChart,
     onGoHome,
     toggles,
+    isEventChart,
+    onOpenForecast, // <- novo
   } = props;
 
   const {
@@ -243,6 +247,14 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       onClick: () => {
         setLunarDerivedModal(true);
       },
+    },
+    {
+      key: "forecast",
+      label: t("forecast.open"),
+      active: false,
+      visible: (chartMenu === "moment" || chartMenu === "transits" || (chartMenu === "birth" && isEventChart)) && !!onOpenForecast,
+      iconPath: "/calendar.png", // ajuste pro ícone real que você tiver
+      onClick: () => onOpenForecast?.(),
     },
     {
       key: "showDegreesWithBirth",

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import moment from "moment";
 import { ChartQuery, extractBirthDate } from "@/utils/chartUrl";
 import { useBirthChart } from "@/contexts/BirthChartContext";
@@ -28,6 +28,7 @@ export default function ChartRuntime({ query }: { query: ChartQuery }) {
   } = useBirthChart();
   const { arabicParts, archArabicParts } = useArabicParts();
   const t = useTranslations();
+  const [forecastOpen, setForecastOpen] = useState(false);
 
   const transitsRawDataRef = useRef<any>(null);
 

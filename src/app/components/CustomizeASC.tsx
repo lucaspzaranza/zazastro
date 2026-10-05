@@ -4,6 +4,7 @@ import {
   convertDegMinNumberToDecimal,
   decimalToDegreesMinutes,
   getDegreesInsideASign,
+  signsGlpyphs,
   signsKeys,
 } from "@/app/utils/chartUtils";
 import React, { useEffect, useRef, useState } from "react";
@@ -108,7 +109,7 @@ export default function CustomizeASC(props: ASCModalProps) {
                 {signsKeys.map((signKey, index) => {
                   return (
                     <option key={index} value={index}>
-                      {t(`signs.${signKey}`)}
+                      {t(`signs.${signKey}`)} {signsGlpyphs[index]}
                     </option>
                   );
                 })}

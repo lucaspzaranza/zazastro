@@ -39,6 +39,7 @@ import AstroChartMenu from "./menus/AstroChartMenu";
 import ChartHeaderSubtitle from "./ChartHeaderSubtitle";
 import { useProfiles } from "@/contexts/ProfilesContext";
 import { useRouter } from "next/dist/client/components/navigation";
+import ForecastPanel from "./forecast/ForecastPanel";
 
 interface Props {
   innerChart: BirthChart;
@@ -66,6 +67,7 @@ export default function ChartAndData(props: Props) {
 
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [forecastOpen, setForecastOpen] = useState(false);
   const { isMobileBreakPoint, isScreen1366 } = useScreenDimensions();
   const [chartForPlanets, setChartForPlanets] = useState<
     BirthChart | undefined
@@ -355,6 +357,8 @@ export default function ChartAndData(props: Props) {
               toggleCombineWithBirthChart={isReturnChart() || isProgressionChart() || isProfectionChart()}
               toggleCombineWithReturnChart={isLunarDerivedReturnChart()}
               onGoHome={handleReset}
+              onOpenForecast={() => setForecastOpen(true)}
+              isEventChart={gender === "event"}
               toggles={toggles}
             />
           </div>
@@ -702,6 +706,15 @@ export default function ChartAndData(props: Props) {
         <>
           {renderChart()}
 
+          {forecastOpen && (
+            <div className="w-full mt-4 mb-6">
+              <ForecastPanel
+                coordinates={innerChart.birthDate.coordinates}
+                onClose={() => setForecastOpen(false)}
+              />
+            </div>
+          )}
+
           {chartIsLocked ? (
             <div className="w-full overflow-y-auto overscroll-contain" style={{ maxHeight: "calc(100vh - 24rem)" }}>
               {renderPlanetsAndHouses()}
@@ -718,7 +731,14 @@ export default function ChartAndData(props: Props) {
 
       {!isMobileBreakPoint() && (
         <div className="w-full flex flex-row items-start justify-center mb-4">
-          {renderArabicPartsAndAspectsTable()}
+          {forecastOpen ? (
+            <ForecastPanel
+              coordinates={innerChart.birthDate.coordinates}
+              onClose={() => setForecastOpen(false)}
+            />
+          ) : (
+            renderArabicPartsAndAspectsTable()
+          )}
           {renderChart()}
           <div className="w-auto">
             {renderPlanetsAndHouses()}
