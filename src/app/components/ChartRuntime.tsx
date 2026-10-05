@@ -28,8 +28,6 @@ export default function ChartRuntime({ query }: { query: ChartQuery }) {
   } = useBirthChart();
   const { arabicParts, archArabicParts } = useArabicParts();
   const t = useTranslations();
-  const [forecastOpen, setForecastOpen] = useState(false);
-
   const transitsRawDataRef = useRef<any>(null);
 
   useEffect(() => {
@@ -45,6 +43,7 @@ export default function ChartRuntime({ query }: { query: ChartQuery }) {
               name: query.type === "moment" ? undefined : query.profileName,
               gender: query.type === "moment" ? "event" : query.gender,
               birthDate,
+              id: query.type === "birth" ? query.profileId : undefined,
             });
             const data = await apiFetch("birth-chart", {
               method: "POST",

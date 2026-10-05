@@ -1,7 +1,7 @@
-// src/app/chart/page.tsx
+// src/app/(charts)/chart/page.tsx
 import { BirthChartQuerySchema } from "@/utils/chartUrl";
-import BirthChartMenu from "../../components/menus/BirthChartMenu";
-import ChartRuntime from "../../components/ChartRuntime";
+import ChartRuntime from "@/app/components/ChartRuntime";
+import BirthChartMenu from "@/app/components/menus/BirthChartMenu";
 
 export default async function Page({
   searchParams,
@@ -9,8 +9,12 @@ export default async function Page({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const resolved = await searchParams;
-  const result = BirthChartQuerySchema.safeParse({ type: "birth", ...resolved });
 
+  if (resolved.edit === "true" && typeof resolved.profileId === "string") {
+    return <BirthChartMenu editProfileId={resolved.profileId} />;
+  }
+
+  const result = BirthChartQuerySchema.safeParse({ type: "birth", ...resolved });
   if (!result.success) return <BirthChartMenu />;
 
   return <ChartRuntime query={result.data} />;

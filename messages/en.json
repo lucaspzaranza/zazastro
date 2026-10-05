@@ -22,6 +22,7 @@
     "create": "Create Birth Chart",
     "createMobile": "Create",
     "createMomentChart": "Generate Chart",
+    "edit": "Edit Chart",
     "chartTitle": "Birth Chart - ",
     "chartTransitsTitle": "Birth Chart and Transits - ",
     "antiscion": "Antiscion",

@@ -22,10 +22,11 @@ import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 interface BirthChartFormProps {
   currentBirthDate?: BirthDate;
   onSubmit?: (birthDate: BirthChartProfile | undefined) => void;
+  initialProfile?: BirthChartProfile;
 }
 
 export default function BirthChartForm(props: BirthChartFormProps) {
-  const { onSubmit } = props;
+  const { onSubmit, initialProfile } = props;
   const t = useTranslations();
    const { isMobileBreakPoint } = useScreenDimensions();
 
@@ -47,6 +48,14 @@ export default function BirthChartForm(props: BirthChartFormProps) {
   const { updateCurrentSelectedProfile } = useProfiles();
 
   const genderIconSize = 16;
+
+  useEffect(() => {
+    if(initialProfile) {
+      setEditProfile(true);
+      setProfile(initialProfile);
+      updateProfileForEditing(initialProfile);
+    }
+  }, []);
 
   useEffect(() => {
     if (
@@ -87,7 +96,8 @@ export default function BirthChartForm(props: BirthChartFormProps) {
     }
   }, [profiles]);
 
-  function updateProfileForEditing() {
+  function updateProfileForEditing(profileToEdit?: BirthChartProfile) {
+    const profile = profileToEdit;
     if (!profile) return;
 
     setName(profile.name!);
@@ -383,7 +393,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
           <button
             onClick={(e) => {
               e.preventDefault();
-              updateProfileForEditing();
+              updateProfileForEditing(profile);
               setEditProfile(true);
             }}
             className="w-full bg-green-700 border text-white px-4 py-2 rounded-full hover:bg-green-800 flex flex-row items-center justify-center gap-2"
@@ -423,7 +433,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
         </button>
       )}
 
-      {menu === 0 && !showDeleteProfileMenu && editProfile && (
+      {menu === 0 && editProfile && !showDeleteProfileMenu && (
         <button
           onClick={(e) => {
             e.preventDefault();

@@ -11,6 +11,9 @@ import { AstroChartTogglesState } from "@/hooks/useAstroChartToggles";
 import { PTOLEMAIC_TERMS, EGYPTIAN_TERMS } from "@/app/utils/termsAndDecans";
 import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
+import { useRouter } from "next/dist/client/components/navigation";
+import { useProfiles } from "@/contexts/ProfilesContext";
+
 
 interface AstroChartMenuProps {
   toggleCombineWithBirthChart?: boolean;
@@ -63,6 +66,8 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
   const mobileContextMenuRef = useRef<HTMLDivElement>(null);
   const desktopContextMenuRef = useRef<HTMLDivElement>(null);
   const t = useTranslations();
+  const router = useRouter();
+  const { currentProfile, profiles } = useProfiles();
 
   const {
     isCombinedWithBirthChart,
@@ -253,12 +258,22 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       label: t("forecast.open"),
       active: false,
       visible: (chartMenu === "moment" || chartMenu === "transits" || (chartMenu === "birth" && isEventChart)) && !!onOpenForecast,
-      iconPath: "/calendar.png", // ajuste pro ícone real que você tiver
+      iconPath: "/calendar.png",
       onClick: () => {
         onOpenForecast?.();
         if(isMobileBreakPoint())
           setMobileContextMenuOpen(false)
         else setDesktopContextMenuOpen(false)
+      },
+    },
+    {
+      key: "edit",
+      label: t("birthChart.edit"),
+      active: false,
+      visible: chartMenu === "birth",
+      iconPath: "/edit-chart.png",
+      onClick: () => {
+        router.push("/chart?edit=true&profileId=" + currentProfile?.id);
       },
     },
     {

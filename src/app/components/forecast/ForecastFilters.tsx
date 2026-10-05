@@ -52,19 +52,31 @@ export default function ForecastFilters({
   const needsCityInput = coordinates === undefined;
   const effectiveCoordinates = coordinates ?? city;
 
-  const toggleInclude = (key: "ingress" | "aspect" | "station") =>
+  const toggleInclude = (keyToToggle: "ingress" | "aspect" | "station") => {
+    if(include.size === INCLUDE_OPTIONS.length) {
+      setInclude(new Set([keyToToggle]));
+      return;
+    }
+
     setInclude((prev) => {
       const next = new Set(prev);
-      next.has(key) ? next.delete(key) : next.add(key);
+      next.has(keyToToggle) ? next.delete(keyToToggle) : next.add(keyToToggle);
       return next;
     });
+  }
 
-  const toggleAspectType = (type: AspectType) =>
+  const toggleAspectType = (type: AspectType) => {
+    if(aspectTypes.size === ASPECT_TYPE_OPTIONS.length) {
+      setAspectTypes(new Set([type]));
+      return;
+    }
+
     setAspectTypes((prev) => {
       const next = new Set(prev);
       next.has(type) ? next.delete(type) : next.add(type);
       return next;
     });
+  }    
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

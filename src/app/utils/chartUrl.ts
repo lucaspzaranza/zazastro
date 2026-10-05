@@ -48,6 +48,7 @@ export const BirthChartQuerySchema = z.object({
   profileName: z.string().min(1),
   gender: GenderSchema,
   houseSystem: HouseSystemSchema,
+  profileId: z.string().optional(),
   ...birthDateFields("birth"),
 });
 

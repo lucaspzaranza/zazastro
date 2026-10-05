@@ -122,9 +122,6 @@ export default function ForecastResults({
   isMobilePanel,
   itemsPerPage = 10,
 }: ForecastResultsProps) {
-
-  console.log('isMobilePanel? ', isMobilePanel? "yes" : "no");
-  
   const t = useTranslations();
   const [page, setPage] = useState(0);
   const [visibleTypes, setVisibleTypes] = useState<Set<"ingress" | "aspect" | "station">>(
@@ -136,19 +133,31 @@ export default function ForecastResults({
   const [dayFilter, setDayFilter] = useState<number | "">("");
   const [monthFilter, setMonthFilter] = useState<number | "">("");
 
-  const toggleVisibleType = (key: "ingress" | "aspect" | "station") =>
+  const toggleVisibleType = (key: "ingress" | "aspect" | "station") => {
+    if(visibleTypes.size === VISIBLE_TYPE_OPTIONS.length) {
+      setVisibleTypes(new Set([key]));
+      return;
+    }
+
     setVisibleTypes((prev) => {
       const next = new Set(prev);
       next.has(key) ? next.delete(key) : next.add(key);
       return next;
     });
+  }
 
-  const toggleVisibleAspectType = (type: string) =>
+  const toggleVisibleAspectType = (type: string) => {
+    if(visibleAspectTypes.size === VISIBLE_ASPECT_OPTIONS.length) {
+      setVisibleAspectTypes(new Set([type]));
+      return;
+    }
+
     setVisibleAspectTypes((prev) => {
       const next = new Set(prev);
       next.has(type) ? next.delete(type) : next.add(type);
       return next;
     });
+  }
 
   const rows = useMemo(() => {
     return flattenEvents(data).filter((row) => {
