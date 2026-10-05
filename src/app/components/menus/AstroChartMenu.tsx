@@ -254,7 +254,12 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       active: false,
       visible: (chartMenu === "moment" || chartMenu === "transits" || (chartMenu === "birth" && isEventChart)) && !!onOpenForecast,
       iconPath: "/calendar.png", // ajuste pro ícone real que você tiver
-      onClick: () => onOpenForecast?.(),
+      onClick: () => {
+        onOpenForecast?.();
+        if(isMobileBreakPoint())
+          setMobileContextMenuOpen(false)
+        else setDesktopContextMenuOpen(false)
+      },
     },
     {
       key: "showDegreesWithBirth",

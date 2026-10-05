@@ -9,15 +9,20 @@ import ForecastFilters from "./ForecastFilters";
 import ForecastResults from "./ForecastResults";
 import { useForecastQuery, ForecastQueryParams } from "@/hooks/useForecastQuery";
 import type { SelectedCity } from "@/interfaces/BirthChartInterfaces";
+import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 
 interface ForecastExplorerProps {
   coordinates: SelectedCity;
+  isMobilePanel?: boolean;
 }
 
-export default function ForecastExplorer({ coordinates }: ForecastExplorerProps) {
+export default function ForecastExplorer({ coordinates, isMobilePanel }: ForecastExplorerProps) {
   const t = useTranslations();
   const { data, loading, error, fetchForecast } = useForecastQuery();
   const [lastParams, setLastParams] = useState<ForecastQueryParams>();
+
+  const { isMobileBreakPoint } = useScreenDimensions();
+  const isMobile = isMobileBreakPoint();
 
   const handleSubmit = (params: ForecastQueryParams) => {
     setLastParams(params);
@@ -55,7 +60,7 @@ export default function ForecastExplorer({ coordinates }: ForecastExplorerProps)
             <span>{t("forecast.errorSubtitle")}</span>
           </div>
         ) : !data ? (
-          <div className="w-full h-full flex items-center justify-center border border-dashed border-zinc-300 rounded-lg text-sm text-zinc-400">
+          <div className="w-full h-full flex items-center justify-center text-center border border-dashed border-zinc-300 rounded-lg text-sm text-zinc-400">
             {t("forecast.placeholder")}
           </div>
         ) : lastParams && (
@@ -64,6 +69,7 @@ export default function ForecastExplorer({ coordinates }: ForecastExplorerProps)
             period={lastParams.period}
             onPreviousPeriod={() => shiftPeriod(-1)}
             onNextPeriod={() => shiftPeriod(1)}
+            isMobilePanel={isMobile}
           />
         )}
       </div>

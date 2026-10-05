@@ -22,7 +22,8 @@ interface ForecastResultsProps {
   onPreviousPeriod: () => void;
   onNextPeriod: () => void;
   previousPeriodDisabled?: boolean;
-  itemsPerPage?: number; // <- novo
+  itemsPerPage?: number;
+  isMobilePanel?: boolean;
 }
 
 function flattenEvents(data: TransitsForecastResponse): ForecastEventRow[] {
@@ -76,14 +77,16 @@ function EventCell({ row }: { row: ForecastEventRow }) {
 
   if (row.type === "aspect" && row.aspectType && row.sign && row.withPlanetSign) {
     return (
-      <div className="flex flex-row items-center gap-2">
+      <div className="flex flex-row items-center gap-1 tracking-tighter">
         {planetType && getPlanetImage(planetType, { size: 15 })}
-        <span className="w-16 flex flex-row items-center justify-between">
+        <span className="w-14 flex flex-row items-center justify-between">
           {formatSignColor(formatDegreeSignGlyph(row.degree ?? 0, row.sign))}
         </span>
-        {getAspectImage(row.aspectType, 15)}
+        <span className="mx-1 flex flex-row items-center">
+          {getAspectImage(row.aspectType, 15)}
+        </span>
         {withPlanetType && getPlanetImage(withPlanetType, { size: 15 })}
-        <span className="w-16 flex flex-row items-center justify-between">
+        <span className="w-14 flex flex-row items-center justify-between">
           {formatSignColor(formatDegreeSignGlyph(row.withPlanetDegree ?? 0, row.withPlanetSign))}
         </span>
       </div>
@@ -116,8 +119,12 @@ function EventCell({ row }: { row: ForecastEventRow }) {
 
 export default function ForecastResults({
   data, period, onPreviousPeriod, onNextPeriod, previousPeriodDisabled,
-  itemsPerPage = 10, // <- novo, com o mesmo padrão de antes
+  isMobilePanel,
+  itemsPerPage = 10,
 }: ForecastResultsProps) {
+
+  console.log('isMobilePanel? ', isMobilePanel? "yes" : "no");
+  
   const t = useTranslations();
   const [page, setPage] = useState(0);
   const [visibleTypes, setVisibleTypes] = useState<Set<"ingress" | "aspect" | "station">>(
@@ -230,11 +237,11 @@ export default function ForecastResults({
         {rows.length === 0 ? (
           <p className="text-sm text-zinc-500 text-center py-4">{t("forecast.noEvents")}</p>
         ) : (
-          <table className="w-full table-fixed text-sm text-left border-collapse">
+          <table className={`w-full table-fixed text-sm text-left border-collapse ${isMobilePanel ? "text-[0.8rem]" : ""}`}>
             <thead>
               <tr className="text-zinc-500 border-b border-zinc-200">
-                <th className="w-[50%] py-1 pr-2 text-left">{t("forecast.event")}</th>
-                <th className="w-[30%] py-1 pr-2 text-left">{t("forecast.date")}</th>
+                <th className="w-[40%] sm:w-[50%] py-1 pr-2 text-left">{t("forecast.event")}</th>
+                <th className={`${isMobilePanel ? "w-[25%]" : "w-[30%]"} py-1 pr-2 text-left`}>{t("forecast.date")}</th>
               </tr>
             </thead>
             <tbody>

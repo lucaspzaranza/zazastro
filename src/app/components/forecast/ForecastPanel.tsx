@@ -16,9 +16,8 @@ export default function ForecastPanel({ coordinates, onClose }: ForecastPanelPro
 
   return (
     <div className="w-full md:w-[450px] 2xl:w-[450px] 3xl:w-[500px] flex flex-col gap-4 2xl:mr-[-15px] 3xl:mr-zero">
-      <Container className="h-[750px]">
+      <Container className="h-[700px]">
         <div className="w-full h-full flex flex-col gap-2 p-4 sm:p-0">
-          {/* resto igual */}
           <div className="w-full flex flex-row items-center justify-between flex-shrink-0">
             <span className="text-sm font-semibold text-zinc-800">{t("forecast.title")}</span>
             <button onClick={onClose} className="p-1 rounded-full hover:bg-zinc-200 text-zinc-500">

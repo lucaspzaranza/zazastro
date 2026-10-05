@@ -69,7 +69,7 @@ export default function ForecastPage({ initialQuery }: ForecastPageProps) {
       <span>{t("forecast.errorSubtitle")}</span>
     </div>
   ) : !data ? (
-    <div className="w-full h-[520px] flex items-center justify-center border border-dashed border-zinc-300 rounded-lg text-sm text-zinc-400">
+    <div className="w-full h-[520px] flex items-center justify-center text-center border border-dashed border-zinc-300 rounded-lg text-sm text-zinc-400">
       {t("forecast.placeholder")}
     </div>
   ) : lastParams && (
@@ -98,7 +98,7 @@ export default function ForecastPage({ initialQuery }: ForecastPageProps) {
   return (
     <div className="relative w-[95%] md:w-[720px] my-8">
       <Container className="w-full h-[660px] sm:h-[640px]">
-        <div className="w-full h-full flex flex-col md:flex-row gap-4 p-4 sm:p-0">
+        <div className="w-full h-full flex flex-col md:flex-row gap-4 px-2 py-4 sm:p-0">
           {/* Desktop: as duas colunas sempre visíveis */}
           <div className="hidden md:flex md:w-[260px] flex-shrink-0 md:h-full md:overflow-y-auto md:pr-1 flex-col gap-3">
             {filtersBlock}
