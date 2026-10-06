@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
 import * as d3 from "d3";
 import {
   angularLabels,
@@ -52,10 +52,21 @@ interface IsolatablePlanet {
 }
 
 interface TooltipData {
-  x: number;
-  y: number;
+  x: number; // horizontal anchor center, in container coordinates
   content: React.ReactNode;
+  // Vertical edges of the anchor (planet/element/pointer), in container coordinates.
+  // The tooltip goes below `bottomY`.
+  anchor: { bottomY: number; topY: number };
 }
+
+const SMALL_TARGET_MAX_PX = 48; // elements up to this size anchor the tooltip to themselves
+const MOUSE_POINTER_GAP = 16; // px below the cursor for large targets
+const TOUCH_POINTER_GAP = 28; // px below the finger for large targets
+
+const PLANET_HIGHLIGHT_RADIUS_FACTOR = 0.85; // circle radius = iconSize * factor
+const PLANET_HIGHLIGHT_SCALE = 1.2;
+const TOOLTIP_GAP = 6; // px between the planet circle and the tooltip
+const TOOLTIP_VIEWPORT_MARGIN = 8; // px
 
 const ASPECTS: Aspect[] = [
   { type: "conjunction", angle: 0 },
@@ -294,22 +305,65 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
   function showTooltip(event: MouseEvent, content: React.ReactNode) {
     const container = containerRef.current;
     if (!container) return;
-    const rect = container.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-    const offset = isMobileBreakPoint() ? -10 : 10;
 
-    const tooltipWidth = 200; // max-w do tooltip
-    const adjustedX = x + tooltipWidth > rect.width ? x - tooltipWidth - offset : x + offset;
+    const containerRect = container.getBoundingClientRect();
+    const target = event.currentTarget as Element | null;
+    const targetRect = target?.getBoundingClientRect();
 
-    setTooltip({ x: adjustedX, y, content });
+    const isSmallTarget =
+      !!targetRect &&
+      targetRect.width <= SMALL_TARGET_MAX_PX &&
+      targetRect.height <= SMALL_TARGET_MAX_PX;
+
+    if (targetRect && isSmallTarget) {
+      // Planets, stars, glyphs: anchored to the element itself
+      setTooltip({
+        content,
+        x: targetRect.left + targetRect.width / 2 - containerRect.left,
+        anchor: {
+          topY: targetRect.top - containerRect.top - TOOLTIP_GAP,
+          bottomY: targetRect.bottom - containerRect.top + TOOLTIP_GAP,
+        },
+      });
+      return;
+    }
+
+    // Large targets (house arcs, aspect lines): anchored to the pointer
+    const gap = isMobileBreakPoint() ? TOUCH_POINTER_GAP : MOUSE_POINTER_GAP;
+    const pointerX = event.clientX - containerRect.left;
+    const pointerY = event.clientY - containerRect.top;
+    setTooltip({
+      content,
+      x: pointerX,
+      anchor: { topY: pointerY - gap, bottomY: pointerY + gap },
+    });
   }
 
-  // function hideTooltip() {
-  //   if(!showDegrees) return;
+  function showTooltipBelowPlanet(hitNode: SVGGraphicsElement, planet: IsolatablePlanet) {
+    const container = containerRef.current;
+    if (!container) return;
 
-  //   setTooltip(null);
-  // }
+    const containerRect = container.getBoundingClientRect();
+    const hitRect = hitNode.getBoundingClientRect();
+
+    // The hit rect is centered on the planet and is not affected by the highlight
+    // scale transition, so it is a stable reference point
+    const centerX = hitRect.left + hitRect.width / 2 - containerRect.left;
+    const centerY = hitRect.top + hitRect.height / 2 - containerRect.top;
+
+    // Final on-screen radius of the highlight circle (svg units * baseGroup scale)
+    const radiusPx =
+      planet.iconSize * PLANET_HIGHLIGHT_RADIUS_FACTOR * PLANET_HIGHLIGHT_SCALE * scaleFactor;
+
+    setTooltip({
+      x: centerX,
+      content: planet.content,
+      anchor: {
+        bottomY: centerY + radiusPx + TOOLTIP_GAP,
+        topY: centerY - radiusPx - TOOLTIP_GAP,
+      },
+    });
+  }
 
   function makePlanetTooltip(
     options: {
@@ -489,7 +543,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
 
     planetGroup
       .append("circle")
-      .attr("r", iconSize * 0.85)
+      .attr("r", iconSize * PLANET_HIGHLIGHT_RADIUS_FACTOR)
       .attr("fill", "white")
       .attr("stroke", "#333")
       .attr("stroke-width", 1.5);
@@ -505,7 +559,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     planetGroup
       .transition()
       .duration(200)
-      .attr("transform", `translate(${xs}, ${ys}) scale(1.2)`);
+      .attr("transform", `translate(${xs}, ${ys}) scale(${PLANET_HIGHLIGHT_SCALE})`);
   }
 
   function bindPlanetHit(
@@ -521,7 +575,8 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
         if (!isMobile) hideTooltip();
       })
       .on("click", (event: MouseEvent) => {
-        showTooltip(event, planet.content); // this is what shows it on mobile
+        // showTooltip(event, planet.content); // this is what shows it on mobile
+        showTooltipBelowPlanet(hit.node()!, planet);
         isolatePlanet(planet);
       });
   }
@@ -3374,6 +3429,42 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     });
   }, [aspects, hasIsolatedAspect]);  
 
+  const tooltipElRef = useRef<HTMLDivElement>(null);
+
+  const getTooltipStyle = (data: TooltipData): React.CSSProperties => ({
+    left: data.x,
+    top: data.anchor.bottomY, // refined by the layout effect (centering + viewport clamp)
+  });
+
+  // Pinned tooltip: center it under the planet, then keep it inside the viewport.
+  // Runs before paint, so there is no visible jump.
+  useLayoutEffect(() => {
+    const el = tooltipElRef.current;
+    const container = containerRef.current;
+    if (!tooltip?.anchor || !el || !container) return;
+
+    const margin = TOOLTIP_VIEWPORT_MARGIN;
+    const containerRect = container.getBoundingClientRect();
+    const { width, height } = el.getBoundingClientRect();
+    const viewportWidth = document.documentElement.clientWidth;
+    const viewportHeight = window.innerHeight;
+
+    // Horizontal: centered on the planet, clamped to the viewport
+    const desiredLeft = containerRect.left + tooltip.x - width / 2;
+    const maxLeft = Math.max(margin, viewportWidth - width - margin);
+    const left = Math.min(Math.max(desiredLeft, margin), maxLeft);
+
+    // Vertical: below the planet. Safety net: flip above only if it does not fit
+    // below the viewport but does fit above the planet.
+    let top = tooltip.anchor.bottomY;
+    const overflowsBottom = containerRect.top + top + height > viewportHeight - margin;
+    const fitsAbove = containerRect.top + tooltip.anchor.topY - height >= margin;
+    if (overflowsBottom && fitsAbove) top = tooltip.anchor.topY - height;
+
+    el.style.left = `${left - containerRect.left}px`;
+    el.style.top = `${top}px`;
+  }, [tooltip]);
+
   // Define o deslocamento extra a partir do centro (em px), por contexto
   let offsetX = 0;
   let offsetY = 0;
@@ -3483,10 +3574,19 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
               </div>
             }
 
-            {tooltip && showDegrees && (
+            {/* {tooltip && showDegrees && (
               <div
                 className="absolute z-50 pointer-events-none px-2 py-1 rounded text-sm bg-white border border-zinc-200 shadow-md w-max max-w-[350px]"
                 style={{ left: tooltip.x + 10, top: tooltip.y - 28 }}
+              >
+                {tooltip.content}
+              </div>
+            )} */}
+            {tooltip && showDegrees && (
+              <div
+                ref={tooltipElRef}
+                className="absolute z-50 pointer-events-none px-2 py-1 rounded text-sm bg-white border border-zinc-200 shadow-md w-max max-w-[min(350px,calc(100vw-1rem))]"
+                style={getTooltipStyle(tooltip)}
               >
                 {tooltip.content}
               </div>
@@ -3511,10 +3611,19 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
             }}
           />
 
-          {tooltip && showDegrees && (
+          {/* {tooltip && showDegrees && (
             <div
               className="absolute z-50 pointer-events-none px-2 py-1 rounded text-sm bg-white border border-zinc-200 shadow-md w-max max-w-[350px]"
               style={{ left: tooltip.x + 10, top: tooltip.y - 28 }}
+            >
+              {tooltip.content}
+            </div>
+          )} */}
+          {tooltip && showDegrees && (
+            <div
+              ref={tooltipElRef}
+              className="absolute z-50 pointer-events-none px-2 py-1 rounded text-sm bg-white border border-zinc-200 shadow-md w-max max-w-[min(350px,calc(100vw-1rem))]"
+              style={getTooltipStyle(tooltip)}
             >
               {tooltip.content}
             </div>
