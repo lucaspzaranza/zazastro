@@ -40,6 +40,17 @@ import ChartHeaderSubtitle from "../ChartHeaderSubtitle";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import { useProfiles } from "@/contexts/ProfilesContext";
 
+const PLANET_DIM_FILTER_ID = "astro-chart-grayscale";
+
+interface IsolatablePlanet {
+  xs: number;
+  ys: number;
+  iconSize: number;
+  iconSrc: string;
+  content: React.ReactNode;
+  tick?: { x1: number; y1: number; x2: number; y2: number; stroke?: string };
+}
+
 interface TooltipData {
   x: number;
   y: number;
@@ -294,11 +305,11 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     setTooltip({ x: adjustedX, y, content });
   }
 
-  function hideTooltip() {
-    if(!showDegrees) return;
+  // function hideTooltip() {
+  //   if(!showDegrees) return;
 
-    setTooltip(null);
-  }
+  //   setTooltip(null);
+  // }
 
   function makePlanetTooltip(
     options: {
@@ -379,6 +390,140 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
         <span className="font-semibold">{aspect.distanceType}</span>
       </div>
     );
+  }
+
+  const planetIsolatedRef = useRef(false);
+
+  function hideTooltip() {
+    // Tooltip stays pinned while a planet is isolated
+    if (planetIsolatedRef.current) return;
+    if (!showDegrees) return;
+
+    setTooltip(null);
+  }
+
+  function clearPlanetIsolation() {
+    const baseGroup = baseGroupRef.current;
+    planetIsolatedRef.current = false;
+    setTooltip(null);
+    if (!baseGroup) return;
+
+    baseGroup.select(".highlight-layer").remove();
+
+    const dimLayer = baseGroup.select<SVGGElement>(".dim-layer");
+    if (dimLayer.empty()) return;
+
+    dimLayer
+      .interrupt()
+      .transition()
+      .duration(200)
+      .style("opacity", 1)
+      .on("end", () => {
+        // Unwrap: move children back to baseGroup, keeping their order
+        const layerNode = dimLayer.node()!;
+        const baseNode = baseGroup.node()!;
+        while (layerNode.firstChild) {
+          baseNode.insertBefore(layerNode.firstChild, layerNode);
+        }
+        layerNode.remove();
+      });
+  }
+
+  function isolatePlanet(planet: IsolatablePlanet) {
+    const baseGroup = baseGroupRef.current;
+    if (!baseGroup) return;
+    const { xs, ys, iconSize, iconSrc, tick } = planet;
+
+    planetIsolatedRef.current = true;
+
+    // Reuses the dim layer if it is still fading out from a previous restore
+    let dimLayer = baseGroup.select<SVGGElement>(".dim-layer");
+    if (dimLayer.empty()) {
+      dimLayer = baseGroup.insert("g", ":first-child").attr("class", "dim-layer");
+      baseGroup
+        .selectChildren<SVGElement, unknown>(":not(.dim-layer)")
+        .each(function () {
+          dimLayer.node()!.appendChild(this);
+        });
+    }
+
+    dimLayer
+      .interrupt()
+      .attr("filter", `url(#${PLANET_DIM_FILTER_ID})`)
+      .transition()
+      .duration(200)
+      .style("opacity", 0.3);
+
+    baseGroup.select(".highlight-layer").remove();
+    const highlightLayer = baseGroup.append("g").attr("class", "highlight-layer");
+
+    // Huge transparent backdrop: a tap anywhere else restores the chart
+    highlightLayer
+      .append("rect")
+      .attr("x", -10000)
+      .attr("y", -10000)
+      .attr("width", 20000)
+      .attr("height", 20000)
+      .attr("fill", "transparent")
+      .on("click", clearPlanetIsolation);
+
+    if (tick) {
+      highlightLayer
+        .append("line")
+        .attr("x1", tick.x1)
+        .attr("y1", tick.y1)
+        .attr("x2", tick.x2)
+        .attr("y2", tick.y2)
+        .attr("stroke", tick.stroke ?? "black")
+        .attr("stroke-width", 1);
+    }
+
+    const planetGroup = highlightLayer
+      .append("g")
+      .attr("transform", `translate(${xs}, ${ys}) scale(1)`)
+      .style("cursor", "pointer")
+      .on("click", (event: MouseEvent) => {
+        event.stopPropagation();
+        clearPlanetIsolation();
+      });
+
+    planetGroup
+      .append("circle")
+      .attr("r", iconSize * 0.85)
+      .attr("fill", "white")
+      .attr("stroke", "#333")
+      .attr("stroke-width", 1.5);
+
+    planetGroup
+      .append("image")
+      .attr("href", iconSrc)
+      .attr("width", iconSize)
+      .attr("height", iconSize)
+      .attr("x", -iconSize / 2)
+      .attr("y", -iconSize / 2);
+
+    planetGroup
+      .transition()
+      .duration(200)
+      .attr("transform", `translate(${xs}, ${ys}) scale(1.2)`);
+  }
+
+  function bindPlanetHit(
+    hit: d3.Selection<SVGRectElement, unknown, null, undefined>,
+    planet: IsolatablePlanet
+  ) {
+    hit
+      .style("cursor", "pointer")
+      .on("mouseover", (event: MouseEvent) => {
+        if (!isMobile && !planetIsolatedRef.current) showTooltip(event, planet.content);
+      })
+      .on("mouseout", () => {
+        if (!isMobile) hideTooltip();
+      })
+      .on("click", (event: MouseEvent) => {
+        showTooltip(event, planet.content); // this is what shows it on mobile
+        isolatePlanet(planet);
+      });
   }
 
   function getOverlapElement(chartElement: ChartElement): ChartElementOverlap {
@@ -1379,6 +1524,21 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     zodiacRotationRef.current = zodiacRotation;
     radiusRef.current = radius;
     lineStartOffsetRef.current = lineStartOffset;
+
+    // A redraw wipes the isolation layers, so reset the flag (and the pinned tooltip)
+    if (planetIsolatedRef.current) {
+      planetIsolatedRef.current = false;
+      setTooltip(null);
+    }
+
+    // Grayscale filter used by the isolation dim layer (defs are wiped on every redraw)
+    svg
+      .append("defs")
+      .append("filter")
+      .attr("id", PLANET_DIM_FILTER_ID)
+      .append("feColorMatrix")
+      .attr("type", "saturate")
+      .attr("values", "0");
    
     const baseGroup = svg
       .attr("width", scaledSize)
@@ -1859,31 +2019,47 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
           .attr("x", xs - iconSize / 2)
           .attr("y", ys - iconSize / 2);
   
-          const planetName = t(`planets.${planet.type}`);
-          const content = makePlanetTooltip({
-            label: planetName,
-            longitude: planet.longitude,
-            planetType: planet.type,
-            isAntiscion: false,
-            isRetrograde: planet.isRetrograde,
-            isTransit: planet.isTransit
+        const planetName = t(`planets.${planet.type}`);
+        const content = makePlanetTooltip({
+          label: planetName,
+          longitude: planet.longitude,
+          planetType: planet.type,
+          isAntiscion: false,
+          isRetrograde: planet.isRetrograde,
+          isTransit: planet.isTransit
+        });
+
+        baseGroup
+          .append("rect") // área de hit invisível, mais fácil de clicar que image
+          .attr("x", xs - iconSize / 2 - 4)
+          .attr("y", ys - iconSize / 2 - 4)
+          .attr("width", iconSize + 8)
+          .attr("height", iconSize + 8)
+          .attr("fill", "transparent")
+          .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
+            showTooltip(event, content);
+          })
+          .on("mouseout", () => {
+            if (!isMobile) hideTooltip();
           });
+
+        const planetHit = baseGroup
+          .append("rect") // invisible hit area, easier to click than the image
+          .attr("x", xs - iconSize / 2 - 4)
+          .attr("y", ys - iconSize / 2 - 4)
+          .attr("width", iconSize + 8)
+          .attr("height", iconSize + 8)
+          .attr("fill", "transparent");
+
+        bindPlanetHit(planetHit, {
+          xs,
+          ys,
+          iconSize,
+          iconSrc,
+          content,
+          tick: { x1, y1, x2, y2 },
+        });
   
-          baseGroup
-            .append("rect") // área de hit invisível, mais fácil de clicar que image
-            .attr("x", xs - iconSize / 2 - 4)
-            .attr("y", ys - iconSize / 2 - 4)
-            .attr("width", iconSize + 8)
-            .attr("height", iconSize + 8)
-            .attr("fill", "transparent")
-            .on(isMobile ? "click" : "mouseover", (event: MouseEvent) => {
-              showTooltip(event, content);
-            })
-            .on("mouseout", () => {
-              if (!isMobile) hideTooltip();
-            });
-  
-        // chartElementsForAspect.current.push(chartElement);
         chartElementsForAspect.current = [
           ...chartElementsForAspect.current,
           chartElement,
@@ -1982,7 +2158,23 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
               if (!isMobile) hideTooltip();
             });
 
-          // chartElementsForAspect.current.push(antiscionElement);
+          const planetHit = baseGroup
+            .append("rect") // invisible hit area, easier to click than the image
+            .attr("x", xAnts - iconSize / 2 - 4)
+            .attr("y", yAnts - iconSize / 2 - 4)
+            .attr("width", iconSize + 8)
+            .attr("height", iconSize + 8)
+            .attr("fill", "transparent");
+
+          bindPlanetHit(planetHit, {
+            xs: xAnts,
+            ys: yAnts,
+            iconSize,
+            iconSrc: iconAntSrc,
+            content,
+            tick: { x1: xAnt1, y1: yAnt1, x2: xAnt2, y2: yAnt2 },
+          });
+          
           chartElementsForAspect.current = [
             ...chartElementsForAspect.current,
             antiscionElement,
@@ -2081,8 +2273,24 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
               .on("mouseout", () => {
                 if (!isMobile) hideTooltip();
               });
-  
-            // chartElementsForAspect.current.push(lotChartElement);
+   
+            const planetHit = baseGroup
+            .append("rect") // invisible hit area, easier to click than the image
+            .attr("x", xs - iconSize / 2 - 4)
+            .attr("y", ys - iconSize / 2 - 4)
+            .attr("width", iconSize + 8)
+            .attr("height", iconSize + 8)
+            .attr("fill", "transparent");
+
+            bindPlanetHit(planetHit, {
+              xs: xs,
+              ys: ys,
+              iconSize,
+              iconSrc,
+              content,
+              tick: { x1, y1, x2, y2 },
+            });
+
             chartElementsForAspect.current = [
               ...chartElementsForAspect.current,
               lotChartElement,
@@ -2200,7 +2408,23 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
                 if (!isMobile) hideTooltip();
               });
   
-            // chartElementsForAspect.current.push(lotAntiscionChartElement);
+            const planetHit = baseGroup
+              .append("rect") // invisible hit area, easier to click than the image
+              .attr("x", xs - iconSize / 2 - 4)
+              .attr("y", ys - iconSize / 2 - 4)
+              .attr("width", iconSize + 8)
+              .attr("height", iconSize + 8)
+              .attr("fill", "transparent");
+
+            bindPlanetHit(planetHit, {
+              xs,
+              ys,
+              iconSize,
+              iconSrc,
+              content,
+              tick: { x1, y1, x2, y2 },
+            });
+              
             chartElementsForAspect.current = [
               ...chartElementsForAspect.current,
               lotAntiscionChartElement,
@@ -2492,8 +2716,24 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
             .on("mouseout", () => {
               if (!isMobile) hideTooltip();
             });
-  
-          // chartElementsForAspect.current.push(chartElement);
+          
+          const planetHit = baseGroup
+            .append("rect") // invisible hit area, easier to click than the image
+            .attr("x", xs - iconSize / 2 - 4)
+            .attr("y", ys - iconSize / 2 - 4)
+            .attr("width", iconSize + 8)
+            .attr("height", iconSize + 8)
+            .attr("fill", "transparent");
+
+          bindPlanetHit(planetHit, {
+            xs,
+            ys,
+            iconSize,
+            iconSrc,
+            content,
+            tick: { x1, y1, x2, y2 },
+          });
+
           chartElementsForAspect.current = [
             ...chartElementsForAspect.current,
             chartElement,
@@ -2592,7 +2832,23 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
                 if (!isMobile) hideTooltip();
               });
 
-            // chartElementsForAspect.current.push(chartElementAntiscion);
+            const planetHit = baseGroup
+              .append("rect") // invisible hit area, easier to click than the image
+              .attr("x", xAnts - iconSize / 2 - 4)
+              .attr("y", yAnts - iconSize / 2 - 4)
+              .attr("width", iconSize + 8)
+              .attr("height", iconSize + 8)
+              .attr("fill", "transparent");
+
+            bindPlanetHit(planetHit, {
+              xs: xAnts,
+              ys: yAnts ,
+              iconSize,
+              iconSrc: iconAntSrc,
+              content,
+              tick: { x1: xAnt1, y1: yAnt1, x2: xAnt2, y2: yAnt2 },
+            });
+
             chartElementsForAspect.current = [
               ...chartElementsForAspect.current,
               chartElementAntiscion,
@@ -2692,8 +2948,23 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
               .on("mouseout", () => {
                 if (!isMobile) hideTooltip();
               });
-  
-            // chartElementsForAspect.current.push(outerLotChartElement);
+
+            const planetHit = baseGroup
+              .append("rect") // invisible hit area, easier to click than the image
+              .attr("x", xs - iconSize / 2 - 4)
+              .attr("y", ys - iconSize / 2 - 4)
+              .attr("width", iconSize + 8)
+              .attr("height", iconSize + 8)
+              .attr("fill", "transparent");
+
+            bindPlanetHit(planetHit, {
+              xs,
+              ys,
+              iconSize,
+              iconSrc,
+              content,
+              tick: { x1, y1, x2, y2 },
+            });
             chartElementsForAspect.current = [
               ...chartElementsForAspect.current,
               outerLotChartElement,
@@ -2798,7 +3069,23 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
                 if (!isMobile) hideTooltip();
               });
   
-            // chartElementsForAspect.current.push(outerLotChartElementAntiscion);
+            const planetHit = baseGroup
+              .append("rect") // invisible hit area, easier to click than the image
+              .attr("x", xs - iconSize / 2 - 4)
+              .attr("y", ys - iconSize / 2 - 4)
+              .attr("width", iconSize + 8)
+              .attr("height", iconSize + 8)
+              .attr("fill", "transparent");
+
+            bindPlanetHit(planetHit, {
+              xs,
+              ys,
+              iconSize,
+              iconSrc,
+              content,
+              tick: { x1, y1, x2, y2 },
+            });
+
             chartElementsForAspect.current = [
               ...chartElementsForAspect.current,
               outerLotChartElementAntiscion,
