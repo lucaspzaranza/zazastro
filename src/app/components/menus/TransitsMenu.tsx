@@ -16,14 +16,30 @@ import type { BirthChartProfile, TransitsChartFormData } from "@/interfaces/Birt
 export default function TransitsMenu() {
   const t = useTranslations();
   const { houseSystem } = useBirthChart();
-  const { currentProfile } = useProfiles();
+  const { currentProfile, getNextHumanProfile } = useProfiles();
   const { navigating, navigate } = useChartNavigation();
   const [mode, setMode] = useState<0 | 1>(0);
   const [profile, setProfile] = useState<BirthChartProfile>();
-  const selected = profile ?? currentProfile;
+
+  const getSelectedProfile = () => {
+    let selected = profile ?? currentProfile;
+    if (!selected?.birthDate || !houseSystem) return;
+
+    if(selected?.gender === "event") {
+      const nextProfile = getNextHumanProfile(selected);
+      if(!nextProfile) 
+        return undefined;
+      setProfile(nextProfile);
+      selected = nextProfile;
+    }
+
+    return selected;
+  } 
 
   const submitMomentTransits = () => {
-    if (!selected?.birthDate || !houseSystem) return;
+    const selected = getSelectedProfile();
+    if(!selected || !selected.birthDate) return;
+
     const now = new Date();
     const transitsNow = {
       day: now.getDate(),
@@ -43,13 +59,24 @@ export default function TransitsMenu() {
   };
 
   const submitCalculatedTransits = (formData: TransitsChartFormData) => {
-    if (!formData.profile.birthDate) return;
+    let selected = formData.profile!;
+
+    if(selected.gender === "event") {
+      const nextProfile = getNextHumanProfile(selected);
+      if(!nextProfile) 
+        return;
+      setProfile(nextProfile);
+      selected = nextProfile;
+    }
+
+    if (!selected.birthDate) return;
+
     navigate(buildChartUrl({
       type: "transits",
-      profileName: formData.profile.name ?? "",
-      gender: formData.profile.gender ?? "event",
-      houseSystem: (formData.profile.birthDate.houseSystem ?? houseSystem ?? "placidus"),
-      ...birthDateToQueryFields("birth", formData.profile.birthDate),
+      profileName: selected.name ?? "",
+      gender: selected.gender ?? "event",
+      houseSystem: (selected.birthDate.houseSystem ?? houseSystem ?? "placidus"),
+      ...birthDateToQueryFields("birth", selected.birthDate),
       ...birthDateToQueryFields("transits", formData.transitsDate),
     }));
   };

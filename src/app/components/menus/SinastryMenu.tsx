@@ -12,16 +12,37 @@ import type { BirthChartProfile } from "@/interfaces/BirthChartInterfaces";
 
 export default function SinastryMenu() {
   const t = useTranslations();
-  const { currentProfile, profiles } = useProfiles();
+  const { currentProfile, profiles, getNextHumanProfile } = useProfiles();
   const { navigating, navigate } = useChartNavigation();
 
   const [profile1, setProfile1] = useState<BirthChartProfile>();
   const [profile2, setProfile2] = useState<BirthChartProfile>();
-  const selected1 = profile1 ?? currentProfile;
-  const selected2 = profile2 ?? profiles[0];
+  // const selected1 = profile1 ?? currentProfile;
+  // const selected2 = profile2 ?? profiles[0];
 
   const handleSubmit = () => {
+    // if (!selected1?.birthDate || !selected2?.birthDate) return;
+
+    let selected1 = profile1 ?? currentProfile;
+    let selected2 = profile2 ?? profiles[0];
     if (!selected1?.birthDate || !selected2?.birthDate) return;
+
+    if(selected1?.gender === "event") {
+      const nextProfile = getNextHumanProfile(selected1);
+      if(!nextProfile) return;
+      setProfile1(nextProfile);
+      selected1 = nextProfile;
+    }
+
+    if(selected2?.gender === "event") {
+      const nextProfile = getNextHumanProfile(selected2);
+      if(!nextProfile) return;
+      setProfile2(nextProfile);
+      selected2 = nextProfile;
+    }
+
+    if(!selected1.birthDate || !selected2.birthDate) return;
+
     navigate(buildChartUrl({
       type: "sinastry",
       profile1Name: selected1.name ?? "",

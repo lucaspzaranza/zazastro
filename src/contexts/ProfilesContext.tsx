@@ -21,6 +21,7 @@ interface ProfilesContextType {
   updateCurrentSelectedProfile: (newProfile: BirthChartProfile | undefined) => void;
   sinastryProfile?: BirthChartProfile;
   updateSinastryProfile: (newProfile: BirthChartProfile | undefined) => void;
+  getNextHumanProfile: (baseProfile: BirthChartProfile) => BirthChartProfile | undefined;
 }
 
 const PROFILE_KEY = "zazastro:profile-";
@@ -125,6 +126,19 @@ export const ProfilesContextProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
+  const getNextHumanProfile = (baseProfile: BirthChartProfile): BirthChartProfile | undefined => {
+    let index = profiles.findIndex((p) => p.id === baseProfile.id);
+    if (index === -1) return undefined;
+    
+    while(index < profiles.length) {
+      const nextProfile = profiles[index + 1];
+      if(nextProfile.gender !== "event") return nextProfile;
+      index++;
+    }
+    
+    return undefined;
+  }
+
   return (
     <ProfilesContext.Provider
       value={{
@@ -136,7 +150,8 @@ export const ProfilesContextProvider: React.FC<{ children: ReactNode }> = ({
         currentProfile,
         updateCurrentSelectedProfile,
         sinastryProfile,
-        updateSinastryProfile
+        updateSinastryProfile,
+        getNextHumanProfile
       }}
     >
       {children}

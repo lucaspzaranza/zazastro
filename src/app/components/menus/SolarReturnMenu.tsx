@@ -13,15 +13,26 @@ import Image from "next/image"
 export default function SolarReturnMenu() {
   const router = useRouter();
   const t = useTranslations();
-  const { currentProfile, profiles } = useProfiles();
+  const { currentProfile, getNextHumanProfile } = useProfiles();
   
   const [profile, setProfile] = useState<BirthChartProfile>();
-  const selected = profile ?? currentProfile; 
+  // const selected = profile ?? currentProfile; 
   const [targetYear, setTargetYear] = useState<number>();
   const { navigating, navigate } = useChartNavigation();
 
   const handleSubmit = () => {
+    let selected = profile ?? currentProfile;
     if (!selected?.birthDate || targetYear === undefined) return;
+
+    if(selected?.gender === "event") {
+      const nextProfile = getNextHumanProfile(selected);
+      if(!nextProfile) return;
+      setProfile(nextProfile);
+      selected = nextProfile;
+    }
+
+    if(!selected.birthDate) return;
+
     navigate(buildChartUrl({
        type: "solarReturn",
         profileName: selected.name ?? "",

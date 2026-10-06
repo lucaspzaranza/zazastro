@@ -12,15 +12,25 @@ import type { BirthChartProfile } from "@/interfaces/BirthChartInterfaces";
 
 export default function ProgressionMenu() {
   const t = useTranslations();
-  const { currentProfile } = useProfiles();
+  const { currentProfile, getNextHumanProfile } = useProfiles();
   const { navigating, navigate } = useChartNavigation();
 
   const [profile, setProfile] = useState<BirthChartProfile>();
-  const selected = profile ?? currentProfile;
   const [years, setYears] = useState<number>();
 
   const handleSubmit = () => {
+    let selected = profile ?? currentProfile;
     if (!selected?.birthDate || years === undefined) return;
+
+    if(selected?.gender === "event") {
+      const nextProfile = getNextHumanProfile(selected);
+      if(!nextProfile) return;
+      setProfile(nextProfile);
+      selected = nextProfile;
+    }
+
+    if(!selected.birthDate) return;
+
     navigate(buildChartUrl({
       type: "progression",
       profileName: selected.name ?? "",
