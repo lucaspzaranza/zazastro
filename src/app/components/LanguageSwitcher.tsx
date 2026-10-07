@@ -20,6 +20,11 @@ const LOCALES = [
     label: "ES",
     countryCode: "ES",
   },
+  {
+    code: "fr",
+    label: "FR",
+    countryCode: "FR",
+  },
 ];
 
 interface LanguageSwitcherProps {

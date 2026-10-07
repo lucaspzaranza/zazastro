@@ -1,0 +1,463 @@
+{
+  "home": {
+    "title": "Zazastro",
+    "subtitle": "Sélectionnez une carte à consulter",
+    "subtitleMobile": "Sélectionnez une carte",
+    "birthChart": "Carte Natale",
+    "solarReturn": "Révolution Solaire",
+    "lunarReturn": "Révolution Lunaire",
+    "sinastry": "Combinaison (Synastrie)",
+    "secondaryProgressions": "Progressions Secondaires",
+    "profections": "Profections",
+    "momentChart": "Carte du Moment",
+    "selectChart": "Sélectionner la carte",
+    "numOfYears": "Nombre d'années",
+    "loading": "Chargement..."
+  },
+  "birthChart": {
+    "title": "Choisissez ou créez une Carte Natale",
+    "titleMobile": "Choisir ou créer",
+    "load": "Choisir une Carte",
+    "loadMobile": "Choisir",
+    "create": "Créer une Carte",
+    "createMobile": "Créer",
+    "createMomentChart": "Générer la Carte",
+    "edit": "Modifier la Carte",
+    "chartTitle": "Carte Natale - ",
+    "chartTransitsTitle": "Carte Natale et Transits - ",
+    "antiscion": "Antiscion",
+    "planetsAntiscion": "Antiscion des Planètes",
+    "arabicParts": "Parts Arabes",
+    "arabicPartsMobile": "Parts Arabes",
+    "arabicPartsAntiscion": "Antiscion des Parts Arabes",
+    "arabicPartsAntiscionMobile": "Antiscion des Parts Arabes",
+    "showDegrees": "Afficher les Degrés",
+    "showDegreesMobile": "Degrés",
+    "showInfo": "Afficher les Détails",
+    "mainMenu": "Menu Principal",
+    "home": "Accueil",
+    "house": "Maison",
+    "houses": "Maisons",
+    "planets": "Planètes",
+    "aspects": "Aspects",
+    "transits": "Transits",
+    "termsPtolomaics": "Termes Ptolémaïques",
+    "termsEgyptians": "Termes Égyptiens",
+    "decans": "Visages (Décans)",
+    "fixedStars": "Étoiles Fixes",
+    "dayMap": "Diurne",
+    "dayMapMobile": "D",
+    "nightMap": "Nocturne",
+    "nightMapMobile": "N",
+    "toggleShowOnMap": "Afficher/Masquer sur la Carte"
+  },
+  "returnChart": {
+    "title": "Entrez l'année de la révolution",
+    "titleLunar": "Entrez la date de la Révolution",
+    "inputPlaceholder": "Année Rév. Solaire",
+    "combineWithBirthChart": "Combiner avec la Carte Natale",
+    "combineWithBirthChartMobile": "Combiner avec la Carte",
+    "combineWithSolarReturnChart": "Combiner avec la Révolution Solaire",
+    "combineWithSolarReturnChartMobile": "Combiner avec la Révolution Solaire",
+    "lunarDerivedReturn": "Révolution Lunaire Dérivée",
+    "lunarDerivedReturnMobile": "Révolution Lunaire Dérivée",
+    "return": "Révolution",
+    "solarReturnFor": "Révolution Solaire",
+    "solarReturnForMobile": "RS",
+    "lunarReturnFor": "Révolution Lunaire",
+    "lunarReturnForMobile": "RL",
+    "lunarDerivedReturnFor": "Révolution Lunaire Dérivée",
+    "lunarDerivedReturnForMobile": "RLD"
+  },
+  "synastryChart": {
+    "title": "Choisissez les cartes à combiner en synastrie",
+    "firstChart": "Première carte",
+    "secondChart": "Deuxième carte",
+    "makeSynastry": "Générer la Synastrie",
+    "sinastry": "Synastrie"
+  },
+  "secondaryProgressions": {
+    "title": "Progressions Secondaires",
+    "generateProgression": "Générer la Progression",
+    "birth": "Naissance",
+    "progressed": "Progressé"
+  },
+  "profections": {
+    "title": "Profection Annuelle",
+    "generateProfection": "Générer la Profection",
+    "yearProfection": "Profection pour l'année ",
+    "birth": "Naissance",
+    "profected": "Profecté"
+  },
+  "momentChart": {
+    "title": "Carte du Moment"
+  },
+  "transitsChart": {
+    "title": "Carte Natale et Transits",
+    "titleMobile": "Transits",
+    "momentTransits": "Moment",
+    "calculateTransits": "Calculer"
+  },
+  "form": {
+    "houseSystem": "Système de Maisons",
+    "edit": "Modifier",
+    "editProfile": "Modifier le Profil",
+    "saveEditAndMakeChart": "Enregistrer et générer la Carte",
+    "delete": "Supprimer",
+    "back": "Retour",
+    "name": "Nom",
+    "day": "Jour",
+    "month": "Mois",
+    "year": "Année",
+    "city": "Entrez la ville",
+    "searching": "Recherche...",
+    "noResults": "Aucun résultat.",
+    "yes": "Oui",
+    "no": "Non",
+    "areYouSureYouWantToDelete": "Êtes-vous sûr de vouloir supprimer le profil de ",
+    "deletedSuccessfully": "Profil supprimé avec succès.",
+    "male": "Homme",
+    "maleMobile": "H",
+    "female": "Femme",
+    "femaleMobile": "F",
+    "event": "Événement/Horaire"
+  },
+  "houses": {
+    "1": {
+      "name": "Maison 1",
+      "specialName": "Ascendant",
+      "acronym": "ASC"
+    },
+    "2": {
+      "name": "Maison 2",
+      "acronym": "C2"
+    },
+    "3": {
+      "name": "Maison 3",
+      "acronym": "C3"
+    },
+    "4": {
+      "name": "Maison 4",
+      "specialName": "Fond du Ciel",
+      "acronym": "IC"
+    },
+    "5": {
+      "name": "Maison 5",
+      "acronym": "C5"
+    },
+    "6": {
+      "name": "Maison 6",
+      "acronym": "C6"
+    },
+    "7": {
+      "name": "Maison 7",
+      "specialName": "Descendant",
+      "acronym": "DSC"
+    },
+    "8": {
+      "name": "Maison 8",
+      "acronym": "C8"
+    },
+    "9": {
+      "name": "Maison 9",
+      "acronym": "C9"
+    },
+    "10": {
+      "name": "Maison 10",
+      "specialName": "Milieu du Ciel",
+      "acronym": "MC"
+    },
+    "11": {
+      "name": "Maison 11",
+      "acronym": "C11"
+    },
+    "12": {
+      "name": "Maison 12",
+      "acronym": "C12"
+    }
+  },
+  "months": {
+    "1": "Janvier",
+    "2": "Février",
+    "3": "Mars",
+    "4": "Avril",
+    "5": "Mai",
+    "6": "Juin",
+    "7": "Juillet",
+    "8": "Août",
+    "9": "Septembre",
+    "10": "Octobre",
+    "11": "Novembre",
+    "12": "Décembre"
+  },
+  "houseSystems": {
+    "placidus": "Placidus",
+    "koch": "Koch",
+    "regiomontanus": "Regiomontanus",
+    "campanus": "Campanus",
+    "equal": "Maisons Égales",
+    "wholeSign": "Signes Entiers",
+    "porphyry": "Porphyre"
+  },
+  "planets": {
+    "sun": "Soleil",
+    "moon": "Lune",
+    "mercury": "Mercure",
+    "venus": "Vénus",
+    "mars": "Mars",
+    "jupiter": "Jupiter",
+    "saturn": "Saturne",
+    "uranus": "Uranus",
+    "neptune": "Neptune",
+    "pluto": "Pluton",
+    "northNode": "Nœud Nord",
+    "southNode": "Nœud Sud"
+  },
+  "signs": {
+    "aries": "Bélier",
+    "taurus": "Taureau",
+    "gemini": "Gémeaux",
+    "cancer": "Cancer",
+    "leo": "Lion",
+    "virgo": "Vierge",
+    "libra": "Balance",
+    "scorpio": "Scorpion",
+    "sagittarius": "Sagittaire",
+    "capricorn": "Capricorne",
+    "aquarius": "Verseau",
+    "pisces": "Poissons"
+  },
+  "arabicParts": {
+    "title": "Parts Arabes",
+    "customizeASC": "Personnaliser l'Ascendant",
+    "lotCalculator": "Calculer une Part Arabe",
+    "choosePoints": "Choisissez les points pour le calcul de la part",
+    "valuesFromBirthChart": "(Valeurs issues de la carte natale)",
+    "seeMore": "Voir plus",
+    "seeMoreDetails": "Voir plus de détails",
+    "switchParts": "Basculer entre parts internes et externes",
+    "someFieldsAreEmpty": "Certains champs sont vides, veuillez sélectionner les éléments pour le calcul.",
+    "origin": "(A) Origine :",
+    "until": "(B) Jusqu'à :",
+    "from": "(C) De :",
+    "calculate": "Calculer",
+    "angles": "Angles",
+    "planets": "Planètes",
+    "houses": "Maisons",
+    "lots": "Parts Arabes",
+    "lotIsIn": "La Part Arabe est en ",
+    "calculationDetails": "Détails du Calcul",
+    "significator": "Significateur",
+    "trigger": "Déclencheur",
+    "distance": "Distance",
+    "in": "en",
+    "projectedIn": "Projeté en",
+    "distanceFromASC": "Distance par rapport à l'Ascendant",
+    "distanceFromOrigin": "Distance par rapport à l'origine (A)",
+    "distanceFromBirthASC": "Distance par rapport à l'Ascendant Natal",
+    "projectedInBirthArch": "Part Arabe projetée dans l'Arc Natal",
+    "asc": "Ascendant",
+    "projectedLotInBirthArch": "Part projetée dans l'Arc de l'Ascendant (ASC de l'Arc + Distance par rapport à l'ASC Natal) =",
+    "archLotIsIn": "La Part Arabe de l'arc est en",
+    "perSign": "Par Signe",
+    "perDeg": "Par Degré",
+    "basedUponBirthChart": "*Basées sur l'Ascendant de la Carte Natale.",
+    "associatedTo": "Associée à",
+    "formula": "Formule",
+    "ruler": "Maître",
+    "customLot": "Part Arabe Personnalisée",
+
+    "fortune": {
+      "short": "Fortune",
+      "shortMobile": "Fortune",
+      "complete": "Part de Fortune"
+    },
+    "spirit": {
+      "short": "Esprit",
+      "shortMobile": "Esprit",
+      "complete": "Part de l'Esprit"
+    },
+    "necessity": {
+      "short": "Nécessité",
+      "shortMobile": "Nécessité",
+      "complete": "Part de la Nécessité"
+    },
+    "love": {
+      "short": "Amour",
+      "shortMobile": "Amour",
+      "complete": "Part de l'Amour"
+    },
+    "valor": {
+      "short": "Courage",
+      "shortMobile": "Courage",
+      "complete": "Part du Courage"
+    },
+    "victory": {
+      "short": "Victoire",
+      "shortMobile": "Victoire",
+      "complete": "Part de la Victoire"
+    },
+    "captivity": {
+      "short": "Captivité",
+      "shortMobile": "Captivité",
+      "complete": "Part de la Captivité"
+    },
+    "marriage": {
+      "short": "Mariage",
+      "shortMobile": "Mariage",
+      "complete": "Part du Mariage"
+    },
+    "marriageHermes": {
+      "short": "Mariage (H)",
+      "shortMobile": "Mariage (H)",
+      "complete": "Part du Mariage (Hermès)"
+    },
+    "marriageValens": {
+      "short": "Mariage (V)",
+      "shortMobile": "Mariage (V)",
+      "complete": "Part du Mariage (Valens)"
+    },
+    "resignation": {
+      "short": "Renonciation",
+      "shortMobile": "Renonciation",
+      "complete": "Part de la Renonciation"
+    },
+    "children": {
+      "short": "Enfants",
+      "shortMobile": "Enfants",
+      "complete": "Part des Enfants"
+    },
+    "custom": {
+      "short": "Part Arabe",
+      "shortMobile": "Part Arabe",
+      "complete": "Part Arabe Personnalisée"
+    }
+  },
+  "aspects": {
+    "title": "Aspects",
+    "element": "Élément",
+    "aspect": "Aspect",
+    "aspects": "Aspects",
+    "aspected": "Aspecté",
+    "distance": "Distance",
+    "type": "Type",
+    "items": "Éléments",
+    "itemsPerPage": "Éléments par page",
+    "legend": "Légende",
+    "sextile": "Sextile",
+    "square": "Carré",
+    "trine": "Trigone",
+    "opposition": "Opposition",
+    "conjunction": "Conjonction",
+    "elements": "Éléments",
+    "houseInitial": "M",
+    "outerInitial": "E",
+    "house": "Maison astrologique",
+    "outerElement": "Éléments de la carte externe",
+    "aspectType": "Type d'aspect",
+    "applicative": "Applicatif",
+    "separative": "Séparatif",
+    "filterByElement": "Filtrer par Élément",
+    "filterByAspect": "Filtrer par Aspect",
+    "filterByDistance": "Filtrer par Distance",
+    "filterByAspectType": "Filtrer par Type d'Aspect",
+    "lowerLimit": "Limite Inférieure",
+    "upperLimit": "Limite Supérieure",
+    "select": "Sélectionner",
+    "equalsTo": "Égal à",
+    "lessThan": "Inférieur à",
+    "lessThanOrEqualTo": "Inférieur ou égal à",
+    "greaterThan": "Supérieur à",
+    "greaterThanOrEqualTo": "Supérieur ou égal à",
+    "all": "Tous",
+    "filter": "Filtrer",
+    "cancel": "Annuler",
+    "noAspectFound": "Aucun aspect trouvé."
+  },
+  "timeAdvanceModal": {
+    "title": "Avance/Recul du temps",
+    "minutes": "Minutes",
+    "hours": "Heures",
+    "days": "Jours",
+    "weeks": "Semaines",
+    "months": "Mois",
+    "years": "Années",
+    "apply": "Appliquer",
+    "abbreviations": {
+      "single": {
+        "minutes": "min.",
+        "hours": "heure",
+        "days": "jour",
+        "weeks": "sem.",
+        "months": "mois",
+        "years": "an"
+      },
+      "multiple": {
+        "minutes": "mins.",
+        "hours": "hrs.",
+        "days": "jours",
+        "weeks": "sem.",
+        "months": "mois",
+        "years": "ans"
+      }
+    }
+  },
+  "forecast": {
+    "period": "Période",
+    "month": "Mois",
+    "year": "Année",
+    "planet": "Planète",
+    "city": "Ville",
+    "allPlanets": "Toutes les planètes",
+    "generate": "Générer la prévision",
+    "noEvents": "Aucun événement pour cette période.",
+    "sign": "Signe",
+    "movement": "Mouvement",
+    "event": "Événement",
+    "date": "Date",
+    "degree": "Degré",
+    "whatToShow": "Que montrer",
+    "whichAspects": "Quels aspects",
+    "filters": "Filtres de recherche",
+    "filter": "Filtrer",
+    "placeholder": "Les données de prévision apparaîtront ici.",
+    "filterByDate": "Filtrer par date",
+    "day": "Jour",
+    "allMonths": "Tous les mois",
+    "errorTitle": "Erreur de recherche !",
+    "errorSubtitle": "Nous n'avons pas pu calculer les prévisions.",
+    "title": "Prévisions de Transits",
+    "pickCityFirst": "Choisissez une ville pour continuer",
+    "open": "Voir les prévisions",
+    "editSearch": "Modifier la recherche",
+    "backHome": "Page d'accueil",
+    "eventTypes": {
+      "ingress": "Entrée en signe",
+      "aspect": "Aspect",
+      "station": "Changement de mouvement"
+    },
+    "stationTypes": {
+      "retrograde": "Devient rétrograde",
+      "direct": "Redevient direct"
+    },
+    "aspectTypes": {
+      "conjunction": "Conjonction",
+      "sextile": "Sextile",
+      "square": "Carré",
+      "trine": "Trigone",
+      "opposition": "Opposition"
+    }
+  },
+  "settings": {
+    "title": "Paramètres",
+    "showFixedStars": "Afficher les Étoiles Fixes",
+    "essentialFixedStars": "Étoiles Fixes Essentielles",
+    "secondaryFixedStars": "Étoiles Fixes Secondaires",
+    "showTerms": "Afficher les Termes",
+    "termsEgyptian": "Termes Égyptiens",
+    "termsPtolemaic": "Termes Ptolémaïques",
+    "showFaces": "Afficher les Visages (Décans)",
+    "showDetails": "Afficher l'infobulle (détails)",
+    "showTransSaturnians": "Afficher les Planètes Transsaturniennes"
+  }
+}

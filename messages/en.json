@@ -253,6 +253,7 @@
     "in": "in",
     "projectedIn": "Projected in",
     "distanceFromASC": "Distance from Ascendant",
+    "distanceFromOrigin": "Distance from origin (A)",
     "distanceFromBirthASC": "Distance from Birth Ascendant",
     "projectedInBirthArch": "Arabic Part projected in Birth Arch",
     "asc": "Ascendant",
