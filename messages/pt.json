@@ -447,5 +447,17 @@
       "trine": "Trígono",
       "opposition": "Oposição"
     }
+  },
+  "settings": {
+    "title": "Configurações", 
+    "showFixedStars": "Exibir Estrelas Fixas", 
+    "essentialFixedStars": "Estrelas Fixas Essenciais", 
+    "secondaryFixedStars": "Estrelas Fixas Secundárias", 
+    "showTerms": "Exibir Termos", 
+    "termsEgyptian": "Termos Egípcios", 
+    "termsPtolemaic": "Termos Ptolemaicos", 
+    "showFaces": "Exibir Faces (Decanatos)", 
+    "showDetails": "Mostrar Tooltip (informações detalhadas)", 
+    "showTransSaturnians": "Exibir Transaturninos"
   }
 }

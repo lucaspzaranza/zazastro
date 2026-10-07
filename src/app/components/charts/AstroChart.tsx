@@ -39,6 +39,7 @@ import { CHALDEAN_DECANS } from "@/app/utils/termsAndDecans";
 import ChartHeaderSubtitle from "../ChartHeaderSubtitle";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import { useProfiles } from "@/contexts/ProfilesContext";
+import { useAstroChartSettings } from "@/hooks/useAstroChartSettings";
 
 const PLANET_DIM_FILTER_ID = "astro-chart-grayscale";
 
@@ -75,6 +76,8 @@ const ASPECTS: Aspect[] = [
   { type: "trine", angle: 120 },
   { type: "opposition", angle: 180 },
 ];
+
+const TRANS_SATURNIAN_TYPES: PlanetType[] = ["uranus", "neptune", "pluto"];
 
 /**
  * Toggles de exibição que antes viviam como useState internos ao
@@ -129,6 +132,8 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     isCombinedWithBirthChart, isCombinedWithReturnChart } = useBirthChart();
   const { customArabicPart } = useArabicParts();
   const { currentProfile } = useProfiles();
+  const { settings } = useAstroChartSettings();
+  const { showTransSaturnians, showEssentialFixedStars, showSecondaryFixedStars } = settings;
 
   const [testValue] = useState(2.5);
   const [showOuterChart, setShowOuterChart] = 
@@ -2005,7 +2010,9 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     }
 
     // Desenha os planetas
-    planets?.forEach((planet) => {
+    planets
+    ?.filter((planet) => showTransSaturnians || !TRANS_SATURNIAN_TYPES.includes(planet.type))
+    .forEach((planet) => {
       const chartElement: ChartElement = {
         id: chartElementsForAspect.current.length,
         isAntiscion: false,
@@ -2681,7 +2688,9 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     })
 
     if (showOuterChart && outerPlanets) {
-      outerPlanets.forEach((planet) => {
+      outerPlanets
+      .filter((planet) => showTransSaturnians || !TRANS_SATURNIAN_TYPES.includes(planet.type))
+      .forEach((planet) => {
         const chartElement: ChartElement = {
           id: chartElementsForAspect.current.length,
           isAntiscion: false,
@@ -3304,7 +3313,9 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
 
     if (!showFixedStars) return;
 
-    fixedStarsAspects.forEach((asp) => {
+    fixedStarsAspects
+    .filter((asp) => asp.aspectedElement.isRelevant ? showEssentialFixedStars : showSecondaryFixedStars)
+    .forEach((asp) => {
       // 1) ângulo zodiacal original (graus → rad)
       const rawDeg = 180 - (asp.aspectedElement.longitude % 360) - 90;
       const rawRad = (rawDeg * Math.PI) / 180;
@@ -3352,7 +3363,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
           if (!isMobile) hideTooltip();
         });
     });
-  }, [fixedStarsAspects, showFixedStars]);
+  }, [fixedStarsAspects, showFixedStars, showEssentialFixedStars, showSecondaryFixedStars]);
 
   useEffect(() => {
     if (!aspects || !aspects.every(a => a.aspectImg !== undefined)) return;

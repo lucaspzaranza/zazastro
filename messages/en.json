@@ -446,5 +446,17 @@
       "trine": "Trine",
       "opposition": "Opposition"
     }
+  },
+  "settings": {
+    "title": "Settings", 
+    "showFixedStars": "Show Fixed Stars", 
+    "essentialFixedStars": "Essential Fixed Stars", 
+    "secondaryFixedStars": "Secondary Fixed Stars", 
+    "showTerms": "Show Terms", 
+    "termsEgyptian": "Egyptian Terms", 
+    "termsPtolemaic": "Ptolemaic Terms", 
+    "showFaces": "Show Faces (Decans)", 
+    "showDetails": "Show Details", 
+    "showTransSaturnians": "Show Trans-Saturnian Planets"
   }
 }

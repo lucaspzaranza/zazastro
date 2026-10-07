@@ -40,6 +40,7 @@ import ChartHeaderSubtitle from "./ChartHeaderSubtitle";
 import { useProfiles } from "@/contexts/ProfilesContext";
 import { useRouter } from "next/dist/client/components/navigation";
 import ForecastPanel from "./forecast/ForecastPanel";
+import { useAstroChartSettings } from "@/hooks/useAstroChartSettings";
 
 interface Props {
   innerChart: BirthChart;
@@ -108,6 +109,7 @@ export default function ChartAndData(props: Props) {
   const [nextChartContentLoaded, setNextChartContentLoaded] = useState(false);
   const t = useTranslations();
   const { currentProfile } = useProfiles();
+  const { settings } = useAstroChartSettings();
   
   const { setHasIsolatedAspect, setSelectedAspect } = useAspectsData();
 
@@ -363,7 +365,7 @@ export default function ChartAndData(props: Props) {
             />
           </div>
 
-          {innerChart && (
+          {innerChart && toggles.ready && (
             <AstroChart
               props={{
                 planets: innerChart.planets,
@@ -699,6 +701,8 @@ export default function ChartAndData(props: Props) {
   function toggleInnerHousesVisualization() {
     setUseInnerHouses((prev) => !prev);
   }
+
+  if(!toggles.ready) return null;
 
   return (
     <div className="w-[95%] md:w-full flex flex-col md:flex-row md:items-start md:justify-center mt-1 mb:mb-4">

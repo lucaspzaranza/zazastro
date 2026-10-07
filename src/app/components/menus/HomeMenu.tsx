@@ -83,6 +83,11 @@ export default function HomeMenu() {
             {t("home.momentChart")}
             <Image src="/clock.png" width={iconSize} height={iconSize} unoptimized alt="chart" />
           </Link>
+
+          <Link href="/settings" className="default-btn">
+            {t("settings.title")}
+            <Image src="/settings.png" width={iconSize} height={iconSize} unoptimized alt="chart" />
+          </Link>
         </div>
       </Container>
   );
