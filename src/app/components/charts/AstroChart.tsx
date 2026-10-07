@@ -12,6 +12,7 @@ import {
   getDegreeAndSign,
   getDegreesInsideASign,
   getPlanetImage,
+  getPlanetImagePath,
   getSign,
   mod360,
   signsGlpyphs,
@@ -370,9 +371,16 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
   ): React.ReactNode {
     const { label, longitude, planetType, isAntiscion, isRetrograde, isTransit } = options;
     const degree = getDegreeAndSign(longitude, true);
+
     return (
       <div className="flex flex-row items-center gap-1">
-        {planetType && getPlanetImage(planetType, { isAntiscion, isRetrograde, size: 15, isTransit })}
+        {planetType && getPlanetImage(planetType, {
+          isAntiscion,
+          isRetrograde,
+          isTransit,
+          longitude,
+          size: 15,
+        })}
         <span>{label}: {formatSignColor(degree)}</span>
       </div>
     );
@@ -1742,8 +1750,10 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
           .attr("stroke-width", 1);
   
         // 6) desenha o ícone do planeta
-        const iconSrc = `/planets/${planet.type}${planet.isRetrograde ? "-rx" : ""
-          }.png`;
+        const iconSrc = getPlanetImagePath(planet.type, {
+          longitude: planet.longitude,
+          isRetrograde: planet.isRetrograde,
+        });
   
         baseGroup
           .attr("data-name", planet.type)
@@ -1853,13 +1863,15 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
             .attr("y1", yAnt1)
             .attr("x2", xAnt2)
             .attr("y2", yAnt2)
-            .attr("stroke", "#ff914d") // antiscion color
+            .attr("stroke", "#778397") // antiscion color
             .attr("stroke-width", 1);
 
           // 6) desenha o ícone do planeta
           const iconAntSize = 13; // px
-          const iconAntSrc = `/planets/antiscion/${planet.type}${planet.isRetrograde ? "-rx" : ""
-            }.png`;
+          const iconAntSrc = getPlanetImagePath(planet.type, {
+            isAntiscion: true,
+            isRetrograde: planet.isRetrograde,
+          });
 
           baseGroup
             .append("image")
@@ -2096,7 +2108,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
               .attr("y1", y1)
               .attr("x2", x2)
               .attr("y2", y2)
-              .attr("stroke", "#ff914d") // antiscion color
+              .attr("stroke", "#778397") // antiscion color
               .attr("stroke-width", 1);
   
             // 6) desenha o ícone do planeta
@@ -2317,8 +2329,10 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
           .attr("stroke-width", 1);
   
         // 6) desenha o ícone do planeta
-        const iconSrc = `/planets/transits/${planet.type}${planet.isRetrograde ? "-rx" : ""
-          }.png`;
+        const iconSrc = getPlanetImagePath(planet.type, {
+          isRetrograde: planet.isRetrograde,
+          isTransit: true,
+        });
   
         baseGroup
           .attr("data-name", planet.type)
@@ -2420,8 +2434,10 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
   
           // 6) desenha o ícone do planeta
           const iconSize = 13; // px
-          const iconSrc = `/planets/${planet.type}${planet.isRetrograde ? "-rx" : ""
-            }.png`;
+          const iconSrc = getPlanetImagePath(planet.type, {
+            longitude: planet.longitude,
+            isRetrograde: planet.isRetrograde,
+          });
   
           baseGroup
             .append("image")
@@ -2531,12 +2547,14 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
               .attr("y1", yAnt1)
               .attr("x2", xAnt2)
               .attr("y2", yAnt2)
-              .attr("stroke", "#ff914d") // antiscion color
+              .attr("stroke", "#778397") // antiscion color
               .attr("stroke-width", 1);
 
             // 6) desenha o ícone do planeta
-            const iconAntSrc = `/planets/antiscion/${planet.type}${planet.isRetrograde ? "-rx" : ""
-              }.png`;
+            const iconAntSrc = getPlanetImagePath(planet.type, {
+              isAntiscion: true,
+              isRetrograde: planet.isRetrograde,
+            });
 
             baseGroup
               .append("image")
@@ -2773,7 +2791,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
               .attr("y1", y1)
               .attr("x2", x2)
               .attr("y2", y2)
-              .attr("stroke", "#ff914d") // antiscion color
+              .attr("stroke", "#778397") // antiscion color
               .attr("stroke-width", 1);
   
             // 6) desenha o ícone do planeta

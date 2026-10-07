@@ -202,40 +202,82 @@ export const getSignColor = (signGlyph: string): string => {
   return "black";
 };
 
+export type EssentialDignityFolder = "domicile" | "exaltation" | "decline" | "exile";
+
+const ESSENTIAL_DIGNITIES: Partial<Record<PlanetType, {
+  domicile: number[];
+  exaltation: number[];
+  decline: number[];
+  exile: number[];
+}>> = {
+  sun: { domicile: [4], exaltation: [0], decline: [6], exile: [10] },
+  moon: { domicile: [3], exaltation: [1], decline: [7], exile: [9] },
+  mercury: { domicile: [2, 5], exaltation: [5], decline: [11], exile: [8, 11] },
+  venus: { domicile: [1, 6], exaltation: [11], decline: [5], exile: [7, 0] },
+  mars: { domicile: [0, 7], exaltation: [9], decline: [3], exile: [6, 1] },
+  jupiter: { domicile: [8, 11], exaltation: [3], decline: [9], exile: [2, 5] },
+  saturn: { domicile: [9, 10], exaltation: [6], decline: [0], exile: [3, 4] },
+};
+
+export function getEssentialDignityFolder(
+  planet: PlanetType,
+  longitude?: number
+): EssentialDignityFolder | undefined {
+  const dignities = ESSENTIAL_DIGNITIES[planet];
+  if (!dignities || longitude === undefined || !Number.isFinite(longitude)) {
+    return undefined;
+  }
+
+  const normalizedLongitude = ((longitude % 360) + 360) % 360;
+  const signIndex = Math.floor(normalizedLongitude / 30);
+
+  // Domicile outranks exaltation; exile outranks fall when a sign has both.
+  if (dignities.domicile.includes(signIndex)) return "domicile";
+  if (dignities.exaltation.includes(signIndex)) return "exaltation";
+  if (dignities.exile.includes(signIndex)) return "exile";
+  if (dignities.decline.includes(signIndex)) return "decline";
+
+  return undefined;
+}
+
 interface ImgOptions {
   size?: number;
   isAntiscion?: boolean;
   isRetrograde?: boolean;
   isTransit?: boolean;
+  longitude?: number;
+}
+
+export function getPlanetImagePath(
+  planet: PlanetType,
+  options: ImgOptions = {}
+): string {
+  let subfolder = "";
+
+  if (options.isAntiscion) {
+    subfolder = "/antiscion";
+  } else if (options.isTransit) {
+    subfolder = "/transits";
+  } else {
+    const dignityFolder = getEssentialDignityFolder(planet, options.longitude);
+    if (dignityFolder) subfolder = `/${dignityFolder}`;
+  }
+
+  return `/planets${subfolder}/${planet}${options.isRetrograde ? "-rx" : ""}.png`;
 }
 
 export function getPlanetImage(
   planet: PlanetType,
-  options: ImgOptions = {
-    size: 15,
-    isAntiscion: false,
-    isRetrograde: false,
-    isTransit: false
-  }
+  options: ImgOptions = {}
 ): React.ReactNode {
-  const folder = "planets";
-  const { size, isAntiscion, isRetrograde, isTransit } = options;
-  //let path = folder;
-   let path = "/" + folder; // <- era só `folder`
-
-  if(isAntiscion)
-    path += "/antiscion";
-  else if(isTransit)
-    path += "/transits";
-
-  path += `/${planet}${isRetrograde ? "-rx" : ""}.png`
+  const path = getPlanetImagePath(planet, options);
 
   return (
     <Image
       alt="planet"
       src={path}
-      width={size ?? 15}
-      height={size ?? 15}
+      width={options.size ?? 15}
+      height={options.size ?? 15}
       unoptimized
     />
   );

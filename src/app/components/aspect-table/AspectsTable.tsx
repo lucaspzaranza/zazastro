@@ -210,7 +210,8 @@ export default function AspectsTable({
           {getPlanetImage(element.name as PlanetType, {
             isAntiscion: element.isAntiscion,
             isRetrograde: element.isRetrograde,
-            isTransit: element.isTransit
+            isTransit: element.isTransit,
+            longitude: element.longitude,
           })}
           {element.isFromOuterChart ? `(${outerInitial})` : ""}
         </div>
