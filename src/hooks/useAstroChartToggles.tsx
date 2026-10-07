@@ -16,6 +16,7 @@ export function useAstroChartToggles() {
   const [showFixedStars, setShowFixedStars] = useState(true);
   const [currentTerms, setCurrentTerms] = useState<Record<Sign, TermOrDecan[]> | undefined>(EGYPTIAN_TERMS);
   const [initializedFromSettings, setInitializedFromSettings] = useState(false);
+  const [showTransSaturnians, setShowTransSaturnians] = useState(false);
 
   /**
    * Aplica as configurações salvas DE UMA SÓ VEZ, assim que a leitura do
@@ -38,6 +39,7 @@ export function useAstroChartToggles() {
         : settings.termsType === "egyptian" ? EGYPTIAN_TERMS
         : undefined
     );
+    setShowTransSaturnians(settings.showTransSaturnians);
     setInitializedFromSettings(true);
   }, [loaded, settings, initializedFromSettings]);
 
@@ -90,6 +92,7 @@ export function useAstroChartToggles() {
     useDecans,
     showFixedStars,
     currentTerms,
+    showTransSaturnians,
     ready: initializedFromSettings, // <- substitui o canRenderChart com setTimeout
 
     toggleArabicParts,

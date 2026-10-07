@@ -93,6 +93,7 @@ interface AstroChartToggleProps {
   useTerms: boolean;
   useDecans: boolean;
   showFixedStars: boolean;
+  showTransSaturnians: boolean;
   currentTerms: Record<Sign, TermOrDecan[]> | undefined;
 }
 
@@ -110,6 +111,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     showArabicParts,
     showPlanetsAntiscia,
     showArabicPartsAntiscia,
+    showTransSaturnians,
     showDegrees,
     useTerms,
     useDecans,
@@ -133,7 +135,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
   const { customArabicPart } = useArabicParts();
   const { currentProfile } = useProfiles();
   const { settings } = useAstroChartSettings();
-  const { showTransSaturnians, showEssentialFixedStars, showSecondaryFixedStars } = settings;
+  const { showEssentialFixedStars, showSecondaryFixedStars } = settings;
 
   const [testValue] = useState(2.5);
   const [showOuterChart, setShowOuterChart] = 
@@ -2982,6 +2984,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     useTerms,
     currentTerms,    
     customArabicPart,
+    showTransSaturnians
   ]);
 
   useEffect(() => {

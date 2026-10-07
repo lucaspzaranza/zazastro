@@ -386,6 +386,7 @@ export default function ChartAndData(props: Props) {
                 useDecans: toggles.useDecans,
                 showFixedStars: toggles.showFixedStars,
                 currentTerms: toggles.currentTerms,
+                showTransSaturnians: toggles.showTransSaturnians,
                 dateBlocks: isMobileBreakPoint() ? [...dateBlocks] : undefined
               }}
             />
