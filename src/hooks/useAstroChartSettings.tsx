@@ -17,7 +17,7 @@ export const DEFAULT_ASTRO_CHART_SETTINGS: AstroChartSettings = {
   termsType: "egyptian",
   showFaces: true,
   showDetails: true,
-  showTransSaturnians: false,
+  showTransSaturnians: true,
 };
 
 const STORAGE_KEY = "zazastro:astro-chart-settings";
