@@ -28,6 +28,10 @@ export default function CitySearch({
   const t = useTranslations();
 
   useEffect(() => {
+    setQuery(initialCoordinates?.name ?? "");
+  }, [initialCoordinates?.name]);
+
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         wrapperRef.current &&
