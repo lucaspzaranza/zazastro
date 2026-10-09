@@ -1,5 +1,6 @@
 // LunarDerivedModal.tsx
 import { apiFetch } from "@/app/utils/api";
+import { clampDayToMonth, getDaysInMonth } from "@/app/utils/dateUtils";
 import Image from "next/image";
 import {
   convertDegMinToDecimal,
@@ -44,7 +45,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
   const t = useTranslations();
 
   const makeChart = async () => {
-    if (birthChart === undefined) return;
+    if (birthChart === undefined || day < 1 || day > getDaysInMonth(month, year)) return;
 
     setLoading(true);
 
@@ -135,20 +136,26 @@ export default function LunarDerivedModal(props: LunarModalProps) {
                 className="w-16 md:w-20 default-input-field"
                 placeholder={t("form.day")}
                 required
+                min={1}
+                max={getDaysInMonth(month, year)}
+                value={day > 0 ? day : ""}
                 onChange={(e) => {
-                  if (e.target.value.length > 0) {
-                    let val = Number.parseInt(e.target.value);
-                    if (val < 1) val = 1;
-                    if (val > 31) val = 31;
-                    setDay(val);
-                    e.target.value = val.toString();
+                  const parsed = Number.parseInt(e.target.value);
+                  if (Number.isNaN(parsed)) {
+                    setDay(0);
+                    return;
                   }
+                  setDay(Math.max(1, Math.min(parsed, getDaysInMonth(month, year))));
                 }}
               />
 
               <select
                 className="flex-1 default-input-field"
-                onChange={(e) => setMonth(Number.parseInt(e.target.value) + 1)}
+                onChange={(e) => {
+                  const nextMonth = Number.parseInt(e.target.value) + 1;
+                  setMonth(nextMonth);
+                  setDay((currentDay) => clampDayToMonth(currentDay, nextMonth, year) ?? 0);
+                }}
                 required
               >
                 {monthsNames.map((month, index) => (
@@ -168,6 +175,7 @@ export default function LunarDerivedModal(props: LunarModalProps) {
                     let val = Number.parseInt(e.target.value);
                     if (val < 0) val = 0;
                     setYear(val);
+                    setDay((currentDay) => clampDayToMonth(currentDay, month, val) ?? 0);
                     e.target.value = val.toString();
                   }
                 }}

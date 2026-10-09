@@ -20,10 +20,12 @@ function isProfile(value: unknown): value is BirthChartProfile {
   if (value.gender !== undefined && !["male", "female", "event"].includes(String(value.gender))) return false;
 
   if (value.birthDate !== undefined) {
-    if (!isRecord(value.birthDate) || !isRecord(value.birthDate.coordinates)) return false;
     const date = value.birthDate;
+    if (!isRecord(date)) return false;
+    const coordinates = date.coordinates;
+    if (!isRecord(coordinates)) return false;
     if (typeof date.day !== "number" || typeof date.month !== "number" || typeof date.year !== "number" || typeof date.time !== "string") return false;
-    if (typeof date.coordinates.latitude !== "number" || typeof date.coordinates.longitude !== "number") return false;
+    if (typeof coordinates.latitude !== "number" || typeof coordinates.longitude !== "number") return false;
   }
 
   return true;
@@ -37,10 +39,6 @@ export default function SettingsMenu() {
   const [importStatus, setImportStatus] = useState("");
   const [importStatusType, setImportStatusType] = useState<"success" | "error">("success");
   const [isProfileDataMenuOpen, setIsProfileDataMenuOpen] = useState(false);
-
-  // useEffect(() => {
-  //   updateSettings({showFixedStars: settings.showEssentialFixedStars || settings.showSecondaryFixedStars});
-  // }, [settings.showEssentialFixedStars, settings.showSecondaryFixedStars]);
 
   const toggleTerms = (term: "egyptian" | "ptolemaic" | null) => {
     updateSettings({termsType: term === settings.termsType ? null : term})

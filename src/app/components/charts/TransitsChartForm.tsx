@@ -17,6 +17,7 @@ import { useBirthChart } from "@/contexts/BirthChartContext";
 import Image from "next/image";
 import HouseSystemDropdown from "../HouseSystemDropdown";
 import { useTranslations } from "next-intl";
+import { clampDayToMonth, getDaysInMonth, isValidDayOfMonth } from "@/app/utils/dateUtils";
 
 interface TransitsChartFormProps {
   currentBirthDate?: BirthDate;
@@ -68,6 +69,10 @@ export default function TransitsChartForm(props: TransitsChartFormProps) {
       alert("Não foi possível gerar o mapa.");
       return;
     }
+    if (transitsDate && !isValidDayOfMonth(transitsDate.day, transitsDate.month, transitsDate.year)) {
+      alert("A data informada não existe no calendário.");
+      return;
+    }
 
     if (form.current && form.current.checkValidity() && transitsDate) {
       onSubmit?.({profile, transitsDate});
@@ -97,6 +102,8 @@ export default function TransitsChartForm(props: TransitsChartFormProps) {
           className="default-input-field w-1/3 px-1"
           placeholder={t("form.day")}
           type="number"
+          min={1}
+          max={getDaysInMonth(month, year)}
           value={day ?? ""}
           onChange={(e) => {
             const parsed = Number.parseInt(e.target.value);
@@ -106,8 +113,8 @@ export default function TransitsChartForm(props: TransitsChartFormProps) {
             }
 
             let val = parsed;
-            if (val < 0) val = 1;
-            if (val > 31) val = 31;
+            if (val < 1) val = 1;
+            val = Math.min(val, getDaysInMonth(month, year));
             setDay(val);
           }}
         />
@@ -115,7 +122,11 @@ export default function TransitsChartForm(props: TransitsChartFormProps) {
           required
           className="default-input-field w-1/2"
           value={month}
-          onChange={(e) => setMonth(Number.parseInt(e.target.value))}
+          onChange={(e) => {
+            const nextMonth = Number.parseInt(e.target.value);
+            setMonth(nextMonth);
+            setDay((currentDay) => clampDayToMonth(currentDay, nextMonth, year));
+          }}
         >
           {monthsNames.map((month, index) => (
             <option key={index} value={index + 1}>
@@ -140,6 +151,7 @@ export default function TransitsChartForm(props: TransitsChartFormProps) {
             if (val < 0) val = 0;
             if (val > 2999) val = 2999;
             setYear(val);
+            setDay((currentDay) => clampDayToMonth(currentDay, month, val));
           }}
         />
       </div>

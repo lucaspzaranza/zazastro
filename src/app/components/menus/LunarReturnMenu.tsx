@@ -10,6 +10,7 @@ import { useProfiles } from "@/contexts/ProfilesContext";
 import { useChartNavigation } from "@/hooks/useChartNavigation";
 import MenuContainer from "./MenuContainer";
 import type { BirthChartProfile } from "@/interfaces/BirthChartInterfaces";
+import { clampDayToMonth, isValidDayOfMonth } from "@/app/utils/dateUtils";
 
 export default function LunarReturnMenu() {
   const t = useTranslations();
@@ -24,7 +25,7 @@ export default function LunarReturnMenu() {
 
   const handleSubmit = () => {
     let selected = profile ?? currentProfile;
-    if (!selected?.birthDate || year === undefined) return;
+    if (!selected?.birthDate || year === undefined || day === undefined || !isValidDayOfMonth(day, month, year)) return;
 
     if(selected?.gender === "event") {
       const nextProfile = getNextHumanProfile(selected);
@@ -61,21 +62,22 @@ export default function LunarReturnMenu() {
                 className="default-input-field w-1/3 px-1"
                 placeholder={t("form.day")}
                 type="number"
+                value={day ?? ""}
                 onChange={(e) => {
-                  if (e.target.value.length > 0) {
-                    let val = Number.parseInt(e.target.value);
-                    if (val < 1) val = 1;
-                    if (val > 31) val = 31;
-                    setDay(val);
-                    e.target.value = val.toString();
-                  }
+                  if (e.target.value.length === 0) return setDay(undefined);
+                  const val = Math.min(31, Math.max(1, Number.parseInt(e.target.value, 10)));
+                  setDay(clampDayToMonth(val, month, year ?? null) ?? undefined);
                 }}
               />
               <select
                 required
                 className="default-input-field w-1/2"
                 value={month}
-                onChange={(e) => setMonth(Number.parseInt(e.target.value))}
+                onChange={(e) => {
+                  const nextMonth = Number.parseInt(e.target.value, 10);
+                  setMonth(nextMonth);
+                  setDay((currentDay) => clampDayToMonth(currentDay ?? null, nextMonth, year ?? null) ?? undefined);
+                }}
               >
                 {monthsNames.map((_, index) => (
                   <option key={index} value={index + 1}>{t(`months.${index + 1}`)}</option>
@@ -86,13 +88,12 @@ export default function LunarReturnMenu() {
                 type="number"
                 className="default-input-field w-20 p-1"
                 placeholder={t("form.year")}
+                value={year ?? ""}
                 onChange={(e) => {
-                  if (e.target.value.length > 0) {
-                    let val = Number.parseInt(e.target.value);
-                    if (val < 0) val = 0;
-                    setYear(val);
-                    e.target.value = val.toString();
-                  }
+                  if (e.target.value.length === 0) return setYear(undefined);
+                  const val = Math.max(0, Number.parseInt(e.target.value, 10));
+                  setYear(val);
+                  setDay((currentDay) => clampDayToMonth(currentDay ?? null, month, val) ?? undefined);
                 }}
               />
             </div>

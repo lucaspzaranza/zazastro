@@ -3,6 +3,7 @@ import {
   getHourAndMinute,
   monthsNames,
 } from "@/app/utils/chartUtils";
+import { clampDayToMonth, getDaysInMonth, isValidDayOfMonth } from "@/app/utils/dateUtils";
 import {
   BirthChartProfile,
   BirthDate,
@@ -103,7 +104,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
     setName(profile.name!);
 
     if (profile.birthDate) {
-      setDay(profile.birthDate.day);
+      setDay(clampDayToMonth(profile.birthDate.day, profile.birthDate.month, profile.birthDate.year));
       setMonth(profile.birthDate.month);
       setYear(profile.birthDate.year);
       setGender(profile.gender ?? "male");
@@ -121,6 +122,10 @@ export default function BirthChartForm(props: BirthChartFormProps) {
   function submitForm() {
     if (!profile) {
       alert("Não foi possível gerar o mapa.");
+      return;
+    }
+    if (profile.birthDate && !isValidDayOfMonth(profile.birthDate.day, profile.birthDate.month, profile.birthDate.year)) {
+      alert("A data informada não existe no calendário.");
       return;
     }
 
@@ -291,6 +296,8 @@ export default function BirthChartForm(props: BirthChartFormProps) {
               className="default-input-field w-1/3 px-1"
               placeholder={t("form.day")}
               type="number"
+              min={1}
+              max={getDaysInMonth(month, year)}
               value={day ?? ""}
               onChange={(e) => {
                 const parsed = Number.parseInt(e.target.value);
@@ -300,8 +307,8 @@ export default function BirthChartForm(props: BirthChartFormProps) {
                 }
 
                 let val = parsed;
-                if (val < 0) val = 1;
-                if (val > 31) val = 31;
+                if (val < 1) val = 1;
+                val = Math.min(val, getDaysInMonth(month, year));
                 setDay(val);
               }}
             />
@@ -309,7 +316,11 @@ export default function BirthChartForm(props: BirthChartFormProps) {
               required
               className="default-input-field w-1/2"
               value={month}
-              onChange={(e) => setMonth(Number.parseInt(e.target.value))}
+              onChange={(e) => {
+                const nextMonth = Number.parseInt(e.target.value);
+                setMonth(nextMonth);
+                setDay((currentDay) => clampDayToMonth(currentDay, nextMonth, year));
+              }}
             >
               {monthsNames.map((month, index) => (
                 <option key={index} value={index + 1}>
@@ -334,6 +345,7 @@ export default function BirthChartForm(props: BirthChartFormProps) {
                 if (val < 0) val = 0;
                 if (val > 2999) val = 2999;
                 setYear(val);
+                setDay((currentDay) => clampDayToMonth(currentDay, month, val));
               }}
             />
           </div>

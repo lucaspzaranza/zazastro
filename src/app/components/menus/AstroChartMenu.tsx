@@ -154,6 +154,19 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
 
   const menuItems: MenuItem[] = [
     {
+      key: "combineWithBirthChart",
+      label: t("returnChart.combineWithBirthChartMobile"),
+      active: isCombinedWithBirthChart,
+      visible: !!toggleCombineWithBirthChart && !isCombinedWithReturnChart,
+      iconPath:  "/combine.png",
+      pinned: isMobileBreakPoint(),
+      onClick: () => {
+        updateCustomArabicPart(undefined);
+        updateIsCombinedWithBirthChart(!isCombinedWithBirthChart);
+        updateIsMountingChart(true);
+      },
+    },
+    {
       key: "planetsAntiscia",
       label: t("birthChart.antiscion"),
       active: showPlanetsAntiscia,
@@ -219,19 +232,6 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       visible: toggleCombineWithBirthChart === false,
       iconPath:  "/see-more.png",
       onClick: toggleDegrees,
-    },
-    {
-      key: "combineWithBirthChart",
-      label: t("returnChart.combineWithBirthChartMobile"),
-      active: isCombinedWithBirthChart,
-      visible: !!toggleCombineWithBirthChart && !isCombinedWithReturnChart,
-      iconPath:  "/combine.png",
-      pinned: isMobileBreakPoint(),
-      onClick: () => {
-        updateCustomArabicPart(undefined);
-        updateIsCombinedWithBirthChart(!isCombinedWithBirthChart);
-        updateIsMountingChart(true);
-      },
     },
     {
       key: "combineWithReturnChart",
