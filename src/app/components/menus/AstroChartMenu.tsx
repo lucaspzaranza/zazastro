@@ -28,6 +28,7 @@ interface AstroChartMenuProps {
   toggles: AstroChartTogglesState;
   isEventChart: boolean;
   onOpenForecast?: () => void; // <- novo
+  onZoomChart?: () => void;
 }
 
 export default function AstroChartMenu(props: AstroChartMenuProps) {
@@ -38,6 +39,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
     toggles,
     isEventChart,
     onOpenForecast, // <- novo
+    onZoomChart,
   } = props;
 
   const {
@@ -265,6 +267,14 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
           setMobileContextMenuOpen(false)
         else setDesktopContextMenuOpen(false)
       },
+    },
+    {
+      key: "zoomChart",
+      label: t("birthChart.zoomChart"),
+      active: false,
+      visible: !isMobileBreakPoint() && !!onZoomChart,
+      iconPath: "/zoom.png",
+      onClick: () => onZoomChart?.(),
     },
     {
       key: "edit",

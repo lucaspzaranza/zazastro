@@ -13,7 +13,7 @@ import { v4 as uuidv4 } from "uuid";
 
 interface ProfilesContextType {
   profiles: BirthChartProfile[];
-  createProfile: (profile: BirthChartProfile) => boolean;
+  createProfile: (profile: BirthChartProfile) => BirthChartProfile | undefined;
   readProfile: (id: string) => BirthChartProfile | null;
   updateProfile: (id: string, profile: BirthChartProfile) => boolean;
   deleteProfile: (id: string) => boolean;
@@ -70,7 +70,7 @@ export const ProfilesContextProvider: React.FC<{ children: ReactNode }> = ({
     setSinastryProfile(newProfile);
   }
 
-  const createProfile = (profile: BirthChartProfile): boolean => {
+  const createProfile = (profile: BirthChartProfile): BirthChartProfile | undefined => {
     try {
       const id = uuidv4();
       const profileID = PROFILE_KEY + id;
@@ -84,9 +84,9 @@ export const ProfilesContextProvider: React.FC<{ children: ReactNode }> = ({
       array = array.sort((a, b) => (a.name! > b.name! ? 1 : -1));
 
       setProfiles(array.map((a) => ({ ...a })));
-      return true;
+      return profileWithId;
     } catch {
-      return false;
+      return undefined;
     }
   };
 

@@ -23,6 +23,8 @@
     "createMobile": "Criar Mapa",
     "createMomentChart": "Gerar Mapa",
     "edit": "Editar Mapa",
+    "zoomChart": "Ampliar mapa",
+    "closeZoom": "Fechar ampliação",
     "chartTitle": "Mapa Natal - ",
     "chartTransitsTitle": "Mapa Natal e Trânsitos - ",
     "antiscion": "Antiscion",

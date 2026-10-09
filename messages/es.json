@@ -23,6 +23,8 @@
     "createMobile": "Crear Carta",
     "createMomentChart": "Generar Carta",
     "edit": "Editar Carta",
+    "zoomChart": "Ampliar carta",
+    "closeZoom": "Cerrar ampliación",
     "chartTitle": "Carta Astral - ",
     "chartTransitsTitle": "Carta Astral y Tránsitos - ",
     "antiscion": "Antiscion",

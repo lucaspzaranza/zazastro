@@ -23,6 +23,8 @@
     "createMobile": "Créer",
     "createMomentChart": "Générer la Carte",
     "edit": "Modifier la Carte",
+    "zoomChart": "Agrandir la carte",
+    "closeZoom": "Fermer l’agrandissement",
     "chartTitle": "Carte Natale - ",
     "chartTransitsTitle": "Carte Natale et Transits - ",
     "antiscion": "Antiscion",

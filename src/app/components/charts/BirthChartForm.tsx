@@ -134,11 +134,11 @@ export default function BirthChartForm(props: BirthChartFormProps) {
       }
     } // create chart
     else if (form.current && form.current.checkValidity()) {
-      if (createProfile(profile)) {
-        updateCurrentSelectedProfile(profile);
-        onSubmit?.(profile);
-      }
-      else alert("Não foi possível gerar o mapa.");
+      const createdProfile = createProfile(profile);
+      if (createdProfile) {
+        updateCurrentSelectedProfile(createdProfile);
+        onSubmit?.(createdProfile);
+      } else alert("Não foi possível gerar o mapa.");
     } else {
       form.current?.reportValidity();
     }

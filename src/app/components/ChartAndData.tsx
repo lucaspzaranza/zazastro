@@ -107,6 +107,7 @@ export default function ChartAndData(props: Props) {
   const [useInnerHouses, setUseInnerHouses] = useState(true);
   const [useInnerParts, setUseInnerParts] = useState(true);
   const [nextChartContentLoaded, setNextChartContentLoaded] = useState(false);
+  const [isChartZoomed, setIsChartZoomed] = useState(false);
   const t = useTranslations();
   const { currentProfile } = useProfiles();
   const { settings } = useAstroChartSettings();
@@ -166,6 +167,15 @@ export default function ChartAndData(props: Props) {
   useEffect(() => {
     toggles.resetPerChartToggles();
   }, [innerChart, outerChart, outerArabicParts, innerChart.fixedStars]);
+
+  useEffect(() => {
+    if (!isChartZoomed) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsChartZoomed(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isChartZoomed]);
 
   const [planetsAntiscion, setPlanetsAntiscion] = useState<
     Record<PlanetType, boolean>
@@ -331,7 +341,50 @@ export default function ChartAndData(props: Props) {
   }
 
   function renderChart(): JSX.Element {
-    const content = (
+    const chart = innerChart && toggles.ready ? (
+      <AstroChart
+        props={{
+          planets: innerChart.planets,
+          housesData: innerChart.housesData,
+          arabicParts,
+          outerPlanets: outerChart?.planets,
+          outerHouses: outerChart?.housesData,
+          outerArabicParts,
+          fixedStars: innerChart.fixedStars,
+          onUpdateAspectsData: handleOnUpdateAspectsData,
+          useReturnSelectorArrows: isReturnChart() || isProgressionChart() ||
+            isTransitsChart() || isProfectionChart() || isMomentChart() || currentProfile?.gender === "event",
+          showArabicParts: toggles.showArabicParts,
+          showPlanetsAntiscia: toggles.showPlanetsAntiscia,
+          showArabicPartsAntiscia: toggles.showArabicPartsAntiscia,
+          showDegrees: toggles.showDegrees,
+          useTerms: toggles.useTerms,
+          useDecans: toggles.useDecans,
+          showFixedStars: toggles.showFixedStars,
+          currentTerms: toggles.currentTerms,
+          showTransSaturnians: toggles.showTransSaturnians,
+          dateBlocks: isMobileBreakPoint() ? [...dateBlocks] : undefined,
+          isZoomed: isChartZoomed,
+        }}
+      />
+    ) : null;
+
+    const content = isChartZoomed ? (
+      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="relative flex h-[86vh] w-[92vw] max-w-[1400px] items-center justify-center overflow-visible rounded-2xl bg-white shadow-2xl">
+          {chart}
+          <button
+            type="button"
+            aria-label={t("birthChart.closeZoom")}
+            title={t("birthChart.closeZoom")}
+            onClick={() => setIsChartZoomed(false)}
+            className="absolute right-4 top-4 z-[110] flex h-11 w-11 items-center justify-center rounded-full border border-zinc-300 bg-white text-3xl leading-none text-zinc-700 shadow-lg transition hover:bg-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            ×
+          </button>
+        </div>
+      </div>
+    ) : (
       <div className="w-full md:min-w-[51rem] flex flex-col items-center justify-center relative">
         {(loadingNextChart || isMountingChart) &&
           <div
@@ -342,7 +395,6 @@ export default function ChartAndData(props: Props) {
           </div>
         }
 
-        <>
           <ChartHeader
             title={title}
             dateBlocks={!isMobileBreakPoint() ? dateBlocks : []}
@@ -360,40 +412,17 @@ export default function ChartAndData(props: Props) {
               toggleCombineWithReturnChart={isLunarDerivedReturnChart()}
               onGoHome={handleReset}
               onOpenForecast={() => setForecastOpen(true)}
+              onZoomChart={() => setIsChartZoomed(true)}
               isEventChart={gender === "event"}
               toggles={toggles}
             />
           </div>
 
-          {innerChart && toggles.ready && (
-            <AstroChart
-              props={{
-                planets: innerChart.planets,
-                housesData: innerChart.housesData,
-                arabicParts: arabicParts,
-                outerPlanets: outerChart?.planets,
-                outerHouses: outerChart?.housesData,
-                outerArabicParts,
-                fixedStars: innerChart.fixedStars,
-                onUpdateAspectsData: handleOnUpdateAspectsData,
-                useReturnSelectorArrows: isReturnChart() || isProgressionChart() || 
-                  isTransitsChart() || isProfectionChart() || isMomentChart() || currentProfile?.gender === "event",
-                showArabicParts: toggles.showArabicParts,
-                showPlanetsAntiscia: toggles.showPlanetsAntiscia,
-                showArabicPartsAntiscia: toggles.showArabicPartsAntiscia,
-                showDegrees: toggles.showDegrees,
-                useTerms: toggles.useTerms,
-                useDecans: toggles.useDecans,
-                showFixedStars: toggles.showFixedStars,
-                currentTerms: toggles.currentTerms,
-                showTransSaturnians: toggles.showTransSaturnians,
-                dateBlocks: isMobileBreakPoint() ? [...dateBlocks] : undefined
-              }}
-            />
-          )}          
-        </>
+          {chart}
       </div>
     );
+
+    if (isChartZoomed) return content;
 
     return isMobileBreakPoint() ? (
       <div className="flex flex-col items-center">{content}</div>
@@ -704,6 +733,7 @@ export default function ChartAndData(props: Props) {
   }
 
   if(!toggles.ready) return null;
+  if (isChartZoomed) return renderChart();
 
   return (
     <div className="w-[95%] md:w-full flex flex-col md:flex-row md:items-start md:justify-center mt-1 mb:mb-4">

@@ -86,6 +86,7 @@ const TRANS_SATURNIAN_TYPES: PlanetType[] = ["uranus", "neptune", "pluto"];
  * cabeçalho/menu que ficou fora deste componente.
  */
 interface AstroChartToggleProps {
+  isZoomed?: boolean;
   showArabicParts: boolean;
   showPlanetsAntiscia: boolean;
   showArabicPartsAntiscia: boolean;
@@ -117,7 +118,8 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     useDecans,
     showFixedStars,
     currentTerms,
-    dateBlocks
+    dateBlocks,
+    isZoomed = false,
   } = { ...props };
 
   const ref = useRef<SVGSVGElement>(null);
@@ -128,6 +130,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
   const aspectStrokeCoords = useRef<Map<string, { x1: number; y1: number; x2: number; y2: number }>>(new Map());
 
   const { isMobileBreakPoint } = useScreenDimensions();
+  const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
   const { chartMenu, isReturnChart, isLunarDerivedReturnChart, isSinastryChart, 
     isProgressionChart, isProfectionChart, isTransitsChart, isMomentChart } = useChartMenu();
   const { birthChart, isMountingChart, updateIsMountingChart, 
@@ -136,6 +139,13 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
   const { currentProfile } = useProfiles();
   const { settings } = useAstroChartSettings();
   const { showEssentialFixedStars, showSecondaryFixedStars } = settings;
+
+  useEffect(() => {
+    const updateViewportSize = () => setViewportSize({ width: window.innerWidth, height: window.innerHeight });
+    updateViewportSize();
+    window.addEventListener("resize", updateViewportSize);
+    return () => window.removeEventListener("resize", updateViewportSize);
+  }, []);
 
   const [testValue] = useState(2.5);
   const [showOuterChart, setShowOuterChart] = 
@@ -193,7 +203,10 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
   //   : showOuterChart
   //     ? 0.7
   //     : 0.85;
-  const scaleFactor = getScaleFactor();
+  const zoomScaleFactor = viewportSize.width && viewportSize.height
+    ? Math.min(getScaleFactor() * 1.5, Math.min(viewportSize.width, viewportSize.height) * 0.93 / 544)
+    : getScaleFactor();
+  const scaleFactor = isZoomed ? zoomScaleFactor : getScaleFactor();
   const scaledSize = size * scaleFactor;
   const center = size / 2;
 
@@ -2984,7 +2997,8 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     useTerms,
     currentTerms,    
     customArabicPart,
-    showTransSaturnians
+    showTransSaturnians,
+    scaleFactor,
   ]);
 
   useEffect(() => {
@@ -3239,6 +3253,8 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
   }
 
   const getDesktopHeight = () => {
+    if (isZoomed) return 'h-full';
+
     if(!useDecans && !useTerms)
       return showOuterChart? 'md:h-[40rem]' : 'md:h-[42rem]'
 
@@ -3252,13 +3268,13 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
   return (
     <div
       className={`w-full flex flex-col justify-center items-center gap-8 mb-4 md:mb-0
-        ${useReturnSelectorArrows ? 'mx-14' : 'mx-10'}`}
+        ${isZoomed ? "h-full" : useReturnSelectorArrows ? 'mx-14' : 'mx-10'}`}
     >
-      {useReturnSelectorArrows ? (
+      {useReturnSelectorArrows && !isZoomed ? (
         <ReturnSelectorArrows showAdvanceOptions={showAdvanceOptions}>
           <div
             ref={containerRef}
-            className={`relative w-full ${getMobileHeight()} ${getDesktopHeight()} ${(isMountingChart ? "opacity-0" : "")}`}
+            className={`relative w-full ${isZoomed ? "h-full" : `${getMobileHeight()} ${getDesktopHeight()}`} ${(isMountingChart ? "opacity-0" : "")}`}
             onClick={(e) => {
               if (e.target === containerRef.current) hideTooltip();
             }}
@@ -3301,7 +3317,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
       ) : (
         <div
           ref={containerRef}
-          className={`relative w-full ${getMobileHeight()} ${getDesktopHeight()} ${(isMountingChart ? "opacity-0" : "")}`}
+          className={`relative w-full ${isZoomed ? "h-full" : `${getMobileHeight()} ${getDesktopHeight()}`} ${(isMountingChart ? "opacity-0" : "")}`}
           onClick={(e) => {
             if (e.target === containerRef.current) hideTooltip();
           }}

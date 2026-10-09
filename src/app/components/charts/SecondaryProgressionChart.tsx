@@ -48,7 +48,7 @@ export default function SecondaryProgressionChart() {
     const date2 = toDate(progressionChart.birthDate);
     const diffMs = date2.getTime() - date1.getTime();
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    const progressedYears = diffDays + 1;
+    const progressedYears = diffDays;
     const nextYear = progressedYears + 1;
     const targetYear = birthChart.birthDate.year + progressedYears;
     const targetNextYear = targetYear + 1;
