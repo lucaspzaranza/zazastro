@@ -206,7 +206,10 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
   const zoomScaleFactor = viewportSize.width && viewportSize.height
     ? Math.min(getScaleFactor() * 1.5, Math.min(viewportSize.width, viewportSize.height) * 0.93 / 544)
     : getScaleFactor();
-  const scaleFactor = isZoomed ? zoomScaleFactor : getScaleFactor();
+  const isCombinedChart = isCombinedWithBirthChart || isCombinedWithReturnChart || showOuterChart;
+  const scaleFactor = isZoomed
+    ? zoomScaleFactor * (isCombinedChart ? 0.85 : 1)
+    : getScaleFactor();
   const scaledSize = size * scaleFactor;
   const center = size / 2;
 
@@ -3146,7 +3149,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
           });
       }
     });
-  }, [aspects, hasIsolatedAspect]);  
+  }, [aspects, hasIsolatedAspect, scaleFactor]);
 
   const tooltipElRef = useRef<HTMLDivElement>(null);
 

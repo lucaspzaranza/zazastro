@@ -269,14 +269,6 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       },
     },
     {
-      key: "zoomChart",
-      label: t("birthChart.zoomChart"),
-      active: false,
-      visible: !isMobileBreakPoint() && !!onZoomChart,
-      iconPath: "/zoom.png",
-      onClick: () => onZoomChart?.(),
-    },
-    {
       key: "edit",
       label: t("birthChart.edit"),
       active: false,
@@ -293,6 +285,14 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       visible: !!toggleCombineWithBirthChart,
       iconPath:  "/see-more.png",
       onClick: toggleDegrees,
+    },
+    {
+      key: "zoomChart",
+      label: t("birthChart.zoomChart"),
+      active: false,
+      visible: !isMobileBreakPoint() && !!onZoomChart,
+      iconPath: "/zoom.png",
+      onClick: () => onZoomChart?.(),
     },
   ];
 
