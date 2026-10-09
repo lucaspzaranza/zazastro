@@ -460,6 +460,17 @@
     "termsPtolemaic": "Termes Ptolémaïques",
     "showFaces": "Afficher les Visages (Décans)",
     "showDetails": "Afficher l'infobulle (détails)",
-    "showTransSaturnians": "Afficher les Planètes Transsaturniennes"
+    "showTransSaturnians": "Afficher les Planètes Transsaturniennes",
+    "profileDataTitle": "Importer/Exporter des cartes",
+    "profileDataDescription": "Exportez vos cartes dans un fichier JSON ou importez un fichier exporté par Zazastro. Les identifiants sont conservés et les doublons sont ignorés.",
+    "exportProfiles": "Exporter les cartes",
+    "importProfiles": "Importer des cartes",
+    "deleteAllProfiles": "Supprimer toutes les cartes",
+    "deleteAllConfirm": "Voulez-vous vraiment supprimer les {count} cartes enregistrées ? Cette action est irréversible.",
+    "importSummary": "Importation terminée : {imported} carte(s) importée(s) ; {skipped} doublon(s) ou enregistrement(s) indisponible(s) ignoré(s).",
+    "importInvalidJson": "Impossible de lire le fichier JSON. Vérifiez qu’il est intact et que sa syntaxe est valide.",
+    "importInvalidFormat": "Ce fichier JSON ne contient pas d’export de cartes Zazastro valide.",
+    "importFailed": "Une erreur est survenue lors de l’importation. Veuillez réessayer.",
+    "deleteAllSummary": "{count} carte(s) supprimée(s)."
   }
 }

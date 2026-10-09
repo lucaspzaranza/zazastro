@@ -11,12 +11,13 @@ interface MenuContainerProps {
   titleKey: string;
   mobileTitleKey?: string;
   loading?: boolean;
+  onBack?: () => void;
   children: React.ReactNode | ((iconSize: number) => React.ReactNode);
 }
 
 const ICON_SIZE = 22;
 
-export default function MenuContainer({ titleKey, mobileTitleKey, loading = false, children }: MenuContainerProps) {
+export default function MenuContainer({ titleKey, mobileTitleKey, loading = false, onBack, children }: MenuContainerProps) {
   const t = useTranslations();
   const { isMobileBreakPoint } = useScreenDimensions();
   const title = isMobileBreakPoint() && mobileTitleKey ? t(mobileTitleKey) : t(titleKey);
@@ -30,10 +31,17 @@ export default function MenuContainer({ titleKey, mobileTitleKey, loading = fals
 
 					{typeof children === "function" ? children(ICON_SIZE) : children}
 
-					<Link href="/" className="default-btn">
-						{t("form.back")}
-						<Image src="/back.png" width={ICON_SIZE} height={ICON_SIZE} unoptimized alt="chart" />
-					</Link>
+					{onBack ? (
+						<button type="button" onClick={onBack} className="default-btn">
+							{t("form.back")}
+							<Image src="/back.png" width={ICON_SIZE} height={ICON_SIZE} unoptimized alt="chart" />
+						</button>
+					) : (
+						<Link href="/" className="default-btn">
+							{t("form.back")}
+							<Image src="/back.png" width={ICON_SIZE} height={ICON_SIZE} unoptimized alt="chart" />
+						</Link>
+					)}
 
 					<span
 						className={`w-full text-start flex flex-row items-center justify-center gap-3 mt-2 ${loading ? "opacity-100" : "opacity-0"}`}

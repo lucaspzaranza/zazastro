@@ -460,6 +460,17 @@
     "termsPtolemaic": "Términos Ptolemaicos", 
     "showFaces": "Mostrar Facies (Decanatos)", 
     "showDetails": "Mostrar Tooltip (información detallada)", 
-    "showTransSaturnians": "Mostrar Transaturninos"
+    "showTransSaturnians": "Mostrar Transaturninos",
+    "profileDataTitle": "Importar/Exportar cartas",
+    "profileDataDescription": "Exporta tus cartas a un archivo JSON o importa un archivo exportado por Zazastro. Se conservan los IDs y se omiten los registros duplicados.",
+    "exportProfiles": "Exportar cartas",
+    "importProfiles": "Importar cartas",
+    "deleteAllProfiles": "Eliminar todas las cartas",
+    "deleteAllConfirm": "¿Seguro que quieres eliminar las {count} cartas guardadas? Esta acción no se puede deshacer.",
+    "importSummary": "Importación finalizada: {imported} carta(s) importada(s); se omitieron {skipped} registro(s) duplicado(s) o no disponible(s).",
+    "importInvalidJson": "No se pudo leer el archivo JSON. Comprueba que esté íntegro y que su sintaxis sea válida.",
+    "importInvalidFormat": "Este archivo JSON no contiene una exportación válida de cartas de Zazastro.",
+    "importFailed": "Se produjo un error al importar el archivo. Inténtalo de nuevo.",
+    "deleteAllSummary": "Se eliminaron {count} carta(s)."
   }
 }

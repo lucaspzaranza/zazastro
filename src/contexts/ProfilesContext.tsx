@@ -14,6 +14,8 @@ import { v4 as uuidv4 } from "uuid";
 interface ProfilesContextType {
   profiles: BirthChartProfile[];
   createProfile: (profile: BirthChartProfile) => BirthChartProfile | undefined;
+  importProfiles: (importedProfiles: BirthChartProfile[]) => { imported: number; skipped: number };
+  deleteAllProfiles: () => number;
   readProfile: (id: string) => BirthChartProfile | null;
   updateProfile: (id: string, profile: BirthChartProfile) => boolean;
   deleteProfile: (id: string) => boolean;
@@ -25,6 +27,7 @@ interface ProfilesContextType {
 }
 
 const PROFILE_KEY = "zazastro:profile-";
+const PROFILE_ID_PATTERN = /^zazastro:profile-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const ProfilesContext = createContext<ProfilesContextType | undefined>(
   undefined
@@ -90,6 +93,49 @@ export const ProfilesContextProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
+  const importProfiles = (importedProfiles: BirthChartProfile[]) => {
+    const existingIds = new Set(profiles.map((profile) => profile.id).filter((id): id is string => !!id));
+    let imported = 0;
+    let skipped = 0;
+    const added: BirthChartProfile[] = [];
+
+    for (const profile of importedProfiles) {
+      if (!profile.id || !PROFILE_ID_PATTERN.test(profile.id) || existingIds.has(profile.id) || localStorage.getItem(profile.id) !== null) {
+        skipped++;
+        continue;
+      }
+
+      try {
+        localStorage.setItem(profile.id, JSON.stringify(profile));
+        existingIds.add(profile.id);
+        added.push(profile);
+        imported++;
+      } catch {
+        skipped++;
+      }
+    }
+
+    if (added.length > 0) {
+      setProfiles((current) => [...current, ...added].sort((a, b) => (a.name ?? "") > (b.name ?? "") ? 1 : -1));
+    }
+
+    return { imported, skipped };
+  };
+
+  const deleteAllProfiles = () => {
+    const profileIds: string[] = [];
+    for (let index = 0; index < localStorage.length; index++) {
+      const key = localStorage.key(index);
+      if (key?.startsWith(PROFILE_KEY)) profileIds.push(key);
+    }
+
+    profileIds.forEach((id) => localStorage.removeItem(id));
+    setProfiles([]);
+    setCurrentProfile(undefined);
+    setSinastryProfile(undefined);
+    return profileIds.length;
+  };
+
   const readProfile = (id: string): BirthChartProfile | null => {
     const rawProfile = localStorage.getItem(id);
 
@@ -144,6 +190,8 @@ export const ProfilesContextProvider: React.FC<{ children: ReactNode }> = ({
       value={{
         profiles,
         createProfile,
+        importProfiles,
+        deleteAllProfiles,
         readProfile,
         updateProfile,
         deleteProfile,

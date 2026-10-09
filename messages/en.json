@@ -460,6 +460,17 @@
     "termsPtolemaic": "Ptolemaic Terms", 
     "showFaces": "Show Faces (Decans)", 
     "showDetails": "Show Details", 
-    "showTransSaturnians": "Show Trans-Saturnian Planets"
+    "showTransSaturnians": "Show Trans-Saturnian Planets",
+    "profileDataTitle": "Import/Export charts",
+    "profileDataDescription": "Export your charts to a JSON file or import a file exported by Zazastro. Existing IDs are preserved and duplicate records are skipped.",
+    "exportProfiles": "Export charts",
+    "importProfiles": "Import charts",
+    "deleteAllProfiles": "Delete all charts",
+    "deleteAllConfirm": "Are you sure you want to delete all {count} saved charts? This cannot be undone.",
+    "importSummary": "Import complete: {imported} chart(s) imported; {skipped} duplicate or unavailable record(s) skipped.",
+    "importInvalidJson": "Could not read the JSON file. Check that it is intact and its syntax is valid.",
+    "importInvalidFormat": "This JSON file does not contain a valid Zazastro chart export.",
+    "importFailed": "An error occurred while importing the file. Please try again.",
+    "deleteAllSummary": "{count} chart(s) deleted."
   }
 }

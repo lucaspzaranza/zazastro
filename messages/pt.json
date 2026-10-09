@@ -460,6 +460,17 @@
     "termsPtolemaic": "Termos Ptolemaicos", 
     "showFaces": "Exibir Faces (Decanatos)", 
     "showDetails": "Mostrar Tooltip (informações detalhadas)", 
-    "showTransSaturnians": "Exibir Transaturninos"
+    "showTransSaturnians": "Exibir Transaturninos",
+    "profileDataTitle": "Importar/Exportar mapas",
+    "profileDataDescription": "Exporte seus mapas para um arquivo JSON ou importe um arquivo exportado pelo Zazastro. IDs existentes são preservados e registros duplicados são ignorados.",
+    "exportProfiles": "Exportar mapas",
+    "importProfiles": "Importar mapas",
+    "deleteAllProfiles": "Excluir todos os mapas",
+    "deleteAllConfirm": "Tem certeza de que deseja excluir todos os {count} mapas salvos? Essa ação não pode ser desfeita.",
+    "importSummary": "Importação concluída: {imported} mapa(s) importado(s), {skipped} registro(s) ignorado(s) por duplicidade ou indisponibilidade.",
+    "importInvalidJson": "Não foi possível ler o arquivo JSON. Verifique se ele está íntegro e se a sintaxe está correta.",
+    "importInvalidFormat": "Este arquivo JSON não contém um export válido de mapas do Zazastro.",
+    "importFailed": "Ocorreu um erro ao importar o arquivo. Tente novamente.",
+    "deleteAllSummary": "{count} mapa(s) excluído(s)."
   }
 }
