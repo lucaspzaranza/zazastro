@@ -472,5 +472,14 @@
     "importInvalidFormat": "Ce fichier JSON ne contient pas d’export de cartes Zazastro valide.",
     "importFailed": "Une erreur est survenue lors de l’importation. Veuillez réessayer.",
     "deleteAllSummary": "{count} carte(s) supprimée(s)."
+  },
+  "support": {
+    "open": "Soutenez le projet !",
+    "close": "Fermer",
+    "title": "Offrez-moi une esfiha.",
+    "description": "Zazastro est gratuit et je le maintiens moi-même. Si le site vous est utile, toute contribution aide à couvrir les frais mensuels.",
+    "anyAmount": "Autre montant",
+    "copyCode": "Copier le code Pix",
+    "copied": "Copié !"
   }
 }

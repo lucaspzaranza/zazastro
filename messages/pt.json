@@ -472,5 +472,14 @@
     "importInvalidFormat": "Este arquivo JSON não contém um export válido de mapas do Zazastro.",
     "importFailed": "Ocorreu um erro ao importar o arquivo. Tente novamente.",
     "deleteAllSummary": "{count} mapa(s) excluído(s)."
+  },
+  "support": {
+    "open": "Apoie o projeto!",
+    "close": "Fechar",
+    "title": "Pague-me uma esfiha.",
+    "description": "O Zazastro é gratuito e mantido por mim. Se ele for útil pra você, qualquer valor ajuda a cobrir os custos mensais.",
+    "anyAmount": "Outro valor",
+    "copyCode": "Copiar código Pix",
+    "copied": "Copiado!"
   }
 }

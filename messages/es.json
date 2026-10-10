@@ -472,5 +472,14 @@
     "importInvalidFormat": "Este archivo JSON no contiene una exportación válida de cartas de Zazastro.",
     "importFailed": "Se produjo un error al importar el archivo. Inténtalo de nuevo.",
     "deleteAllSummary": "Se eliminaron {count} carta(s)."
+  },
+  "support": {
+    "open": "¡Apoya el proyecto!",
+    "close": "Cerrar",
+    "title": "Invítame a una esfiha.",
+    "description": "Zazastro es gratuito y lo mantengo yo. Si te resulta útil, cualquier aportación ayuda a cubrir los gastos mensuales.",
+    "anyAmount": "Otro importe",
+    "copyCode": "Copiar código Pix",
+    "copied": "¡Copiado!"
   }
 }

@@ -7,6 +7,7 @@ import Providers from "./providers";
 import Image from "next/image";
 import Footer from "./components/Footer";
 import LanguageSwitcher from "./components/LanguageSwitcher";
+import SupportCoffeeWidget from "./components/SupportCoffeeWidget";
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
@@ -51,6 +52,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
               {children}
               <Footer />
             </div>
+            <SupportCoffeeWidget />
           </Providers>
         </NextIntlClientProvider>
       </body>

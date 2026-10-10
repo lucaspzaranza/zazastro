@@ -472,5 +472,14 @@
     "importInvalidFormat": "This JSON file does not contain a valid Zazastro chart export.",
     "importFailed": "An error occurred while importing the file. Please try again.",
     "deleteAllSummary": "{count} chart(s) deleted."
+  },
+  "support": {
+    "open": "Support the project!",
+    "close": "Close",
+    "title": "Buy me an esfiha.",
+    "description": "Zazastro is free and maintained by me. If you find it useful, any contribution helps cover the monthly costs.",
+    "anyAmount": "Other amount",
+    "copyCode": "Copy Pix code",
+    "copied": "Copied!"
   }
 }
