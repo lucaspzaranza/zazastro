@@ -25,6 +25,8 @@
     "edit": "Modifier la Carte",
     "zoomChart": "Agrandir la carte",
     "closeZoom": "Fermer l’agrandissement",
+    "zoomIn": "Zoomer",
+    "zoomOut": "Dézoomer",
     "chartTitle": "Carte Natale - ",
     "chartTransitsTitle": "Carte Natale et Transits - ",
     "antiscion": "Antiscion",

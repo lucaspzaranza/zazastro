@@ -6,7 +6,7 @@ import {
   GenderType,
   PlanetType,
 } from "@/interfaces/BirthChartInterfaces";
-import React, { JSX, useCallback, useEffect, useEffectEvent, useState } from "react";
+import React, { JSX, useCallback, useEffect, useEffectEvent, useLayoutEffect, useRef, useState } from "react";
 import {
   angularLabels,
   convertTransitsToChart,
@@ -108,6 +108,23 @@ export default function ChartAndData(props: Props) {
   const [useInnerParts, setUseInnerParts] = useState(true);
   const [nextChartContentLoaded, setNextChartContentLoaded] = useState(false);
   const [isChartZoomed, setIsChartZoomed] = useState(false);
+  const [chartZoomMultiplier, setChartZoomMultiplier] = useState(1);
+  const zoomViewportRef = useRef<HTMLDivElement>(null);
+  const zoomDragRef = useRef<{
+    pointerId: number;
+    startX: number;
+    startY: number;
+    startScrollLeft: number;
+    startScrollTop: number;
+    lastX: number;
+    lastY: number;
+    lastTime: number;
+    velocityX: number;
+    velocityY: number;
+    dragging: boolean;
+  } | null>(null);
+  const suppressZoomClickRef = useRef(false);
+  const zoomInertiaFrameRef = useRef<number | null>(null);
   const t = useTranslations();
   const { currentProfile } = useProfiles();
   const { settings } = useAstroChartSettings();
@@ -115,6 +132,112 @@ export default function ChartAndData(props: Props) {
   const { setHasIsolatedAspect, setSelectedAspect } = useAspectsData();
 
   const genderIconSize = 20;
+
+  useLayoutEffect(() => {
+    if (!isChartZoomed) return;
+    const frame = window.requestAnimationFrame(() => {
+      const viewport = zoomViewportRef.current;
+      if (!viewport) return;
+      viewport.scrollLeft = (viewport.scrollWidth - viewport.clientWidth) / 2;
+      viewport.scrollTop = (viewport.scrollHeight - viewport.clientHeight) / 2;
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [isChartZoomed, chartZoomMultiplier]);
+
+  useEffect(() => () => {
+    if (zoomInertiaFrameRef.current !== null)
+      window.cancelAnimationFrame(zoomInertiaFrameRef.current);
+  }, []);
+
+  const startZoomInertia = (viewport: HTMLDivElement, velocityX: number, velocityY: number) => {
+    if (zoomInertiaFrameRef.current !== null)
+      window.cancelAnimationFrame(zoomInertiaFrameRef.current);
+    if (Math.hypot(velocityX, velocityY) < 0.05) return;
+
+    let previousTime = performance.now();
+    const animate = (time: number) => {
+      const elapsed = Math.min(time - previousTime, 32);
+      previousTime = time;
+      viewport.scrollLeft += velocityX * elapsed;
+      viewport.scrollTop += velocityY * elapsed;
+      const friction = Math.pow(0.88, elapsed / 16);
+      velocityX *= friction;
+      velocityY *= friction;
+
+      if (Math.hypot(velocityX, velocityY) >= 0.05) {
+        zoomInertiaFrameRef.current = window.requestAnimationFrame(animate);
+      } else {
+        zoomInertiaFrameRef.current = null;
+      }
+    };
+    zoomInertiaFrameRef.current = window.requestAnimationFrame(animate);
+  };
+
+  const handleZoomPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== "mouse" || event.button !== 0) return;
+    if (event.target instanceof Element && event.target.closest("button")) return;
+    if (zoomInertiaFrameRef.current !== null) {
+      window.cancelAnimationFrame(zoomInertiaFrameRef.current);
+      zoomInertiaFrameRef.current = null;
+    }
+    const viewport = event.currentTarget;
+    zoomDragRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      startScrollLeft: viewport.scrollLeft,
+      startScrollTop: viewport.scrollTop,
+      lastX: event.clientX,
+      lastY: event.clientY,
+      lastTime: performance.now(),
+      velocityX: 0,
+      velocityY: 0,
+      dragging: false,
+    };
+  };
+
+  const handleZoomPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    const drag = zoomDragRef.current;
+    const viewport = zoomViewportRef.current;
+    if (!drag || !viewport || drag.pointerId !== event.pointerId) return;
+
+    const deltaX = event.clientX - drag.startX;
+    const deltaY = event.clientY - drag.startY;
+    if (!drag.dragging && Math.hypot(deltaX, deltaY) < 4) return;
+
+    if (!drag.dragging) {
+      drag.dragging = true;
+      viewport.setPointerCapture(event.pointerId);
+    }
+
+    event.preventDefault();
+    viewport.scrollLeft = drag.startScrollLeft - deltaX;
+    viewport.scrollTop = drag.startScrollTop - deltaY;
+    const now = performance.now();
+    const elapsed = Math.max(now - drag.lastTime, 1);
+    const instantVelocityX = -(event.clientX - drag.lastX) / elapsed;
+    const instantVelocityY = -(event.clientY - drag.lastY) / elapsed;
+    drag.velocityX = drag.velocityX * 0.45 + instantVelocityX * 0.55;
+    drag.velocityY = drag.velocityY * 0.45 + instantVelocityY * 0.55;
+    drag.lastX = event.clientX;
+    drag.lastY = event.clientY;
+    drag.lastTime = now;
+  };
+
+  const finishZoomDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    const drag = zoomDragRef.current;
+    const viewport = zoomViewportRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    if (drag.dragging) {
+      suppressZoomClickRef.current = true;
+      window.setTimeout(() => {
+        suppressZoomClickRef.current = false;
+      }, 0);
+      if (viewport?.hasPointerCapture(event.pointerId)) viewport.releasePointerCapture(event.pointerId);
+      if (viewport) startZoomInertia(viewport, drag.velocityX, drag.velocityY);
+    }
+    zoomDragRef.current = null;
+  };
 
   // Estado de toggles do mapa (antiscion, partes árabes, termos, decanatos,
   // estrelas fixas), antes interno ao AstroChart, agora levantado para este
@@ -365,14 +488,52 @@ export default function ChartAndData(props: Props) {
           showTransSaturnians: toggles.showTransSaturnians,
           dateBlocks: isMobileBreakPoint() ? [...dateBlocks] : undefined,
           isZoomed: isChartZoomed,
+          zoomMultiplier: chartZoomMultiplier,
         }}
       />
     ) : null;
 
     const content = isChartZoomed ? (
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-        <div className="relative flex h-[86vh] w-[92vw] max-w-[1400px] items-center justify-center overflow-visible rounded-2xl bg-white shadow-2xl">
-          {chart}
+        <div className="relative h-[86vh] w-[92vw] max-w-[1400px] overflow-hidden rounded-2xl bg-white shadow-2xl">
+          <div
+            ref={zoomViewportRef}
+            className="h-full w-full cursor-grab overflow-auto select-none active:cursor-grabbing"
+            onPointerDown={handleZoomPointerDown}
+            onPointerMove={handleZoomPointerMove}
+            onPointerUp={finishZoomDrag}
+            onPointerCancel={finishZoomDrag}
+            onClickCapture={(event) => {
+              if (!suppressZoomClickRef.current) return;
+              event.preventDefault();
+              event.stopPropagation();
+              suppressZoomClickRef.current = false;
+            }}
+          >
+            {chart}
+          </div>
+          <div className="absolute right-4 top-1/2 z-[110] flex -translate-y-1/2 flex-col gap-2">
+            <button
+              type="button"
+              aria-label={t("birthChart.zoomIn")}
+              title={t("birthChart.zoomIn")}
+              onClick={() => setChartZoomMultiplier((current) => Math.min(4, current + 0.25))}
+              disabled={chartZoomMultiplier >= 4}
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-zinc-300 bg-white text-2xl leading-none text-zinc-700 shadow-lg transition hover:bg-zinc-100 disabled:opacity-40"
+            >
+              +
+            </button>
+            <button
+              type="button"
+              aria-label={t("birthChart.zoomOut")}
+              title={t("birthChart.zoomOut")}
+              onClick={() => setChartZoomMultiplier((current) => Math.max(0.5, current - 0.25))}
+              disabled={chartZoomMultiplier <= 0.5}
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-zinc-300 bg-white text-2xl leading-none text-zinc-700 shadow-lg transition hover:bg-zinc-100 disabled:opacity-40"
+            >
+              −
+            </button>
+          </div>
           <button
             type="button"
             aria-label={t("birthChart.closeZoom")}

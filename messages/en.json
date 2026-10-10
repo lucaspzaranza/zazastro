@@ -25,6 +25,8 @@
     "edit": "Edit Chart",
     "zoomChart": "Focus chart",
     "closeZoom": "Close chart focus",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
     "chartTitle": "Birth Chart - ",
     "chartTransitsTitle": "Birth Chart and Transits - ",
     "antiscion": "Antiscion",

@@ -10,23 +10,13 @@ export default function SupportCoffeeWidget() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="fixed bottom-[calc(env(safe-area-inset-bottom)+1rem)] right-4 z-[70] flex flex-col items-end gap-3 sm:right-6">
+    <div className="fixed bottom-[calc(env(safe-area-inset-bottom)+1rem)] right-4 z-[70] flex flex-col items-end gap-3 font-[family-name:var(--font-jetbrains-mono)] sm:right-6">
       {open && (
         <section
           aria-label={t("title")}
-          className="max-h-[min(75dvh,42rem)] w-[min(24rem,calc(100vw-2rem))] overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-2xl"
+          className="w-[min(24rem,calc(100vw-2rem))] rounded-2xl border border-slate-200 bg-white shadow-2xl"
         >
-          <div className="sticky top-0 flex justify-end border-b border-slate-100 bg-white/95 p-2 backdrop-blur">
-            <button
-              type="button"
-              aria-label={t("close")}
-              className="flex h-9 w-9 items-center justify-center rounded-full text-xl text-slate-600 hover:bg-slate-100"
-              onClick={() => setOpen(false)}
-            >
-              ×
-            </button>
-          </div>
-          <SupportCoffee />
+          <SupportCoffee onClose={() => setOpen(false)} />
         </section>
       )}
 

@@ -87,6 +87,7 @@ const TRANS_SATURNIAN_TYPES: PlanetType[] = ["uranus", "neptune", "pluto"];
  */
 interface AstroChartToggleProps {
   isZoomed?: boolean;
+  zoomMultiplier?: number;
   showArabicParts: boolean;
   showPlanetsAntiscia: boolean;
   showArabicPartsAntiscia: boolean;
@@ -120,6 +121,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     currentTerms,
     dateBlocks,
     isZoomed = false,
+    zoomMultiplier = 1,
   } = { ...props };
 
   const ref = useRef<SVGSVGElement>(null);
@@ -208,7 +210,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     : getScaleFactor();
   const isCombinedChart = isCombinedWithBirthChart || isCombinedWithReturnChart || showOuterChart;
   const scaleFactor = isZoomed
-    ? zoomScaleFactor * (isCombinedChart ? 0.85 : 1)
+    ? zoomScaleFactor * (isCombinedChart ? 0.85 : 1) * zoomMultiplier
     : getScaleFactor();
   const scaledSize = size * scaleFactor;
   const center = size / 2;
@@ -234,6 +236,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
   const outerZodiacRadius = zodiacRadius + 10;
   const outerChartBorderRadius = outerZodiacRadius + 60;
   const outerChartBorderRadiusTransits = outerZodiacRadius + 32.5;
+  const zoomCanvasSize = Math.max(scaledSize, (outerChartBorderRadius + 24) * 2 * scaleFactor);
   const transitsIconsOffset = 18;
 
   /**
@@ -3271,13 +3274,14 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
   return (
     <div
       className={`w-full flex flex-col justify-center items-center gap-8 mb-4 md:mb-0
-        ${isZoomed ? "h-full" : useReturnSelectorArrows ? 'mx-14' : 'mx-10'}`}
+        ${isZoomed ? "h-full items-start justify-start" : useReturnSelectorArrows ? 'mx-14' : 'mx-10'}`}
     >
       {useReturnSelectorArrows && !isZoomed ? (
         <ReturnSelectorArrows showAdvanceOptions={showAdvanceOptions}>
           <div
             ref={containerRef}
-            className={`relative w-full ${isZoomed ? "h-full" : `${getMobileHeight()} ${getDesktopHeight()}`} ${(isMountingChart ? "opacity-0" : "")}`}
+            className={`relative w-full ${isZoomed ? "h-full flex-none" : `${getMobileHeight()} ${getDesktopHeight()}`} ${(isMountingChart ? "opacity-0" : "")}`}
+            style={isZoomed ? { width: `max(100%, ${zoomCanvasSize}px)`, height: `max(100%, ${zoomCanvasSize}px)` } : undefined}
             onClick={(e) => {
               if (e.target === containerRef.current) hideTooltip();
             }}
@@ -3320,7 +3324,8 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
       ) : (
         <div
           ref={containerRef}
-          className={`relative w-full ${isZoomed ? "h-full" : `${getMobileHeight()} ${getDesktopHeight()}`} ${(isMountingChart ? "opacity-0" : "")}`}
+          className={`relative w-full ${isZoomed ? "h-full flex-none" : `${getMobileHeight()} ${getDesktopHeight()}`} ${(isMountingChart ? "opacity-0" : "")}`}
+          style={isZoomed ? { width: `max(100%, ${zoomCanvasSize}px)`, height: `max(100%, ${zoomCanvasSize}px)` } : undefined}
           onClick={(e) => {
             if (e.target === containerRef.current) hideTooltip();
           }}
