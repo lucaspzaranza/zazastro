@@ -688,7 +688,7 @@ export default function AspectsTable({
   }
 
   const tableNavBtnsClasses: string = 
-    "default-input-field p-1! py-0.5! w-[30px] hover:bg-gray-200 active:bg-gray-300 disabled:opacity-50 disabled:bg-transparent disabled:hover:bg-transparent";
+    "default-input-field p-1! py-0.5! w-[30px] sm:w-[34px] hover:bg-gray-200 active:bg-gray-300 disabled:opacity-50 disabled:bg-transparent disabled:hover:bg-transparent";
 
   return (
     (loading || loadingNextChart || isMountingChart) ? (
