@@ -152,20 +152,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
     pinned?: boolean;
   };
 
-  const menuItems: MenuItem[] = [
-    {
-      key: "combineWithBirthChart",
-      label: t("returnChart.combineWithBirthChartMobile"),
-      active: isCombinedWithBirthChart,
-      visible: !!toggleCombineWithBirthChart && !isCombinedWithReturnChart,
-      iconPath:  "/combine.png",
-      pinned: isMobileBreakPoint(),
-      onClick: () => {
-        updateCustomArabicPart(undefined);
-        updateIsCombinedWithBirthChart(!isCombinedWithBirthChart);
-        updateIsMountingChart(true);
-      },
-    },
+  const menuItems: MenuItem[] = [    
     {
       key: "planetsAntiscia",
       label: t("birthChart.antiscion"),
@@ -183,7 +170,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       iconPath:  "/planets/fortune.png",
       onClick: toggleArabicParts,
       pinned: true,
-    },
+    },    
     {
       key: "arabicPartsAntiscia",
       label: t("birthChart.arabicPartsAntiscionMobile"),
@@ -192,6 +179,19 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       iconPath:  "/planets/antiscion/necessity.png",
       onClick: toggleArabicPartsAntiscia,
       pinned: true,
+    },
+    {
+      key: "combineWithBirthChart",
+      label: t("returnChart.combineWithBirthChartMobile"),
+      active: isCombinedWithBirthChart,
+      visible: !!toggleCombineWithBirthChart && !isCombinedWithReturnChart,
+      iconPath:  "/combine.png",
+      pinned: isMobileBreakPoint(),
+      onClick: () => {
+        updateCustomArabicPart(undefined);
+        updateIsCombinedWithBirthChart(!isCombinedWithBirthChart);
+        updateIsMountingChart(true);
+      },
     },
     {
       key: "showFixedStars",
