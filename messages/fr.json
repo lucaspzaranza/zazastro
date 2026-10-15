@@ -467,6 +467,8 @@
     "profileDataDescription": "Exportez vos cartes dans un fichier JSON ou importez un fichier exporté par Zazastro. Les identifiants sont conservés et les doublons sont ignorés.",
     "exportProfiles": "Exporter les cartes",
     "importProfiles": "Importer des cartes",
+    "exportProfilesMobile": "Exporter",
+    "importProfilesMobile": "Importer",
     "deleteAllProfiles": "Supprimer toutes les cartes",
     "deleteAllConfirm": "Voulez-vous vraiment supprimer les {count} cartes enregistrées ? Cette action est irréversible.",
     "importSummary": "Importation terminée : {imported} carte(s) importée(s) ; {skipped} doublon(s) ou enregistrement(s) indisponible(s) ignoré(s).",

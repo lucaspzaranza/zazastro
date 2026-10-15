@@ -467,6 +467,8 @@
     "profileDataDescription": "Exporta tus cartas a un archivo JSON o importa un archivo exportado por Zazastro. Se conservan los IDs y se omiten los registros duplicados.",
     "exportProfiles": "Exportar cartas",
     "importProfiles": "Importar cartas",
+    "exportProfilesMobile": "Exportar",
+    "importProfilesMobile": "Importar",
     "deleteAllProfiles": "Eliminar todas las cartas",
     "deleteAllConfirm": "¿Seguro que quieres eliminar las {count} cartas guardadas? Esta acción no se puede deshacer.",
     "importSummary": "Importación finalizada: {imported} carta(s) importada(s); se omitieron {skipped} registro(s) duplicado(s) o no disponible(s).",

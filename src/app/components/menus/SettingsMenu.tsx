@@ -8,6 +8,7 @@ import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useProfiles } from "@/contexts/ProfilesContext";
 import type { BirthChartProfile } from "@/interfaces/BirthChartInterfaces";
 import { IoClose } from "react-icons/io5";
+import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 
 const PROFILE_ID_PATTERN = /^zazastro:profile-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MANUAL_TIPS = [
@@ -46,6 +47,7 @@ export default function SettingsMenu() {
   const t = useTranslations();
   const { settings, updateSettings } = useAstroChartSettings();
   const { profiles, importProfiles, deleteAllProfiles } = useProfiles();
+  const { isMobileBreakPoint } = useScreenDimensions();
   const importInputRef = useRef<HTMLInputElement>(null);
   const [importStatus, setImportStatus] = useState("");
   const [importStatusType, setImportStatusType] = useState<"success" | "error">("success");
@@ -137,10 +139,10 @@ export default function SettingsMenu() {
                 <p>{t("settings.profileDataDescription")}</p>
                 <div className="flex w-full flex-row items-center justify-center gap-2">
                   <button type="button" className="default-btn min-w-0 flex-1" onClick={() => importInputRef.current?.click()}>
-                    {t("settings.importProfiles")}
+                    {t(isMobileBreakPoint() ? "settings.importProfilesMobile" : "settings.importProfiles")}
                   </button>
                   <button type="button" className="default-btn min-w-0 flex-1" onClick={exportProfiles} disabled={profiles.length === 0}>
-                    {t("settings.exportProfiles")}
+                    {t(isMobileBreakPoint() ? "settings.exportProfilesMobile" : "settings.exportProfiles")}
                   </button>
                 </div>
                 <button type="button" className="default-btn w-full" onClick={handleDeleteAllProfiles} disabled={profiles.length === 0}>

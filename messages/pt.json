@@ -467,6 +467,8 @@
     "profileDataDescription": "Exporte seus mapas para um arquivo JSON ou importe um arquivo exportado pelo Zazastro. IDs existentes são preservados e registros duplicados são ignorados.",
     "exportProfiles": "Exportar mapas",
     "importProfiles": "Importar mapas",
+    "exportProfilesMobile": "Exportar",
+    "importProfilesMobile": "Importar",
     "deleteAllProfiles": "Excluir todos os mapas",
     "deleteAllConfirm": "Tem certeza de que deseja excluir todos os {count} mapas salvos? Essa ação não pode ser desfeita.",
     "importSummary": "Importação concluída: {imported} mapa(s) importado(s), {skipped} registro(s) ignorado(s) por duplicidade ou indisponibilidade.",
