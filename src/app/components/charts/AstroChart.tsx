@@ -2688,7 +2688,9 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
       ];
     }
 
-    const showTransitDegrees = showPlanetDegrees && !showOuterChart;
+    // Transit planets are rendered in the outer ring; degree labels are only
+    // shown for the inner chart, never for transit or combined-chart elements.
+    const showTransitDegrees = showPlanetDegrees && !isCombinedChart && !birthChart?.transits;
     let nextTransitLongitude: number | undefined;
     birthChart?.transits?.planets.slice().sort((a, b) => showTransitDegrees ? getPlanetDegreeOrder(a.longitudeRaw) - getPlanetDegreeOrder(b.longitudeRaw) : 0).forEach((planet) => {
       const chartElement: ChartElement = {
