@@ -80,6 +80,114 @@ const ASPECTS: Aspect[] = [
 
 const TRANS_SATURNIAN_TYPES: PlanetType[] = ["uranus", "neptune", "pluto"];
 
+// ---------------------------------------------------------------------------
+// Side-by-side layout (only used while `showPlanetDegrees` is on)
+// ---------------------------------------------------------------------------
+// With degree labels on, every symbol carries a label that runs radially inward
+// from it (see appendPlanetDegreeLabel). Two neighbours therefore need enough
+// angular room for those labels not to touch. Tune these if the text changes.
+const DEGREE_LABEL_OFFSET = 36; // px from the symbol to the label center (same value as appendPlanetDegreeLabel)
+const DEGREE_LABEL_LENGTH = 44; // px, approx. length of text like "29°59'♓"
+const DEGREE_LABEL_STRIP_WIDTH = 11; // px, approx. height of the text (font-size 11)
+
+interface SideBySideItem {
+  key: string;
+  longitude: number;
+}
+
+/**
+ * Spreads elements along the zodiac so that neighbours end up at least
+ * `minSeparationDeg` apart, and returns the new longitude of each key.
+ *
+ * Unlike a greedy "push the next one forward" pass, every group of touching
+ * elements is laid out side by side and CENTERED on where its members really
+ * are. So nobody travels more than half of the group's width, a shift never
+ * cascades into a far-away neighbour, and an isolated element never moves.
+ * Groups that end up touching are merged until the layout is stable, and the
+ * 360° -> 0° wrap-around is handled as well.
+ */
+function spreadSideBySide(items: SideBySideItem[], minSeparationDeg: number): Map<string, number> {
+  const result = new Map<string, number>();
+  if (items.length === 0) return result;
+  if (items.length === 1) {
+    result.set(items[0].key, items[0].longitude);
+    return result;
+  }
+
+  const sorted = items
+    .map((item, index) => ({ ...item, index, lon: mod360(item.longitude) }))
+    .sort((a, b) => a.lon - b.lon || a.index - b.index);
+
+  // Cut the circle at its widest empty gap so it can be treated as a straight line.
+  let cutIndex = 0;
+  let widestGap = -1;
+  for (let i = 0; i < sorted.length; i++) {
+    const previous = sorted[(i - 1 + sorted.length) % sorted.length];
+    const gap = i === 0 ? sorted[0].lon + 360 - previous.lon : sorted[i].lon - previous.lon;
+    if (gap > widestGap) {
+      widestGap = gap;
+      cutIndex = i;
+    }
+  }
+
+  type Member = (typeof sorted)[number] & { target: number };
+  const wrapFrom = sorted.length - cutIndex; // first position that lies past 360° after the cut
+  const line: Member[] = [...sorted.slice(cutIndex), ...sorted.slice(0, cutIndex)].map(
+    (element, position) => ({ ...element, target: element.lon + (cutIndex > 0 && position >= wrapFrom ? 360 : 0) })
+  );
+
+  interface Cluster {
+    members: Member[];
+    start: number;
+  }
+  // Position of the first member that keeps the group centered on its targets.
+  const centeredStart = (members: Member[]) =>
+    members.reduce((sum, member, i) => sum + (member.target - i * minSeparationDeg), 0) / members.length;
+  const endOf = (cluster: Cluster) => cluster.start + (cluster.members.length - 1) * minSeparationDeg;
+
+  let clusters: Cluster[] = line.map((member) => ({ members: [member], start: member.target }));
+
+  let changed = true;
+  while (changed) {
+    changed = false;
+
+    for (let i = 0; i < clusters.length - 1; i++) {
+      const current = clusters[i];
+      const next = clusters[i + 1];
+      if (next.start - endOf(current) < minSeparationDeg - 1e-9) {
+        const members = [...current.members, ...next.members];
+        clusters.splice(i, 2, { members, start: centeredStart(members) });
+        changed = true;
+        break;
+      }
+    }
+    if (changed) continue;
+
+    // Wrap-around: the last group may run into the first one (+360°).
+    if (clusters.length > 1) {
+      const first = clusters[0];
+      const last = clusters[clusters.length - 1];
+      if (first.start + 360 - endOf(last) < minSeparationDeg - 1e-9) {
+        const members = [
+          ...last.members,
+          ...first.members.map((member) => ({ ...member, target: member.target + 360 })),
+        ];
+        clusters = [...clusters.slice(1, -1), { members, start: centeredStart(members) }];
+        changed = true;
+      }
+    }
+  }
+
+  for (const cluster of clusters) {
+    cluster.members.forEach((member, i) => {
+      const delta = cluster.start + i * minSeparationDeg - member.target;
+      // Untouched elements keep their exact longitude (the displacement trace relies on it).
+      result.set(member.key, Math.abs(delta) < 1e-9 ? member.longitude : mod360(member.longitude + delta));
+    });
+  }
+  return result;
+}
+
 /**
  * Toggles de exibição que antes viviam como useState internos ao
  * AstroChart e agora são controlados de fora (ChartAndData.tsx via
@@ -198,6 +306,9 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
 
   const chartElementsForAspect = useRef<ChartElement[]>([]);
   const symbolLayoutRef = useRef<SymbolLayout | null>(null);
+  // Pre-computed side-by-side positions of the inner chart (planets, lots and their
+  // antiscia). Only filled while showPlanetDegrees is on; keyed by getSideBySideKey().
+  const sideBySidePositionsRef = useRef<Map<string, ElementOverlapLongitudeAndOffset>>(new Map());
 
   const isMobile = isMobileBreakPoint();
   const size = !isMobile ? 400 : 370;
@@ -460,7 +571,13 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     );
   }
 
-  function appendPlanetDegreeLabel(longitude: number, planetType: PlanetType, x: number, y: number) {
+  function appendPlanetDegreeLabel(
+    longitude: number,
+    elementKey: string,
+    x: number,
+    y: number,
+    degreeColor = "#18181b"
+  ) {
     if (!showPlanetDegrees) return;
 
     const radialAngle = Math.atan2(y, x);
@@ -476,14 +593,14 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     const degreeLabel = baseGroupRef.current!
       .append("text")
       .attr("class", "planet-degree-label")
-      .attr("data-planet", planetType)
+      .attr("data-element", elementKey)
       .attr("x", labelX)
       .attr("y", labelY)
       .attr("text-anchor", "middle")
       .attr("dominant-baseline", "middle")
       .attr("transform", `rotate(${labelRotation}, ${labelX}, ${labelY})`)
       .attr("font-size", 11)
-      .attr("fill", "#18181b")
+      .attr("fill", degreeColor)
       .attr("stroke", "white")
       .attr("stroke-width", 2.5)
       .attr("paint-order", "stroke")
@@ -705,8 +822,16 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     chartElement: ChartElement,
     reserveDegreeLabel = false,
     shiftDirection?: 1 | -1,
-    minimumLongitude?: number
+    minimumLongitude?: number,
+    maxShiftDeg?: number
   ): ElementOverlapLongitudeAndOffset {
+    // Inner chart + degree labels: positions were solved together, once, for every
+    // visible planet / lot / antiscion (see buildSideBySidePositions).
+    if (showPlanetDegrees && !chartElement.isFromOuterChart && !chartElement.isTransit) {
+      const placed = sideBySidePositionsRef.current.get(getSideBySideKey(chartElement));
+      if (placed) return placed;
+    }
+
     const layout = symbolLayoutRef.current!;
 
     // Transits are also kept away from the angular house cusps (ASC/IC/DSC/MC).
@@ -724,11 +849,153 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
       collisionSize: reserveDegreeLabel ? 15 : undefined,
       label: reserveDegreeLabel ? { offset: 36, length: 48, width: 14 } : undefined,
       shiftDirection,
+      maxShiftDeg: maxShiftDeg ?? (reserveDegreeLabel ? 14 : undefined),
       minimumLongitude,
       sameLaneOnly: reserveDegreeLabel,
     });
 
     return { longitude, offset };
+  }
+
+  function getSideBySideKey(element: Pick<ChartElement, "elementType" | "name">): string {
+    return `${element.elementType}|${element.name}`;
+  }
+
+  /**
+   * Solves the position of EVERY visible inner-chart element at once: planets,
+   * their antiscia, Arabic parts and the antiscia of those. They all share the
+   * same lane, so they are spread together and stay side by side right next to
+   * where they really are, instead of being nudged one after the other.
+   */
+  function buildSideBySidePositions(): Map<string, ElementOverlapLongitudeAndOffset> {
+    const items: SideBySideItem[] = [];
+
+    const addIfVisible = (element: ChartElement) => {
+      if (hasIsolatedAspect && !elementIsInIsolatedAspect(element)) return;
+      items.push({ key: getSideBySideKey(element), longitude: element.longitude });
+    };
+
+    planets
+      ?.filter((planet) => showTransSaturnians || !TRANS_SATURNIAN_TYPES.includes(planet.type))
+      .forEach((planet) => {
+        addIfVisible({
+          id: 0,
+          isAntiscion: false,
+          longitude: planet.longitude,
+          name: planet.name,
+          elementType: "planet",
+          planetType: planet.type,
+          isFromOuterChart: false,
+          isRetrograde: planet.isRetrograde,
+        });
+
+        if (showPlanetsAntiscia) {
+          const antiscionElement: ChartElement = {
+            id: 0,
+            isAntiscion: true,
+            longitude: planet.antiscion,
+            name: `${planet.name}-${fixedNames.antiscionName}`,
+            elementType: "planet",
+            planetType: planet.type,
+            isFromOuterChart: false,
+            isRetrograde: planet.isRetrograde,
+          };
+          if (isTraditionalPlanet(antiscionElement)) addIfVisible(antiscionElement);
+        }
+      });
+
+    if (arabicParts !== undefined) {
+      arabicPartKeys.forEach((key) => {
+        const isCustomArabicPart = customArabicPart
+          && arabicParts[key]?.partKey === customArabicPart.partKey
+          && !customArabicPart.isFromOuterChart;
+        const lot = isCustomArabicPart ? customArabicPart : arabicParts[key];
+        if (!lot || (!lot.planet && !isCustomArabicPart)) return;
+
+        if (showArabicParts) {
+          addIfVisible({
+            id: 0,
+            isAntiscion: false,
+            longitude: lot.longitude,
+            name: lot.partKey,
+            elementType: "arabicPart",
+            isFromOuterChart: false,
+            isRetrograde: false,
+          });
+        }
+        if (showArabicPartsAntiscia) {
+          addIfVisible({
+            id: 0,
+            isAntiscion: true,
+            longitude: lot.antiscion,
+            name: `${lot.partKey}-${fixedNames.antiscionName}`,
+            elementType: "arabicPart",
+            isFromOuterChart: false,
+            isRetrograde: false,
+          });
+        }
+      });
+    }
+
+    // Angular room each symbol needs: its own icon, or its radial degree label,
+    // which is tighter because the labels converge toward the center.
+    const symbolRadius = chartInnerRadius - symbolOffset;
+    const labelInnerRadius = Math.max(
+      symbolRadius - DEGREE_LABEL_OFFSET - DEGREE_LABEL_LENGTH / 2,
+      symbolRadius * 0.3
+    );
+    const minSeparationRad = Math.max(
+      DEGREE_LABEL_STRIP_WIDTH / labelInnerRadius,
+      (iconSize + 2) / symbolRadius
+    );
+    const minSeparationDeg = (minSeparationRad * 180) / Math.PI;
+
+    const spread = spreadSideBySide(items, minSeparationDeg);
+    const positions = new Map<string, ElementOverlapLongitudeAndOffset>();
+    spread.forEach((longitude, key) => positions.set(key, { longitude, offset: symbolOffset }));
+    return positions;
+  }
+
+  function getShiftDirectionFromNearestElement(element: ChartElement): 1 | -1 {
+    let nearestDelta = Number.POSITIVE_INFINITY;
+    let direction: 1 | -1 = 1;
+    const candidates = chartElementsForAspect.current
+      .filter((placedElement) =>
+        (placedElement.elementType === "planet" || placedElement.elementType === "arabicPart") &&
+        placedElement.name !== element.name
+      )
+      .map(({ name, longitude }) => ({ name, longitude }));
+
+    // Arabic parts are drawn after the planets, so later parts are not in the
+    // rendered-elements list yet. Include all visible forms up front so the
+    // nearest element and displacement direction do not depend on render order.
+    if (arabicParts) {
+      const parts = arabicPartKeys.flatMap((key) => {
+        const isCustom = customArabicPart && arabicParts[key]?.partKey === customArabicPart.partKey &&
+          !customArabicPart.isFromOuterChart;
+        const lot = isCustom ? customArabicPart : arabicParts[key];
+        if (!lot || (!lot.planet && !isCustom)) return [];
+        const visiblePositions = [
+          ...(showArabicParts ? [{ name: lot.partKey, longitude: lot.longitude }] : []),
+          ...(showArabicPartsAntiscia
+            ? [{ name: `${lot.partKey}-${fixedNames.antiscionName}`, longitude: lot.antiscion }]
+            : []),
+        ];
+        return visiblePositions;
+      });
+      candidates.push(...parts.filter((part) => part.name !== element.name));
+    }
+
+    for (const placedElement of candidates) {
+      const signedDelta = ((mod360(element.longitude) - mod360(placedElement.longitude) + 540) % 360) - 180;
+      const distance = Math.abs(signedDelta);
+      if (distance < nearestDelta) {
+        nearestDelta = distance;
+        direction = signedDelta < 0 ? -1 : 1;
+      }
+    }
+
+    return direction;
   }
 
   const isTraditionalPlanet = (element: ChartElement): boolean => {
@@ -1376,6 +1643,8 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
       },
     });
 
+    sideBySidePositionsRef.current = showPlanetDegrees ? buildSideBySidePositions() : new Map();
+
     zodiacRotationRef.current = zodiacRotation;
     radiusRef.current = radius;
     lineStartOffsetRef.current = lineStartOffset;
@@ -1961,7 +2230,11 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
           canDrawPlanet = elementIsInIsolatedAspect(antiscionElement);
 
         if(canDrawPlanet && isTraditionalPlanet(antiscionElement)) {
-          const overlapData = getElementOverlapLongitudeAndOffset(antiscionElement);
+          const overlapData = getElementOverlapLongitudeAndOffset(
+            antiscionElement,
+            showPlanetDegrees,
+            showPlanetDegrees ? getShiftDirectionFromNearestElement(antiscionElement) : undefined
+          );
 
           // 1) ângulo zodiacal original (graus → rad)
           const rawAntDegOriginal = 180 - (planet.antiscion % 360) - 90;
@@ -2014,6 +2287,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
             // centraliza o ícone em (xs, ys)
             .attr("x", xAnts - iconAntSize / 2)
             .attr("y", yAnts - iconAntSize / 2);
+          appendPlanetDegreeLabel(planet.antiscionRaw, `${planet.type}-antiscion`, xAnts, yAnts, "#778397");
 
           const planetName = t(`planets.${planet.type}`);
           const content = makePlanetTooltip({
@@ -2064,7 +2338,15 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     });    
 
     if (showArabicParts && arabicParts !== undefined) {
-      arabicPartKeys.forEach((key) => {
+      const orderedArabicPartKeys = [...arabicPartKeys].sort((keyA, keyB) => {
+        const getLot = (key: typeof keyA) => {
+          const isCustom = customArabicPart && arabicParts[key]?.partKey === customArabicPart.partKey &&
+            !customArabicPart.isFromOuterChart;
+          return isCustom ? customArabicPart : arabicParts[key];
+        };
+        return mod360(getLot(keyA)?.longitude ?? 0) - mod360(getLot(keyB)?.longitude ?? 0);
+      });
+      orderedArabicPartKeys.forEach((key) => {
         const isCustomArabicPart = customArabicPart 
           && arabicParts[key]?.partKey === customArabicPart.partKey 
           && !customArabicPart.isFromOuterChart;
@@ -2087,8 +2369,13 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
             canDrawArabicPart = elementIsInIsolatedAspect(lotChartElement);                    
 
           if(canDrawArabicPart) {
-            const overlapData =
-              getElementOverlapLongitudeAndOffset(lotChartElement);
+            const overlapData = getElementOverlapLongitudeAndOffset(
+              lotChartElement,
+              showPlanetDegrees,
+              showPlanetDegrees ? getShiftDirectionFromNearestElement(lotChartElement) : undefined,
+              undefined,
+              showPlanetDegrees ? 14 : undefined
+            );
   
             // 1) ângulo zodiacal original (graus → rad)
             const rawDegOriginal = 180 - (lot.longitude % 360) - 90;
@@ -2137,6 +2424,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
               // centraliza o ícone em (xs, ys)
               .attr("x", xs - iconSize / 2)
               .attr("y", ys - iconSize / 2);
+            appendPlanetDegreeLabel(lot.longitudeRaw, String(lot.partKey), xs, ys);
   
             const content = makeArabicPartTooltip(lot, {isAntiscion: false});
   
@@ -2181,7 +2469,15 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     }
 
     if (showArabicPartsAntiscia && arabicParts !== undefined) {
-      arabicPartKeys.forEach((key) => {
+      const orderedArabicPartKeys = [...arabicPartKeys].sort((keyA, keyB) => {
+        const getLot = (key: typeof keyA) => {
+          const isCustom = customArabicPart && arabicParts[key]?.partKey === customArabicPart.partKey &&
+            !customArabicPart.isFromOuterChart;
+          return isCustom ? customArabicPart : arabicParts[key];
+        };
+        return mod360(getLot(keyA)?.antiscion ?? 0) - mod360(getLot(keyB)?.antiscion ?? 0);
+      });
+      orderedArabicPartKeys.forEach((key) => {
         const isCustomArabicPart = customArabicPart 
           && arabicParts[key]?.partKey === customArabicPart.partKey 
           && !customArabicPart.isFromOuterChart;
@@ -2206,7 +2502,11 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
           if(canDrawArabicPart) {
 
             const overlapData = getElementOverlapLongitudeAndOffset(
-              lotAntiscionChartElement
+              lotAntiscionChartElement,
+              showPlanetDegrees,
+              showPlanetDegrees ? getShiftDirectionFromNearestElement(lotAntiscionChartElement) : undefined,
+              undefined,
+              showPlanetDegrees ? 14 : undefined
             );
   
             // 1) ângulo zodiacal original (graus → rad)
@@ -2256,6 +2556,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
               // centraliza o ícone em (xs, ys)
               .attr("x", xs - iconSize / 2)
               .attr("y", ys - iconSize / 2);
+            appendPlanetDegreeLabel(lot.antiscionRaw, `${String(lot.partKey)}-antiscion`, xs, ys, "#778397");
   
             
             const content = makeArabicPartTooltip(lot, {isAntiscion: true});
@@ -2387,8 +2688,9 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
       ];
     }
 
+    const showTransitDegrees = showPlanetDegrees && !showOuterChart;
     let nextTransitLongitude: number | undefined;
-    birthChart?.transits?.planets.slice().sort((a, b) => showPlanetDegrees ? getPlanetDegreeOrder(a.longitudeRaw) - getPlanetDegreeOrder(b.longitudeRaw) : 0).forEach((planet) => {
+    birthChart?.transits?.planets.slice().sort((a, b) => showTransitDegrees ? getPlanetDegreeOrder(a.longitudeRaw) - getPlanetDegreeOrder(b.longitudeRaw) : 0).forEach((planet) => {
       const chartElement: ChartElement = {
         id: chartElementsForAspect.current.length,
         isAntiscion: false,
@@ -2408,11 +2710,11 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
       if(canDrawPlanet) {
         let overlapData = getElementOverlapLongitudeAndOffset(
           chartElement,
-          showPlanetDegrees,
-          showPlanetDegrees ? 1 : undefined,
-          showPlanetDegrees ? nextTransitLongitude : undefined
+          showTransitDegrees,
+          showTransitDegrees ? 1 : undefined,
+          showTransitDegrees ? nextTransitLongitude : undefined
         );
-        if (showPlanetDegrees) nextTransitLongitude = mod360(overlapData.longitude);
+        if (showTransitDegrees) nextTransitLongitude = mod360(overlapData.longitude);
   
         // 1) ângulo zodiacal original (graus → rad)
         const rawDegOriginal = 180 - (planet.longitude % 360) - 90;
@@ -2447,7 +2749,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
         const x2Outer = rLineEndOuter * Math.cos(angleRadOriginal);
         const y2Outer = rLineEndOuter * Math.sin(angleRadOriginal);
   
-        if (!showPlanetDegrees) {
+        if (!showTransitDegrees) {
           baseGroup
             .attr("data-name", planet.type)
             .append("line")
@@ -2459,7 +2761,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
             .attr("stroke-width", 1);
         }
 
-        if (showPlanetDegrees) {
+        if (showTransitDegrees) {
           appendPlanetDisplacementTrace(outerZodiacRadius, angleRadOriginal, xs, ys, traceLength, "#005f73");
         } else {
           baseGroup
@@ -2487,7 +2789,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
           .attr("height", iconSize)
           .attr("x", xs - iconSize / 2)
           .attr("y", ys - iconSize / 2);
-        appendPlanetDegreeLabel(planet.longitudeRaw, planet.type, xs, ys);
+        if (showTransitDegrees) appendPlanetDegreeLabel(planet.longitudeRaw, planet.type, xs, ys);
   
           const planetName = t(`planets.${planet.type}`);
           const content = makePlanetTooltip({
@@ -2521,10 +2823,8 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     })
 
     if (showOuterChart && outerPlanets) {
-      let nextOuterPlanetLongitude: number | undefined;
       outerPlanets
       .filter((planet) => showTransSaturnians || !TRANS_SATURNIAN_TYPES.includes(planet.type))
-      .sort((a, b) => showPlanetDegrees ? getPlanetDegreeOrder(a.longitudeRaw) - getPlanetDegreeOrder(b.longitudeRaw) : 0)
       .forEach((planet) => {
         const chartElement: ChartElement = {
           id: chartElementsForAspect.current.length,
@@ -2542,13 +2842,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
           canDrawPlanet = elementIsInIsolatedAspect(chartElement);
 
         if(canDrawPlanet) {
-          let overlapData = getElementOverlapLongitudeAndOffset(
-            chartElement,
-            showPlanetDegrees,
-            showPlanetDegrees ? 1 : undefined,
-            showPlanetDegrees ? nextOuterPlanetLongitude : undefined
-          );
-          if (showPlanetDegrees) nextOuterPlanetLongitude = mod360(overlapData.longitude);
+          const overlapData = getElementOverlapLongitudeAndOffset(chartElement);
   
           // 1) ângulo zodiacal original (graus → rad)
           const rawDegOriginal = 180 - (planet.longitude % 360) - 90;
@@ -2570,20 +2864,21 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
           // 4) cálculos das coordenadas
           const xs = rSymbol * Math.cos(angleRadOverlapped);
           const ys = rSymbol * Math.sin(angleRadOverlapped);
-          const traceLength = overlapData.offset !== symbolOffset || mod360(overlapData.longitude) !== mod360(planet.longitude) ? 8 : 6;
-  
-          if (showPlanetDegrees) {
-            appendPlanetDisplacementTrace(outerZodiacRadius, angleRadOriginal, xs, ys, traceLength, "black");
-          } else {
-            baseGroup
-              .append("line")
-              .attr("x1", rLineStart * Math.cos(angleRadOriginal))
-              .attr("y1", rLineStart * Math.sin(angleRadOriginal))
-              .attr("x2", rLineEnd * Math.cos(angleRadOriginal))
-              .attr("y2", rLineEnd * Math.sin(angleRadOriginal))
-              .attr("stroke", "black")
-              .attr("stroke-width", 1);
-          }
+          const planetTrace = {
+            x1: rLineStart * Math.cos(angleRadOriginal),
+            y1: rLineStart * Math.sin(angleRadOriginal),
+            x2: rLineEnd * Math.cos(angleRadOriginal),
+            y2: rLineEnd * Math.sin(angleRadOriginal),
+            stroke: "black",
+          };
+          baseGroup
+            .append("line")
+            .attr("x1", planetTrace.x1)
+            .attr("y1", planetTrace.y1)
+            .attr("x2", planetTrace.x2)
+            .attr("y2", planetTrace.y2)
+            .attr("stroke", "black")
+            .attr("stroke-width", 1);
   
           // 6) desenha o ícone do planeta
           const iconSize = 13; // px
@@ -2599,7 +2894,6 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
             .attr("height", iconSize)
             .attr("x", xs - iconSize / 2)
             .attr("y", ys - iconSize / 2);
-          appendPlanetDegreeLabel(planet.longitudeRaw, planet.type, xs, ys);
   
           const planetName = t(`planets.${planet.type}`);
           const content = makePlanetTooltip({
@@ -2638,7 +2932,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
             iconSize,
             iconSrc,
             content,
-            tick: { x1, y1, x2, y2 },
+            tick: planetTrace,
           });
 
           chartElementsForAspect.current = [

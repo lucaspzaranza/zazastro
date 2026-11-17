@@ -26,6 +26,8 @@ export interface LayoutElementInput {
   rotationDeg?: number;
   /** Restricts collision nudges to one zodiacal direction. */
   shiftDirection?: 1 | -1;
+  /** Optional cap for angular nudges, without affecting other chart elements. */
+  maxShiftDeg?: number;
   /** Keeps displayed longitudes in sorted order when laid out as a sequence. */
   minimumLongitude?: number;
   /** Prevents symbols with degree labels from moving to a different radial lane. */
@@ -137,13 +139,14 @@ export class SymbolLayout {
     const { geometry, depthStep, maxDepthPx, maxShiftDeg, shiftStepDeg, depthCostDegPerPx } = this.o;
     const g = geometry[el.layer];
 
-    // Pass 1 is the normal range. Passes 2 and 3 only run in very dense clusters:
-    // first allow a wider nudge, then allow a deeper advance.
+    // Pass 1 is the normal range. Passes 2 and 3 widen the nudge for dense
+    // clusters, subject to an optional per-element angular cap.
+    const shiftCap = el.maxShiftDeg ?? Number.POSITIVE_INFINITY;
     const passes = [
-      { range: maxShiftDeg, depth: maxDepthPx },
-      { range: maxShiftDeg * 2, depth: maxDepthPx },
-      { range: maxShiftDeg * 2, depth: maxDepthPx * 2 },
-      { range: maxShiftDeg * 4, depth: maxDepthPx * 2 },
+      { range: Math.min(maxShiftDeg, shiftCap), depth: maxDepthPx },
+      { range: Math.min(maxShiftDeg * 2, shiftCap), depth: maxDepthPx },
+      { range: Math.min(maxShiftDeg * 2, shiftCap), depth: maxDepthPx * 2 },
+      { range: Math.min(maxShiftDeg * 4, shiftCap), depth: maxDepthPx * 2 },
     ];
     const maxLanes = el.sameLaneOnly ? 1 : Math.floor(passes[passes.length - 1].depth / depthStep) + 1;
     let chosen: { lane: number; shift: number; xy: Point; longitude: number; shapes: Placed[] } | undefined;
@@ -198,10 +201,18 @@ export class SymbolLayout {
       if (chosen) break;
     }
 
-    // Last resort (practically unreachable): original longitude on the last lane.
+    // If the lane remains crowded after trying every allowed slot, keep the
+    // requested ordering by using the furthest permitted directional nudge.
     if (!chosen) {
       const lane = maxLanes - 1;
-      const longitude = mod360(el.longitude);
+      let fallbackShift = el.shiftDirection
+        ? el.shiftDirection * Math.min(maxShiftDeg * 4, shiftCap)
+        : 0;
+      let longitude = mod360(el.longitude + fallbackShift);
+      if (el.minimumLongitude !== undefined && longitude + 1e-9 < el.minimumLongitude) {
+        fallbackShift = 0;
+        longitude = mod360(el.longitude);
+      }
       const symbolRadius = this.symbolRadius(g, lane);
       const rotationRad = ((el.rotationDeg ?? 0) * Math.PI) / 180;
       const xy = this.toXY(longitude, symbolRadius, rotationRad);
@@ -222,7 +233,7 @@ export class SymbolLayout {
           halfHeight: (el.label.width + this.o.padding) / 2,
         });
       }
-      chosen = { lane, shift: 0, xy, longitude, shapes };
+      chosen = { lane, shift: fallbackShift, xy, longitude, shapes };
       this.failures++;
     }
 
