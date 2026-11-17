@@ -273,6 +273,16 @@ export default function SettingsMenu() {
             {t("settings.showTransSaturnians")}
           </label>
 
+          <label className="flex flex-row items-center gap-2">
+            <input
+              type="checkbox"
+              className="accent-zinc-700 w-4 h-4"
+              checked={settings.horaryMode}
+              onChange={(e) => updateSettings({ horaryMode: e.target.checked })}
+            />
+            {t("settings.horaryMode")}
+          </label>
+
           <button type="button" className="default-btn flex w-full flex-row items-center justify-center gap-2" onClick={() => { setActiveTipIndex(0); setInfoModal("manual"); }}>
             {t("settings.manualTitle")}
             <Image src="/manual.png" alt="" width={22} height={22} unoptimized />

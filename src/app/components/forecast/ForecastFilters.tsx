@@ -1,6 +1,6 @@
 // src/app/components/forecast/ForecastFilters.tsx
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { monthsNames, getAspectImage } from "@/app/utils/chartUtils";
 import { planetTypes } from "@/interfaces/BirthChartInterfaces";
@@ -32,6 +32,7 @@ const INCLUDE_OPTIONS: { key: "ingress" | "aspect" | "station"; labelKey: string
   { key: "station", labelKey: "forecast.eventTypes.station" },
 ];
 const ASPECT_TYPE_OPTIONS: AspectType[] = ["conjunction", "sextile", "square", "trine", "opposition"];
+const MOMENT_CITY_STORAGE_KEY = "zazastro:moment-city";
 
 export default function ForecastFilters({
   coordinates, initialCity, initialPeriod, initialMonth, initialYear, initialPlanet, onSubmit, loading, inlineFilters = false,
@@ -48,6 +49,29 @@ export default function ForecastFilters({
     new Set(["ingress", "aspect", "station"])
   );
   const [aspectTypes, setAspectTypes] = useState<Set<AspectType>>(new Set(ASPECT_TYPE_OPTIONS));
+
+  useEffect(() => {
+    if (coordinates || initialCity) return;
+
+    try {
+      const rawCity = localStorage.getItem(MOMENT_CITY_STORAGE_KEY);
+      if (!rawCity) return;
+
+      const savedCity: unknown = JSON.parse(rawCity);
+      if (
+        typeof savedCity === "object" && savedCity !== null &&
+        typeof (savedCity as SelectedCity).name === "string" &&
+        typeof (savedCity as SelectedCity).latitude === "number" &&
+        Number.isFinite((savedCity as SelectedCity).latitude) &&
+        typeof (savedCity as SelectedCity).longitude === "number" &&
+        Number.isFinite((savedCity as SelectedCity).longitude)
+      ) {
+        setCity(savedCity as SelectedCity);
+      }
+    } catch {
+      // Forecast continua disponível para seleção manual se o storage estiver inválido.
+    }
+  }, [coordinates, initialCity]);
 
   const needsCityInput = coordinates === undefined;
   const effectiveCoordinates = coordinates ?? city;
@@ -142,7 +166,7 @@ export default function ForecastFilters({
       {needsCityInput && (
         <div className="flex flex-col gap-1">
           <span className="text-sm text-zinc-600">{t("forecast.city")}*</span>
-          <CitySearch onSelect={setCity} />
+          <CitySearch initialCoordinates={effectiveCoordinates} onSelect={setCity} />
         </div>
       )}
 

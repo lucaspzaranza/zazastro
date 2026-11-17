@@ -13,6 +13,7 @@ import { useScreenDimensions } from "@/contexts/ScreenDimensionsContext";
 import { useArabicParts } from "@/contexts/ArabicPartsContext";
 import { useRouter } from "next/dist/client/components/navigation";
 import { useProfiles } from "@/contexts/ProfilesContext";
+import { useAstroChartSettings } from "@/hooks/useAstroChartSettings";
 
 
 interface AstroChartMenuProps {
@@ -70,6 +71,7 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
   const t = useTranslations();
   const router = useRouter();
   const { currentProfile, profiles } = useProfiles();
+  const { settings, updateSettings } = useAstroChartSettings();
 
   const {
     isCombinedWithBirthChart,
@@ -192,6 +194,14 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
         updateIsCombinedWithBirthChart(!isCombinedWithBirthChart);
         updateIsMountingChart(true);
       },
+    },
+    {
+      key: "horaryMode",
+      label: t("settings.horaryMode"),
+      active: settings.horaryMode,
+      visible: true,
+      iconPath: "/planets/jupiter.png",
+      onClick: () => updateSettings({ horaryMode: !settings.horaryMode }),
     },
     {
       key: "showFixedStars",
