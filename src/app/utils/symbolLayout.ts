@@ -2,7 +2,7 @@
  * Collision-based layout for chart symbols (planets, antiscia, lots...).
  *
  * Idea (same mental model as 2D colliders in Unity):
- *  - every symbol is an axis-aligned box (iconSize + padding) in SCREEN space;
+ *  - every symbol is a screen-aligned box; optional degree labels use a radial box;
  *  - a new symbol tries candidate slots, from the cheapest to the most expensive,
  *    and takes the first one whose box does not intersect any box already placed;
  *  - a slot = (lane, angular shift). Lane 0 is the ring itself, lane N is N steps
@@ -18,6 +18,18 @@ export type LayoutLayer = "inner" | "outer";
 export interface LayoutElementInput {
   longitude: number; // degrees, 0..360
   layer: LayoutLayer;
+  /** Larger visual footprint for labels attached to a symbol. */
+  collisionSize?: number;
+  /** A radial label rendered inward from the symbol. */
+  label?: { offset: number; length: number; width: number };
+  /** Rotation applied to the whole chart in degrees. */
+  rotationDeg?: number;
+  /** Restricts collision nudges to one zodiacal direction. */
+  shiftDirection?: 1 | -1;
+  /** Keeps displayed longitudes in sorted order when laid out as a sequence. */
+  minimumLongitude?: number;
+  /** Prevents symbols with degree labels from moving to a different radial lane. */
+  sameLaneOnly?: boolean;
   /** Optional: only relevant for transits. Angular cusps push symbols away. */
   avoidLongitudes?: number[];
 }
@@ -48,9 +60,15 @@ export interface SymbolLayoutOptions {
   avoidMarginDeg?: number;
 }
 
-interface Placed {
+interface Point {
   x: number;
   y: number;
+}
+
+interface Placed extends Point {
+  angle: number;
+  halfWidth: number;
+  halfHeight: number;
 }
 
 const mod360 = (v: number) => ((v % 360) + 360) % 360;
@@ -81,15 +99,29 @@ export class SymbolLayout {
   }
 
   /** Same screen convention used by the chart: angle = 180 - longitude - 90 (deg). */
-  private toXY(longitude: number, radius: number): Placed {
-    const rad = ((180 - mod360(longitude) - 90) * Math.PI) / 180;
+  private toXY(longitude: number, radius: number, rotationRad: number): Point {
+    const rad = ((180 - mod360(longitude) - 90) * Math.PI) / 180 - rotationRad;
     return { x: radius * Math.cos(rad), y: radius * Math.sin(rad) };
   }
 
-  private collides(layer: LayoutLayer, p: Placed): boolean {
-    const size = this.o.iconSize + this.o.padding;
-    return this.placed[layer].some(
-      (q) => Math.abs(q.x - p.x) < size && Math.abs(q.y - p.y) < size
+  private shapesOverlap(a: Placed, b: Placed): boolean {
+    const dx = a.x - b.x;
+    const dy = a.y - b.y;
+    const axes = [a.angle, a.angle + Math.PI / 2, b.angle, b.angle + Math.PI / 2];
+
+    return axes.every((axis) => {
+      const aRadius = a.halfWidth * Math.abs(Math.cos(a.angle - axis)) +
+        a.halfHeight * Math.abs(Math.sin(a.angle - axis));
+      const bRadius = b.halfWidth * Math.abs(Math.cos(b.angle - axis)) +
+        b.halfHeight * Math.abs(Math.sin(b.angle - axis));
+      const centerDistance = Math.abs(dx * Math.cos(axis) + dy * Math.sin(axis));
+      return centerDistance < aRadius + bRadius;
+    });
+  }
+
+  private collides(layer: LayoutLayer, shapes: Placed[]): boolean {
+    return shapes.some((shape) =>
+      this.placed[layer].some((placedShape) => this.shapesOverlap(shape, placedShape))
     );
   }
 
@@ -113,13 +145,17 @@ export class SymbolLayout {
       { range: maxShiftDeg * 2, depth: maxDepthPx * 2 },
       { range: maxShiftDeg * 4, depth: maxDepthPx * 2 },
     ];
-    const maxLanes = Math.floor(passes[passes.length - 1].depth / depthStep) + 1;
-    let chosen: { lane: number; shift: number; xy: Placed; longitude: number } | undefined;
+    const maxLanes = el.sameLaneOnly ? 1 : Math.floor(passes[passes.length - 1].depth / depthStep) + 1;
+    let chosen: { lane: number; shift: number; xy: Point; longitude: number; shapes: Placed[] } | undefined;
 
     for (const { range, depth } of passes) {
-      const lanesInPass = Math.floor(depth / depthStep) + 1;
+      const lanesInPass = el.sameLaneOnly ? 1 : Math.floor(depth / depthStep) + 1;
       const shifts: number[] = [0];
-      for (let s = shiftStepDeg; s <= range + 1e-9; s += shiftStepDeg) shifts.push(s, -s);
+      for (let s = shiftStepDeg; s <= range + 1e-9; s += shiftStepDeg) {
+        if (el.shiftDirection === 1) shifts.push(s);
+        else if (el.shiftDirection === -1) shifts.push(-s);
+        else shifts.push(s, -s);
+      }
 
       const candidates: { lane: number; shift: number; cost: number }[] = [];
       for (let lane = 0; lane < lanesInPass; lane++) {
@@ -132,10 +168,30 @@ export class SymbolLayout {
 
       for (const c of candidates) {
         const longitude = mod360(el.longitude + c.shift);
+        if (el.minimumLongitude !== undefined && longitude + 1e-9 < el.minimumLongitude) continue;
         if (this.nearAvoid(longitude, el.avoidLongitudes)) continue;
-        const xy = this.toXY(longitude, this.symbolRadius(g, c.lane));
-        if (!this.collides(el.layer, xy)) {
-          chosen = { lane: c.lane, shift: c.shift, xy, longitude };
+        const symbolRadius = this.symbolRadius(g, c.lane);
+        const rotationRad = ((el.rotationDeg ?? 0) * Math.PI) / 180;
+        const xy = this.toXY(longitude, symbolRadius, rotationRad);
+        const angle = ((180 - mod360(longitude) - 90) * Math.PI) / 180 - rotationRad;
+        const iconExtent = (el.collisionSize ?? this.o.iconSize) + this.o.padding;
+        const shapes: Placed[] = [{
+          ...xy,
+          angle: 0,
+          halfWidth: iconExtent / 2,
+          halfHeight: iconExtent / 2,
+        }];
+        if (el.label) {
+          const labelPosition = this.toXY(longitude, symbolRadius - el.label.offset, rotationRad);
+          shapes.push({
+            ...labelPosition,
+            angle,
+            halfWidth: (el.label.length + this.o.padding) / 2,
+            halfHeight: (el.label.width + this.o.padding) / 2,
+          });
+        }
+        if (!this.collides(el.layer, shapes)) {
+          chosen = { lane: c.lane, shift: c.shift, xy, longitude, shapes };
           break;
         }
       }
@@ -146,11 +202,31 @@ export class SymbolLayout {
     if (!chosen) {
       const lane = maxLanes - 1;
       const longitude = mod360(el.longitude);
-      chosen = { lane, shift: 0, xy: this.toXY(longitude, this.symbolRadius(g, lane)), longitude };
+      const symbolRadius = this.symbolRadius(g, lane);
+      const rotationRad = ((el.rotationDeg ?? 0) * Math.PI) / 180;
+      const xy = this.toXY(longitude, symbolRadius, rotationRad);
+      const angle = ((180 - mod360(longitude) - 90) * Math.PI) / 180 - rotationRad;
+      const iconExtent = (el.collisionSize ?? this.o.iconSize) + this.o.padding;
+      const shapes: Placed[] = [{
+        ...xy,
+        angle: 0,
+        halfWidth: iconExtent / 2,
+        halfHeight: iconExtent / 2,
+      }];
+      if (el.label) {
+        const labelPosition = this.toXY(longitude, symbolRadius - el.label.offset, rotationRad);
+        shapes.push({
+          ...labelPosition,
+          angle,
+          halfWidth: (el.label.length + this.o.padding) / 2,
+          halfHeight: (el.label.width + this.o.padding) / 2,
+        });
+      }
+      chosen = { lane, shift: 0, xy, longitude, shapes };
       this.failures++;
     }
 
-    this.placed[el.layer].push(chosen.xy);
+    this.placed[el.layer].push(...chosen.shapes);
     return {
       longitude: chosen.longitude,
       offset: this.offsetOf(chosen.lane),

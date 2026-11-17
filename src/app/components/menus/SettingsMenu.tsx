@@ -277,10 +277,10 @@ export default function SettingsMenu() {
             <input
               type="checkbox"
               className="accent-zinc-700 w-4 h-4"
-              checked={settings.horaryMode}
-              onChange={(e) => updateSettings({ horaryMode: e.target.checked })}
+              checked={settings.showPlanetDegrees}
+              onChange={(e) => updateSettings({ showPlanetDegrees: e.target.checked })}
             />
-            {t("settings.horaryMode")}
+            {t("settings.showPlanetDegrees")}
           </label>
 
           <button type="button" className="default-btn flex w-full flex-row items-center justify-center gap-2" onClick={() => { setActiveTipIndex(0); setInfoModal("manual"); }}>

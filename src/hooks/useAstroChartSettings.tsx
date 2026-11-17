@@ -9,7 +9,7 @@ export interface AstroChartSettings {
   showFaces: boolean;
   showDetails: boolean;
   showTransSaturnians: boolean;
-  horaryMode: boolean;
+  showPlanetDegrees: boolean;
 }
 
 export const DEFAULT_ASTRO_CHART_SETTINGS: AstroChartSettings = {
@@ -19,7 +19,7 @@ export const DEFAULT_ASTRO_CHART_SETTINGS: AstroChartSettings = {
   showFaces: true,
   showDetails: true,
   showTransSaturnians: true,
-  horaryMode: false,
+  showPlanetDegrees: false,
 };
 
 const STORAGE_KEY = "zazastro:astro-chart-settings";
@@ -37,7 +37,15 @@ export function useAstroChartSettings() {
     window.addEventListener(SETTINGS_CHANGE_EVENT, handleSettingsChange);
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setSettings({ ...DEFAULT_ASTRO_CHART_SETTINGS, ...JSON.parse(raw) });
+      if (raw) {
+        const saved = JSON.parse(raw) as Partial<AstroChartSettings> & { horaryMode?: boolean };
+        const { horaryMode, ...currentSettings } = saved;
+        setSettings({
+          ...DEFAULT_ASTRO_CHART_SETTINGS,
+          ...currentSettings,
+          showPlanetDegrees: currentSettings.showPlanetDegrees ?? horaryMode ?? DEFAULT_ASTRO_CHART_SETTINGS.showPlanetDegrees,
+        });
+      }
     } catch {
       // leitura corrompida ou indisponível — segue nos padrões
     } finally {

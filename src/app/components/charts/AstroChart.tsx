@@ -14,6 +14,7 @@ import {
   getPlanetImage,
   getPlanetImagePath,
   getSign,
+  getSignColor,
   mod360,
   signsGlpyphs,
 } from "@/utils/chartUtils";
@@ -92,6 +93,7 @@ interface AstroChartToggleProps {
   showPlanetsAntiscia: boolean;
   showArabicPartsAntiscia: boolean;
   showDegrees: boolean;
+  showPlanetDegrees: boolean;
   useTerms: boolean;
   useDecans: boolean;
   showFixedStars: boolean;
@@ -115,6 +117,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     showArabicPartsAntiscia,
     showTransSaturnians,
     showDegrees,
+    showPlanetDegrees,
     useTerms,
     useDecans,
     showFixedStars,
@@ -183,7 +186,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
   // const [selectedAspect, setSelectedAspect] = useState<PlanetAspectData | null>(null);
   // const selectedAspectRef = useRef<PlanetAspectData | null>(null);
   // const [hasIsolatedAspect, setHasIsolatedAspect] = useState(false);
-  
+
   const t = useTranslations();
   const outerInitial = t("aspects.outerInitial");
 
@@ -457,6 +460,90 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     );
   }
 
+  function appendPlanetDegreeLabel(longitude: number, planetType: PlanetType, x: number, y: number) {
+    if (!showPlanetDegrees) return;
+
+    const radialAngle = Math.atan2(y, x);
+    const labelX = x - Math.cos(radialAngle) * 36;
+    const labelY = y - Math.sin(radialAngle) * 36;
+    let labelRotation = ((radialAngle * 180 / Math.PI + 360) % 360) + 180;
+    labelRotation = ((labelRotation + 180) % 360 + 360) % 360 - 180;
+    if (labelRotation > 90) labelRotation -= 180;
+    if (labelRotation < -90) labelRotation += 180;
+    const position = getDegreeAndSign(decimalToDegreesMinutes(longitude), true);
+    const signGlyph = getSign(decimalToDegreesMinutes(longitude), true);
+    const degreePart = position.slice(0, -signGlyph.length);
+    const degreeLabel = baseGroupRef.current!
+      .append("text")
+      .attr("class", "planet-degree-label")
+      .attr("data-planet", planetType)
+      .attr("x", labelX)
+      .attr("y", labelY)
+      .attr("text-anchor", "middle")
+      .attr("dominant-baseline", "middle")
+      .attr("transform", `rotate(${labelRotation}, ${labelX}, ${labelY})`)
+      .attr("font-size", 11)
+      .attr("fill", "#18181b")
+      .attr("stroke", "white")
+      .attr("stroke-width", 2.5)
+      .attr("paint-order", "stroke")
+      .attr("pointer-events", "none");
+
+    degreeLabel
+      .append("tspan")
+      .attr("font-weight", 600)
+      .text(degreePart);
+    degreeLabel
+      .append("tspan")
+      .attr("fill", getSignColor(signGlyph))
+      .attr("font-weight", 400)
+      .text(signGlyph);
+  }
+
+  function getPlanetDegreeOrder(longitude: number) {
+    const normalized = mod360(longitude);
+    const position = getDegreeAndSign(decimalToDegreesMinutes(normalized), true);
+    const match = /^(\d+)°(\d+)'/.exec(position);
+    if (!match) return normalized;
+    const signIndex = Math.floor(normalized / 30);
+    return signIndex * 3000 + Number(match[1]) * 100 + Number(match[2]);
+  }
+
+  function appendPlanetDisplacementTrace(
+    startRadius: number,
+    startAngle: number,
+    targetX: number,
+    targetY: number,
+    length: number,
+    stroke: string
+  ): IsolatablePlanet["tick"] {
+    if (!showPlanetDegrees) return undefined;
+
+    const startX = startRadius * Math.cos(startAngle);
+    const startY = startRadius * Math.sin(startAngle);
+    const dx = targetX - startX;
+    const dy = targetY - startY;
+    const targetDistance = Math.hypot(dx, dy);
+    if (targetDistance < 0.5) return undefined;
+    const tick = {
+      x1: startX,
+      y1: startY,
+      x2: startX + (dx / targetDistance) * length,
+      y2: startY + (dy / targetDistance) * length,
+      stroke,
+    };
+    baseGroupRef.current!
+      .append("line")
+      .attr("x1", startX)
+      .attr("y1", startY)
+      .attr("x2", tick.x2)
+      .attr("y2", tick.y2)
+      .attr("stroke", stroke)
+      .attr("stroke-width", 1)
+      .attr("pointer-events", "none");
+    return tick;
+  }
+
   function makeAspectTooltip(aspect: PlanetAspectData): React.ReactNode {
     return (
       <div className="flex flex-row items-center gap-1.5">
@@ -615,7 +702,10 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
    * Layout details live in utils/symbolLayout.ts.
    */
   function getElementOverlapLongitudeAndOffset(
-    chartElement: ChartElement
+    chartElement: ChartElement,
+    reserveDegreeLabel = false,
+    shiftDirection?: 1 | -1,
+    minimumLongitude?: number
   ): ElementOverlapLongitudeAndOffset {
     const layout = symbolLayoutRef.current!;
 
@@ -630,6 +720,12 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
       longitude: chartElement.longitude,
       layer: chartElement.isFromOuterChart || chartElement.isTransit ? "outer" : "inner",
       avoidLongitudes,
+      rotationDeg: zodiacRotation,
+      collisionSize: reserveDegreeLabel ? 15 : undefined,
+      label: reserveDegreeLabel ? { offset: 36, length: 48, width: 14 } : undefined,
+      shiftDirection,
+      minimumLongitude,
+      sameLaneOnly: reserveDegreeLabel,
     });
 
     return { longitude, offset };
@@ -1273,6 +1369,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     symbolLayoutRef.current = new SymbolLayout({
       iconSize,
       baseOffset: symbolOffset,
+      ...(showPlanetDegrees ? { maxShiftDeg: 9, depthCostDegPerPx: 2 } : {}),
       geometry: {
         inner: { baseRadius: chartInnerRadius, direction: -1 }, // grows toward the center
         outer: { baseRadius: outerZodiacRadius, direction: 1 }, // grows away from the zodiac
@@ -1712,8 +1809,10 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     const aspectsLayer = baseGroup.append("g").attr("class", "aspects-layer");
 
     // Desenha os planetas
+    let nextPlanetLongitude: number | undefined;
     planets
     ?.filter((planet) => showTransSaturnians || !TRANS_SATURNIAN_TYPES.includes(planet.type))
+    .sort((a, b) => showPlanetDegrees ? getPlanetDegreeOrder(a.longitudeRaw) - getPlanetDegreeOrder(b.longitudeRaw) : 0)
     .forEach((planet) => {
       const chartElement: ChartElement = {
         id: chartElementsForAspect.current.length,
@@ -1731,7 +1830,13 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
         canDrawPlanet = elementIsInIsolatedAspect(chartElement);
 
       if(canDrawPlanet) {
-        let overlapData = getElementOverlapLongitudeAndOffset(chartElement);
+        let overlapData = getElementOverlapLongitudeAndOffset(
+          chartElement,
+          showPlanetDegrees,
+          showPlanetDegrees ? 1 : undefined,
+          showPlanetDegrees ? nextPlanetLongitude : undefined
+        );
+        if (showPlanetDegrees) nextPlanetLongitude = mod360(overlapData.longitude);
   
         // 1) ângulo zodiacal original (graus → rad)
         const rawDegOriginal = 180 - (planet.longitude % 360) - 90;
@@ -1753,23 +1858,29 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
         // 4) cálculos das coordenadas
         const xs = rSymbol * Math.cos(angleRadOverlapped);
         const ys = rSymbol * Math.sin(angleRadOverlapped);
+        const traceLength = overlapData.offset !== symbolOffset || mod360(overlapData.longitude) !== mod360(planet.longitude) ? 8 : 6;
   
-        const x1 = rLineStart * Math.cos(angleRadOriginal);
-        const y1 = rLineStart * Math.sin(angleRadOriginal);
-        const x2 = rLineEnd * Math.cos(angleRadOriginal);
-        const y2 = rLineEnd * Math.sin(angleRadOriginal);          
-  
-        // 5) desenha a linha
-        baseGroup
-          .attr("data-name", planet.type)
-          .append("line")
-          .attr("x1", x1)
-          .attr("y1", y1)
-          .attr("x2", x2)
-          .attr("y2", y2)
-          .attr("stroke", "black")
-          .attr("stroke-width", 1);
-  
+        const planetTrace = showPlanetDegrees
+          ? appendPlanetDisplacementTrace(chartInnerRadius, angleRadOriginal, xs, ys, traceLength, "black")
+          : {
+              x1: rLineStart * Math.cos(angleRadOriginal),
+              y1: rLineStart * Math.sin(angleRadOriginal),
+              x2: rLineEnd * Math.cos(angleRadOriginal),
+              y2: rLineEnd * Math.sin(angleRadOriginal),
+              stroke: "black",
+            };
+        if (!showPlanetDegrees) {
+          baseGroup
+            .attr("data-name", planet.type)
+            .append("line")
+            .attr("x1", rLineStart * Math.cos(angleRadOriginal))
+            .attr("y1", rLineStart * Math.sin(angleRadOriginal))
+            .attr("x2", rLineEnd * Math.cos(angleRadOriginal))
+            .attr("y2", rLineEnd * Math.sin(angleRadOriginal))
+            .attr("stroke", "black")
+            .attr("stroke-width", 1);
+        }
+
         // 6) desenha o ícone do planeta
         const iconSrc = getPlanetImagePath(planet.type, {
           longitude: planet.longitude,
@@ -1784,6 +1895,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
           .attr("height", iconSize)
           .attr("x", xs - iconSize / 2)
           .attr("y", ys - iconSize / 2);
+        appendPlanetDegreeLabel(planet.longitudeRaw, planet.type, xs, ys);
   
         const planetName = t(`planets.${planet.type}`);
         const content = makePlanetTooltip({
@@ -1823,7 +1935,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
           iconSize,
           iconSrc,
           content,
-          tick: { x1, y1, x2, y2 },
+          tick: planetTrace,
         });
   
         chartElementsForAspect.current = [
@@ -2275,7 +2387,8 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
       ];
     }
 
-    birthChart?.transits?.planets.forEach((planet) => {
+    let nextTransitLongitude: number | undefined;
+    birthChart?.transits?.planets.slice().sort((a, b) => showPlanetDegrees ? getPlanetDegreeOrder(a.longitudeRaw) - getPlanetDegreeOrder(b.longitudeRaw) : 0).forEach((planet) => {
       const chartElement: ChartElement = {
         id: chartElementsForAspect.current.length,
         isAntiscion: false,
@@ -2293,7 +2406,13 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
         canDrawPlanet = elementIsInIsolatedAspect(chartElement);
 
       if(canDrawPlanet) {
-        let overlapData = getElementOverlapLongitudeAndOffset(chartElement);
+        let overlapData = getElementOverlapLongitudeAndOffset(
+          chartElement,
+          showPlanetDegrees,
+          showPlanetDegrees ? 1 : undefined,
+          showPlanetDegrees ? nextTransitLongitude : undefined
+        );
+        if (showPlanetDegrees) nextTransitLongitude = mod360(overlapData.longitude);
   
         // 1) ângulo zodiacal original (graus → rad)
         const rawDegOriginal = 180 - (planet.longitude % 360) - 90;
@@ -2314,11 +2433,12 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
         // 4) cálculos das coordenadas
         const xs = rSymbol * Math.cos(angleRadOverlapped);
         const ys = rSymbol * Math.sin(angleRadOverlapped);
+        const traceLength = overlapData.offset !== symbolOffset || mod360(overlapData.longitude) !== mod360(planet.longitude) ? 8 : 6;
   
         const x1 = rLineStart * Math.cos(angleRadOriginal);
         const y1 = rLineStart * Math.sin(angleRadOriginal);
         const x2 = rLineEnd * Math.cos(angleRadOriginal);
-        const y2 = rLineEnd * Math.sin(angleRadOriginal);    
+        const y2 = rLineEnd * Math.sin(angleRadOriginal);
         
         const rLineStartOuter = outerZodiacRadius;
         const rLineEndOuter = outerZodiacRadius + 5;
@@ -2327,27 +2447,31 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
         const x2Outer = rLineEndOuter * Math.cos(angleRadOriginal);
         const y2Outer = rLineEndOuter * Math.sin(angleRadOriginal);
   
-        // 5) desenha a linha interna
-        baseGroup
-          .attr("data-name", planet.type)
-          .append("line")
-          .attr("x1", x1)
-          .attr("y1", y1)
-          .attr("x2", x2)
-          .attr("y2", y2)
-          .attr("stroke", "#005f73")
-          .attr("stroke-width", 1);
+        if (!showPlanetDegrees) {
+          baseGroup
+            .attr("data-name", planet.type)
+            .append("line")
+            .attr("x1", x1)
+            .attr("y1", y1)
+            .attr("x2", x2)
+            .attr("y2", y2)
+            .attr("stroke", "#005f73")
+            .attr("stroke-width", 1);
+        }
 
-        // 5) desenha a linha externa
-        baseGroup
-          .attr("data-name", planet.type)
-          .append("line")
-          .attr("x1", x1Outer)
-          .attr("y1", y1Outer)
-          .attr("x2", x2Outer)
-          .attr("y2", y2Outer)
-          .attr("stroke", "#005f73")
-          .attr("stroke-width", 1);
+        if (showPlanetDegrees) {
+          appendPlanetDisplacementTrace(outerZodiacRadius, angleRadOriginal, xs, ys, traceLength, "#005f73");
+        } else {
+          baseGroup
+            .attr("data-name", planet.type)
+            .append("line")
+            .attr("x1", x1Outer)
+            .attr("y1", y1Outer)
+            .attr("x2", x2Outer)
+            .attr("y2", y2Outer)
+            .attr("stroke", "#005f73")
+            .attr("stroke-width", 1);
+        }
   
         // 6) desenha o ícone do planeta
         const iconSrc = getPlanetImagePath(planet.type, {
@@ -2363,6 +2487,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
           .attr("height", iconSize)
           .attr("x", xs - iconSize / 2)
           .attr("y", ys - iconSize / 2);
+        appendPlanetDegreeLabel(planet.longitudeRaw, planet.type, xs, ys);
   
           const planetName = t(`planets.${planet.type}`);
           const content = makePlanetTooltip({
@@ -2396,8 +2521,10 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     })
 
     if (showOuterChart && outerPlanets) {
+      let nextOuterPlanetLongitude: number | undefined;
       outerPlanets
       .filter((planet) => showTransSaturnians || !TRANS_SATURNIAN_TYPES.includes(planet.type))
+      .sort((a, b) => showPlanetDegrees ? getPlanetDegreeOrder(a.longitudeRaw) - getPlanetDegreeOrder(b.longitudeRaw) : 0)
       .forEach((planet) => {
         const chartElement: ChartElement = {
           id: chartElementsForAspect.current.length,
@@ -2415,7 +2542,13 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
           canDrawPlanet = elementIsInIsolatedAspect(chartElement);
 
         if(canDrawPlanet) {
-          let overlapData = getElementOverlapLongitudeAndOffset(chartElement);
+          let overlapData = getElementOverlapLongitudeAndOffset(
+            chartElement,
+            showPlanetDegrees,
+            showPlanetDegrees ? 1 : undefined,
+            showPlanetDegrees ? nextOuterPlanetLongitude : undefined
+          );
+          if (showPlanetDegrees) nextOuterPlanetLongitude = mod360(overlapData.longitude);
   
           // 1) ângulo zodiacal original (graus → rad)
           const rawDegOriginal = 180 - (planet.longitude % 360) - 90;
@@ -2437,21 +2570,20 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
           // 4) cálculos das coordenadas
           const xs = rSymbol * Math.cos(angleRadOverlapped);
           const ys = rSymbol * Math.sin(angleRadOverlapped);
+          const traceLength = overlapData.offset !== symbolOffset || mod360(overlapData.longitude) !== mod360(planet.longitude) ? 8 : 6;
   
-          const x1 = rLineStart * Math.cos(angleRadOriginal);
-          const y1 = rLineStart * Math.sin(angleRadOriginal);
-          const x2 = rLineEnd * Math.cos(angleRadOriginal);
-          const y2 = rLineEnd * Math.sin(angleRadOriginal);
-  
-          // 5) desenha a linha
-          baseGroup
-            .append("line")
-            .attr("x1", x1)
-            .attr("y1", y1)
-            .attr("x2", x2)
-            .attr("y2", y2)
-            .attr("stroke", "black")
-            .attr("stroke-width", 1);
+          if (showPlanetDegrees) {
+            appendPlanetDisplacementTrace(outerZodiacRadius, angleRadOriginal, xs, ys, traceLength, "black");
+          } else {
+            baseGroup
+              .append("line")
+              .attr("x1", rLineStart * Math.cos(angleRadOriginal))
+              .attr("y1", rLineStart * Math.sin(angleRadOriginal))
+              .attr("x2", rLineEnd * Math.cos(angleRadOriginal))
+              .attr("y2", rLineEnd * Math.sin(angleRadOriginal))
+              .attr("stroke", "black")
+              .attr("stroke-width", 1);
+          }
   
           // 6) desenha o ícone do planeta
           const iconSize = 13; // px
@@ -2467,6 +2599,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
             .attr("height", iconSize)
             .attr("x", xs - iconSize / 2)
             .attr("y", ys - iconSize / 2);
+          appendPlanetDegreeLabel(planet.longitudeRaw, planet.type, xs, ys);
   
           const planetName = t(`planets.${planet.type}`);
           const content = makePlanetTooltip({
@@ -2998,6 +3131,7 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
     testValue,
     showOuterChart,
     showDegrees,
+    showPlanetDegrees,
     hasIsolatedAspect,
     useDecans,
     useTerms,
@@ -3301,15 +3435,6 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
                 <ChartHeaderSubtitle blocks={dateBlocks}/>
               </div>
             }
-
-            {/* {tooltip && showDegrees && (
-              <div
-                className="absolute z-50 pointer-events-none px-2 py-1 rounded text-sm bg-white border border-zinc-200 shadow-md w-max max-w-[350px]"
-                style={{ left: tooltip.x + 10, top: tooltip.y - 28 }}
-              >
-                {tooltip.content}
-              </div>
-            )} */}
             {tooltip && showDegrees && (
               <div
                 ref={tooltipElRef}
@@ -3339,15 +3464,6 @@ const AstroChart: React.FC<AstroChartProps & { props: AstroChartProps["props"] &
               transform: "translate(-50%, -50%)",
             }}
           />
-
-          {/* {tooltip && showDegrees && (
-            <div
-              className="absolute z-50 pointer-events-none px-2 py-1 rounded text-sm bg-white border border-zinc-200 shadow-md w-max max-w-[350px]"
-              style={{ left: tooltip.x + 10, top: tooltip.y - 28 }}
-            >
-              {tooltip.content}
-            </div>
-          )} */}
           {tooltip && showDegrees && (
             <div
               ref={tooltipElRef}

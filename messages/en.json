@@ -463,7 +463,7 @@
     "showFaces": "Show Faces (Decans)", 
     "showDetails": "Show Details", 
     "showTransSaturnians": "Show Trans-Saturnian Planets",
-    "horaryMode": "Degrees Visible",
+    "showPlanetDegrees": "Show Degrees",
     "profileDataTitle": "Import/Export charts",
     "profileDataDescription": "Export your charts to a JSON file or import a file exported by Zazastro. Existing IDs are preserved and duplicate records are skipped.",
     "exportProfiles": "Export charts",

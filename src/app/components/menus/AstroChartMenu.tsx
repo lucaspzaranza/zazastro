@@ -196,12 +196,12 @@ export default function AstroChartMenu(props: AstroChartMenuProps) {
       },
     },
     {
-      key: "horaryMode",
-      label: t("settings.horaryMode"),
-      active: settings.horaryMode,
+      key: "showPlanetDegrees",
+      label: t("settings.showPlanetDegrees"),
+      active: settings.showPlanetDegrees,
       visible: true,
-      iconPath: "/planets/jupiter.png",
-      onClick: () => updateSettings({ horaryMode: !settings.horaryMode }),
+      iconPath: "/deg.png",
+      onClick: () => updateSettings({ showPlanetDegrees: !settings.showPlanetDegrees }),
     },
     {
       key: "showFixedStars",

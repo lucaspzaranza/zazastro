@@ -463,7 +463,7 @@
     "showFaces": "Afficher les Décans",
     "showDetails": "Afficher l'infobulle (détails)",
     "showTransSaturnians": "Afficher les Planètes Transsaturniennes",
-    "horaryMode": "Degrés visibles",
+    "showPlanetDegrees": "Degrés visibles",
     "profileDataTitle": "Importer/Exporter des cartes",
     "profileDataDescription": "Exportez vos cartes dans un fichier JSON ou importez un fichier exporté par Zazastro. Les identifiants sont conservés et les doublons sont ignorés.",
     "exportProfiles": "Exporter les cartes",

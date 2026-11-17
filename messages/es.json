@@ -463,7 +463,7 @@
     "showFaces": "Mostrar Facies (Decanatos)", 
     "showDetails": "Mostrar Tooltip (información detallada)", 
     "showTransSaturnians": "Mostrar Transaturninos",
-    "horaryMode": "Grados visibles",
+    "showPlanetDegrees": "Mostrar grados",
     "profileDataTitle": "Importar/Exportar cartas",
     "profileDataDescription": "Exporta tus cartas a un archivo JSON o importa un archivo exportado por Zazastro. Se conservan los IDs y se omiten los registros duplicados.",
     "exportProfiles": "Exportar cartas",

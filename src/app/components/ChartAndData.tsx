@@ -481,6 +481,7 @@ export default function ChartAndData(props: Props) {
           showPlanetsAntiscia: toggles.showPlanetsAntiscia,
           showArabicPartsAntiscia: toggles.showArabicPartsAntiscia,
           showDegrees: toggles.showDegrees,
+          showPlanetDegrees: settings.showPlanetDegrees,
           useTerms: toggles.useTerms,
           useDecans: toggles.useDecans,
           showFixedStars: toggles.showFixedStars,
